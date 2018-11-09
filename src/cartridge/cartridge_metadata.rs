@@ -155,12 +155,12 @@ impl CartridgeMetadata {
             0x02 => Ok(BytesConvert::from_kb(128.0)),
             0x03 => Ok(BytesConvert::from_kb(256.0)),
             0x04 => Ok(BytesConvert::from_kb(512.0)),
-            0x04 => Ok(BytesConvert::from_mb(1.0)),
-            0x05 => Ok(BytesConvert::from_mb(2.0)),
-            0x05 => Ok(BytesConvert::from_mb(4.0)),
-            0x05 => Ok(BytesConvert::from_mb(1.1)),
-            0x05 => Ok(BytesConvert::from_mb(1.2)),
-            0x05 => Ok(BytesConvert::from_mb(1.5)),
+            0x05 => Ok(BytesConvert::from_mb(1.0)),
+            0x06 => Ok(BytesConvert::from_mb(2.0)),
+            0x07 => Ok(BytesConvert::from_mb(4.0)),
+            0x52 => Ok(BytesConvert::from_mb(1.1)),
+            0x53 => Ok(BytesConvert::from_mb(1.2)),
+            0x54 => Ok(BytesConvert::from_mb(1.5)),
             _ => Err(String::from("invalid ROM size value"))
         };
     }

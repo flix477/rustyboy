@@ -3,178 +3,172 @@ use processor::instruction::*;
 pub struct Decoder;
 
 impl Decoder {
-    pub fn decode_opcode(opcode: u8, immediate: u16) -> InstructionInfo {
+    pub fn decode_opcode(opcode: u8, immediate: u16) -> Option<InstructionInfo> {
         match opcode {
-            0 => InstructionInfo {
+            // NOP
+            0 => Some(InstructionInfo::new(
                 opcode,
-                mnemonic: Instruction::NOP,
-                operands: [],
-                cycle_count: 0
-            },
+                InstructionMnemonic::NOP,
+                None,
+                0
+            )),
             // LD r -> n
-            0x06 => InstructionInfo::build_ld_r_n(
+            0x06 => Some(Self::build_ld_r_n(
                 opcode,
                 Register::B,
                 immediate
-            ),
-            0x0E => InstructionInfo::build_ld_r_n(
+            )),
+            0x0E => Some(Self::build_ld_r_n(
                 opcode,
                 Register::C,
                 immediate
-            ),
-            0x16 => InstructionInfo::build_ld_r_n(
+            )),
+            0x16 => Some(Self::build_ld_r_n(
                 opcode,
                 Register::D,
                 immediate
-            ),
-            0x1E => InstructionInfo::build_ld_r_n(
+            )),
+            0x1E => Some(Self::build_ld_r_n(
                 opcode,
                 Register::E,
                 immediate
-            ),
-            0x26 => InstructionInfo::build_ld_r_n(
+            )),
+            0x26 => Some(Self::build_ld_r_n(
                 opcode,
                 Register::H,
                 immediate
-            ),
-            0x2E => InstructionInfo::build_ld_r_n(
+            )),
+            0x2E => Some(Self::build_ld_r_n(
                 opcode,
                 Register::L,
                 immediate
-            ),
+            )),
+            0x36 => Some(Self::build_ld_r_n(
+                opcode,
+                Register::HL,
+                immediate
+            )),
+            // HALT
+            0x76 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::HALT,
+                None,
+                0 // TODO: how many cycles for HALT?
+            )),
             // LD r -> r
-            0x78..=0x7F => {
-                let r1 = Register::A;
-                let r2 = match opcode {
-                    0x7F => Register::A,
-                    0x78 => Register::B,
-                    0x79 => Register::C,
-                    0x7A => Register::D,
-                    0x7B => Register::E,
-                    0x7C => Register::H,
-                    0x7D => Register::L
-                };
-                return InstructionInfo::build_ld_r_r(opcode, r1, r2);
+            0x40..=0x7F => Self::parse_ld_r_r(opcode),
+            0x02 =>
+            _ => None
+        }
+    }
+
+    pub fn parse_ld_r_r(opcode: u8) -> Option<InstructionInfo> {
+        let r1 = match opcode {
+            0x78..=0x7F => Some(Register::A),
+            0x40..=0x46 => Some(Register::B),
+            0x48..=0x4E => Some(Register::C),
+            0x50..=0x56 => Some(Register::D),
+            0x58..=0x5E => Some(Register::E),
+            0x60..=0x66 => Some(Register::H),
+            0x68..=0x6E => Some(Register::L),
+            0x70..=0x75 => Some(Register::HL),
+            _ => None
+        };
+
+        if r1.is_none() { return None; }
+        let r1 = r1.unwrap();
+
+        // get second hex value (f7 -> 7)
+        let r2 = match opcode & 0xf {
+            0 | 0x8 => Some(Register::B),
+            1 | 0x9 => Some(Register::C),
+            2 | 0xA => Some(Register::D),
+            3 | 0xB => Some(Register::E),
+            4 | 0xC => Some(Register::H),
+            5 | 0xD => Some(Register::L),
+            6 | 0xE => Some(Register::HL),
+            0xF if r1 == Register::A =>
+                Some(Register::A), // could be reduced to 0xF, not sure
+            _ => None
+        };
+
+        if let Some(r2) = r2 {
+            let mut cycle_count = 4;
+            if r1 == Register::HL || r2 == Register::HL {
+                cycle_count = 8
             }
-            0x7E => InstructionInfo::build_ld_r_r16(
+            return Some(InstructionInfo::new(
                 opcode,
-                Register::A,
-                Register::HL
-            ),
-            0x40..=0x45 => {
-                let r1 = Register::B;
-                let r2 = match opcode {
-                    0x40 => Register::B,
-                    0x41 => Register::C,
-                    0x42 => Register::D,
-                    0x43 => Register::E,
-                    0x44 => Register::H,
-                    0x45 => Register::L
-                };
-                return InstructionInfo::build_ld_r_r(opcode, r1, r2);
-            }
-            0x46 => InstructionInfo::build_ld_r_r16(
-                opcode,
-                Register::B,
-                Register::HL
-            ),
-            0x48..=0x4D => {
-                let r1 = Register::C;
-                let r2 = match opcode {
-                    0x48 => Register::B,
-                    0x49 => Register::C,
-                    0x4A => Register::D,
-                    0x4B => Register::E,
-                    0x4C => Register::H,
-                    0x4D => Register::L
-                };
-                return InstructionInfo::build_ld_r_r(opcode, r1, r2);
-            }
-            0x4E => InstructionInfo::build_ld_r_r16(
-                opcode,
-                Register::C,
-                Register::HL
-            ),
-            0x50..=0x55 => {
-                let r1 = Register::D;
-                let r2 = match opcode {
-                    0x50 => Register::B,
-                    0x51 => Register::C,
-                    0x52 => Register::D,
-                    0x53 => Register::E,
-                    0x54 => Register::H,
-                    0x55 => Register::L
-                };
-                return InstructionInfo::build_ld_r_r(opcode, r1, r2);
-            }
-            0x56 => InstructionInfo::build_ld_r_r16(
-                opcode,
-                Register::D,
-                Register::HL
-            ),
-            0x58..=0x5D => {
-                let r1 = Register::E;
-                let r2 = match opcode {
-                    0x58 => Register::B,
-                    0x59 => Register::C,
-                    0x5A => Register::D,
-                    0x5B => Register::E,
-                    0x5C => Register::H,
-                    0x5D => Register::L
-                };
-                return InstructionInfo::build_ld_r_r(opcode, r1, r2);
-            }
-            0x5E => InstructionInfo::build_ld_r_r16(
-                opcode,
-                Register::E,
-                Register::HL
-            ),
-            0x60..=0x65 => {
-                let r1 = Register::H;
-                let r2 = match opcode {
-                    0x60 => Register::B,
-                    0x61 => Register::C,
-                    0x62 => Register::D,
-                    0x63 => Register::E,
-                    0x64 => Register::H,
-                    0x65 => Register::L
-                };
-                return InstructionInfo::build_ld_r_r(opcode, r1, r2);
-            }
-            0x66 => InstructionInfo::build_ld_r_r16(
-                opcode,
-                Register::H,
-                Register::HL
-            ),
-            0x68..=0x6D => {
-                let r1 = Register::L;
-                let r2 = match opcode {
-                    0x68 => Register::B,
-                    0x69 => Register::C,
-                    0x6A => Register::D,
-                    0x6B => Register::E,
-                    0x6C => Register::H,
-                    0x6D => Register::L
-                };
-                return InstructionInfo::build_ld_r_r(opcode, r1, r2);
-            }
-            0x6E => InstructionInfo::build_ld_r_r16(
-                opcode,
-                Register::L,
-                Register::HL
-            ),
-            0x70..=0x75 => {
-                let r1 = Register::HL;
-                let r2 = match opcode {
-                    0x68 => Register::B,
-                    0x69 => Register::C,
-                    0x6A => Register::D,
-                    0x6B => Register::E,
-                    0x6C => Register::H,
-                    0x6D => Register::L
-                };
-                return InstructionInfo::build_ld_r_r16(opcode, r1, r2);
+                InstructionMnemonic::LD,
+                Some(vec![
+                    Operand::Register(r1),
+                    Operand::Register(r2),
+                ]),
+                cycle_count
+            ));
+        }
+        return None;
+    }
+
+    pub fn build_ld_r_r(opcode: u8, r1: Register, r2: Register)
+        -> InstructionInfo
+    {
+        let cycle_count = if r1.is16bit() || r2.is16bit() { 8 } else { 4 };
+        return InstructionInfo::new(
+            opcode,
+            InstructionMnemonic::LD,
+            Some(vec![
+                Operand::Register(r1),
+                Operand::Register(r2),
+            ]),
+            cycle_count
+        );
+    }
+
+    pub fn build_ld_r_n(opcode: u8, register: Register, immediate: u16)
+        -> InstructionInfo
+    {
+        let cycle_count = if register == Register::HL { 12 } else { 8 };
+        return InstructionInfo::new(
+            opcode,
+            InstructionMnemonic::LD,
+            Some(vec![
+                Operand::Register(register),
+                Operand::Immediate(immediate)
+            ]),
+            cycle_count
+        );
+    }
+
+    pub fn build_ld_n_r(opcode: u8, register: Register, immediate: u16)
+                        -> InstructionInfo
+    {
+        let cycle_count = if register == Register::HL { 12 } else { 8 };
+        return InstructionInfo::new(
+            opcode,
+            InstructionMnemonic::LD,
+            Some(vec![
+                Operand::Register(register),
+                Operand::Immediate(immediate)
+            ]),
+            cycle_count
+        );
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs;
+
+    #[test]
+    fn coverage() {
+        let mut covered = Vec::new();
+        for i in 0..0xff {
+            if let Some(res) = Decoder::decode_opcode(i, 0) {
+                covered.push(i);
             }
         }
+        assert_eq!(covered.len(), 0xff);
     }
 }

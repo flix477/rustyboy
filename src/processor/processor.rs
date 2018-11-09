@@ -1,7 +1,6 @@
 use memory::Memory;
 use processor::register::DualRegister;
 use processor::flag_register::FlagRegister;
-use processor::instruction::Instruction;
 
 const CLOCK_FREQUENCY: f64 = 4.194304; // MHz
 
@@ -22,10 +21,6 @@ impl Processor {
 
     fn next(&self) {
         let mut pc = self.registers.program_counter;
-        match self.memory[pc] {
-
-        }
-
         pc += 1;
     }
 

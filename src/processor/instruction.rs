@@ -1,4 +1,4 @@
-pub enum Instruction {
+pub enum InstructionMnemonic {
     LD,
     LDI,
     LDD,
@@ -46,52 +46,24 @@ pub enum Instruction {
 
 pub struct InstructionInfo {
     opcode: u8,
-    mnemonic: Instruction,
-    operands: [Option<Operand>; 2],
+    mnemonic: InstructionMnemonic,
+    operands: Option<Vec<Operand>>,
     cycle_count: u8
 }
 
 impl InstructionInfo {
-    pub fn build_ld_r_n(opcode: u8, register: Register, immediate: u16)
-        -> InstructionInfo
-    {
+    pub fn new(
+        opcode: u8,
+        mnemonic: InstructionMnemonic,
+        operands: Option<Vec<Operand>>,
+        cycle_count: u8
+    ) -> InstructionInfo {
         return InstructionInfo {
             opcode,
-            mnemonic: Instruction::LD,
-            operands: [
-                Some(Operand::Register(register)),
-                (Operand::Immediate(immediate))
-            ],
-            cycle_count: 8
-        }
-    }
-
-    pub fn build_ld_r_r(opcode: u8, r1: Register, r2: Register)
-         -> InstructionInfo
-    {
-        return InstructionInfo {
-            opcode,
-            mnemonic: Instruction::LD,
-            operands: [
-                Some(Operand::Register(r1)),
-                Some(Operand::Register(r2)),
-            ],
-            cycle_count: 4
-        }
-    }
-
-    pub fn build_ld_r_r16(opcode: u8, r1: Register, r2: Register)
-        -> InstructionInfo
-    {
-        return InstructionInfo {
-            opcode,
-            mnemonic: Instruction::LD,
-            operands: [
-                Some(Operand::Register(r1)),
-                Some(Operand::Register(r2)),
-            ],
-            cycle_count: 8
-        }
+            mnemonic,
+            operands,
+            cycle_count
+        };
     }
 }
 
@@ -100,6 +72,7 @@ pub enum Operand {
     Immediate(u16)
 }
 
+#[derive(PartialEq)]
 pub enum Register {
     AF,
     A,
@@ -115,4 +88,17 @@ pub enum Register {
     L,
     SP,
     PC
+}
+
+impl Register {
+    pub fn is16bit(&self) -> bool {
+        return
+            self == Register::AF ||
+            self == Register::BC ||
+            self == Register::DE ||
+            self == Register::HL ||
+            self == Register::SP ||
+            self == Register::PC
+        ;
+    }
 }
