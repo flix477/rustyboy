@@ -6,63 +6,85 @@ impl Decoder {
     pub fn decode_opcode(opcode: u8, immediate: u16) -> Option<InstructionInfo> {
         match opcode {
             // NOP
-            0 => Some(InstructionInfo::new(
+            0 => Some(InstructionInfo::nop(opcode)),
+            // LD A -> n
+            0x2 => Some(InstructionInfo::ld_rr(
                 opcode,
-                InstructionMnemonic::NOP,
-                None,
-                0
+                Register::BC,
+                Register::A
             )),
+            0x12 => Some(InstructionInfo::ld_rr(
+                opcode,
+                Register::DE,
+                Register::A
+            )),
+            0x77 => Some(InstructionInfo::ld_rr(
+                opcode,
+                Register::HL,
+                Register::A
+            )),
+            // LD n -> A
+            0x0A => Some(InstructionInfo::ld_rr(
+                opcode,
+                Register::A,
+                Register::BC
+            )),
+            0x1A => Some(InstructionInfo::ld_rr(
+                opcode,
+                Register::DE,
+                Register::A
+            )),
+            0x7E => Some(InstructionInfo::ld_rr(
+                opcode,
+                Register::HL,
+                Register::A
+            )),
+            // LD A ->
             // LD r -> n
-            0x06 => Some(Self::build_ld_r_n(
+            0x06 => Some(InstructionInfo::ld_rn(
                 opcode,
                 Register::B,
                 immediate
             )),
-            0x0E => Some(Self::build_ld_r_n(
+            0x0E => Some(InstructionInfo::ld_rn(
                 opcode,
                 Register::C,
                 immediate
             )),
-            0x16 => Some(Self::build_ld_r_n(
+            0x16 => Some(InstructionInfo::ld_rn(
                 opcode,
                 Register::D,
                 immediate
             )),
-            0x1E => Some(Self::build_ld_r_n(
+            0x1E => Some(InstructionInfo::ld_rn(
                 opcode,
                 Register::E,
                 immediate
             )),
-            0x26 => Some(Self::build_ld_r_n(
+            0x26 => Some(InstructionInfo::ld_rn(
                 opcode,
                 Register::H,
                 immediate
             )),
-            0x2E => Some(Self::build_ld_r_n(
+            0x2E => Some(InstructionInfo::ld_rn(
                 opcode,
                 Register::L,
                 immediate
             )),
-            0x36 => Some(Self::build_ld_r_n(
+            0x36 => Some(InstructionInfo::ld_rn(
                 opcode,
                 Register::HL,
                 immediate
             )),
             // HALT
-            0x76 => Some(InstructionInfo::new(
-                opcode,
-                InstructionMnemonic::HALT,
-                None,
-                0 // TODO: how many cycles for HALT?
-            )),
+            0x76 => Some(InstructionInfo::nop(opcode)),
             // LD r -> r
-            0x40..=0x7F => Self::parse_ld_r_r(opcode),
-            0x02 =>
+            0x40..=0x7F => Self::parse_ld_rr(opcode),
             _ => None
         }
     }
 
-    pub fn parse_ld_r_r(opcode: u8) -> Option<InstructionInfo> {
+    pub fn parse_ld_rr(opcode: u8) -> Option<InstructionInfo> {
         let r1 = match opcode {
             0x78..=0x7F => Some(Register::A),
             0x40..=0x46 => Some(Register::B),
@@ -93,66 +115,9 @@ impl Decoder {
         };
 
         if let Some(r2) = r2 {
-            let mut cycle_count = 4;
-            if r1 == Register::HL || r2 == Register::HL {
-                cycle_count = 8
-            }
-            return Some(InstructionInfo::new(
-                opcode,
-                InstructionMnemonic::LD,
-                Some(vec![
-                    Operand::Register(r1),
-                    Operand::Register(r2),
-                ]),
-                cycle_count
-            ));
+            return Some(InstructionInfo::ld_rr(opcode, r1, r2));
         }
         return None;
-    }
-
-    pub fn build_ld_r_r(opcode: u8, r1: Register, r2: Register)
-        -> InstructionInfo
-    {
-        let cycle_count = if r1.is16bit() || r2.is16bit() { 8 } else { 4 };
-        return InstructionInfo::new(
-            opcode,
-            InstructionMnemonic::LD,
-            Some(vec![
-                Operand::Register(r1),
-                Operand::Register(r2),
-            ]),
-            cycle_count
-        );
-    }
-
-    pub fn build_ld_r_n(opcode: u8, register: Register, immediate: u16)
-        -> InstructionInfo
-    {
-        let cycle_count = if register == Register::HL { 12 } else { 8 };
-        return InstructionInfo::new(
-            opcode,
-            InstructionMnemonic::LD,
-            Some(vec![
-                Operand::Register(register),
-                Operand::Immediate(immediate)
-            ]),
-            cycle_count
-        );
-    }
-
-    pub fn build_ld_n_r(opcode: u8, register: Register, immediate: u16)
-                        -> InstructionInfo
-    {
-        let cycle_count = if register == Register::HL { 12 } else { 8 };
-        return InstructionInfo::new(
-            opcode,
-            InstructionMnemonic::LD,
-            Some(vec![
-                Operand::Register(register),
-                Operand::Immediate(immediate)
-            ]),
-            cycle_count
-        );
     }
 }
 
@@ -169,6 +134,6 @@ mod tests {
                 covered.push(i);
             }
         }
-        assert_eq!(covered.len(), 0xff);
+        assert_eq!(covered.len(), 0xff - 11);
     }
 }
