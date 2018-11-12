@@ -15,8 +15,12 @@ impl Memory {
         self.map = [0; MEMORY_MAP_LENGTH];
     }
 
-    pub fn set(&mut self, address: usize, value: u8) {
-        self.map[address] = value;
+    pub fn get(&self, address: u16) -> u8 {
+        self.map[address as usize]
+    }
+
+    pub fn set(&mut self, address: u16, value: u8) {
+        self.map[address as usize] = value;
     }
 }
 
