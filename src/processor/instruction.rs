@@ -51,7 +51,8 @@ pub enum InstructionMnemonic {
 pub enum Operand {
     Register(RegisterType),
     Immediate,
-    Immediate16
+    Immediate16,
+    Address((RegisterType, u16))
 }
 
 pub struct InstructionInfo {

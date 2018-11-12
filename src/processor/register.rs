@@ -29,6 +29,14 @@ impl SingleRegister {
             self.value &= !2u8.pow(idx as u32);
         }
     }
+
+    pub fn increment(&mut self) {
+        self.value += 1;
+    }
+
+    pub fn decrement(&mut self) {
+        self.value += 1;
+    }
 }
 
 pub struct DualRegister {
@@ -51,6 +59,16 @@ impl DualRegister {
     pub fn set(&mut self, value: u16) {
         self.low.set(value as u8);
         self.high.set((value >> 8) as u8);
+    }
+
+    pub fn increment(&mut self) {
+        let current_value = self.get();
+        self.set(current_value + 1);
+    }
+
+    pub fn decrement(&mut self) {
+        let current_value = self.get();
+        self.set(current_value - 1);
     }
 }
 

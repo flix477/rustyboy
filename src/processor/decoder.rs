@@ -11,7 +11,7 @@ impl Decoder {
             // NOP
             0 => Some(Self::nop(opcode)),
 
-            // LD A -> n
+            // LD n,A
             0x2 => Some(Self::ld_rr(
                 opcode,
                 RegisterType::BC,
@@ -22,9 +22,8 @@ impl Decoder {
                 RegisterType::DE,
                 RegisterType::A
             )),
-            0x77 => Some(Self::ld_rr(
+            0xEA => Some(Self::ld_n16r(
                 opcode,
-                RegisterType::HL,
                 RegisterType::A
             )),
 
@@ -89,6 +88,41 @@ impl Decoder {
             // put value r2 in r1
             0x40..=0x7F => Self::parse_ld_rr(opcode),
 
+            // LD A,(C)
+            // Put value at address $FF00 + register C into A
+            0xF2 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::LD,
+                Some(vec![
+                    Operand::Register(RegisterType::A),
+                    Operand::Address((RegisterType::C, 0xFF00))
+                ]),
+                8
+            )),
+
+            // LD (C),A
+            // Put A into address $FF00 + register C
+            0xE2 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::LD,
+                Some(vec![
+                    Operand::Address((RegisterType::C, 0xFF00)),
+                    Operand::Register(RegisterType::A)
+                ]),
+                8
+            )),
+
+            // LDD A,(HL)
+            0x3A => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::LDD,
+                Some(vec![
+                    Operand::Register(RegisterType::A),
+                    Operand::Register(RegisterType::HL)
+                ]),
+                8
+            )),
+
             _ => None
         }
     }
@@ -97,12 +131,12 @@ impl Decoder {
         let r1 = match opcode {
             0x78..=0x7F => Some(RegisterType::A),
             0x40..=0x46 => Some(RegisterType::B),
-            0x48..=0x4E => Some(RegisterType::C),
+            0x48..=0x4F => Some(RegisterType::C),
             0x50..=0x56 => Some(RegisterType::D),
-            0x58..=0x5E => Some(RegisterType::E),
+            0x58..=0x5F => Some(RegisterType::E),
             0x60..=0x66 => Some(RegisterType::H),
-            0x68..=0x6E => Some(RegisterType::L),
-            0x70..=0x75 => Some(RegisterType::HL),
+            0x68..=0x6F => Some(RegisterType::L),
+            0x70..=0x77 => Some(RegisterType::HL),
             _ => None
         };
 
@@ -118,8 +152,7 @@ impl Decoder {
             4 | 0xC => Some(RegisterType::H),
             5 | 0xD => Some(RegisterType::L),
             6 | 0xE => Some(RegisterType::HL),
-            0xF if r1 == RegisterType::A =>
-                Some(RegisterType::A),
+            7 | 0xF => Some(RegisterType::A),
             _ => None
         };
 
@@ -176,6 +209,15 @@ impl Decoder {
             opcode,
             InstructionMnemonic::LD,
             Some(vec![Operand::Register(register), Operand::Immediate16]),
+            16
+        )
+    }
+
+    pub fn ld_n16r(opcode: u8, register: RegisterType) -> InstructionInfo {
+        InstructionInfo::new(
+            opcode,
+            InstructionMnemonic::LD,
+            Some(vec![Operand::Immediate16, Operand::Register(register)]),
             16
         )
     }

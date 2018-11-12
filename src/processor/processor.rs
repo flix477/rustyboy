@@ -50,14 +50,12 @@ impl Processor {
 }
 
 impl LR35902 for Processor {
-    /**
-
-        LD Instructions
-
-    */
     fn ld(&mut self, instruction: InstructionInfo) {
         if let Some(operands) = instruction.operands() {
             match (operands[0], operands[1]) {
+                (Operand::Immediate16, Operand::Register(r)) => {
+                    self.ld_n16r(r)
+                },
                 (Operand::Register(r), Operand::Immediate16) => {
                     self.ld_rn16(r)
                 },
@@ -76,7 +74,15 @@ impl LR35902 for Processor {
                     } else {
                         self.ld_rr(r1, r2)
                     }
-                }
+                },
+                (Operand::Register(r1), Operand::Address((r2, a))) => {
+                    let address = self.registers.reg(r2).get() as u16 + a;
+                    self.ld_ra(r1, address);
+                },
+                (Operand::Address((r2, a)), Operand::Register(r1)) => {
+                    let address = self.registers.reg(r2).get() as u16 + a;
+                    self.ld_ar(address, r1);
+                },
                 _ => panic!("bad LD arguments")
             }
         }
@@ -92,6 +98,11 @@ impl LR35902 for Processor {
         - 16: previous char meaning but 16bit instead of 8
 */
 impl Processor {
+    /**
+
+        LD Instructions
+
+    */
     // writes a value to memory
     fn ld_av(&mut self, address: u16, value: u8) {
         self.memory.set(address, value);
@@ -124,6 +135,12 @@ impl Processor {
     fn ld_rn16(&mut self, register: RegisterType) {
         let address = self.get_immediate16();
         self.ld_ra(register, address);
+    }
+
+    // writes the value of a register at an immediate address
+    fn ld_n16r(&mut self, register: RegisterType) {
+        let address = self.get_immediate16();
+        self.ld_ar(address, register);
     }
 
     // writes an immediate value at the memory address in a register
