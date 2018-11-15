@@ -1,3 +1,10 @@
+pub trait Register {
+    fn get(&self) -> u16;
+    fn set(&mut self, value: u16);
+    fn increment(&mut self);
+    fn decrement(&mut self);
+}
+
 pub struct SingleRegister {
     value: u8
 }
@@ -7,14 +14,6 @@ impl SingleRegister {
         return SingleRegister {
             value: 0
         };
-    }
-
-    pub fn get(&self) -> u8 {
-        self.value
-    }
-
-    pub fn set(&mut self, value: u8) {
-        self.value = value;
     }
 
     pub fn get_bit(&self, idx: u8) -> bool {
@@ -29,13 +28,23 @@ impl SingleRegister {
             self.value &= !2u8.pow(idx as u32);
         }
     }
+}
 
-    pub fn increment(&mut self) {
+impl Register for SingleRegister {
+    fn get(&self) -> u16 {
+        self.value as u16
+    }
+
+    fn set(&mut self, value: u16) {
+        self.value = value as u8;
+    }
+
+    fn increment(&mut self) {
         self.value += 1;
     }
 
-    pub fn decrement(&mut self) {
-        self.value += 1;
+    fn decrement(&mut self) {
+        self.value -= 1;
     }
 }
 
@@ -51,22 +60,24 @@ impl DualRegister {
             low: SingleRegister::new()
         };
     }
+}
 
-    pub fn get(&self) -> u16 {
+impl Register for DualRegister {
+    fn get(&self) -> u16 {
         return (self.high.get() as u16) | self.low.get() as u16;
     }
 
-    pub fn set(&mut self, value: u16) {
-        self.low.set(value as u8);
-        self.high.set((value >> 8) as u8);
+    fn set(&mut self, value: u16) {
+        self.low.set(value);
+        self.high.set(value >> 8);
     }
 
-    pub fn increment(&mut self) {
+    fn increment(&mut self) {
         let current_value = self.get();
         self.set(current_value + 1);
     }
 
-    pub fn decrement(&mut self) {
+    fn decrement(&mut self) {
         let current_value = self.get();
         self.set(current_value - 1);
     }

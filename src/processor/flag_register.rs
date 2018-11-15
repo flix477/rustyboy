@@ -1,4 +1,4 @@
-use processor::register::{SingleRegister, DualRegister};
+use processor::register::{Register, SingleRegister, DualRegister};
 
 pub struct FlagRegister {
     pub register: DualRegister
@@ -20,24 +20,33 @@ impl FlagRegister {
     }
 
     pub fn set_accumulator(&mut self, value: u8) {
-        self.register.high.set(value);
+        self.register.high.set(value as u16);
     }
 
-    pub fn get_flag(&self, flag: Flag) -> bool {
-        return self.register.low.get() & (flag as u8) != 0;
+    pub fn flag(&self, flag: Flag) -> bool {
+        return self.register.low.get() as u8 & (flag as u8) != 0;
     }
 
-    pub fn set_flag(&mut self, flag: Flag) {
-        let new_low = self.register.low.get() & !(flag as u8);
-        self.register.low.set(new_low);
+    pub fn set_flag(&mut self, flag: Flag, value: bool) {
+        let mut new_low = self.register.low.get() as u8;
+        if value {
+            new_low |= flag as u8;
+        } else {
+            new_low &= !(flag as u8);
+        }
+        self.register.low.set(new_low as u16);
     }
 
     pub fn set_flags(&mut self, value: u8) {
-        self.register.low.set(value);
+        self.register.low.set(value as u16);
     }
 
     pub fn register(&self) -> &DualRegister {
         &self.register
+    }
+
+    pub fn set_zero_from_result(&mut self, result: u8) {
+        self.set_flag(Flag::Zero, result == 0);
     }
 }
 

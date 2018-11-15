@@ -95,7 +95,7 @@ impl Decoder {
                 InstructionMnemonic::LD,
                 Some(vec![
                     Operand::Register(RegisterType::A),
-                    Operand::Address((RegisterType::C, 0xFF00))
+                    Operand::IncrementedRegister(RegisterType::C)
                 ]),
                 8
             )),
@@ -106,7 +106,7 @@ impl Decoder {
                 opcode,
                 InstructionMnemonic::LD,
                 Some(vec![
-                    Operand::Address((RegisterType::C, 0xFF00)),
+                    Operand::IncrementedRegister(RegisterType::C),
                     Operand::Register(RegisterType::A)
                 ]),
                 8
@@ -123,11 +123,157 @@ impl Decoder {
                 8
             )),
 
+            // LDD (HL),A
+            0x32 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::LDD,
+                Some(vec![
+                    Operand::Register(RegisterType::HL),
+                    Operand::Register(RegisterType::A)
+                ]),
+                8
+            )),
+
+            // LDI A,(HL)
+            0x2A => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::LDI,
+                Some(vec![
+                    Operand::Register(RegisterType::A),
+                    Operand::Register(RegisterType::HL)
+                ]),
+                8
+            )),
+
+            // LDI (HL),A
+            0x22 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::LDI,
+                Some(vec![
+                    Operand::Register(RegisterType::HL),
+                    Operand::Register(RegisterType::A)
+                ]),
+                8
+            )),
+
+            // LDH (n),A
+            0xE0 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::LD,
+                Some(vec![
+                    Operand::IncrementedImmediate,
+                    Operand::Register(RegisterType::A)
+                ]),
+                12
+            )),
+
+            // LDH A,(n)
+            0xF0 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::LD,
+                Some(vec![
+                    Operand::Register(RegisterType::A),
+                    Operand::IncrementedImmediate
+                ]),
+                12
+            )),
+
+            // LD n,nn 16bit
+            0x01 => Some(Self::ld_r16n16(opcode, RegisterType::BC)),
+            0x11 => Some(Self::ld_r16n16(opcode, RegisterType::DE)),
+            0x21 => Some(Self::ld_r16n16(opcode, RegisterType::HL)),
+            0x31 => Some(Self::ld_r16n16(opcode, RegisterType::SP)),
+
+            // LD SP,HL
+            0xF9 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::LD,
+                Some(vec![
+                    Operand::Register(RegisterType::SP),
+                    Operand::Register(RegisterType::HL)
+                ]),
+                8
+            )),
+
+            // LDHL SP,n
+            0xF8 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::LDHL,
+                Some(vec![
+                    Operand::Register(RegisterType::SP),
+                    Operand::Immediate
+                ]),
+                12
+            )),
+
+            // LD (nn),SP
+            0x08 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::LD,
+                Some(vec![
+                    Operand::Immediate16,
+                    Operand::Register(RegisterType::SP)
+                ]),
+                20
+            )),
+
+            // PUSH nn
+            0xF5 => Some(Self::push(opcode, RegisterType::AF)),
+            0xC5 => Some(Self::push(opcode, RegisterType::BC)),
+            0xD5 => Some(Self::push(opcode, RegisterType::DE)),
+            0xE5 => Some(Self::push(opcode, RegisterType::HL)),
+
+            // POP nn
+            0xF1 => Some(Self::push(opcode, RegisterType::AF)),
+            0xC1 => Some(Self::push(opcode, RegisterType::BC)),
+            0xD1 => Some(Self::push(opcode, RegisterType::DE)),
+            0xE1 => Some(Self::push(opcode, RegisterType::HL)),
+
+            // ADD A,n
+            // add n to A
+            0x87 => Some(Self::add_an(opcode, RegisterType::A)),
+            0x80 => Some(Self::add_an(opcode, RegisterType::B)),
+            0x81 => Some(Self::add_an(opcode, RegisterType::C)),
+            0x82 => Some(Self::add_an(opcode, RegisterType::D)),
+            0x83 => Some(Self::add_an(opcode, RegisterType::E)),
+            0x84 => Some(Self::add_an(opcode, RegisterType::H)),
+            0x85 => Some(Self::add_an(opcode, RegisterType::L)),
+            0x86 => Some(Self::add_an(opcode, RegisterType::HL)),
+            0xC6 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::ADD,
+                Some(vec![
+                    Operand::Register(RegisterType::A),
+                    Operand::Immediate16
+                ]),
+                8
+            )),
+
+            // ADC A,n
+            // Add n + Carry flag to A
+            0x8F => Some(Self::adc_an(opcode, RegisterType::A)),
+            0x89 => Some(Self::adc_an(opcode, RegisterType::B)),
+            0x8A => Some(Self::adc_an(opcode, RegisterType::C)),
+            0x8B => Some(Self::adc_an(opcode, RegisterType::D)),
+            0x8C => Some(Self::adc_an(opcode, RegisterType::E)),
+            0x8D => Some(Self::adc_an(opcode, RegisterType::H)),
+            0x8E => Some(Self::adc_an(opcode, RegisterType::L)),
+            0x8F => Some(Self::adc_an(opcode, RegisterType::HL)),
+            0xCE => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::ADC,
+                Some(vec![
+                    Operand::Register(RegisterType::A),
+                    Operand::Immediate16
+                ]),
+                8
+            )),
+
             _ => None
         }
     }
 
-    pub fn parse_ld_rr(opcode: u8) -> Option<InstructionInfo> {
+    fn parse_ld_rr(opcode: u8) -> Option<InstructionInfo> {
         let r1 = match opcode {
             0x78..=0x7F => Some(RegisterType::A),
             0x40..=0x46 => Some(RegisterType::B),
@@ -162,8 +308,8 @@ impl Decoder {
         return None;
     }
 
-    pub fn ld_nr(opcode: u8, immediate: u16, register: RegisterType)
-                 -> InstructionInfo
+    fn ld_nr(opcode: u8, register: RegisterType)
+         -> InstructionInfo
     {
         let cycle_count = if register == RegisterType::HL { 12 } else { 8 };
         InstructionInfo::new(
@@ -177,8 +323,8 @@ impl Decoder {
         )
     }
 
-    pub fn ld_rn(opcode: u8, register: RegisterType)
-                 -> InstructionInfo
+    fn ld_rn(opcode: u8, register: RegisterType)
+        -> InstructionInfo
     {
         let cycle_count = if register == RegisterType::HL { 12 } else { 8 };
         InstructionInfo::new(
@@ -192,8 +338,8 @@ impl Decoder {
         )
     }
 
-    pub fn ld_rr(opcode: u8, r1: RegisterType, r2: RegisterType)
-                 -> InstructionInfo
+    fn ld_rr(opcode: u8, r1: RegisterType, r2: RegisterType)
+         -> InstructionInfo
     {
         let cycle_count = if r1.is16bit() || r2.is16bit() { 8 } else { 4 };
         InstructionInfo::new(
@@ -204,7 +350,7 @@ impl Decoder {
         )
     }
 
-    pub fn ld_rn16(opcode: u8, register: RegisterType) -> InstructionInfo {
+    fn ld_rn16(opcode: u8, register: RegisterType) -> InstructionInfo {
         InstructionInfo::new(
             opcode,
             InstructionMnemonic::LD,
@@ -213,7 +359,7 @@ impl Decoder {
         )
     }
 
-    pub fn ld_n16r(opcode: u8, register: RegisterType) -> InstructionInfo {
+    fn ld_n16r(opcode: u8, register: RegisterType) -> InstructionInfo {
         InstructionInfo::new(
             opcode,
             InstructionMnemonic::LD,
@@ -222,7 +368,41 @@ impl Decoder {
         )
     }
 
-    pub fn nop(opcode: u8) -> InstructionInfo {
+    fn ld_r16n16(opcode: u8, register: RegisterType) -> InstructionInfo {
+        InstructionInfo::new(
+            opcode,
+            InstructionMnemonic::LD,
+            Some(vec![
+                Operand::Register(register),
+                Operand::Immediate16
+            ]),
+            12
+        )
+    }
+
+    fn push(opcode: u8, register: RegisterType) -> InstructionInfo {
+        InstructionInfo::new(
+            opcode,
+            InstructionMnemonic::PUSH,
+            Some(vec![
+                Operand::Register(register)
+            ]),
+            16
+        )
+    }
+
+    fn pop(opcode: u8, register: RegisterType) -> InstructionInfo {
+        InstructionInfo::new(
+            opcode,
+            InstructionMnemonic::POP,
+            Some(vec![
+                Operand::Register(register)
+            ]),
+            12
+        )
+    }
+
+    fn nop(opcode: u8) -> InstructionInfo {
         InstructionInfo::new(
             opcode,
             InstructionMnemonic::NOP,
@@ -231,12 +411,36 @@ impl Decoder {
         )
     }
 
-    pub fn halt(opcode: u8) -> InstructionInfo {
+    fn halt(opcode: u8) -> InstructionInfo {
         InstructionInfo::new(
             opcode,
             InstructionMnemonic::HALT,
             None,
             0 // TODO: how many cycles for HALT?
+        )
+    }
+
+    fn add_an(opcode: u8, register: RegisterType) -> InstructionInfo {
+        InstructionInfo::new(
+            opcode,
+            InstructionMnemonic::ADD,
+            Some(vec![
+                Operand::Register(RegisterType::A),
+                Operand::Register(register)
+            ]),
+            if register == RegisterType::HL { 8 } else { 4 }
+        )
+    }
+
+    fn adc_an(opcode: u8, register: RegisterType) -> InstructionInfo {
+        InstructionInfo::new(
+            opcode,
+            InstructionMnemonic::ADC,
+            Some(vec![
+                Operand::Register(RegisterType::A),
+                Operand::Register(register)
+            ]),
+            if register == RegisterType::HL { 8 } else { 4 }
         )
     }
 }

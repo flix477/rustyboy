@@ -3,6 +3,7 @@ use processor::registers::RegisterType;
 #[derive(Copy, Clone)]
 pub enum InstructionMnemonic {
     LD,
+    LDHL,
     LDI,
     LDD,
     PUSH,
@@ -48,11 +49,13 @@ pub enum InstructionMnemonic {
 }
 
 #[derive(Copy, Clone)]
+// Increment versions are incremented with 0xFF00
 pub enum Operand {
     Register(RegisterType),
     Immediate,
     Immediate16,
-    Address((RegisterType, u16))
+    IncrementedRegister(RegisterType),
+    IncrementedImmediate
 }
 
 pub struct InstructionInfo {
