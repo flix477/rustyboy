@@ -49,13 +49,26 @@ pub enum InstructionMnemonic {
 }
 
 #[derive(Copy, Clone)]
-// Increment versions are incremented with 0xFF00
 pub enum Operand {
     Register(RegisterType),
+    Value(ValueType),
+    Address(AddressType),
+}
+
+// Increment versions are incremented with 0xFF00
+#[derive(Copy, Clone)]
+pub enum AddressType {
+    Register(RegisterType),
+    IncRegister(RegisterType),
     Immediate,
-    Immediate16,
-    IncrementedRegister(RegisterType),
     IncrementedImmediate
+}
+
+#[derive(Copy, Clone)]
+pub enum ValueType {
+    Register(RegisterType),
+    Immediate,
+    Immediate16
 }
 
 pub struct InstructionInfo {

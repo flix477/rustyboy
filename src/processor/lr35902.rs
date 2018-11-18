@@ -63,6 +63,20 @@ pub trait LR35902 {
                     panic!("ADC needs two arguments");
                 }
             }
+            InstructionMnemonic::SUB => {
+                if let Some(operands) = instruction.operands() {
+                    self.sub(operands[0]);
+                } else {
+                    panic!("SUB needs one argument");
+                }
+            }
+            InstructionMnemonic::SBC => {
+                if let Some(operands) = instruction.operands() {
+                    self.sbc(operands[0]);
+                } else {
+                    panic!("SBC needs one argument");
+                }
+            }
             _ => {}
         }
     }
@@ -76,4 +90,5 @@ pub trait LR35902 {
     fn add(&mut self, register: RegisterType, op: Operand);
     fn adc(&mut self, register: RegisterType, op: Operand);
     fn sub(&mut self, op: Operand);
+    fn sbc(&mut self, op: Operand);
 }

@@ -191,7 +191,7 @@ impl LR35902 for Processor {
                 self.registers.reg(r).get()
             },
             _ => {
-                panic!("bad arguments for ADD");
+                panic!("bad arguments for ADC");
             }
         };
         let carry = self.registers.af.flag(Flag::Carry);
@@ -199,8 +199,7 @@ impl LR35902 for Processor {
     }
 
     fn sub(&mut self, op: Operand) {
-        let value1 = self.registers.af.accumulator().get();
-        let value2 = match op {
+        let value = match op {
             Operand::Register(RegisterType::HL) => {
                 let address = self.registers.hl.get();
                 self.memory.get(address) as u16
@@ -213,16 +212,31 @@ impl LR35902 for Processor {
                 self.registers.reg(r).get()
             },
             _ => {
-                panic!("bad arguments for ADD");
+                panic!("bad arguments for SUB");
             }
         };
+        self.sub_generic(value);
+    }
 
-        let result = value1 - value2;
-
-        self.registers.af.set_flag(Flag::AddSub, true);
-        self.registers.af.set_zero_from_result(result as u8);
-        self.registers.af.set_flag(Flag::HalfCarry, true);
-        self.registers.af.set_flag(Flag::Carry, true);
+    fn sbc(&mut self, op: Operand) {
+        let value = match op {
+            Operand::Register(RegisterType::HL) => {
+                let address = self.registers.hl.get();
+                self.memory.get(address) as u16
+            },
+            Operand::Immediate16 => {
+                let address = self.get_immediate16();
+                self.memory.get(address) as u16
+            }
+            Operand::Register(r) => {
+                self.registers.reg(r).get()
+            },
+            _ => {
+                panic!("bad arguments for SBC");
+            }
+        };
+        let carry = self.registers.af.flag(Flag::Carry);
+        self.sub_generic(value + carry as u16);
     }
 }
 
@@ -366,5 +380,15 @@ impl Processor {
         self.registers.af.set_flag(Flag::HalfCarry, result > 0xF);
         self.registers.af.set_flag(Flag::Carry, result > 0xFF);
         self.registers.af.set_zero_from_result(result as u8);
+    }
+
+    fn sub_generic(&mut self, value: u16) {
+        let a = self.registers.af.accumulator().get();
+        let result = a - value;
+
+        self.registers.af.set_flag(Flag::AddSub, true);
+        self.registers.af.set_zero_from_result(result as u8);
+        self.registers.af.set_flag(Flag::HalfCarry, a & 0xF < value & 0xF);
+        self.registers.af.set_flag(Flag::Carry, a < value);
     }
 }
