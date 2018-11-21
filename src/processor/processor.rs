@@ -47,198 +47,198 @@ impl Processor {
     }
 }
 
-impl LR35902 for Processor {
-    fn ld(&mut self, op1: Operand, op2: Operand) {
-        match (op1, op2) {
-            (Operand::Immediate16, Operand::Register(r)) => {
-                if r.is16bit() {
-                    self.ld_n16r16(r);
-                } else {
-                    self.ld_n16r(r)
-                }
-            },
-            (Operand::Register(r), Operand::Immediate16) => {
-                if r.is16bit() {
-                    self.ld_r16n16(r);
-                } else {
-                    self.ld_rn16(r);
-                }
-            },
-            (Operand::Register(r), Operand::Immediate) => {
-                if r.is16bit() {
-                    self.ld_r16n(r);
-                } else {
-                    self.ld_rn(r)
-                }
-            },
-            (Operand::Register(r1), Operand::Register(r2)) => {
-                if r1.is16bit() && r2.is16bit() {
-                    self.ld_r16r16(r1, r2);
-                } else if r1.is16bit() && !r2.is16bit() {
-                    self.ld_r16r(r1, r2)
-                } else if !r1.is16bit() && r2.is16bit() {
-                    self.ld_rr16(r1, r2)
-                } else {
-                    self.ld_rr(r1, r2)
-                }
-            },
-            (Operand::Register(r1), Operand::IncrementedRegister(r2)) => {
-                self.ld_rri(r1, r2);
-            },
-            (Operand::IncrementedRegister(r1), Operand::Register(r2)) => {
-                self.ld_rir(r1, r2)
-            },
-            (Operand::IncrementedImmediate, Operand::Register(r)) => {
-                self.ld_nir(r);
-            },
-            (Operand::Register(r), Operand::IncrementedImmediate) => {
-                self.ld_rni(r);
-            },
-            _ => panic!("bad LD arguments")
-        }
-    }
-
-    fn ldd(&mut self, op1: Operand, op2: Operand) {
-        match (op1, op2) {
-            (Operand::Register(r1), Operand::Register(r2)) => {
-                if !r1.is16bit() && r2.is16bit() {
-                    self.ld_rr16(r1, r2);
-                    self.registers.decrement_reg(r2);
-                } else if r1.is16bit() && !r2.is16bit() {
-                    self.ld_r16r(r1, r2);
-                    self.registers.decrement_reg(r1);
-                }
-            },
-            _ => {}
-        }
-    }
-
-    fn ldi(&mut self, op1: Operand, op2: Operand) {
-        match (op1, op2) {
-            (Operand::Register(r1), Operand::Register(r2)) => {
-                if !r1.is16bit() && r2.is16bit() {
-                    self.ld_rr16(r1, r2);
-                    self.registers.increment_reg(r2);
-                } else if r1.is16bit() && !r2.is16bit() {
-                    self.ld_r16r(r1, r2);
-                    self.registers.increment_reg(r1);
-                }
-            },
-            _ => {}
-        }
-    }
-
-    // writes SP + n to HL
-    fn ldhl(&mut self) {
-        let n = self.get_immediate() as i8;
-        let value = (self.registers.stack_pointer.get() as i32 + n as i32) as u32;
-        self.registers.af.set_flags(0);
-        self.registers.af.set_flag(Flag::HalfCarry, value > 0xFFF);
-        self.registers.af.set_flag(Flag::Carry, value > 0xFFFF);
-        self.registers.hl.set(value as u16);
-    }
-
-    fn push(&mut self, register: RegisterType) {
-        // todo: refactor this, very ugly
-        let mut high = 0;
-        let mut low = 0;
-        {
-            let register = self.registers.dual_reg(register);
-            high = register.high.get() as u8;
-            low = register.low.get() as u8;
-        }
-        self.push_stack(high);
-        self.push_stack(low);
-    }
-
-    fn pop(&mut self, register: RegisterType) {
-        let low = self.pop_stack() as u16;
-        let high = self.pop_stack() as u16;
-        self.registers.set_reg(register, (high << 8) | low);
-    }
-
-    fn add(&mut self, register: RegisterType, op: Operand) {
-        let value2 = match op {
-            Operand::Register(RegisterType::HL) => {
-                let address = self.registers.hl.get();
-                self.memory.get(address) as u16
-            },
-            Operand::Immediate16 => {
-                let address = self.get_immediate16();
-                self.memory.get(address) as u16
-            }
-            Operand::Register(r) => {
-                self.registers.reg(r).get()
-            },
-            _ => {
-                panic!("bad arguments for ADD");
-            }
-        };
-        self.add_generic(register, value2);
-    }
-
-    fn adc(&mut self, register: RegisterType, op: Operand) {
-        let value2 = match op {
-            Operand::Register(RegisterType::HL) => {
-                let address = self.registers.hl.get();
-                self.memory.get(address) as u16
-            },
-            Operand::Immediate16 => {
-                let address = self.get_immediate16();
-                self.memory.get(address) as u16
-            }
-            Operand::Register(r) => {
-                self.registers.reg(r).get()
-            },
-            _ => {
-                panic!("bad arguments for ADC");
-            }
-        };
-        let carry = self.registers.af.flag(Flag::Carry);
-        self.add_generic(register, value2 + carry as u16);
-    }
-
-    fn sub(&mut self, op: Operand) {
-        let value = match op {
-            Operand::Register(RegisterType::HL) => {
-                let address = self.registers.hl.get();
-                self.memory.get(address) as u16
-            },
-            Operand::Immediate16 => {
-                let address = self.get_immediate16();
-                self.memory.get(address) as u16
-            }
-            Operand::Register(r) => {
-                self.registers.reg(r).get()
-            },
-            _ => {
-                panic!("bad arguments for SUB");
-            }
-        };
-        self.sub_generic(value);
-    }
-
-    fn sbc(&mut self, op: Operand) {
-        let value = match op {
-            Operand::Register(RegisterType::HL) => {
-                let address = self.registers.hl.get();
-                self.memory.get(address) as u16
-            },
-            Operand::Immediate16 => {
-                let address = self.get_immediate16();
-                self.memory.get(address) as u16
-            }
-            Operand::Register(r) => {
-                self.registers.reg(r).get()
-            },
-            _ => {
-                panic!("bad arguments for SBC");
-            }
-        };
-        let carry = self.registers.af.flag(Flag::Carry);
-        self.sub_generic(value + carry as u16);
-    }
-}
+impl LR35902 for Processor {}
+//    fn ld(&mut self, op1: Operand, op2: Operand) {
+//        match (op1, op2) {
+//            (Operand::Immediate16, Operand::Register(r)) => {
+//                if r.is16bit() {
+//                    self.ld_n16r16(r);
+//                } else {
+//                    self.ld_n16r(r)
+//                }
+//            },
+//            (Operand::Register(r), Operand::Immediate16) => {
+//                if r.is16bit() {
+//                    self.ld_r16n16(r);
+//                } else {
+//                    self.ld_rn16(r);
+//                }
+//            },
+//            (Operand::Register(r), Operand::Immediate) => {
+//                if r.is16bit() {
+//                    self.ld_r16n(r);
+//                } else {
+//                    self.ld_rn(r)
+//                }
+//            },
+//            (Operand::Register(r1), Operand::Register(r2)) => {
+//                if r1.is16bit() && r2.is16bit() {
+//                    self.ld_r16r16(r1, r2);
+//                } else if r1.is16bit() && !r2.is16bit() {
+//                    self.ld_r16r(r1, r2)
+//                } else if !r1.is16bit() && r2.is16bit() {
+//                    self.ld_rr16(r1, r2)
+//                } else {
+//                    self.ld_rr(r1, r2)
+//                }
+//            },
+//            (Operand::Register(r1), Operand::IncrementedRegister(r2)) => {
+//                self.ld_rri(r1, r2);
+//            },
+//            (Operand::IncrementedRegister(r1), Operand::Register(r2)) => {
+//                self.ld_rir(r1, r2)
+//            },
+//            (Operand::IncrementedImmediate, Operand::Register(r)) => {
+//                self.ld_nir(r);
+//            },
+//            (Operand::Register(r), Operand::IncrementedImmediate) => {
+//                self.ld_rni(r);
+//            },
+//            _ => panic!("bad LD arguments")
+//        }
+//    }
+//
+//    fn ldd(&mut self, op1: Operand, op2: Operand) {
+//        match (op1, op2) {
+//            (Operand::Register(r1), Operand::Register(r2)) => {
+//                if !r1.is16bit() && r2.is16bit() {
+//                    self.ld_rr16(r1, r2);
+//                    self.registers.decrement_reg(r2);
+//                } else if r1.is16bit() && !r2.is16bit() {
+//                    self.ld_r16r(r1, r2);
+//                    self.registers.decrement_reg(r1);
+//                }
+//            },
+//            _ => {}
+//        }
+//    }
+//
+//    fn ldi(&mut self, op1: Operand, op2: Operand) {
+//        match (op1, op2) {
+//            (Operand::Register(r1), Operand::Register(r2)) => {
+//                if !r1.is16bit() && r2.is16bit() {
+//                    self.ld_rr16(r1, r2);
+//                    self.registers.increment_reg(r2);
+//                } else if r1.is16bit() && !r2.is16bit() {
+//                    self.ld_r16r(r1, r2);
+//                    self.registers.increment_reg(r1);
+//                }
+//            },
+//            _ => {}
+//        }
+//    }
+//
+//    // writes SP + n to HL
+//    fn ldhl(&mut self) {
+//        let n = self.get_immediate() as i8;
+//        let value = (self.registers.stack_pointer.get() as i32 + n as i32) as u32;
+//        self.registers.af.set_flags(0);
+//        self.registers.af.set_flag(Flag::HalfCarry, value > 0xFFF);
+//        self.registers.af.set_flag(Flag::Carry, value > 0xFFFF);
+//        self.registers.hl.set(value as u16);
+//    }
+//
+//    fn push(&mut self, register: RegisterType) {
+//        // todo: refactor this, very ugly
+//        let mut high = 0;
+//        let mut low = 0;
+//        {
+//            let register = self.registers.dual_reg(register);
+//            high = register.high.get() as u8;
+//            low = register.low.get() as u8;
+//        }
+//        self.push_stack(high);
+//        self.push_stack(low);
+//    }
+//
+//    fn pop(&mut self, register: RegisterType) {
+//        let low = self.pop_stack() as u16;
+//        let high = self.pop_stack() as u16;
+//        self.registers.set_reg(register, (high << 8) | low);
+//    }
+//
+//    fn add(&mut self, register: RegisterType, op: Operand) {
+//        let value2 = match op {
+//            Operand::Register(RegisterType::HL) => {
+//                let address = self.registers.hl.get();
+//                self.memory.get(address) as u16
+//            },
+//            Operand::Immediate16 => {
+//                let address = self.get_immediate16();
+//                self.memory.get(address) as u16
+//            }
+//            Operand::Register(r) => {
+//                self.registers.reg(r).get()
+//            },
+//            _ => {
+//                panic!("bad arguments for ADD");
+//            }
+//        };
+//        self.add_generic(register, value2);
+//    }
+//
+//    fn adc(&mut self, register: RegisterType, op: Operand) {
+//        let value2 = match op {
+//            Operand::Register(RegisterType::HL) => {
+//                let address = self.registers.hl.get();
+//                self.memory.get(address) as u16
+//            },
+//            Operand::Immediate16 => {
+//                let address = self.get_immediate16();
+//                self.memory.get(address) as u16
+//            }
+//            Operand::Register(r) => {
+//                self.registers.reg(r).get()
+//            },
+//            _ => {
+//                panic!("bad arguments for ADC");
+//            }
+//        };
+//        let carry = self.registers.af.flag(Flag::Carry);
+//        self.add_generic(register, value2 + carry as u16);
+//    }
+//
+//    fn sub(&mut self, op: Operand) {
+//        let value = match op {
+//            Operand::Register(RegisterType::HL) => {
+//                let address = self.registers.hl.get();
+//                self.memory.get(address) as u16
+//            },
+//            Operand::Immediate16 => {
+//                let address = self.get_immediate16();
+//                self.memory.get(address) as u16
+//            }
+//            Operand::Register(r) => {
+//                self.registers.reg(r).get()
+//            },
+//            _ => {
+//                panic!("bad arguments for SUB");
+//            }
+//        };
+//        self.sub_generic(value);
+//    }
+//
+//    fn sbc(&mut self, op: Operand) {
+//        let value = match op {
+//            Operand::Register(RegisterType::HL) => {
+//                let address = self.registers.hl.get();
+//                self.memory.get(address) as u16
+//            },
+//            Operand::Immediate16 => {
+//                let address = self.get_immediate16();
+//                self.memory.get(address) as u16
+//            }
+//            Operand::Register(r) => {
+//                self.registers.reg(r).get()
+//            },
+//            _ => {
+//                panic!("bad arguments for SBC");
+//            }
+//        };
+//        let carry = self.registers.af.flag(Flag::Carry);
+//        self.sub_generic(value + carry as u16);
+//    }
+//}
 
 /**
     functions legend:

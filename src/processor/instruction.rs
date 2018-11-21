@@ -68,13 +68,14 @@ pub enum AddressType {
 pub enum ValueType {
     Register(RegisterType),
     Immediate,
-    Immediate16
+    Immediate16,
+    Address(AddressType)
 }
 
 pub struct InstructionInfo {
     opcode: u8,
     mnemonic: InstructionMnemonic,
-    operands: Option<Vec<Operand>>,
+    pub operands: Option<Vec<Operand>>,
     cycle_count: u8
 }
 
@@ -93,11 +94,11 @@ impl InstructionInfo {
         };
     }
 
-    pub fn mnemonic(&self) -> &InstructionMnemonic {
-        &self.mnemonic
-    }
-
-    pub fn operands(&self) -> &Option<Vec<Operand>> {
-        &self.operands
-    }
+//    pub fn mnemonic(&self) -> &InstructionMnemonic {
+//        &self.mnemonic
+//    }
+//
+//    pub fn operands(&self) -> &Option<Vec<Operand>> {
+//        &self.operands
+//    }
 }
