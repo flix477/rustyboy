@@ -1,6 +1,8 @@
 use processor::instruction::*;
 use processor::instruction::AddressType as Addr;
+use processor::instruction::Reference as Ref;
 use processor::registers::RegisterType as Reg;
+use processor::flag_register::Flag;
 
 pub struct Decoder;
 
@@ -8,7 +10,12 @@ impl Decoder {
     pub fn decode_opcode(opcode: u8) -> Option<InstructionInfo> {
         match opcode {
             // NOP
-            0 => Some(Self::nop(opcode)),
+            0 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::NOP,
+                None,
+                0
+            )),
 
             // LD nn,n
             // put value nn into n
@@ -22,7 +29,12 @@ impl Decoder {
             0x36 => Some(Self::ld_rn(opcode, Reg::HL)),
 
             // HALT
-            0x76 => Some(Self::nop(opcode)),
+            0x76 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::HALT,
+                None,
+                4
+            )),
 
             // LD r1,r2
             // put value r2 in r1
@@ -32,9 +44,16 @@ impl Decoder {
             // put value n into A
             0x0A => Some(Self::ld_rr(opcode, Reg::A, Reg::BC)),
             0x1A => Some(Self::ld_rr(opcode, Reg::A, Reg::DE)),
-            0x7E => Some(Self::ld_rr(opcode, Reg::A, Reg::HL)),
             0xFA => Some(Self::ld_rn16(opcode, Reg::A)),
-            // TODO: 0x3E
+            0x3E => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::LD,
+                Some(vec![
+                    Operand::Reference(Ref::Register(Reg::A)),
+                    Operand::Value(ValueType::Address(Addr::Immediate))
+                ]),
+                8
+            )),
 
             // LD n,A
             0x02 => Some(Self::ld_rr(opcode, Reg::BC, Reg::A)),
@@ -47,11 +66,9 @@ impl Decoder {
                 opcode,
                 InstructionMnemonic::LD,
                 Some(vec![
-                    Operand::Register(Reg::A),
+                    Operand::Reference(Ref::Register(Reg::A)),
                     Operand::Value(
-                        ValueType::Address(
-                            Addr::IncRegister(Reg::C)
-                        )
+                        ValueType::Address(Addr::IncRegister(Reg::C))
                     )
                 ]),
                 8
@@ -63,7 +80,9 @@ impl Decoder {
                 opcode,
                 InstructionMnemonic::LD,
                 Some(vec![
-                    Operand::Address(Addr::IncRegister(Reg::C)),
+                    Operand::Reference(
+                        Ref::Address(Addr::IncRegister(Reg::C))
+                    ),
                     Operand::Value(ValueType::Register(Reg::A))
                 ]),
                 8
@@ -74,7 +93,7 @@ impl Decoder {
                 opcode,
                 InstructionMnemonic::LDD,
                 Some(vec![
-                    Operand::Register(Reg::A),
+                    Operand::Reference(Ref::Register(Reg::A)),
                     Operand::Value(ValueType::Address(Addr::Register(Reg::HL)))
                 ]),
                 8
@@ -85,7 +104,7 @@ impl Decoder {
                 opcode,
                 InstructionMnemonic::LDD,
                 Some(vec![
-                    Operand::Address(Addr::Register(Reg::HL)),
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
                     Operand::Value(ValueType::Register(Reg::A))
                 ]),
                 8
@@ -96,7 +115,7 @@ impl Decoder {
                 opcode,
                 InstructionMnemonic::LDI,
                 Some(vec![
-                    Operand::Register(Reg::A),
+                    Operand::Reference(Ref::Register(Reg::A)),
                     Operand::Value(ValueType::Address(Addr::Register(Reg::HL)))
                 ]),
                 8
@@ -107,7 +126,7 @@ impl Decoder {
                 opcode,
                 InstructionMnemonic::LDI,
                 Some(vec![
-                    Operand::Address(Addr::Register(Reg::HL)),
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
                     Operand::Value(ValueType::Register(Reg::A))
                 ]),
                 8
@@ -118,7 +137,7 @@ impl Decoder {
                 opcode,
                 InstructionMnemonic::LD,
                 Some(vec![
-                    Operand::Address(Addr::IncrementedImmediate),
+                    Operand::Reference(Ref::Address(Addr::IncImmediate)),
                     Operand::Value(ValueType::Register(Reg::A))
                 ]),
                 12
@@ -129,9 +148,9 @@ impl Decoder {
                 opcode,
                 InstructionMnemonic::LD,
                 Some(vec![
-                    Operand::Register(Reg::A),
+                    Operand::Reference(Ref::Register(Reg::A)),
                     Operand::Value(
-                        ValueType::Address(Addr::IncrementedImmediate)
+                        ValueType::Address(Addr::IncImmediate)
                     )
                 ]),
                 12
@@ -148,7 +167,7 @@ impl Decoder {
                 opcode,
                 InstructionMnemonic::LD,
                 Some(vec![
-                    Operand::Register(Reg::SP),
+                    Operand::Reference(Ref::Register(Reg::SP)),
                     Operand::Value(ValueType::Register(Reg::HL))
                 ]),
                 8
@@ -170,7 +189,7 @@ impl Decoder {
                 opcode,
                 InstructionMnemonic::LD,
                 Some(vec![
-                    Operand::Address(Addr::Immediate),
+                    Operand::Reference(Ref::Address(Addr::Immediate)),
                     Operand::Value(ValueType::Register(Reg::SP))
                 ]),
                 20
@@ -202,7 +221,7 @@ impl Decoder {
                 opcode,
                 InstructionMnemonic::ADD,
                 Some(vec![
-                    Operand::Register(Reg::A),
+                    Operand::Reference(Ref::Register(Reg::A)),
                     Operand::Value(ValueType::Address(Addr::Immediate))
                 ]),
                 8
@@ -211,18 +230,18 @@ impl Decoder {
             // ADC A,n
             // Add n + Carry flag to A
             0x8F => Some(Self::adc_an(opcode, Reg::A)),
-            0x89 => Some(Self::adc_an(opcode, Reg::B)),
-            0x8A => Some(Self::adc_an(opcode, Reg::C)),
-            0x8B => Some(Self::adc_an(opcode, Reg::D)),
-            0x8C => Some(Self::adc_an(opcode, Reg::E)),
-            0x8D => Some(Self::adc_an(opcode, Reg::H)),
-            0x8E => Some(Self::adc_an(opcode, Reg::L)),
-            0x8F => Some(Self::adc_an(opcode, Reg::HL)),
+            0x88 => Some(Self::adc_an(opcode, Reg::B)),
+            0x89 => Some(Self::adc_an(opcode, Reg::C)),
+            0x8A => Some(Self::adc_an(opcode, Reg::D)),
+            0x8B => Some(Self::adc_an(opcode, Reg::E)),
+            0x8C => Some(Self::adc_an(opcode, Reg::H)),
+            0x8D => Some(Self::adc_an(opcode, Reg::L)),
+            0x8E => Some(Self::adc_an(opcode, Reg::HL)),
             0xCE => Some(InstructionInfo::new(
                 opcode,
                 InstructionMnemonic::ADC,
                 Some(vec![
-                    Operand::Register(Reg::A),
+                    Operand::Reference(Ref::Register(Reg::A)),
                     Operand::Value(ValueType::Address(Addr::Immediate))
                 ]),
                 8
@@ -242,7 +261,7 @@ impl Decoder {
                 opcode,
                 InstructionMnemonic::SUB,
                 Some(vec![
-                    Operand::Register(Reg::A),
+                    Operand::Reference(Ref::Register(Reg::A)),
                     Operand::Value(ValueType::Address(Addr::Immediate))
                 ]),
                 8
@@ -250,24 +269,351 @@ impl Decoder {
 
             // SBC A,n
             // subtracts n + Carry flag from A
-            0x9F => Some(Self::adc_an(opcode, Reg::A)),
-            0x98 => Some(Self::adc_an(opcode, Reg::B)),
-            0x99 => Some(Self::adc_an(opcode, Reg::C)),
-            0x9A => Some(Self::adc_an(opcode, Reg::D)),
-            0x9B => Some(Self::adc_an(opcode, Reg::E)),
-            0x9C => Some(Self::adc_an(opcode, Reg::H)),
-            0x9D => Some(Self::adc_an(opcode, Reg::L)),
-            0x9E => Some(Self::adc_an(opcode, Reg::HL)),
-            // TODO: what opcode for SBC A,# ?
-//            0xCE => Some(InstructionInfo::new(
-//                opcode,
-//                InstructionMnemonic::ADC,
-//                Some(vec![
-//                    Operand::Register(Reg::A),
-//                    Operand::Immediate16
-//                ]),
-//                8
-//            )),
+            0x9F => Some(Self::sbc_an(opcode, Reg::A)),
+            0x98 => Some(Self::sbc_an(opcode, Reg::B)),
+            0x99 => Some(Self::sbc_an(opcode, Reg::C)),
+            0x9A => Some(Self::sbc_an(opcode, Reg::D)),
+            0x9B => Some(Self::sbc_an(opcode, Reg::E)),
+            0x9C => Some(Self::sbc_an(opcode, Reg::H)),
+            0x9D => Some(Self::sbc_an(opcode, Reg::L)),
+            0x9E => Some(Self::sbc_an(opcode, Reg::HL)),
+            0xDE => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::SBC,
+                Some(vec![
+                    Operand::Value(ValueType::Address(Addr::Immediate))
+                ]),
+                8
+            )),
+
+            // AND n
+            // Logically AND n with A, result in A
+            0xA7 => Some(Self::and(opcode, Reg::A)),
+            0xA0 => Some(Self::and(opcode, Reg::B)),
+            0xA1 => Some(Self::and(opcode, Reg::C)),
+            0xA2 => Some(Self::and(opcode, Reg::D)),
+            0xA3 => Some(Self::and(opcode, Reg::E)),
+            0xA4 => Some(Self::and(opcode, Reg::H)),
+            0xA5 => Some(Self::and(opcode, Reg::L)),
+            0xA6 => Some(Self::and(opcode, Reg::HL)),
+            0xE6 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::AND,
+                Some(vec![
+                    Operand::Value(ValueType::Address(Addr::Immediate))
+                ]),
+                8
+            )),
+
+            // OR n
+            // Logically OR n with A, result in A
+            0xB7 => Some(Self::or(opcode, Reg::A)),
+            0xB0 => Some(Self::or(opcode, Reg::B)),
+            0xB1 => Some(Self::or(opcode, Reg::C)),
+            0xB2 => Some(Self::or(opcode, Reg::D)),
+            0xB3 => Some(Self::or(opcode, Reg::E)),
+            0xB4 => Some(Self::or(opcode, Reg::H)),
+            0xB5 => Some(Self::or(opcode, Reg::L)),
+            0xB6 => Some(Self::or(opcode, Reg::HL)),
+            0xF6 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::OR,
+                Some(vec![
+                    Operand::Value(ValueType::Address(Addr::Immediate))
+                ]),
+                8
+            )),
+
+            // XOR n
+            // Logically XOR n with A, result in A
+            0xAF => Some(Self::xor(opcode, Reg::A)),
+            0xA8 => Some(Self::xor(opcode, Reg::B)),
+            0xA9 => Some(Self::xor(opcode, Reg::C)),
+            0xAA => Some(Self::xor(opcode, Reg::D)),
+            0xAB => Some(Self::xor(opcode, Reg::E)),
+            0xAC => Some(Self::xor(opcode, Reg::H)),
+            0xAD => Some(Self::xor(opcode, Reg::L)),
+            0xAE => Some(Self::xor(opcode, Reg::HL)),
+            0xEE => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::XOR,
+                Some(vec![
+                    Operand::Value(ValueType::Address(Addr::Immediate))
+                ]),
+                8
+            )),
+
+            // CP n
+            // Compare A with n
+            0xBF => Some(Self::cp(opcode, Reg::A)),
+            0xB8 => Some(Self::cp(opcode, Reg::B)),
+            0xB9 => Some(Self::cp(opcode, Reg::C)),
+            0xBA => Some(Self::cp(opcode, Reg::D)),
+            0xBB => Some(Self::cp(opcode, Reg::E)),
+            0xBC => Some(Self::cp(opcode, Reg::H)),
+            0xBD => Some(Self::cp(opcode, Reg::L)),
+            0xBE => Some(Self::cp(opcode, Reg::HL)),
+            0xFE => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::CP,
+                Some(vec![
+                    Operand::Value(ValueType::Address(Addr::Immediate))
+                ]),
+                8
+            )),
+
+            // INC n
+            // Increment register n
+            0x3C => Some(Self::inc(opcode, Reg::A)),
+            0x04 => Some(Self::inc(opcode, Reg::B)),
+            0x0C => Some(Self::inc(opcode, Reg::C)),
+            0x14 => Some(Self::inc(opcode, Reg::D)),
+            0x1C => Some(Self::inc(opcode, Reg::E)),
+            0x24 => Some(Self::inc(opcode, Reg::H)),
+            0x2C => Some(Self::inc(opcode, Reg::L)),
+            0x34 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::INC,
+                Some(vec![
+                    Operand::Reference(Ref::Address(Addr::Immediate))
+                ]),
+                12
+            )),
+
+            // DEC n
+            // Decrement register n
+            0x3D => Some(Self::dec(opcode, Reg::A)),
+            0x05 => Some(Self::dec(opcode, Reg::B)),
+            0x0D => Some(Self::dec(opcode, Reg::C)),
+            0x15 => Some(Self::dec(opcode, Reg::D)),
+            0x1D => Some(Self::dec(opcode, Reg::E)),
+            0x25 => Some(Self::dec(opcode, Reg::H)),
+            0x2D => Some(Self::dec(opcode, Reg::L)),
+            0x35 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::DEC,
+                Some(vec![
+                    Operand::Reference(Ref::Address(Addr::Immediate))
+                ]),
+                12
+            )),
+
+            // ADD HL,n
+            // Add to HL, result in HL
+            0x09 => Some(Self::add_hl(opcode, Reg::BC)),
+            0x19 => Some(Self::add_hl(opcode, Reg::DE)),
+            0x29 => Some(Self::add_hl(opcode, Reg::HL)),
+            0x39 => Some(Self::add_hl(opcode, Reg::SP)),
+
+            // ADD SP,n
+            // Add n to SP, result in SP
+            0xE8 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::ADD,
+                Some(vec![
+                    Operand::Reference(Ref::Register(Reg::SP)),
+                    Operand::Value(ValueType::Immediate)
+                ]),
+                16
+            )),
+
+            // INC nn
+            // Increment register nn
+            0x03 => Some(Self::inc(opcode, Reg::BC)),
+            0x13 => Some(Self::inc(opcode, Reg::DE)),
+            0x23 => Some(Self::inc(opcode, Reg::HL)),
+            0x33 => Some(Self::inc(opcode, Reg::SP)),
+
+            // DEC nn
+            // Decrement register nn
+            0x0B => Some(Self::dec(opcode, Reg::BC)),
+            0x1B => Some(Self::dec(opcode, Reg::DE)),
+            0x2B => Some(Self::dec(opcode, Reg::HL)),
+            0x3B => Some(Self::dec(opcode, Reg::SP)),
+
+            // DAA
+            // Decimal adjust register A
+            0x27 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::DAA,
+                None,
+                4
+            )),
+
+            // CPL
+            // Complement register A (flip all bits)
+            0x2F => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::CPL,
+                None,
+                4
+            )),
+
+            // CCF
+            // Complement carry flag (toggle it)
+            0x3F => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::CCF,
+                None,
+                4
+            )),
+
+            // SCF
+            // Set carry flag
+            0x37 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::SCF,
+                None,
+                4
+            )),
+
+            // STOP
+            0x10 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::STOP,
+                None,
+                4
+            )),
+
+            // DI
+            0xF3 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::DI,
+                None,
+                4
+            )),
+
+            // EI
+            0xFB => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::EI,
+                None,
+                4
+            )),
+
+            // RLCA
+            0x07 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::RLCA,
+                None,
+                4
+            )),
+
+            // RLA
+            0x17 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::RLA,
+                None,
+                4
+            )),
+
+            // RRCA
+            0x0F => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::RRCA,
+                None,
+                4
+            )),
+
+            // RRA
+            0x1F => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::RRA,
+                None,
+                4
+            )),
+
+            // TODO: Lots of CB opcodes
+
+            // JP nn
+            0xC3 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::JP,
+                Some(vec![
+                    Operand::Value(ValueType::Address(Addr::Immediate))
+                ]),
+                12
+            )),
+
+            // JP cc,nn
+            0xC2 => Some(Self::jp(opcode, (Flag::Zero, false))),
+            0xCA => Some(Self::jp(opcode, (Flag::Zero, true))),
+            0xD2 => Some(Self::jp(opcode, (Flag::Carry, false))),
+            0xDA => Some(Self::jp(opcode, (Flag::Carry, true))),
+
+            // JP (HL)
+            0xE9 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::JP,
+                Some(vec![
+                    Operand::Value(ValueType::Address(Addr::Register(Reg::HL)))
+                ]),
+                4
+            )),
+
+            // JR n
+            0x18 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::JR,
+                Some(vec![
+                    Operand::Value(ValueType::Address(Addr::Immediate))
+                ]),
+                8
+            )),
+
+            // JR cc,nn
+            0x20 => Some(Self::jr(opcode, (Flag::Zero, false))),
+            0x28 => Some(Self::jr(opcode, (Flag::Zero, true))),
+            0x30 => Some(Self::jr(opcode, (Flag::Carry, false))),
+            0x38 => Some(Self::jr(opcode, (Flag::Carry, true))),
+
+            // CALL nn
+            0xCD => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::CALL,
+                Some(vec![
+                    Operand::Value(ValueType::Address(Addr::Immediate))
+                ]),
+                12
+            )),
+
+            // CALL cc,nn
+            0xC4 => Some(Self::call(opcode, (Flag::Zero, false))),
+            0xCC => Some(Self::call(opcode, (Flag::Zero, true))),
+            0xD4 => Some(Self::call(opcode, (Flag::Carry, false))),
+            0xDC => Some(Self::call(opcode, (Flag::Carry, true))),
+
+            // RST n
+            0xC7 => Some(Self::rst(opcode, 0x00)),
+            0xCF => Some(Self::rst(opcode, 0x08)),
+            0xD7 => Some(Self::rst(opcode, 0x10)),
+            0xDF => Some(Self::rst(opcode, 0x18)),
+            0xE7 => Some(Self::rst(opcode, 0x20)),
+            0xEF => Some(Self::rst(opcode, 0x28)),
+            0xF7 => Some(Self::rst(opcode, 0x30)),
+            0xFF => Some(Self::rst(opcode, 0x38)),
+
+            // RET
+            0xC9 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::RET,
+                None,
+                8
+            )),
+
+            // RET cc
+            0xC0 => Some(Self::ret(opcode, (Flag::Zero, false))),
+            0xC8 => Some(Self::ret(opcode, (Flag::Zero, true))),
+            0xD0 => Some(Self::ret(opcode, (Flag::Carry, false))),
+            0xD8 => Some(Self::ret(opcode, (Flag::Carry, true))),
+
+            // RETI
+            0xD9 => Some(InstructionInfo::new(
+                opcode,
+                InstructionMnemonic::RETI,
+                None,
+                8
+            )),
 
             _ => None
         }
@@ -276,11 +622,11 @@ impl Decoder {
     fn parse_ld_rr(opcode: u8) -> Option<InstructionInfo> {
         let r1 = match opcode {
             0x78..=0x7F => Some(Reg::A),
-            0x40..=0x46 => Some(Reg::B),
+            0x40..=0x47 => Some(Reg::B),
             0x48..=0x4F => Some(Reg::C),
-            0x50..=0x56 => Some(Reg::D),
+            0x50..=0x57 => Some(Reg::D),
             0x58..=0x5F => Some(Reg::E),
-            0x60..=0x66 => Some(Reg::H),
+            0x60..=0x67 => Some(Reg::H),
             0x68..=0x6F => Some(Reg::L),
             0x70..=0x77 => Some(Reg::HL),
             _ => None
@@ -311,9 +657,9 @@ impl Decoder {
     fn ld_rr(opcode: u8, r1: Reg, r2: Reg) -> InstructionInfo {
         let cycle_count = if r1.is16bit() || r2.is16bit() { 8 } else { 4 };
         let r1 = if r1.is16bit() {
-            Operand::Address(Addr::Register(r1))
+            Ref::Address(Addr::Register(r1))
         } else {
-            Operand::Register(r1)
+            Ref::Register(r1)
         };
         let r2 = if r2.is16bit() {
             ValueType::Address(Addr::Register(r2))
@@ -324,7 +670,7 @@ impl Decoder {
         InstructionInfo::new(
             opcode,
             InstructionMnemonic::LD,
-            Some(vec![r1, Operand::Value(r2)]),
+            Some(vec![Operand::Reference(r1), Operand::Value(r2)]),
             cycle_count
         )
     }
@@ -332,15 +678,15 @@ impl Decoder {
     fn ld_rn(opcode: u8, register: Reg) -> InstructionInfo {
         let cycle_count = if register == Reg::HL { 12 } else { 8 };
         let op = if register == Reg::HL {
-            Operand::Address(Addr::Register(Reg::HL))
+            Ref::Address(Addr::Register(Reg::HL))
         } else {
-            Operand::Register(register)
+            Ref::Register(register)
         };
         InstructionInfo::new(
             opcode,
             InstructionMnemonic::LD,
             Some(vec![
-                op,
+                Operand::Reference(op),
                 Operand::Value(ValueType::Immediate)
             ]),
             cycle_count
@@ -352,7 +698,7 @@ impl Decoder {
             opcode,
             InstructionMnemonic::LD,
             Some(vec![
-                Operand::Register(register),
+                Operand::Reference(Ref::Register(register)),
                 Operand::Value(ValueType::Address(Addr::Immediate))
             ]),
             16
@@ -364,7 +710,7 @@ impl Decoder {
             opcode,
             InstructionMnemonic::LD,
             Some(vec![
-                Operand::Address(Addr::Immediate),
+                Operand::Reference(Ref::Address(Addr::Immediate)),
                 Operand::Value(ValueType::Register(register))
             ]),
             16
@@ -376,7 +722,7 @@ impl Decoder {
             opcode,
             InstructionMnemonic::LD,
             Some(vec![
-                Operand::Register(register),
+                Operand::Reference(Ref::Register(register)),
                 Operand::Value(ValueType::Immediate16)
             ]),
             12
@@ -399,99 +745,164 @@ impl Decoder {
             opcode,
             InstructionMnemonic::POP,
             Some(vec![
-                Operand::Register(register)
+                Operand::Reference(Ref::Register(register))
             ]),
             12
         )
     }
 
-    fn nop(opcode: u8) -> InstructionInfo {
-        InstructionInfo::new(
-            opcode,
-            InstructionMnemonic::NOP,
-            None,
-            0
-        )
-    }
-
-    fn halt(opcode: u8) -> InstructionInfo {
-        InstructionInfo::new(
-            opcode,
-            InstructionMnemonic::HALT,
-            None,
-            0 // TODO: how many cycles for HALT?
-        )
-    }
-
     fn add_an(opcode: u8, register: Reg) -> InstructionInfo {
+        Self::alu(opcode, register, InstructionMnemonic::ADD)
+    }
+
+    fn adc_an(opcode: u8, register: Reg) -> InstructionInfo {
+        Self::alu(opcode, register, InstructionMnemonic::ADC)
+    }
+
+    fn sub_an(opcode: u8, register: Reg) -> InstructionInfo {
+        Self::alu(opcode, register, InstructionMnemonic::SUB)
+    }
+
+    fn sbc_an(opcode: u8, register: Reg) -> InstructionInfo {
+        Self::alu(opcode, register, InstructionMnemonic::SBC)
+    }
+
+    fn and(opcode: u8, register: Reg) -> InstructionInfo {
+        Self::alu(opcode, register, InstructionMnemonic::AND)
+    }
+
+    fn or(opcode: u8, register: Reg) -> InstructionInfo {
+        Self::alu(opcode, register, InstructionMnemonic::OR)
+    }
+
+    fn xor(opcode: u8, register: Reg) -> InstructionInfo {
+        Self::alu(opcode, register, InstructionMnemonic::XOR)
+    }
+
+    fn cp(opcode: u8, register: Reg) -> InstructionInfo {
+        Self::alu(opcode, register, InstructionMnemonic::CP)
+    }
+
+    fn inc(opcode: u8, register: Reg) -> InstructionInfo {
+        Self::incdec(opcode, register, InstructionMnemonic::INC)
+    }
+
+    fn dec(opcode: u8, register: Reg) -> InstructionInfo {
+        Self::incdec(opcode, register, InstructionMnemonic::DEC)
+    }
+
+    fn incdec(opcode: u8, register: Reg, mnemonic: InstructionMnemonic)
+        -> InstructionInfo
+    {
+        let cycle_count = if register.is16bit() { 8 } else { 4 };
+        InstructionInfo::new(
+            opcode,
+            mnemonic,
+            Some(vec![
+                Operand::Reference(Ref::Register(register))
+            ]),
+            cycle_count
+        )
+    }
+
+    fn alu(opcode: u8, register: Reg, mnemonic: InstructionMnemonic)
+           -> InstructionInfo
+    {
         let cycle_count = if register == Reg::HL { 8 } else { 4 };
         let op = if register == Reg::HL {
             ValueType::Address(Addr::Register(Reg::HL))
         } else {
             ValueType::Register(register)
         };
+        InstructionInfo::new(
+            opcode,
+            mnemonic,
+            Some(vec![
+                Operand::Reference(Ref::Register(Reg::A)),
+                Operand::Value(op)
+            ]),
+            cycle_count
+        )
+    }
+
+    fn add_hl(opcode: u8, register: Reg) -> InstructionInfo {
         InstructionInfo::new(
             opcode,
             InstructionMnemonic::ADD,
             Some(vec![
-                Operand::Register(Reg::A),
-                Operand::Value(op)
+                Operand::Reference(Ref::Register(Reg::HL)),
+                Operand::Value(ValueType::Register(register))
             ]),
-            cycle_count
+            8
         )
     }
 
-    fn adc_an(opcode: u8, register: Reg) -> InstructionInfo {
-        let cycle_count = if register == Reg::HL { 8 } else { 4 };
-        let op = if register == Reg::HL {
-            ValueType::Address(Addr::Register(Reg::HL))
-        } else {
-            ValueType::Register(register)
-        };
+    fn rlc(opcode: u8, register: Reg) -> InstructionInfo {
         InstructionInfo::new(
             opcode,
-            InstructionMnemonic::ADC,
+            InstructionMnemonic::RLC,
             Some(vec![
-                Operand::Register(Reg::A),
-                Operand::Value(op)
+                Operand::Reference(Ref::Register(register))
             ]),
-            cycle_count
+            8
         )
     }
 
-    fn sub_an(opcode: u8, register: Reg) -> InstructionInfo {
-        let cycle_count = if register == Reg::HL { 8 } else { 4 };
-        let op = if register == Reg::HL {
-            ValueType::Address(Addr::Register(Reg::HL))
-        } else {
-            ValueType::Register(register)
-        };
+    fn jp(opcode: u8, condition: (Flag, bool)) -> InstructionInfo {
         InstructionInfo::new(
             opcode,
-            InstructionMnemonic::SUB,
+            InstructionMnemonic::JP,
             Some(vec![
-                Operand::Register(Reg::A),
-                Operand::Value(op)
+                Operand::Condition(condition),
+                Operand::Value(ValueType::Address(Addr::Immediate))
             ]),
-            cycle_count
+            12
         )
     }
 
-    fn sbc_an(opcode: u8, register: Reg) -> InstructionInfo {
-        let cycle_count = if register == Reg::HL { 8 } else { 4 };
-        let op = if register == Reg::HL {
-            ValueType::Address(Addr::Register(Reg::HL))
-        } else {
-            ValueType::Register(register)
-        };
+    fn jr(opcode: u8, condition: (Flag, bool)) -> InstructionInfo {
         InstructionInfo::new(
             opcode,
-            InstructionMnemonic::SBC,
+            InstructionMnemonic::JP,
             Some(vec![
-                Operand::Register(Reg::A),
-                Operand::Value(op)
+                Operand::Condition(condition),
+                Operand::Value(ValueType::Address(Addr::Immediate))
             ]),
-            cycle_count
+            8
+        )
+    }
+
+    fn call(opcode: u8, condition: (Flag, bool)) -> InstructionInfo {
+        InstructionInfo::new(
+            opcode,
+            InstructionMnemonic::CALL,
+            Some(vec![
+                Operand::Condition(condition),
+                Operand::Value(ValueType::Address(Addr::Immediate))
+            ]),
+            12
+        )
+    }
+
+    fn rst(opcode: u8, address: u16) -> InstructionInfo {
+        InstructionInfo::new(
+            opcode,
+            InstructionMnemonic::RST,
+            Some(vec![
+                Operand::Value(ValueType::Constant(address))
+            ]),
+            32
+        )
+    }
+
+    fn ret(opcode: u8, condition: (Flag, bool)) -> InstructionInfo {
+        InstructionInfo::new(
+            opcode,
+            InstructionMnemonic::RET,
+            Some(vec![
+                Operand::Condition(condition)
+            ]),
+            8
         )
     }
 }
@@ -502,12 +913,18 @@ mod tests {
 
     #[test]
     fn coverage() {
-        let mut covered = Vec::new();
+        let mut not_covered = Vec::new();
+        let empty_instr = vec![
+            0xD3, 0xDB, 0xDD, 0xE3, 0xE4, 0xEB, 0xEC, 0xED, 0xF4, 0xFC, 0xFD
+        ];
+        let empty: Vec<&str> = Vec::new();
         for i in 0..0xff {
-            if let Some(_) = Decoder::decode_opcode(i) {
-                covered.push(i);
+            if !empty_instr.contains(&i) &&
+                Decoder::decode_opcode(i).is_none()
+            {
+                not_covered.push(format!("{:X}", i));
             }
         }
-        assert_eq!(covered.len(), 0xff - 11);
+        assert_eq!(not_covered, empty);
     }
 }

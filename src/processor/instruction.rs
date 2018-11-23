@@ -1,4 +1,5 @@
 use processor::registers::RegisterType;
+use processor::flag_register::Flag;
 
 #[derive(Copy, Clone)]
 pub enum InstructionMnemonic {
@@ -12,6 +13,7 @@ pub enum InstructionMnemonic {
     ADC,
     SUB,
     SBC,
+    AND,
     XOR,
     OR,
     CP,
@@ -50,9 +52,15 @@ pub enum InstructionMnemonic {
 
 #[derive(Copy, Clone)]
 pub enum Operand {
-    Register(RegisterType),
+    Reference(Reference),
     Value(ValueType),
-    Address(AddressType),
+    Condition((Flag, bool))
+}
+
+#[derive(Copy, Clone)]
+pub enum Reference {
+    Register(RegisterType),
+    Address(AddressType)
 }
 
 // Increment versions are incremented with 0xFF00
@@ -61,7 +69,7 @@ pub enum AddressType {
     Register(RegisterType),
     IncRegister(RegisterType),
     Immediate,
-    IncrementedImmediate
+    IncImmediate
 }
 
 #[derive(Copy, Clone)]
@@ -69,13 +77,14 @@ pub enum ValueType {
     Register(RegisterType),
     Immediate,
     Immediate16,
-    Address(AddressType)
+    Address(AddressType),
+    Constant(u16)
 }
 
 pub struct InstructionInfo {
     opcode: u8,
     mnemonic: InstructionMnemonic,
-    pub operands: Option<Vec<Operand>>,
+    operands: Option<Vec<Operand>>,
     cycle_count: u8
 }
 
@@ -94,11 +103,11 @@ impl InstructionInfo {
         };
     }
 
-//    pub fn mnemonic(&self) -> &InstructionMnemonic {
-//        &self.mnemonic
-//    }
-//
-//    pub fn operands(&self) -> &Option<Vec<Operand>> {
-//        &self.operands
-//    }
+    pub fn mnemonic(&self) -> &InstructionMnemonic {
+        &self.mnemonic
+    }
+
+    pub fn operands(&self) -> &Option<Vec<Operand>> {
+        &self.operands
+    }
 }

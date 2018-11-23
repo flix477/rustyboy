@@ -50,6 +50,7 @@ impl FlagRegister {
     }
 }
 
+#[derive(Copy, Clone)]
 pub enum Flag {
     Carry = 16, // c, set when an addition becomes bigger than 0xFF or 0xFFFF
     HalfCarry = 32, // h

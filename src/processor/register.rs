@@ -83,7 +83,6 @@ impl Register for DualRegister {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;

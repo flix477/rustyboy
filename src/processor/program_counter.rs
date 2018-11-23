@@ -1,4 +1,5 @@
 use memory::Memory;
+use processor::register::Register;
 
 pub struct ProgramCounter {
     value: u16
@@ -16,8 +17,22 @@ impl ProgramCounter {
         self.increment();
         value
     }
+}
+
+impl Register for ProgramCounter {
+    fn get(&self) -> u16 {
+        self.value
+    }
+
+    fn set(&mut self, value: u16) {
+        self.value = value
+    }
 
     fn increment(&mut self) {
         self.value += 1;
+    }
+
+    fn decrement(&mut self) {
+        self.value -= 1;
     }
 }

@@ -24,27 +24,22 @@ impl Registers {
         };
     }
 
-    pub fn dual_reg(&self, register: RegisterType) -> &DualRegister {
+    pub fn reg(&self, register: RegisterType) -> u16 {
         return match register {
-            RegisterType::AF => &self.af.register,
-            RegisterType::BC => &self.bc,
-            RegisterType::DE => &self.de,
-            RegisterType::HL => &self.hl,
-            _ => panic!("not a dual register")
-        }
-    }
-
-    pub fn reg(&self, register: RegisterType) -> &SingleRegister {
-        return match register {
-            RegisterType::A => &self.af.accumulator(),
-            RegisterType::F => &self.af.flags(),
-            RegisterType::B => &self.bc.high,
-            RegisterType::C => &self.bc.low,
-            RegisterType::D => &self.de.high,
-            RegisterType::E => &self.de.low,
-            RegisterType::H => &self.hl.high,
-            RegisterType::L => &self.hl.low,
-            _ => panic!("not a single register")
+            RegisterType::AF => self.af.register.get(),
+            RegisterType::BC => self.bc.get(),
+            RegisterType::DE => self.de.get(),
+            RegisterType::HL => self.hl.get(),
+            RegisterType::SP => self.stack_pointer.get(),
+            RegisterType::PC => self.program_counter.get(),
+            RegisterType::A => self.af.accumulator().get(),
+            RegisterType::F => self.af.flags().get(),
+            RegisterType::B => self.bc.high.get(),
+            RegisterType::C => self.bc.low.get(),
+            RegisterType::D => self.de.high.get(),
+            RegisterType::E => self.de.low.get(),
+            RegisterType::H => self.hl.high.get(),
+            RegisterType::L => self.hl.low.get()
         }
     }
 
@@ -85,90 +80,6 @@ impl Registers {
             },
             RegisterType::HL => {
                 self.hl.set(value);
-            },
-            _ => {}
-        }
-    }
-
-    pub fn increment_reg(&mut self, register: RegisterType) {
-        match register {
-            RegisterType::A => {
-                self.af.register.high.increment();
-            },
-            RegisterType::F => {
-                self.af.register.low.increment();
-            },
-            RegisterType::AF => {
-                self.af.register.increment();
-            },
-            RegisterType::B => {
-                self.bc.high.increment();
-            },
-            RegisterType::C => {
-                self.bc.low.increment();
-            },
-            RegisterType::BC => {
-                self.bc.increment();
-            },
-            RegisterType::D => {
-                self.de.high.increment();
-            },
-            RegisterType::E => {
-                self.de.low.increment();
-            },
-            RegisterType::DE => {
-                self.bc.increment();
-            },
-            RegisterType::H => {
-                self.hl.high.increment();
-            },
-            RegisterType::L => {
-                self.hl.low.increment();
-            },
-            RegisterType::HL => {
-                self.hl.increment();
-            },
-            _ => {}
-        }
-    }
-
-    pub fn decrement_reg(&mut self, register: RegisterType) {
-        match register {
-            RegisterType::A => {
-                self.af.register.high.decrement();
-            },
-            RegisterType::F => {
-                self.af.register.low.decrement();
-            },
-            RegisterType::AF => {
-                self.af.register.decrement();
-            },
-            RegisterType::B => {
-                self.bc.high.decrement();
-            },
-            RegisterType::C => {
-                self.bc.low.decrement();
-            },
-            RegisterType::BC => {
-                self.bc.decrement();
-            },
-            RegisterType::D => {
-                self.de.high.decrement();
-            },
-            RegisterType::E => {
-                self.de.low.decrement();
-            },
-            RegisterType::DE => {
-                self.bc.decrement();
-            },
-            RegisterType::H => {
-                self.hl.high.decrement();
-            },
-            RegisterType::L => {
-                self.hl.low.decrement();
-            },
-            RegisterType::HL => {
-                self.hl.decrement();
             },
             _ => {}
         }

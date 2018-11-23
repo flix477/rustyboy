@@ -12,21 +12,23 @@ impl StackPointer {
         }
     }
 
-    pub fn fetch(&mut self, memory: &Memory) -> u8 {
-        let value = memory.get(self.value);
-        self.increment();
-        value
+    pub fn peek(&mut self, memory: &Memory) -> u8 {
+        memory.get(self.value)
     }
 
-    pub fn push(&mut self, memory: &mut Memory, value: u8) {
+    pub fn push(&mut self, memory: &mut Memory, value: u16) {
         self.decrement();
-        memory.set(self.value, value);
+        memory.set(self.value, (value >> 8) as u8);
+        self.decrement();
+        memory.set(self.value, value as u8);
     }
 
-    pub fn pop(&mut self, memory: &Memory) -> u8 {
-        let value = memory.get(self.value);
+    pub fn pop(&mut self, memory: &Memory) -> u16 {
+        let low = memory.get(self.value) as u16;
         self.increment();
-        value
+        let high = memory.get(self.value) as u16;
+        self.increment();
+        low | (high << 8)
     }
 }
 
