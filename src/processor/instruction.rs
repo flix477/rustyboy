@@ -2,7 +2,14 @@ use processor::registers::RegisterType;
 use processor::flag_register::Flag;
 
 #[derive(Copy, Clone)]
-pub enum InstructionMnemonic {
+pub enum Prefix {
+    CB,
+    None
+}
+
+#[derive(Copy, Clone)]
+pub enum Mnemonic {
+    CB,
     LD,
     LDHL,
     LDI,
@@ -21,12 +28,9 @@ pub enum InstructionMnemonic {
     DEC,
     DAA,
     CPL,
-    RLCA,
-    RLA,
-    RRCA,
-    RRA,
     RLC,
     RL,
+    RRC,
     RR,
     SLA,
     SWAP,
@@ -83,7 +87,7 @@ pub enum ValueType {
 
 pub struct InstructionInfo {
     opcode: u8,
-    mnemonic: InstructionMnemonic,
+    mnemonic: Mnemonic,
     operands: Option<Vec<Operand>>,
     cycle_count: u8
 }
@@ -91,7 +95,7 @@ pub struct InstructionInfo {
 impl InstructionInfo {
     pub fn new(
         opcode: u8,
-        mnemonic: InstructionMnemonic,
+        mnemonic: Mnemonic,
         operands: Option<Vec<Operand>>,
         cycle_count: u8
     ) -> InstructionInfo {
@@ -103,7 +107,7 @@ impl InstructionInfo {
         };
     }
 
-    pub fn mnemonic(&self) -> &InstructionMnemonic {
+    pub fn mnemonic(&self) -> &Mnemonic {
         &self.mnemonic
     }
 

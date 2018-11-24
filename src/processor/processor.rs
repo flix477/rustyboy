@@ -3,6 +3,7 @@ use processor::flag_register::Flag;
 use processor::decoder::Decoder;
 use processor::lr35902::LR35902;
 use processor::registers::{Registers, RegisterType};
+use processor::instruction::Prefix;
 
 const CLOCK_FREQUENCY: f64 = 4.194304; // MHz
 
@@ -22,10 +23,7 @@ impl Processor {
     }
 
     fn step(&mut self) {
-        let opcode = self.immediate();
-        if let Some(instruction) = Decoder::decode_opcode(opcode) {
-            self.execute(instruction);
-        }
+        self.execute_next(Prefix::None)
     }
 }
 
@@ -72,5 +70,12 @@ impl LR35902 for Processor {
 
     fn pop_stack(&mut self) -> u16 {
         self.registers.stack_pointer.pop(&self.memory)
+    }
+
+    fn execute_next(&mut self, prefix: Prefix) {
+        let opcode = self.immediate();
+        if let Some(instruction) = Decoder::decode_opcode(opcode, prefix) {
+            self.execute(instruction);
+        }
     }
 }
