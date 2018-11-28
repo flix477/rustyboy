@@ -40,6 +40,7 @@ pub trait MemoryBankController {
 struct MBC1 {
     mode: MBC1Mode,
     rom_bank: u8,
+    rom_bank_set: u8,
     ram_enabled: bool,
     ram_bank: u8
 }
@@ -49,6 +50,7 @@ impl MBC1 {
         MBC1 {
             mode: MBC1Mode::MaxROM,
             rom_bank: 1,
+            rom_bank_set: 1,
             ram_enabled: false,
             ram_bank: 1
         }
@@ -64,8 +66,20 @@ impl MemoryBankController for MBC1 {
 
     fn write_rom(&mut self, address: u16, value: u8) {
         match address {
+            0...0x1FFF => { // toggle ram bank
+                self.ram_enabled = value == 0x0A;
+            },
             2000...0x3FFF => { // change rom bank
                 self.rom_bank = cmp::max(value & 0b11111, 1);
+            },
+            4000...0x5FFF => { // change ram bank/rom bank set
+                if self.ram_enabled {
+                    if let MBC1Mode::MaxRAM = self.mode {
+                        self.ram_bank = cmp::max(value & 0b11, 1);
+                    } else {
+
+                    }
+                }
             },
             6000...0x7FFF => { // change mode
                 self.mode = if get_bit(value, 7) {
@@ -79,12 +93,6 @@ impl MemoryBankController for MBC1 {
 
         if let MBC1Mode::MaxRAM = self.mode {
             match address {
-                0...0x1FFF => { // toggle ram bank
-                    self.ram_enabled = value == 0x0A;
-                },
-                4000...0x5FFF => { // change ram bank
-                    self.ram_bank = cmp::max(value & 0b11, 1);
-                },
                 _ => {}
             }
         } else {
