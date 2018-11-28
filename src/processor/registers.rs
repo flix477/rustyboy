@@ -108,11 +108,11 @@ impl RegisterType {
     pub fn is16bit(&self) -> bool {
         return
             *self == RegisterType::AF ||
-                *self == RegisterType::BC ||
-                *self == RegisterType::DE ||
-                *self == RegisterType::HL ||
-                *self == RegisterType::SP ||
-                *self == RegisterType::PC
+            *self == RegisterType::BC ||
+            *self == RegisterType::DE ||
+            *self == RegisterType::HL ||
+            *self == RegisterType::SP ||
+            *self == RegisterType::PC
         ;
     }
 }

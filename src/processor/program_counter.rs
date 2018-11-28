@@ -1,4 +1,4 @@
-use memory::Memory;
+use bus::Bus;
 use processor::register::Register;
 
 pub struct ProgramCounter {
@@ -12,8 +12,8 @@ impl ProgramCounter {
         }
     }
 
-    pub fn fetch(&mut self, memory: &Memory) -> u8 {
-        let value = memory.get(self.value);
+    pub fn fetch<H: Bus>(&mut self, bus: &H) -> u8 {
+        let value = bus.read(self.value);
         self.increment();
         value
     }

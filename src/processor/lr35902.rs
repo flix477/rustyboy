@@ -5,29 +5,30 @@ use processor::flag_register::Flag;
 use processor::instruction::Reference;
 use processor::instruction::Prefix;
 use util::bits;
+use bus::Bus;
 
 pub trait LR35902 {
-    fn immediate(&mut self) -> u8;
-    fn immediate16(&mut self) -> u16;
+    fn immediate<H: Bus>(&mut self, bus: &H) -> u8;
+    fn immediate16<H: Bus>(&mut self, bus: &H) -> u16;
     fn reg(&self, register: RegisterType) -> u16;
     fn set_reg(&mut self, register: RegisterType, value: u16);
-    fn address(&self, address: u16) -> u8;
-    fn set_address(&mut self, address: u16, value: u8);
+    fn address<H: Bus>(&self, bus: &H, address: u16) -> u8;
+    fn set_address<H: Bus>(&self, bus: &mut H, address: u16, value: u8);
     fn flag(&self, flag: Flag) -> bool;
     fn set_flag(&mut self, flag: Flag, value: bool);
     fn set_zero_from_result(&mut self, result: u8);
-    fn push_stack(&mut self, value: u16);
-    fn pop_stack(&mut self) -> u16;
-    fn execute_next(&mut self, prefix: Prefix);
+    fn push_stack<H: Bus>(&mut self, bus: &mut H, value: u16);
+    fn pop_stack<H: Bus>(&mut self, bus: &mut H) -> u16;
+    fn execute_next<H: Bus>(&mut self, bus: &mut H, prefix: Prefix);
 
-    fn execute(&mut self, instruction: InstructionInfo) -> Result<(), &str> {
+    fn execute<H: Bus>(&mut self, bus: &mut H, instruction: InstructionInfo) -> Result<(), &str> {
         let mnemonic = *instruction.mnemonic();
         match mnemonic {
             Mnemonic::LD => {
                 if let Some(operands) = instruction.operands() {
                     if let (Operand::Reference(r), Operand::Value(v)) = (operands[0], operands[1]) {
-                        let value = self.operand_value(v);
-                        self.ld(r, value);
+                        let value = self.operand_value(bus, v);
+                        self.ld(bus, r, value);
                     } else {
                         return Err("Wrong arguments");
                     }
@@ -40,8 +41,8 @@ pub trait LR35902 {
                 if let Some(operands) = instruction.operands() {
                     if let (Operand::Reference(r1), Operand::Reference(r2)) = (operands[0], operands[1]) {
                         match mnemonic {
-                            Mnemonic::LDD => self.ldd(r1, r2),
-                            Mnemonic::LDI => self.ldi(r1, r2),
+                            Mnemonic::LDD => self.ldd(bus, r1, r2),
+                            Mnemonic::LDI => self.ldi(bus, r1, r2),
                             _ => {}
                         };
                     } else {
@@ -51,12 +52,12 @@ pub trait LR35902 {
                     return Err("Requires arguments");
                 }
             }
-            Mnemonic::LDHL => self.ldhl(),
+            Mnemonic::LDHL => self.ldhl(bus),
             Mnemonic::PUSH => {
                 if let Some(operands) = instruction.operands() {
                     if let Operand::Value(value) = operands[0] {
-                        let value = self.operand_value(value);
-                        self.push(value);
+                        let value = self.operand_value(bus, value);
+                        self.push(bus, value);
                     } else {
                         return Err("Wrong argument");
                     }
@@ -67,7 +68,7 @@ pub trait LR35902 {
             Mnemonic::POP => {
                 if let Some(operands) = instruction.operands() {
                     if let Operand::Reference(Reference::Register(r)) = operands[0] {
-                        self.pop(r);
+                        self.pop(bus, r);
                     } else {
                         return Err("Wrong argument");
                     }
@@ -78,7 +79,7 @@ pub trait LR35902 {
             Mnemonic::ADD => {
                 if let Some(operands) = instruction.operands() {
                     if let (Operand::Reference(Reference::Register(r)), Operand::Value(v)) = (operands[0], operands[1]) {
-                        let value = self.operand_value(v);
+                        let value = self.operand_value(bus, v);
                         if r.is16bit() {
                             self.add16(r, value);
                         } else {
@@ -99,7 +100,7 @@ pub trait LR35902 {
             Mnemonic::XOR => {
                 if let Some(operands) = instruction.operands() {
                     if let Operand::Value(v) = operands[0] {
-                        let value = self.operand_value(v) as u8;
+                        let value = self.operand_value(bus, v) as u8;
                         match mnemonic {
                             Mnemonic::ADC => self.adc(value),
                             Mnemonic::SUB => self.sub(value),
@@ -119,7 +120,7 @@ pub trait LR35902 {
             Mnemonic::CP => {
                 if let Some(operands) = instruction.operands() {
                     if let Operand::Value(value) = operands[0] {
-                        let value = self.operand_value(value);
+                        let value = self.operand_value(bus, value);
                         self.cp(value as u8);
                     } else {
                         return Err("Wrong argument");
@@ -133,9 +134,9 @@ pub trait LR35902 {
                 if let Some(operands) = instruction.operands() {
                     if let Operand::Reference(reference) = operands[0] {
                         if let Mnemonic::INC = mnemonic {
-                            self.inc(reference);
+                            self.inc(bus, reference);
                         } else {
-                            self.dec(reference);
+                            self.dec(bus, reference);
                         }
                     } else {
                         return Err("Wrong argument");
@@ -201,9 +202,9 @@ pub trait LR35902 {
                     ) = (operands[0], operands[1]) {
                         let value = value as u8;
                         match mnemonic {
-                            Mnemonic::BIT => self.bit(value, r),
-                            Mnemonic::SET => self.set(value, r),
-                            Mnemonic::RES => self.res(value, r),
+                            Mnemonic::BIT => self.bit(bus, value, r),
+                            Mnemonic::SET => self.set(bus, value, r),
+                            Mnemonic::RES => self.res(bus, value, r),
                             _ => {}
                         };
                     } else {
@@ -219,7 +220,7 @@ pub trait LR35902 {
                 if let Some(operands) = instruction.operands() {
                     if operands.len() == 1 {
                         if let Operand::Value(value) = operands[0] {
-                            let address = self.operand_value(value);
+                            let address = self.operand_value(bus, value);
                             match mnemonic {
                                 Mnemonic::JP => {
                                     self.jp(address);
@@ -228,7 +229,7 @@ pub trait LR35902 {
                                     self.jr(address as i8);
                                 },
                                 Mnemonic::CALL => {
-                                    self.call(address);
+                                    self.call(bus, address);
                                 },
                                 _ => {}
                             }
@@ -238,7 +239,7 @@ pub trait LR35902 {
                     } else if operands.len() == 2 {
                         if let (Operand::Condition(condition), Operand::Value(value)) = (operands[0], operands[1]) {
                             if self.operand_condition(condition) {
-                                let address = self.operand_value(value);
+                                let address = self.operand_value(bus, value);
                                 match mnemonic {
                                     Mnemonic::JP => {
                                         self.jp(address);
@@ -247,7 +248,7 @@ pub trait LR35902 {
                                         self.jr(address as i8);
                                     },
                                     Mnemonic::CALL => {
-                                        self.call(address);
+                                        self.call(bus, address);
                                     },
                                     _ => {}
                                 }
@@ -263,7 +264,7 @@ pub trait LR35902 {
             Mnemonic::RST => {
                 if let Some(operands) = instruction.operands() {
                     if let Operand::Value(ValueType::Constant(v)) = operands[0] {
-                        self.rst(v);
+                        self.rst(bus, v);
                     } else {
                         return Err("Wrong argument");
                     }
@@ -275,49 +276,49 @@ pub trait LR35902 {
                 if let Some(operands) = instruction.operands() {
                     if let Operand::Condition(condition) = operands[0] {
                         if self.operand_condition(condition) {
-                            self.ret();
+                            self.ret(bus);
                         }
                     } else {
                         return Err("Wrong argument");
                     }
                 } else {
-                    self.ret();
+                    self.ret(bus);
                 }
             },
-            Mnemonic::RETI => self.reti(),
-            Mnemonic::CB => self.cb(),
+            Mnemonic::RETI => self.reti(bus),
+            Mnemonic::CB => self.cb(bus),
 
             _ => { return Err("Invalid mnemonic"); }
         };
         Ok(())
     }
 
-    fn operand_value(&mut self, value: ValueType) -> u16 {
+    fn operand_value<H: Bus>(&mut self, bus: &H, value: ValueType) -> u16 {
         match value {
             ValueType::Constant(value) => value,
             ValueType::Register(reg) => self.reg(reg),
-            ValueType::Immediate => self.immediate() as u16,
-            ValueType::Immediate16 => self.immediate16(),
+            ValueType::Immediate => self.immediate(bus) as u16,
+            ValueType::Immediate16 => self.immediate16(bus),
             ValueType::Address(address) => {
                 let address = match address {
-                    AddressType::Immediate => self.immediate16(),
+                    AddressType::Immediate => self.immediate16(bus),
                     AddressType::IncImmediate =>
-                        self.immediate16() + 0xFF00,
+                        self.immediate16(bus) + 0xFF00,
                     AddressType::Register(reg) => self.reg(reg),
                     AddressType::IncRegister(reg) => self.reg(reg) + 0xFF00
                 };
-                self.address(address) as u16
+                self.address(bus, address) as u16
             }
         }
     }
 
-    fn operand_address(&mut self, address: AddressType) -> u16 {
+    fn operand_address<H: Bus>(&mut self, bus: &mut H, address: AddressType) -> u16 {
         match address {
             AddressType::Register(reg) => self.reg(reg),
             AddressType::IncRegister(reg) => self.reg(reg) + 0xFF00,
-            AddressType::Immediate => self.immediate16(),
+            AddressType::Immediate => self.immediate16(bus),
             AddressType::IncImmediate =>
-                self.immediate16() + 0xFF00
+                self.immediate16(bus) + 0xFF00
         }
     }
 
@@ -326,55 +327,55 @@ pub trait LR35902 {
         return self.flag(flag) == value;
     }
 
-    fn reference(&mut self, reference: Reference) -> u16 {
+    fn reference<H: Bus>(&mut self, bus: &mut H, reference: Reference) -> u16 {
         match reference {
             Reference::Register(register) => self.reg(register),
-            Reference::Address(address) => self.operand_address(address)
+            Reference::Address(address) => self.operand_address(bus, address)
         }
     }
 
-    fn set_reference(&mut self, reference: Reference, value: u16) {
+    fn set_reference<H: Bus>(&mut self, bus: &mut H, reference: Reference, value: u16) {
         match reference {
             Reference::Register(register) => {
                 self.set_reg(register, value);
             }
             Reference::Address(address) => {
-                let address = self.operand_address(address);
-                self.set_address(address, value as u8);
+                let address = self.operand_address(bus, address);
+                self.set_address(bus, address, value as u8);
                 if value > 0xFF {
-                    self.set_address(address + 1, (value >> 8) as u8);
+                    self.set_address(bus, address + 1, (value >> 8) as u8);
                 }
             }
         };
     }
 
-    fn ld(&mut self, reference: Reference, value: u16) {
-        self.set_reference(reference, value);
+    fn ld<H: Bus>(&mut self, bus: &mut H, reference: Reference, value: u16) {
+        self.set_reference(bus, reference, value);
     }
 
-    fn ldd(&mut self, r1: Reference, r2: Reference) {
-        let value = self.reference(r2);
-        self.ld(r1, value);
+    fn ldd<H: Bus>(&mut self, bus: &mut H, r1: Reference, r2: Reference) {
+        let value = self.reference(bus, r2);
+        self.ld(bus, r1, value);
         if let Reference::Address(_) = r1 {
-            self.dec(r1);
+            self.dec(bus, r1);
         } else {
-            self.dec(r2);
+            self.dec(bus, r2);
         }
     }
 
-    fn ldi(&mut self, r1: Reference, r2: Reference) {
-        let value = self.reference(r2);
-        self.ld(r1, value);
+    fn ldi<H: Bus>(&mut self, bus: &mut H, r1: Reference, r2: Reference) {
+        let value = self.reference(bus, r2);
+        self.ld(bus, r1, value);
         if let Reference::Address(_) = r1 {
-            self.inc(r1);
+            self.inc(bus, r1);
         } else {
-            self.inc(r2);
+            self.inc(bus, r2);
         }
     }
 
     // writes SP + n to HL
-    fn ldhl(&mut self) {
-        let n = self.immediate() as i32;
+    fn ldhl<H: Bus>(&mut self, bus: &H) {
+        let n = self.immediate(bus) as i32;
         let value = (self.reg(RegisterType::SP) as i32 + n) as u32;
         self.set_flag(Flag::HalfCarry, value > 0xFFF);
         self.set_flag(Flag::Carry, value > 0xFFFF);
@@ -383,12 +384,12 @@ pub trait LR35902 {
         self.set_reg(RegisterType::HL, value as u16);
     }
 
-    fn push(&mut self, value: u16) {
-        self.push_stack(value);
+    fn push<H: Bus>(&mut self, bus: &mut H, value: u16) {
+        self.push_stack(bus, value);
     }
 
-    fn pop(&mut self, register: RegisterType) {
-        let value = self.pop_stack();
+    fn pop<H: Bus>(&mut self, bus: &mut H, register: RegisterType) {
+        let value = self.pop_stack(bus);
         self.set_reg(register, value);
     }
 
@@ -481,14 +482,14 @@ pub trait LR35902 {
         self.set_flag(Flag::Carry, result < value as u16);
     }
 
-    fn inc(&mut self, reference: Reference) {
-        let value = self.reference(reference);
-        self.set_reference(reference, value + 1);
+    fn inc<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
+        let value = self.reference(bus, reference);
+        self.set_reference(bus, reference, value + 1);
     }
 
-    fn dec(&mut self, reference: Reference) {
-        let value = self.reference(reference);
-        self.set_reference(reference, value - 1);
+    fn dec<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
+        let value = self.reference(bus, reference);
+        self.set_reference(bus, reference, value - 1);
     }
 
     fn daa(&mut self) {
@@ -553,8 +554,8 @@ pub trait LR35902 {
         unimplemented!()
     }
 
-    fn cb(&mut self) {
-        self.execute_next(Prefix::CB);
+    fn cb<H: Bus>(&mut self, bus: &mut H) {
+        self.execute_next(bus, Prefix::CB);
     }
 
     fn rlc(&mut self, reference: Reference) {
@@ -585,21 +586,21 @@ pub trait LR35902 {
         unimplemented!();
     }
 
-    fn bit(&mut self, bit: u8, reference: Reference) {
-        let value = self.reference(reference) as u8;
+    fn bit<H: Bus>(&mut self, bus: &mut H, bit: u8, reference: Reference) {
+        let value = self.reference(bus, reference) as u8;
         self.set_flag(Flag::Zero, bits::get_bit(value, bit));
         self.set_flag(Flag::AddSub, false);
         self.set_flag(Flag::HalfCarry, true);
     }
 
-    fn set(&mut self, bit: u8, reference: Reference) {
-        let value = self.reference(reference) as u8;
-        self.set_reference(reference, bits::set_bit(value, bit, true) as u16);
+    fn set<H: Bus>(&mut self, bus: &mut H, bit: u8, reference: Reference) {
+        let value = self.reference(bus, reference) as u8;
+        self.set_reference(bus, reference, bits::set_bit(value, bit, true) as u16);
     }
 
-    fn res(&mut self, bit: u8, reference: Reference) {
-        let value = self.reference(reference) as u8;
-        self.set_reference(reference, bits::set_bit(value, bit, false) as u16);
+    fn res<H: Bus>(&mut self, bus: &mut H, bit: u8, reference: Reference) {
+        let value = self.reference(bus, reference) as u8;
+        self.set_reference(bus, reference, bits::set_bit(value, bit, false) as u16);
     }
 
     fn jp(&mut self, address: u16) {
@@ -612,25 +613,25 @@ pub trait LR35902 {
         self.set_reg(RegisterType::PC, result as u16);
     }
 
-    fn call(&mut self, address: u16) {
+    fn call<H: Bus>(&mut self, bus: &mut H, address: u16) {
         let pc = self.reg(RegisterType::PC);
-        self.push_stack(pc);
+        self.push_stack(bus, pc);
         self.jp(address);
     }
 
-    fn rst(&mut self, address: u16) {
+    fn rst<H: Bus>(&mut self, bus: &mut H, address: u16) {
         let pc = self.reg(RegisterType::PC);
-        self.push_stack(pc);
+        self.push_stack(bus, pc);
         self.jp(address);
     }
 
-    fn ret(&mut self) {
-        let address = self.pop_stack();
+    fn ret<H: Bus>(&mut self, bus: &mut H) {
+        let address = self.pop_stack(bus);
         self.jp(address);
     }
 
-    fn reti(&mut self) {
-        self.ret();
+    fn reti<H: Bus>(&mut self, bus: &mut H) {
+        self.ret(bus);
         self.ei();
     }
 }

@@ -1,4 +1,4 @@
-use memory::Memory;
+use bus::Bus;
 use processor::register::Register;
 
 pub struct StackPointer {
@@ -12,21 +12,21 @@ impl StackPointer {
         }
     }
 
-    pub fn peek(&mut self, memory: &Memory) -> u8 {
-        memory.get(self.value)
+    pub fn peek<H: Bus>(&mut self, bus: &H) -> u8 {
+        bus.read(self.value)
     }
 
-    pub fn push(&mut self, memory: &mut Memory, value: u16) {
+    pub fn push<H: Bus>(&mut self, bus: &mut H, value: u16) {
         self.decrement();
-        memory.set(self.value, (value >> 8) as u8);
+        bus.write(self.value, (value >> 8) as u8);
         self.decrement();
-        memory.set(self.value, value as u8);
+        bus.write(self.value, value as u8);
     }
 
-    pub fn pop(&mut self, memory: &Memory) -> u16 {
-        let low = memory.get(self.value) as u16;
+    pub fn pop<H: Bus>(&mut self, bus: &H) -> u16 {
+        let low = bus.read(self.value) as u16;
         self.increment();
-        let high = memory.get(self.value) as u16;
+        let high = bus.read(self.value) as u16;
         self.increment();
         low | (high << 8)
     }

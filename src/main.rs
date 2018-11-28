@@ -1,8 +1,9 @@
 use std::fs;
-mod memory;
+mod gameboy;
 mod cartridge;
 mod processor;
 mod util;
+mod bus;
 use cartridge::cartridge_metadata::CartridgeMetadata;
 
 fn main() {

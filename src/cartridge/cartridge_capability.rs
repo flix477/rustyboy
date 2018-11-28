@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum CartridgeCapability {
     ROM,
     MBC1,
