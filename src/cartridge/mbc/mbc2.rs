@@ -18,20 +18,20 @@ impl MBC2 {
 }
 
 impl MemoryBankController for MBC2 {
-    fn rom_bank(&self) -> u8 { self.rom_bank }
+    fn rom_bank(&self) -> u16 { self.rom_bank as u16 }
 
     fn ram_bank(&self) -> u8 { 0 }
 
     fn ram_enabled(&self) -> bool { self.ram_enabled }
 
-    fn write_rom(&mut self, address: u16, value: u8) {
+    fn write_rom(&mut self, address: usize, value: u8) {
         match address {
             0...0x1FFF => { // toggle ram bank
                 if address & 0x100 == 0 {
                     self.ram_enabled = value == 0x0A;
                 }
             },
-            2000...0x3FFF => { // change rom bank
+            0x2000...0x3FFF => { // change rom bank
                 if address & 0x100 != 0 {
                     self.rom_bank = cmp::max(value & 0xF, 1);
                 }

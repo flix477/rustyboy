@@ -1,3 +1,5 @@
+// TODO: implement writing to clock
+
 pub struct RealTimeClock {
     active_register: RTCRegister,
     latched_state: ClockState,

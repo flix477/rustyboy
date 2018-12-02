@@ -32,21 +32,21 @@ impl MBC1 {
 }
 
 impl MemoryBankController for MBC1 {
-    fn rom_bank(&self) -> u8 { self.rom_bank }
+    fn rom_bank(&self) -> u16 { self.rom_bank as u16 }
 
     fn ram_bank(&self) -> u8 { self.ram_bank }
 
     fn ram_enabled(&self) -> bool { self.ram_enabled }
 
-    fn write_rom(&mut self, address: u16, value: u8) {
+    fn write_rom(&mut self, address: usize, value: u8) {
         match address {
             0...0x1FFF => { // toggle ram bank
                 self.ram_enabled = value == 0x0A;
             },
-            2000...0x3FFF => { // change rom bank
+            0x2000...0x3FFF => { // change rom bank
                 self.rom_bank = cmp::max(value & 0b11111, 1) | (self.rom_bank & 0b1100000);
             },
-            4000...0x5FFF => { // change ram bank/rom bank set
+            0x4000...0x5FFF => { // change ram bank/rom bank set
                 if let MBC1Mode::MaxRAM = self.mode {
                     if self.ram_enabled {
                         self.ram_bank = value & 0b11;
@@ -55,7 +55,7 @@ impl MemoryBankController for MBC1 {
                     self.rom_bank = (self.rom_bank & 0b11111) | (value << 5);
                 }
             },
-            6000...0x7FFF => { // change mode
+            0x6000...0x7FFF => { // change mode
                 self.mode = if value == 1 {
                     MBC1Mode::MaxRAM
                 } else {

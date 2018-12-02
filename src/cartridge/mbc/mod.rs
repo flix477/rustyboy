@@ -1,6 +1,7 @@
 mod mbc1;
 mod mbc2;
 mod mbc3;
+mod mbc5;
 mod real_time_clock;
 
 use cartridge::cartridge_capability::CartridgeCapability;
@@ -8,7 +9,7 @@ use cartridge::cartridge_metadata::CartridgeMetadata;
 use cartridge::mbc::mbc1::MBC1;
 use cartridge::mbc::mbc2::MBC2;
 use cartridge::mbc::mbc3::MBC3;
-use cartridge::Cartridge;
+use cartridge::mbc::mbc5::MBC5;
 
 pub struct MBCFactory {}
 impl MBCFactory {
@@ -26,29 +27,33 @@ impl MBCFactory {
             MBCVariant::MBC1 => Some(Box::new(MBC1::new(capabilities))),
             MBCVariant::MBC2 => Some(Box::new(MBC2::new(capabilities))),
             MBCVariant::MBC3 => Some(Box::new(MBC3::new(capabilities))),
-            _ => None
+            MBCVariant::MBC5 => Some(Box::new(MBC5::new(capabilities)))
         }
     }
 }
 
 pub trait MemoryBankController {
-    fn rom_bank(&self) -> u8;
+    fn rom_bank(&self) -> u16;
     fn ram_bank(&self) -> u8;
     fn ram_enabled(&self) -> bool;
 
-    fn relative_rom_address(&self, address: u16) -> usize {
-        let current_bank = (self.rom_bank() - 1) as usize;
-        address as usize + current_bank * 0x4000
+    fn relative_rom_address(&self, address: usize) -> usize {
+        let current_bank = if self.rom_bank() > 0 { (self.rom_bank() - 1) as usize } else { 0 }; // TODO: ew
+        address + current_bank * 0x4000
     }
 
-    fn write_rom(&mut self, address: u16, value: u8) {}
+    fn write_rom(&mut self, address: usize, value: u8) {}
 
-    fn read_ram(&self, address: u16, cartridge: &Cartridge) -> u8 {
-        let address = self.relative_ram_address(address) + cartridge.metadata.rom_size;
-        cartridge.buffer[address]
+    fn read_ram(&self, address: usize, buffer: &Vec<u8>) -> u8 {
+        let address = self.relative_ram_address(address);
+        buffer[address]
     }
 
-    fn relative_ram_address(&self, address: u16) -> usize {
+    fn write_ram(&mut self, address: usize, value: u8, buffer: &mut Vec<u8>) {
+        buffer[address] = value;
+    }
+
+    fn relative_ram_address(&self, address: usize) -> usize {
         let address = address - 0xA000;
         let current_bank = self.ram_bank() as usize;
         address as usize + current_bank * 0xFF

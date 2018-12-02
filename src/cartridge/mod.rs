@@ -36,14 +36,15 @@ impl Bus for Cartridge {
             0...0x3FFF => self.buffer[address as usize], // first rom bank
             0x4000...0x7FFF => {
                 let address = if let Some(mbc) = &self.mbc {
-                    mbc.relative_rom_address(address)
+                    mbc.relative_rom_address(address as usize)
                 } else { address as usize };
                 self.buffer[address]
             }, // switchable rom bank
             0xA000...0xBFFF => {
                 if let Some(mbc) = &self.mbc {
                     if mbc.ram_enabled() {
-                        return mbc.read_ram(address, &self);
+                        let address = address as usize + self.metadata.rom_size;
+                        return mbc.read_ram(address, &self.buffer);
                     }
                 }
                 return 0; // TODO: should do something else maybe?
@@ -56,14 +57,13 @@ impl Bus for Cartridge {
         match address {
             0...0x7FFF => {
                 if let Some(ref mut mbc) = self.mbc {
-                    mbc.write_rom(address, value);
+                    mbc.write_rom(address as usize, value);
                 }
             },
             0xA000...0xBFFF => {
-                if let Some(mbc) = &self.mbc {
+                if let Some(ref mut mbc) = self.mbc {
                     if mbc.ram_enabled() {
-                        let address = mbc.relative_ram_address(address);
-                        self.buffer[address] = value;
+                        mbc.write_ram(address as usize, value, &mut self.buffer);
                     }
                 }
             }, // switchable ram bank
