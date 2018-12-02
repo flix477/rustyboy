@@ -7,7 +7,7 @@ mod bus;
 use cartridge::cartridge_metadata::CartridgeMetadata;
 
 fn main() {
-    let buffer = fs::read("pokemonb.gb").unwrap();
+    let buffer = fs::read("tetris.gb").unwrap();
     let cm = CartridgeMetadata::from_buffer(&buffer).unwrap();
     println!("{:?}", cm);
 }

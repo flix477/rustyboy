@@ -1,5 +1,4 @@
 use processor::Processor;
-use bus::Bus;
 use bus::Hardware;
 use std::error::Error;
 

@@ -1,12 +1,12 @@
 pub mod cartridge_metadata;
 mod cartridge_capability;
-mod memory_bank_controller;
+mod mbc;
 
 use std::fs;
 use std::error::Error;
 use cartridge::cartridge_metadata::CartridgeMetadata;
 use bus::Bus;
-use cartridge::memory_bank_controller::{MemoryBankController, MBCFactory};
+use cartridge::mbc::{MemoryBankController, MBCFactory};
 
 pub struct Cartridge {
     buffer: Vec<u8>,
@@ -40,7 +40,14 @@ impl Bus for Cartridge {
                 } else { address as usize };
                 self.buffer[address]
             }, // switchable rom bank
-            0xA000...0xBFFF => 0, // switchable ram bank
+            0xA000...0xBFFF => {
+                if let Some(mbc) = &self.mbc {
+                    if mbc.ram_enabled() {
+                        return mbc.read_ram(address, &self);
+                    }
+                }
+                return 0; // TODO: should do something else maybe?
+            }, // switchable ram bank
             _ => 0
         }
     }
@@ -52,7 +59,14 @@ impl Bus for Cartridge {
                     mbc.write_rom(address, value);
                 }
             },
-            0xA000...0xBFFF => {}, // switchable ram bank
+            0xA000...0xBFFF => {
+                if let Some(mbc) = &self.mbc {
+                    if mbc.ram_enabled() {
+                        let address = mbc.relative_ram_address(address);
+                        self.buffer[address] = value;
+                    }
+                }
+            }, // switchable ram bank
             _ => {}
         }
     }
