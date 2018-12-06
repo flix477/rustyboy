@@ -6,6 +6,7 @@ mod lr35902;
 mod registers;
 mod program_counter;
 mod stack_pointer;
+pub mod interrupt;
 
 use processor::flag_register::Flag;
 use processor::decoder::Decoder;
@@ -13,24 +14,33 @@ use processor::lr35902::LR35902;
 use processor::registers::{Registers, RegisterType};
 use processor::instruction::Prefix;
 use bus::Bus;
+use util::bitflags::Bitflags;
+use processor::register::Register;
 
 const CLOCK_FREQUENCY: f64 = 4.194304; // MHz
 
 pub struct Processor {
     registers: Registers,
-    clock_frequency: f64
+    clock_frequency: f64,
 }
 
 impl Processor {
     pub fn new() -> Processor {
         return Processor {
             registers: Registers::new(),
-            clock_frequency: CLOCK_FREQUENCY
+            clock_frequency: CLOCK_FREQUENCY,
         };
     }
 
     pub fn step<H: Bus>(&mut self, bus: &mut H) {
-        self.execute_next(bus, Prefix::None)
+        let interrupt = bus.fetch_interrupt();
+        if let Some(interrupt) = interrupt {
+            let pc = self.registers.program_counter.get();
+            self.push_stack(bus, pc);
+            self.jp(interrupt.address())
+        } else {
+            self.execute_next(bus, Prefix::None)
+        }
     }
 }
 
@@ -67,10 +77,6 @@ impl LR35902 for Processor {
         self.registers.af.set_flag(flag, value);
     }
 
-    fn set_zero_from_result(&mut self, result: u8) {
-        self.registers.af.set_zero_from_result(result);
-    }
-
     fn push_stack<H: Bus>(&mut self, bus: &mut H, value: u16) {
         self.registers.stack_pointer.push(bus, value);
     }
@@ -82,33 +88,9 @@ impl LR35902 for Processor {
     fn execute_next<H: Bus>(&mut self, bus: &mut H, prefix: Prefix) {
         let opcode = self.immediate(bus);
         if let Some(instruction) = Decoder::decode_opcode(opcode, prefix) {
-            self.execute(bus, instruction);
+            if let Err(err) = self.execute(bus, instruction) {
+                println!("Error with instruction: {:?}", err);
+            }
         }
     }
 }
-
-
-//
-//use self::decoder::Decoder;
-//use self::processor::Processor;
-//use self::super::memory::Memory;
-//use self::lr35902::LR35902;
-//
-//#[cfg(test)]
-//mod tests {
-//    use super::*;
-//
-//    #[test]
-//    fn implemented_coverage() {
-//        let mut cpu = Processor::new(Memory::new());
-//        let mut covered = Vec::new();
-//        for i in 0..0xff {
-//            if let Some(instruction) = Decoder::decode_opcode(i) {
-//                if let Ok(_) = cpu.execute(instruction) {
-//                    covered.push(i);
-//                }
-//            }
-//        }
-//        assert_eq!(covered.len(), 0xff - 11);
-//    }
-//}

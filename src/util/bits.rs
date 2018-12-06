@@ -1,5 +1,5 @@
 pub fn get_bit(value: u8, idx: u8) -> bool {
-    value >> (7 - idx) == 1
+    value >> idx != 0
 }
 
 pub fn set_bit(value: u8, idx: u8, new_value: bool) -> u8 {

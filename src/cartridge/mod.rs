@@ -5,7 +5,7 @@ mod mbc;
 use std::fs;
 use std::error::Error;
 use cartridge::cartridge_metadata::CartridgeMetadata;
-use bus::Bus;
+use bus::{Readable, Writable};
 use cartridge::mbc::{MemoryBankController, MBCFactory};
 
 pub struct Cartridge {
@@ -30,7 +30,7 @@ impl Cartridge {
     }
 }
 
-impl Bus for Cartridge {
+impl Readable for Cartridge {
     fn read(&self, address: u16) -> u8 {
         match address {
             0...0x3FFF => self.buffer[address as usize], // first rom bank
@@ -52,7 +52,9 @@ impl Bus for Cartridge {
             _ => 0
         }
     }
+}
 
+impl Writable for Cartridge {
     fn write(&mut self, address: u16, value: u8) {
         match address {
             0...0x7FFF => {

@@ -255,7 +255,6 @@ impl Decoder {
                 opcode,
                 Mnemonic::ADC,
                 Some(vec![
-                    Operand::Reference(Ref::Register(Reg::A)),
                     Operand::Value(ValueType::Address(Addr::Immediate))
                 ]),
                 8
@@ -275,7 +274,6 @@ impl Decoder {
                 opcode,
                 Mnemonic::SUB,
                 Some(vec![
-                    Operand::Reference(Ref::Register(Reg::A)),
                     Operand::Value(ValueType::Address(Addr::Immediate))
                 ]),
                 8
@@ -713,6 +711,24 @@ impl Decoder {
                 16
             )),
 
+            // SWAP n
+            // Swap upper and lower nibble of n
+            0x37 => Some(Self::swap(opcode, Reg::A)),
+            0x30 => Some(Self::swap(opcode, Reg::B)),
+            0x31 => Some(Self::swap(opcode, Reg::C)),
+            0x32 => Some(Self::swap(opcode, Reg::D)),
+            0x33 => Some(Self::swap(opcode, Reg::E)),
+            0x34 => Some(Self::swap(opcode, Reg::H)),
+            0x35 => Some(Self::swap(opcode, Reg::L)),
+            0x36 => Some(InstructionInfo::new(
+                opcode,
+                Mnemonic::SWAP,
+                Some(vec![
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                ]),
+                16
+            )),
+
             // SLA n
             // Shift n left into carry
             0x27 => Some(Self::sla(opcode, Reg::A)),
@@ -958,7 +974,15 @@ impl Decoder {
     }
 
     fn add_an(opcode: u8, register: Reg) -> InstructionInfo {
-        Self::alu(opcode, register, Mnemonic::ADD)
+        InstructionInfo::new(
+            opcode,
+            Mnemonic::ADD,
+            Some(vec![
+                Operand::Reference(Ref::Register(Reg::A)),
+                Operand::Value(ValueType::Register(register))
+            ]),
+            4
+        )
     }
 
     fn adc_an(opcode: u8, register: Reg) -> InstructionInfo {
@@ -1024,7 +1048,6 @@ impl Decoder {
             opcode,
             mnemonic,
             Some(vec![
-                Operand::Reference(Ref::Register(Reg::A)),
                 Operand::Value(op)
             ]),
             cycle_count
@@ -1057,6 +1080,10 @@ impl Decoder {
 
     fn rr(opcode: u8, register: Reg) -> InstructionInfo {
         Self::rotates(opcode, register, Mnemonic::RR)
+    }
+
+    fn swap(opcode: u8, register: Reg) -> InstructionInfo {
+        Self::rotates(opcode, register, Mnemonic::SWAP)
     }
 
     fn sla(opcode: u8, register: Reg) -> InstructionInfo {

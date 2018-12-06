@@ -16,7 +16,6 @@ pub trait LR35902 {
     fn set_address<H: Bus>(&self, bus: &mut H, address: u16, value: u8);
     fn flag(&self, flag: Flag) -> bool;
     fn set_flag(&mut self, flag: Flag, value: bool);
-    fn set_zero_from_result(&mut self, result: u8);
     fn push_stack<H: Bus>(&mut self, bus: &mut H, value: u16);
     fn pop_stack<H: Bus>(&mut self, bus: &mut H) -> u16;
     fn execute_next<H: Bus>(&mut self, bus: &mut H, prefix: Prefix);
@@ -39,10 +38,10 @@ pub trait LR35902 {
             Mnemonic::LDD |
             Mnemonic::LDI => {
                 if let Some(operands) = instruction.operands() {
-                    if let (Operand::Reference(r1), Operand::Reference(r2)) = (operands[0], operands[1]) {
+                    if let (Operand::Reference(r), Operand::Value(v)) = (operands[0], operands[1]) {
                         match mnemonic {
-                            Mnemonic::LDD => self.ldd(bus, r1, r2),
-                            Mnemonic::LDI => self.ldi(bus, r1, r2),
+                            Mnemonic::LDD => self.ldd(bus, r, v),
+                            Mnemonic::LDI => self.ldi(bus, r, v),
                             _ => {}
                         };
                     } else {
@@ -152,19 +151,21 @@ pub trait LR35902 {
             Mnemonic::NOP => {},
             Mnemonic::HALT => self.halt(),
             Mnemonic::STOP => self.stop(),
-            Mnemonic::DI => self.di(),
-            Mnemonic::EI => self.ei(),
+            Mnemonic::DI => self.di(bus),
+            Mnemonic::EI => self.ei(bus),
             Mnemonic::RLC |
             Mnemonic::RL |
             Mnemonic::RRC |
-            Mnemonic::RR => {
+            Mnemonic::RR |
+            Mnemonic::SWAP => {
                 if let Some(operands) = instruction.operands() {
                     if let Operand::Reference(r) = operands[0] {
                         match mnemonic {
-                            Mnemonic::RLC => self.rlc(r),
-                            Mnemonic::RL => self.rl(r),
-                            Mnemonic::RRC => self.rrc(r),
-                            Mnemonic::RR => self.rr(r),
+                            Mnemonic::RLC => self.rlc(bus, r),
+                            Mnemonic::RL => self.rl(bus, r),
+                            Mnemonic::RRC => self.rrc(bus, r),
+                            Mnemonic::RR => self.rr(bus, r),
+                            Mnemonic::SWAP => self.swap(bus, r),
                             _ => {}
                         };
                     } else {
@@ -180,9 +181,9 @@ pub trait LR35902 {
                 if let Some(operands) = instruction.operands() {
                     if let Operand::Reference(r) = operands[0] {
                         match mnemonic {
-                            Mnemonic::SLA => self.sla(r),
-                            Mnemonic::SRA => self.sra(r),
-                            Mnemonic::SRL => self.srl(r),
+                            Mnemonic::SLA => self.sla(bus, r),
+                            Mnemonic::SRA => self.sra(bus, r),
+                            Mnemonic::SRL => self.srl(bus, r),
                             _ => {}
                         };
                     } else {
@@ -287,8 +288,6 @@ pub trait LR35902 {
             },
             Mnemonic::RETI => self.reti(bus),
             Mnemonic::CB => self.cb(bus),
-
-            _ => { return Err("Invalid mnemonic"); }
         };
         Ok(())
     }
@@ -303,7 +302,7 @@ pub trait LR35902 {
                 let address = match address {
                     AddressType::Immediate => self.immediate16(bus),
                     AddressType::IncImmediate =>
-                        self.immediate16(bus) + 0xFF00,
+                        self.immediate16(bus).wrapping_add(0xFF00),
                     AddressType::Register(reg) => self.reg(reg),
                     AddressType::IncRegister(reg) => self.reg(reg) + 0xFF00
                 };
@@ -318,7 +317,7 @@ pub trait LR35902 {
             AddressType::IncRegister(reg) => self.reg(reg) + 0xFF00,
             AddressType::Immediate => self.immediate16(bus),
             AddressType::IncImmediate =>
-                self.immediate16(bus) + 0xFF00
+                self.immediate16(bus).wrapping_add(0xFF00)
         }
     }
 
@@ -353,24 +352,16 @@ pub trait LR35902 {
         self.set_reference(bus, reference, value);
     }
 
-    fn ldd<H: Bus>(&mut self, bus: &mut H, r1: Reference, r2: Reference) {
-        let value = self.reference(bus, r2);
-        self.ld(bus, r1, value);
-        if let Reference::Address(_) = r1 {
-            self.dec(bus, r1);
-        } else {
-            self.dec(bus, r2);
-        }
+    fn ldd<H: Bus>(&mut self, bus: &mut H, reg: Reference, value: ValueType) {
+        let value = self.operand_value(bus, value);
+        self.ld(bus, reg, value);
+        self.dec(bus, Reference::Register(RegisterType::HL));
     }
 
-    fn ldi<H: Bus>(&mut self, bus: &mut H, r1: Reference, r2: Reference) {
-        let value = self.reference(bus, r2);
-        self.ld(bus, r1, value);
-        if let Reference::Address(_) = r1 {
-            self.inc(bus, r1);
-        } else {
-            self.inc(bus, r2);
-        }
+    fn ldi<H: Bus>(&mut self, bus: &mut H, reg: Reference, value: ValueType) {
+        let value = self.operand_value(bus, value);
+        self.ld(bus, reg, value);
+        self.inc(bus, Reference::Register(RegisterType::HL));
     }
 
     // writes SP + n to HL
@@ -423,16 +414,17 @@ pub trait LR35902 {
     }
 
     fn sub(&mut self, value: u8) {
+        let value = value as u16;
         let reg_value = self.reg(RegisterType::A);
-        let result = reg_value - value as u16;
+        let result = reg_value.wrapping_sub(value);
 
         self.set_flag(Flag::AddSub, true);
         self.set_flag(Flag::Zero, result == 0);
         self.set_flag(
             Flag::HalfCarry,
-            reg_value & 0xF < value as u16 & 0xF
+            reg_value & 0xF < value & 0xF
         );
-        self.set_flag(Flag::Carry, reg_value < value as u16);
+        self.set_flag(Flag::Carry, reg_value < value);
     }
 
     fn sbc(&mut self, value: u8) {
@@ -472,7 +464,7 @@ pub trait LR35902 {
 
     fn cp(&mut self, value: u8) {
         let a = self.reg(RegisterType::A) as u8;
-        let result = (a - value) as u16;
+        let result = a.wrapping_sub(value) as u16;
         self.set_flag(Flag::Zero, result == 0);
         self.set_flag(Flag::AddSub, true);
         self.set_flag(
@@ -488,8 +480,8 @@ pub trait LR35902 {
     }
 
     fn dec<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
-        let value = self.reference(bus, reference);
-        self.set_reference(bus, reference, value - 1);
+        let value = self.reference(bus, reference).wrapping_sub(1);
+        self.set_reference(bus, reference, value);
     }
 
     fn daa(&mut self) {
@@ -546,44 +538,115 @@ pub trait LR35902 {
         unimplemented!()
     }
 
-    fn di(&mut self) {
-        unimplemented!()
+    fn di<H: Bus>(&mut self, bus: &mut H) {
+        bus.toggle_interrupts(false);
     }
 
-    fn ei(&mut self) {
-        unimplemented!()
+    fn ei<H: Bus>(&mut self, bus: &mut H) {
+        bus.toggle_interrupts(true);
     }
 
     fn cb<H: Bus>(&mut self, bus: &mut H) {
         self.execute_next(bus, Prefix::CB);
     }
 
-    fn rlc(&mut self, reference: Reference) {
-        unimplemented!();
+    fn rlc<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
+        let value = self.reference(bus, reference);
+        self.set_flag(Flag::Carry, bits::get_bit(value as u8, 7));
+
+        value.rotate_left(1);
+        self.set_reference(bus, reference, value);
+
+        self.set_flag(Flag::Zero, value == 0);
+        self.set_flag(Flag::AddSub, false);
+        self.set_flag(Flag::HalfCarry, false);
     }
 
-    fn rl(&mut self, reference: Reference) {
-        unimplemented!();
+    fn rl<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
+        let value = self.reference(bus, reference) as u8;
+        let old_flag = self.flag(Flag::Carry) as u8;
+        self.set_flag(Flag::Carry, bits::get_bit(value as u8, 7));
+
+        let value = (value << 1) | old_flag;
+        self.set_reference(bus, reference, value as u16);
+
+        self.set_flag(Flag::Zero, value == 0);
+        self.set_flag(Flag::AddSub, false);
+        self.set_flag(Flag::HalfCarry, false);
     }
 
-    fn rrc(&mut self, reference: Reference) {
-        unimplemented!();
+    fn rrc<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
+        let value = self.reference(bus, reference);
+        self.set_flag(Flag::Carry, bits::get_bit(value as u8, 0));
+
+        value.rotate_right(1);
+        self.set_reference(bus, reference, value);
+
+        self.set_flag(Flag::Zero, value == 0);
+        self.set_flag(Flag::AddSub, false);
+        self.set_flag(Flag::HalfCarry, false);
     }
 
-    fn rr(&mut self, reference: Reference) {
-        unimplemented!();
+    fn rr<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
+        let value = self.reference(bus, reference) as u8;
+        let old_flag = self.flag(Flag::Carry) as u8;
+        self.set_flag(Flag::Carry, bits::get_bit(value as u8, 0));
+
+        let value = (value >> 1) | (old_flag << 7);
+        self.set_reference(bus, reference, value as u16);
+
+        self.set_flag(Flag::Zero, value == 0);
+        self.set_flag(Flag::AddSub, false);
+        self.set_flag(Flag::HalfCarry, false);
     }
 
-    fn sla(&mut self, reference: Reference) {
-        unimplemented!();
+    fn swap<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
+        let value = self.reference(bus, reference) as u8;
+
+        let value = value.rotate_left(4);
+        self.set_reference(bus, reference, value as u16);
+
+        self.set_flag(Flag::Zero, value == 0);
+        self.set_flag(Flag::AddSub, false);
+        self.set_flag(Flag::HalfCarry, false);
+        self.set_flag(Flag::Carry, false);
     }
 
-    fn sra(&mut self, reference: Reference) {
-        unimplemented!();
+    fn sla<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
+        let value = self.reference(bus, reference);
+        self.set_flag(Flag::Carry, bits::get_bit(value as u8, 7));
+
+        let value = value << 1;
+        self.set_reference(bus, reference, value);
+
+        self.set_flag(Flag::Zero, value == 0);
+        self.set_flag(Flag::AddSub, false);
+        self.set_flag(Flag::HalfCarry, false);
     }
 
-    fn srl(&mut self, reference: Reference) {
-        unimplemented!();
+    fn sra<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
+        let value = self.reference(bus, reference);
+        let msb = bits::get_bit(value as u8, 7) as u16;
+        self.set_flag(Flag::Carry, bits::get_bit(value as u8, 0));
+
+        let value = (value >> 1) | (msb << 7);
+        self.set_reference(bus, reference, value);
+
+        self.set_flag(Flag::Zero, value == 0);
+        self.set_flag(Flag::AddSub, false);
+        self.set_flag(Flag::HalfCarry, false);
+    }
+
+    fn srl<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
+        let value = self.reference(bus, reference);
+        self.set_flag(Flag::Carry, bits::get_bit(value as u8, 0));
+
+        let value = value >> 1;
+        self.set_reference(bus, reference, value);
+
+        self.set_flag(Flag::Zero, value == 0);
+        self.set_flag(Flag::AddSub, false);
+        self.set_flag(Flag::HalfCarry, false);
     }
 
     fn bit<H: Bus>(&mut self, bus: &mut H, bit: u8, reference: Reference) {
@@ -632,6 +695,6 @@ pub trait LR35902 {
 
     fn reti<H: Bus>(&mut self, bus: &mut H) {
         self.ret(bus);
-        self.ei();
+        self.ei(bus);
     }
 }

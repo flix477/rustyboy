@@ -4,3 +4,4 @@ version = "0.1.0"
 authors = ["felixleveille <flxleveille@gmail.com>"]
 
 [dependencies]
+glium = "*"

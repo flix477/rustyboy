@@ -7,7 +7,7 @@ pub enum Prefix {
     None
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub enum Mnemonic {
     CB,
     LD,
@@ -54,21 +54,21 @@ pub enum Mnemonic {
     RST
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub enum Operand {
     Reference(Reference),
     Value(ValueType),
     Condition((Flag, bool))
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub enum Reference {
     Register(RegisterType),
     Address(AddressType)
 }
 
 // Increment versions are incremented with 0xFF00
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub enum AddressType {
     Register(RegisterType),
     IncRegister(RegisterType),
@@ -76,7 +76,7 @@ pub enum AddressType {
     IncImmediate
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub enum ValueType {
     Register(RegisterType),
     Immediate,
@@ -85,6 +85,7 @@ pub enum ValueType {
     Constant(u16)
 }
 
+#[derive(Debug)]
 pub struct InstructionInfo {
     opcode: u8,
     mnemonic: Mnemonic,

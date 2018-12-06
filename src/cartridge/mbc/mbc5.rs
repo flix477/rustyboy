@@ -1,5 +1,4 @@
 use super::MemoryBankController;
-use std::cmp;
 use cartridge::cartridge_capability::CartridgeCapability;
 
 pub struct MBC5 {
@@ -49,12 +48,6 @@ impl MemoryBankController for MBC5 {
             _ => {}
         }
     }
-}
-
-#[derive(Debug, PartialEq)]
-pub enum MBC5Mode {
-    MaxROM,
-    MaxRAM
 }
 
 #[cfg(test)]

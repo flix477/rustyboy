@@ -101,7 +101,8 @@ impl CartridgeMetadata {
             old_licensee_code: Self::parse_old_licensee_code(buffer),
             version: buffer[VERSION_OFFSET],
             header_checksum: buffer[HEADER_CHECKSUM_OFFSET],
-            global_checksum: buffer[GLOBAL_CHECKSUM_RANGE].iter().map(|x| *x).sum() // lol clearly not
+//            global_checksum: buffer[GLOBAL_CHECKSUM_RANGE].iter().map(|x| *x).sum() // lol clearly not
+            global_checksum: 0
         });
     }
 
