@@ -9,7 +9,7 @@ pub struct MBC2 {
 }
 
 impl MBC2 {
-    pub fn new(capabilities: &[CartridgeCapability]) -> MBC2 {
+    pub fn new(_capabilities: &[CartridgeCapability]) -> MBC2 {
         MBC2 {
             rom_bank: 1,
             ram_enabled: false

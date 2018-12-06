@@ -97,7 +97,7 @@ impl Readable for VideoMemory {
 }
 
 impl Writable for VideoMemory {
-    fn write(&mut self, address: u16, value: u8) {
+    fn write(&mut self, address: u16, _value: u8) {
         match address {
             _ => {}
         }

@@ -8,7 +8,7 @@ pub struct MBC5 {
 }
 
 impl MBC5 {
-    pub fn new(capabilities: &[CartridgeCapability]) -> MBC5 {
+    pub fn new(_capabilities: &[CartridgeCapability]) -> MBC5 {
 //        let has_ram = capabilities.contains(&CartridgeCapability::RAM);
         MBC5 {
             rom_bank: 0,

@@ -42,7 +42,7 @@ pub trait MemoryBankController {
         address + current_bank * 0x4000
     }
 
-    fn write_rom(&mut self, address: usize, value: u8) {}
+    fn write_rom(&mut self, _address: usize, _value: u8) {}
 
     fn read_ram(&self, address: usize, buffer: &Vec<u8>) -> u8 {
         let address = self.relative_ram_address(address);

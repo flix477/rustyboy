@@ -10,7 +10,7 @@ pub struct MBC1 {
 }
 
 impl MBC1 {
-    pub fn new(capabilities: &[CartridgeCapability]) -> MBC1 {
+    pub fn new(_capabilities: &[CartridgeCapability]) -> MBC1 {
 //        let has_ram = capabilities.contains(&CartridgeCapability::RAM);
         MBC1 {
             mode: MBC1Mode::MaxROM,
