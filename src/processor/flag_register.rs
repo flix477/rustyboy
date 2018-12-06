@@ -1,5 +1,5 @@
-use processor::register::{Register, SingleRegister, DualRegister};
-use util::bitflags::Bitflags;
+use crate::processor::register::{Register, SingleRegister, DualRegister};
+use crate::util::bitflags::Bitflags;
 
 pub struct FlagRegister {
     pub register: DualRegister

@@ -1,5 +1,5 @@
-use processor::registers::RegisterType;
-use processor::flag_register::Flag;
+use crate::processor::registers::RegisterType;
+use crate::processor::flag_register::Flag;
 
 #[derive(Copy, Clone)]
 pub enum Prefix {

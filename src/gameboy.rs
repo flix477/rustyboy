@@ -1,7 +1,7 @@
-use processor::Processor;
-use hardware::Hardware;
+use crate::processor::Processor;
+use crate::hardware::Hardware;
 use std::error::Error;
-use config::Config;
+use crate::config::Config;
 
 pub struct Gameboy {
     processor: Processor,

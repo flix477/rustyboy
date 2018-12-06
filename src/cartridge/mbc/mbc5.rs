@@ -1,5 +1,5 @@
 use super::MemoryBankController;
-use cartridge::cartridge_capability::CartridgeCapability;
+use crate::cartridge::cartridge_capability::CartridgeCapability;
 
 pub struct MBC5 {
     rom_bank: u16,

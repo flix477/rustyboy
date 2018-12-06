@@ -1,12 +1,12 @@
 mod joypad;
-use cartridge::Cartridge;
+use crate::cartridge::Cartridge;
 use std::error::Error;
-use config::Config;
-use processor::interrupt::Interrupt;
-use processor::interrupt::InterruptHandler;
+use crate::config::Config;
+use crate::processor::interrupt::Interrupt;
+use crate::processor::interrupt::InterruptHandler;
 use self::joypad::Joypad;
-use bus::{Bus, Readable, Writable};
-use video::Video;
+use crate::bus::{Bus, Readable, Writable};
+use crate::video::Video;
 
 pub struct Hardware {
     cartridge: Cartridge,

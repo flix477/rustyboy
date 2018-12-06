@@ -1,6 +1,6 @@
 use super::MemoryBankController;
 use std::cmp;
-use cartridge::cartridge_capability::CartridgeCapability;
+use crate::cartridge::cartridge_capability::CartridgeCapability;
 
 // TODO: RAM is 512*4bit, maybe should only return the 4 necessary bits on read
 pub struct MBC2 {

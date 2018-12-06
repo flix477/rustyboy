@@ -1,5 +1,5 @@
-use bus::Bus;
-use processor::register::Register;
+use crate::bus::Bus;
+use crate::processor::register::Register;
 
 pub struct ProgramCounter {
     value: u16

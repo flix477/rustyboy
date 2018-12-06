@@ -1,7 +1,7 @@
 mod color;
 mod tile;
-use bus::{Readable, Writable};
-use video::tile::Tile;
+use crate::bus::{Readable, Writable};
+use crate::video::tile::Tile;
 
 pub struct Video {
     enabled: bool,
@@ -79,7 +79,7 @@ impl VideoMemory {
     }
 
     pub fn tile_line_at(&self, address: u16) -> u8 {
-        let tile_address = 0x8000 - address;
+        let tile_address = 0x8000u16.saturating_sub(address);
         let tile_base_address = (tile_address - tile_address % 16) / 16;
         let line_idx = ((tile_address - tile_address % 2) - tile_base_address) / 2;
         let line = self.tile_data[tile_base_address as usize].line(line_idx as u8);

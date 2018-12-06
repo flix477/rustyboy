@@ -1,5 +1,3 @@
-extern crate glium;
-
 mod gameboy;
 mod cartridge;
 mod processor;
@@ -9,9 +7,9 @@ mod config;
 mod video;
 mod hardware;
 
-use gameboy::{Gameboy, DeviceType};
-use config::Config;
-use cartridge::Cartridge;
+use crate::gameboy::{Gameboy, DeviceType};
+use crate::config::Config;
+use crate::cartridge::Cartridge;
 //use glium::{glutin, Display, Surface};
 //use glutin::{EventsLoop, WindowBuilder, ContextBuilder, ControlFlow, WindowEvent, Event};
 

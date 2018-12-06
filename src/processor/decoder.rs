@@ -1,8 +1,8 @@
-use processor::instruction::*;
-use processor::instruction::AddressType as Addr;
-use processor::instruction::Reference as Ref;
-use processor::registers::RegisterType as Reg;
-use processor::flag_register::Flag;
+use crate::processor::instruction::*;
+use crate::processor::instruction::AddressType as Addr;
+use crate::processor::instruction::Reference as Ref;
+use crate::processor::registers::RegisterType as Reg;
+use crate::processor::flag_register::Flag;
 
 pub struct Decoder;
 

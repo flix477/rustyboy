@@ -1,6 +1,6 @@
 use super::MemoryBankController;
 use std::cmp;
-use cartridge::cartridge_capability::CartridgeCapability;
+use crate::cartridge::cartridge_capability::CartridgeCapability;
 
 pub struct MBC1 {
     mode: MBC1Mode,

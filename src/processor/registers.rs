@@ -1,7 +1,7 @@
-use processor::register::*;
-use processor::flag_register::FlagRegister;
-use processor::program_counter::ProgramCounter;
-use processor::stack_pointer::StackPointer;
+use crate::processor::register::*;
+use crate::processor::flag_register::FlagRegister;
+use crate::processor::program_counter::ProgramCounter;
+use crate::processor::stack_pointer::StackPointer;
 
 pub struct Registers {
     pub af: FlagRegister, // accumulator and flags

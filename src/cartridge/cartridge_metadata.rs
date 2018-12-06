@@ -1,8 +1,8 @@
 use std::ops::RangeInclusive;
 use std::error::Error;
-use util::ut8_decode_trim;
-use util::bytes_convert::BytesConvert;
-use cartridge::cartridge_capability::CartridgeCapability;
+use crate::util::ut8_decode_trim;
+use crate::util::bytes_convert::BytesConvert;
+use crate::cartridge::cartridge_capability::CartridgeCapability;
 
 // The bitmap of the Nintendo logo displayed on boot.
 const NINTENDO_LOGO: [u8; 48] = [

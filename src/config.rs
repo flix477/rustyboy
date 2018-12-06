@@ -1,5 +1,5 @@
-use cartridge::Cartridge;
-use gameboy::DeviceType;
+use crate::cartridge::Cartridge;
+use crate::gameboy::DeviceType;
 
 pub struct Config {
     pub cartridge: Cartridge,

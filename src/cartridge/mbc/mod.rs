@@ -4,12 +4,12 @@ mod mbc3;
 mod mbc5;
 mod real_time_clock;
 
-use cartridge::cartridge_capability::CartridgeCapability;
-use cartridge::cartridge_metadata::CartridgeMetadata;
-use cartridge::mbc::mbc1::MBC1;
-use cartridge::mbc::mbc2::MBC2;
-use cartridge::mbc::mbc3::MBC3;
-use cartridge::mbc::mbc5::MBC5;
+use crate::cartridge::cartridge_capability::CartridgeCapability;
+use crate::cartridge::cartridge_metadata::CartridgeMetadata;
+use crate::cartridge::mbc::mbc1::MBC1;
+use crate::cartridge::mbc::mbc2::MBC2;
+use crate::cartridge::mbc::mbc3::MBC3;
+use crate::cartridge::mbc::mbc5::MBC5;
 
 pub struct MBCFactory {}
 impl MBCFactory {

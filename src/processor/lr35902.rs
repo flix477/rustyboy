@@ -1,11 +1,11 @@
-use processor::instruction::{Operand, ValueType, AddressType};
-use processor::registers::RegisterType;
-use processor::instruction::{InstructionInfo, Mnemonic};
-use processor::flag_register::Flag;
-use processor::instruction::Reference;
-use processor::instruction::Prefix;
-use util::bits;
-use bus::Bus;
+use crate::processor::instruction::{Operand, ValueType, AddressType};
+use crate::processor::registers::RegisterType;
+use crate::processor::instruction::{InstructionInfo, Mnemonic};
+use crate::processor::flag_register::Flag;
+use crate::processor::instruction::Reference;
+use crate::processor::instruction::Prefix;
+use crate::util::bits;
+use crate::bus::Bus;
 
 pub trait LR35902 {
     fn immediate<H: Bus>(&mut self, bus: &H) -> u8;

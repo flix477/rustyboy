@@ -1,5 +1,5 @@
-use util::bitflags::Bitflags;
-use bus::{Readable, Writable};
+use crate::util::bitflags::Bitflags;
+use crate::bus::{Readable, Writable};
 
 pub struct Joypad {
     mode: Mode,

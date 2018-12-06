@@ -4,9 +4,9 @@ mod mbc;
 
 use std::fs;
 use std::error::Error;
-use cartridge::cartridge_metadata::CartridgeMetadata;
-use bus::{Readable, Writable};
-use cartridge::mbc::{MemoryBankController, MBCFactory};
+use crate::cartridge::cartridge_metadata::CartridgeMetadata;
+use crate::bus::{Readable, Writable};
+use crate::cartridge::mbc::{MemoryBankController, MBCFactory};
 
 pub struct Cartridge {
     buffer: Vec<u8>,
