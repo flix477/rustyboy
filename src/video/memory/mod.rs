@@ -18,10 +18,14 @@ impl VideoMemory {
         }
     }
 
+    pub fn tile_data(&self) -> &[Tile; 384] { &self.tile_data }
+    pub fn oam(&self) -> &SpriteAttributeTable { &self.oam }
+    pub fn background_tile_maps(&self) -> &(BackgroundTileMap, BackgroundTileMap) { &self.background_tile_maps }
+
     fn tile_idx_at(&self, address: u16) -> (u16, u16, u8) {
-        let tile_address = 0x8000u16.saturating_sub(address);
+        let tile_address = address.saturating_sub(0x8000);
         let tile_base_address = (tile_address - tile_address % 16) / 16;
-        let line_idx = ((tile_address - tile_address % 2) - tile_base_address) / 2;
+        let line_idx = ((tile_address - tile_address % 2) - tile_base_address * 16) / 2;
         (tile_address, tile_base_address, line_idx as u8)
     }
 
@@ -33,6 +37,7 @@ impl VideoMemory {
 
     fn set_tile_line_at(&mut self, address: u16, value: u8) {
         let (tile_address, tile_idx, line_idx) = self.tile_idx_at(address);
+        println!("yo tile: {}", tile_idx);
         let value = (value as u16).wrapping_shl((!(tile_address % 2).saturating_mul(8)) as u32);
         self.tile_data[tile_idx as usize].set_line(line_idx, value);
     }

@@ -1,9 +1,20 @@
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub enum Color {
     White = 0,
     LightGray = 1,
     DarkGray = 2,
     Black = 3
+}
+
+impl Color {
+    pub fn to_rgb(&self) -> (u8, u8, u8) {
+        match self {
+            Color::White => (255, 255, 255),
+            Color::LightGray => (170, 170, 170),
+            Color::DarkGray => (85, 85, 85),
+            Color::Black => (0, 0, 0)
+        }
+    }
 }
 
 impl From<u8> for Color {

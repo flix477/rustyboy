@@ -22,7 +22,8 @@ pub struct Processor {
     registers: Registers,
     clock_frequency: f64,
     leftover_time: f64,
-    last_instruction_cycles: u8
+    last_instruction_cycles: u8,
+    stopped: bool
 }
 
 impl Processor {
@@ -31,19 +32,18 @@ impl Processor {
             registers: Registers::new(),
             clock_frequency: CLOCK_FREQUENCY,
             leftover_time: 0.0,
-            last_instruction_cycles: 0
+            last_instruction_cycles: 0,
+            stopped: false
         };
     }
 
     pub fn update<H: Bus>(&mut self, bus: &mut H, delta: f64) {
-        let last_instruction_cycles = self.last_instruction_cycles as f64;
-
         self.leftover_time += delta;
-        while self.last_instruction_cycles == 0 ||
-            self.leftover_time >= (last_instruction_cycles / CLOCK_FREQUENCY)
+        while self.last_instruction_cycles == 0||
+            self.leftover_time >= (self.last_instruction_cycles as f64 / CLOCK_FREQUENCY)
         {
             self.leftover_time -= if self.last_instruction_cycles > 0 {
-                last_instruction_cycles / CLOCK_FREQUENCY
+                self.last_instruction_cycles as f64 / CLOCK_FREQUENCY
             } else { self.leftover_time };
             self.last_instruction_cycles = self.step(bus);
         }
@@ -52,13 +52,15 @@ impl Processor {
     pub fn step<H: Bus>(&mut self, bus: &mut H) -> u8 {
         let interrupt = bus.fetch_interrupt();
         if let Some(interrupt) = interrupt {
-            println!("{:?}, interrupt!", interrupt);
+            self.stopped = false;
             let pc = self.registers.program_counter.get();
             self.push_stack(bus, pc);
             self.jp(interrupt.address());
             0 // lol TODO
-        } else {
+        } else if !self.stopped {
             self.execute_next(bus, Prefix::None)
+        } else {
+            0
         }
     }
 }
@@ -115,5 +117,13 @@ impl LR35902 for Processor {
             return cycle_count;
         }
         0 // i guess lol
+    }
+
+    fn halt(&mut self) {
+        self.stopped = true;
+    }
+
+    fn stop(&mut self) {
+        self.stopped = true;
     }
 }

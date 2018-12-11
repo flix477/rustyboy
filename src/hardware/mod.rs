@@ -37,6 +37,8 @@ impl Hardware {
         self.timer.update(&mut self.interrupt_handler, delta);
     }
 
+    pub fn video(&self) -> &Video { &self.video }
+
     fn audio_unimplemented(&self) {}
 }
 
@@ -116,7 +118,7 @@ impl Readable for Hardware {
             }, // high ram
 
             _ => {
-                println!("Unrecognised read at 0x{:X}", address);
+//                println!("Unrecognised read at 0x{:X}", address);
                 0
 //                unimplemented!()
             } // empty
@@ -195,7 +197,7 @@ impl Writable for Hardware {
             }, // high ram
 
             _ => {
-                println!("Unrecognised write at 0x{:X}: {}", address, value);
+//                println!("Unrecognised write at 0x{:X}: {}", address, value);
 //                unimplemented!()
             } // empty
         }

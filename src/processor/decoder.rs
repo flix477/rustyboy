@@ -20,7 +20,7 @@ impl Decoder {
                 opcode,
                 Mnemonic::NOP,
                 None,
-                0
+                4
             )),
 
             // CB prefix

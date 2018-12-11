@@ -19,6 +19,8 @@ pub trait LR35902 {
     fn push_stack<H: Bus>(&mut self, bus: &mut H, value: u16);
     fn pop_stack<H: Bus>(&mut self, bus: &mut H) -> u16;
     fn execute_next<H: Bus>(&mut self, bus: &mut H, prefix: Prefix) -> u8;
+    fn halt(&mut self);
+    fn stop(&mut self);
 
     fn execute<H: Bus>(&mut self, bus: &mut H, instruction: InstructionInfo) -> Result<(), &str> {
         let mnemonic = *instruction.mnemonic();
@@ -528,14 +530,6 @@ pub trait LR35902 {
         self.set_flag(Flag::Carry, true);
         self.set_flag(Flag::AddSub, false);
         self.set_flag(Flag::HalfCarry, false);
-    }
-
-    fn halt(&mut self) {
-//        unimplemented!()
-    }
-
-    fn stop(&mut self) {
-//        unimplemented!()
     }
 
     fn di<H: Bus>(&mut self, bus: &mut H) {

@@ -1,4 +1,4 @@
-use crate::bus::{Readable, Writable, Bus};
+use crate::bus::{Readable, Writable};
 use crate::processor::interrupt::{Interrupt, InterruptHandler};
 
 // TODO: move this to config singleton thingy

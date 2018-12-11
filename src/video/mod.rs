@@ -1,5 +1,5 @@
-mod color;
-mod tile;
+pub mod color;
+pub mod tile;
 mod palette;
 mod register;
 mod status_register;
@@ -43,6 +43,8 @@ impl Video {
             vram: VideoMemory::new()
         }
     }
+
+    pub fn memory(&self) -> &VideoMemory { &self.vram }
 }
 
 impl Readable for Video {
