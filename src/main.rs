@@ -15,9 +15,10 @@ use crate::cartridge::Cartridge;
 
 fn main() {
     let cartridge = Cartridge::from_file("tetris.gb").unwrap();
+    println!("{:?}", cartridge.metadata());
     let config = Config {
         cartridge,
-        device_type: DeviceType::GameBoyColor
+        device_type: DeviceType::GameBoy
     };
     let mut gameboy = Gameboy::new(config).unwrap();
     gameboy.start();

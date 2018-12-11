@@ -35,7 +35,8 @@ impl From<u8> for Interrupt {
             2 => Interrupt::LCDCStat,
             4 => Interrupt::Timer,
             8 => Interrupt::Serial,
-            _ => Interrupt::Keypad,
+            16 => Interrupt::Keypad,
+            _ => panic!("Invalid value.")
         }
     }
 }
@@ -100,6 +101,10 @@ impl InterruptHandler {
 
     pub fn toggle_interrupts(&mut self, value: bool) {
         self.interrupt_master_enable = value;
+    }
+
+    pub fn request_interrupt(&mut self, interrupt: Interrupt) {
+        self.interrupt_request.set_flag(interrupt, true);
     }
 }
 

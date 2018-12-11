@@ -785,17 +785,137 @@ impl Decoder {
 
             // BIT b,r
             // Test bit b in r
-            0x47 => Some(Self::bit(opcode, Reg::A)),
-            0x40 => Some(Self::bit(opcode, Reg::B)),
-            0x41 => Some(Self::bit(opcode, Reg::C)),
-            0x42 => Some(Self::bit(opcode, Reg::D)),
-            0x43 => Some(Self::bit(opcode, Reg::E)),
-            0x44 => Some(Self::bit(opcode, Reg::H)),
-            0x45 => Some(Self::bit(opcode, Reg::L)),
+            0x47 => Some(Self::bit(opcode, 0, Reg::A)),
+            0x40 => Some(Self::bit(opcode, 0, Reg::B)),
+            0x41 => Some(Self::bit(opcode, 0, Reg::C)),
+            0x42 => Some(Self::bit(opcode, 0, Reg::D)),
+            0x43 => Some(Self::bit(opcode, 0, Reg::E)),
+            0x44 => Some(Self::bit(opcode, 0, Reg::H)),
+            0x45 => Some(Self::bit(opcode, 0, Reg::L)),
             0x46 => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::BIT,
                 Some(vec![
+                    Operand::Value(ValueType::Constant(0)),
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                ]),
+                16
+            )),
+
+            0x4F => Some(Self::bit(opcode, 1, Reg::A)),
+            0x48 => Some(Self::bit(opcode, 1, Reg::B)),
+            0x49 => Some(Self::bit(opcode, 1, Reg::C)),
+            0x4A => Some(Self::bit(opcode, 1, Reg::D)),
+            0x4B => Some(Self::bit(opcode, 1, Reg::E)),
+            0x4C => Some(Self::bit(opcode, 1, Reg::H)),
+            0x4D => Some(Self::bit(opcode, 1, Reg::L)),
+            0x4E => Some(InstructionInfo::new(
+                opcode,
+                Mnemonic::BIT,
+                Some(vec![
+                    Operand::Value(ValueType::Constant(1)),
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                ]),
+                16
+            )),
+
+            0x57 => Some(Self::bit(opcode, 2, Reg::A)),
+            0x50 => Some(Self::bit(opcode, 2, Reg::B)),
+            0x51 => Some(Self::bit(opcode, 2, Reg::C)),
+            0x52 => Some(Self::bit(opcode, 2, Reg::D)),
+            0x53 => Some(Self::bit(opcode, 2, Reg::E)),
+            0x54 => Some(Self::bit(opcode, 2, Reg::H)),
+            0x55 => Some(Self::bit(opcode, 2, Reg::L)),
+            0x56 => Some(InstructionInfo::new(
+                opcode,
+                Mnemonic::BIT,
+                Some(vec![
+                    Operand::Value(ValueType::Constant(2)),
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                ]),
+                16
+            )),
+
+            0x5F => Some(Self::bit(opcode, 3, Reg::A)),
+            0x58 => Some(Self::bit(opcode, 3, Reg::B)),
+            0x59 => Some(Self::bit(opcode, 3, Reg::C)),
+            0x5A => Some(Self::bit(opcode, 3, Reg::D)),
+            0x5B => Some(Self::bit(opcode, 3, Reg::E)),
+            0x5C => Some(Self::bit(opcode, 3, Reg::H)),
+            0x5D => Some(Self::bit(opcode, 3, Reg::L)),
+            0x5E => Some(InstructionInfo::new(
+                opcode,
+                Mnemonic::BIT,
+                Some(vec![
+                    Operand::Value(ValueType::Constant(3)),
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                ]),
+                16
+            )),
+
+            0x67 => Some(Self::bit(opcode, 4, Reg::A)),
+            0x60 => Some(Self::bit(opcode, 4, Reg::B)),
+            0x61 => Some(Self::bit(opcode, 4, Reg::C)),
+            0x62 => Some(Self::bit(opcode, 4, Reg::D)),
+            0x63 => Some(Self::bit(opcode, 4, Reg::E)),
+            0x64 => Some(Self::bit(opcode, 4, Reg::H)),
+            0x65 => Some(Self::bit(opcode, 4, Reg::L)),
+            0x66 => Some(InstructionInfo::new(
+                opcode,
+                Mnemonic::BIT,
+                Some(vec![
+                    Operand::Value(ValueType::Constant(4)),
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                ]),
+                16
+            )),
+
+            0x6F => Some(Self::bit(opcode, 5, Reg::A)),
+            0x68 => Some(Self::bit(opcode, 5, Reg::B)),
+            0x69 => Some(Self::bit(opcode, 5, Reg::C)),
+            0x6A => Some(Self::bit(opcode, 5, Reg::D)),
+            0x6B => Some(Self::bit(opcode, 5, Reg::E)),
+            0x6C => Some(Self::bit(opcode, 5, Reg::H)),
+            0x6D => Some(Self::bit(opcode, 5, Reg::L)),
+            0x6E => Some(InstructionInfo::new(
+                opcode,
+                Mnemonic::BIT,
+                Some(vec![
+                    Operand::Value(ValueType::Constant(5)),
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                ]),
+                16
+            )),
+
+            0x77 => Some(Self::bit(opcode, 6, Reg::A)),
+            0x70 => Some(Self::bit(opcode, 6, Reg::B)),
+            0x71 => Some(Self::bit(opcode, 6, Reg::C)),
+            0x72 => Some(Self::bit(opcode, 6, Reg::D)),
+            0x73 => Some(Self::bit(opcode, 6, Reg::E)),
+            0x74 => Some(Self::bit(opcode, 6, Reg::H)),
+            0x75 => Some(Self::bit(opcode, 6, Reg::L)),
+            0x76 => Some(InstructionInfo::new(
+                opcode,
+                Mnemonic::BIT,
+                Some(vec![
+                    Operand::Value(ValueType::Constant(6)),
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                ]),
+                16
+            )),
+
+            0x7F => Some(Self::bit(opcode, 7, Reg::A)),
+            0x78 => Some(Self::bit(opcode, 7, Reg::B)),
+            0x79 => Some(Self::bit(opcode, 7, Reg::C)),
+            0x7A => Some(Self::bit(opcode, 7, Reg::D)),
+            0x7B => Some(Self::bit(opcode, 7, Reg::E)),
+            0x7C => Some(Self::bit(opcode, 7, Reg::H)),
+            0x7D => Some(Self::bit(opcode, 7, Reg::L)),
+            0x7E => Some(InstructionInfo::new(
+                opcode,
+                Mnemonic::BIT,
+                Some(vec![
+                    Operand::Value(ValueType::Constant(7)),
                     Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
                 ]),
                 16
@@ -803,17 +923,137 @@ impl Decoder {
 
             // SET b,r
             // Set bit b in r
-            0xC7 => Some(Self::set(opcode, Reg::A)),
-            0xC0 => Some(Self::set(opcode, Reg::B)),
-            0xC1 => Some(Self::set(opcode, Reg::C)),
-            0xC2 => Some(Self::set(opcode, Reg::D)),
-            0xC3 => Some(Self::set(opcode, Reg::E)),
-            0xC4 => Some(Self::set(opcode, Reg::H)),
-            0xC5 => Some(Self::set(opcode, Reg::L)),
+            0xC7 => Some(Self::set(opcode, 0, Reg::A)),
+            0xC0 => Some(Self::set(opcode, 0, Reg::B)),
+            0xC1 => Some(Self::set(opcode, 0, Reg::C)),
+            0xC2 => Some(Self::set(opcode, 0, Reg::D)),
+            0xC3 => Some(Self::set(opcode, 0, Reg::E)),
+            0xC4 => Some(Self::set(opcode, 0, Reg::H)),
+            0xC5 => Some(Self::set(opcode, 0, Reg::L)),
             0xC6 => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::SET,
                 Some(vec![
+                    Operand::Value(ValueType::Constant(0)),
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                ]),
+                16
+            )),
+
+            0xCF => Some(Self::set(opcode, 1, Reg::A)),
+            0xC8 => Some(Self::set(opcode, 1, Reg::B)),
+            0xC9 => Some(Self::set(opcode, 1, Reg::C)),
+            0xCA => Some(Self::set(opcode, 1, Reg::D)),
+            0xCB => Some(Self::set(opcode, 1, Reg::E)),
+            0xCC => Some(Self::set(opcode, 1, Reg::H)),
+            0xCD => Some(Self::set(opcode, 1, Reg::L)),
+            0xCE => Some(InstructionInfo::new(
+                opcode,
+                Mnemonic::SET,
+                Some(vec![
+                    Operand::Value(ValueType::Constant(1)),
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                ]),
+                16
+            )),
+
+            0xD7 => Some(Self::set(opcode, 2, Reg::A)),
+            0xD0 => Some(Self::set(opcode, 2, Reg::B)),
+            0xD1 => Some(Self::set(opcode, 2, Reg::C)),
+            0xD2 => Some(Self::set(opcode, 2, Reg::D)),
+            0xD3 => Some(Self::set(opcode, 2, Reg::E)),
+            0xD4 => Some(Self::set(opcode, 2, Reg::H)),
+            0xD5 => Some(Self::set(opcode, 2, Reg::L)),
+            0xD6 => Some(InstructionInfo::new(
+                opcode,
+                Mnemonic::SET,
+                Some(vec![
+                    Operand::Value(ValueType::Constant(2)),
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                ]),
+                16
+            )),
+
+            0xDF => Some(Self::set(opcode, 3, Reg::A)),
+            0xD8 => Some(Self::set(opcode, 3, Reg::B)),
+            0xD9 => Some(Self::set(opcode, 3, Reg::C)),
+            0xDA => Some(Self::set(opcode, 3, Reg::D)),
+            0xDB => Some(Self::set(opcode, 3, Reg::E)),
+            0xDC => Some(Self::set(opcode, 3, Reg::H)),
+            0xDD => Some(Self::set(opcode, 3, Reg::L)),
+            0xDE => Some(InstructionInfo::new(
+                opcode,
+                Mnemonic::SET,
+                Some(vec![
+                    Operand::Value(ValueType::Constant(3)),
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                ]),
+                16
+            )),
+
+            0xE7 => Some(Self::set(opcode, 4, Reg::A)),
+            0xE0 => Some(Self::set(opcode, 4, Reg::B)),
+            0xE1 => Some(Self::set(opcode, 4, Reg::C)),
+            0xE2 => Some(Self::set(opcode, 4, Reg::D)),
+            0xE3 => Some(Self::set(opcode, 4, Reg::E)),
+            0xE4 => Some(Self::set(opcode, 4, Reg::H)),
+            0xE5 => Some(Self::set(opcode, 4, Reg::L)),
+            0xE6 => Some(InstructionInfo::new(
+                opcode,
+                Mnemonic::SET,
+                Some(vec![
+                    Operand::Value(ValueType::Constant(4)),
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                ]),
+                16
+            )),
+
+            0xEF => Some(Self::set(opcode, 5, Reg::A)),
+            0xE8 => Some(Self::set(opcode, 5, Reg::B)),
+            0xE9 => Some(Self::set(opcode, 5, Reg::C)),
+            0xEA => Some(Self::set(opcode, 5, Reg::D)),
+            0xEB => Some(Self::set(opcode, 5, Reg::E)),
+            0xEC => Some(Self::set(opcode, 5, Reg::H)),
+            0xED => Some(Self::set(opcode, 5, Reg::L)),
+            0xEE => Some(InstructionInfo::new(
+                opcode,
+                Mnemonic::SET,
+                Some(vec![
+                    Operand::Value(ValueType::Constant(5)),
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                ]),
+                16
+            )),
+
+            0xF7 => Some(Self::set(opcode, 6, Reg::A)),
+            0xF0 => Some(Self::set(opcode, 6, Reg::B)),
+            0xF1 => Some(Self::set(opcode, 6, Reg::C)),
+            0xF2 => Some(Self::set(opcode, 6, Reg::D)),
+            0xF3 => Some(Self::set(opcode, 6, Reg::E)),
+            0xF4 => Some(Self::set(opcode, 6, Reg::H)),
+            0xF5 => Some(Self::set(opcode, 6, Reg::L)),
+            0xF6 => Some(InstructionInfo::new(
+                opcode,
+                Mnemonic::SET,
+                Some(vec![
+                    Operand::Value(ValueType::Constant(6)),
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                ]),
+                16
+            )),
+
+            0xFF => Some(Self::set(opcode, 7, Reg::A)),
+            0xF8 => Some(Self::set(opcode, 7, Reg::B)),
+            0xF9 => Some(Self::set(opcode, 7, Reg::C)),
+            0xFA => Some(Self::set(opcode, 7, Reg::D)),
+            0xFB => Some(Self::set(opcode, 7, Reg::E)),
+            0xFC => Some(Self::set(opcode, 7, Reg::H)),
+            0xFD => Some(Self::set(opcode, 7, Reg::L)),
+            0xFE => Some(InstructionInfo::new(
+                opcode,
+                Mnemonic::SET,
+                Some(vec![
+                    Operand::Value(ValueType::Constant(7)),
                     Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
                 ]),
                 16
@@ -821,17 +1061,137 @@ impl Decoder {
 
             // RES b,r
             // Reset bit b in r
-            0x87 => Some(Self::res(opcode, Reg::A)),
-            0x80 => Some(Self::res(opcode, Reg::B)),
-            0x81 => Some(Self::res(opcode, Reg::C)),
-            0x82 => Some(Self::res(opcode, Reg::D)),
-            0x83 => Some(Self::res(opcode, Reg::E)),
-            0x84 => Some(Self::res(opcode, Reg::H)),
-            0x85 => Some(Self::res(opcode, Reg::L)),
+            0x87 => Some(Self::res(opcode, 0, Reg::A)),
+            0x80 => Some(Self::res(opcode, 0, Reg::B)),
+            0x81 => Some(Self::res(opcode, 0, Reg::C)),
+            0x82 => Some(Self::res(opcode, 0, Reg::D)),
+            0x83 => Some(Self::res(opcode, 0, Reg::E)),
+            0x84 => Some(Self::res(opcode, 0, Reg::H)),
+            0x85 => Some(Self::res(opcode, 0, Reg::L)),
             0x86 => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::RES,
                 Some(vec![
+                    Operand::Value(ValueType::Constant(0)),
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                ]),
+                16
+            )),
+
+            0x8F => Some(Self::res(opcode, 1, Reg::A)),
+            0x88 => Some(Self::res(opcode, 1, Reg::B)),
+            0x89 => Some(Self::res(opcode, 1, Reg::C)),
+            0x8A => Some(Self::res(opcode, 1, Reg::D)),
+            0x8B => Some(Self::res(opcode, 1, Reg::E)),
+            0x8C => Some(Self::res(opcode, 1, Reg::H)),
+            0x8D => Some(Self::res(opcode, 1, Reg::L)),
+            0x8E => Some(InstructionInfo::new(
+                opcode,
+                Mnemonic::RES,
+                Some(vec![
+                    Operand::Value(ValueType::Constant(1)),
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                ]),
+                16
+            )),
+
+            0x97 => Some(Self::res(opcode, 2, Reg::A)),
+            0x90 => Some(Self::res(opcode, 2, Reg::B)),
+            0x91 => Some(Self::res(opcode, 2, Reg::C)),
+            0x92 => Some(Self::res(opcode, 2, Reg::D)),
+            0x93 => Some(Self::res(opcode, 2, Reg::E)),
+            0x94 => Some(Self::res(opcode, 2, Reg::H)),
+            0x95 => Some(Self::res(opcode, 2, Reg::L)),
+            0x96 => Some(InstructionInfo::new(
+                opcode,
+                Mnemonic::RES,
+                Some(vec![
+                    Operand::Value(ValueType::Constant(2)),
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                ]),
+                16
+            )),
+
+            0x9F => Some(Self::res(opcode, 3, Reg::A)),
+            0x98 => Some(Self::res(opcode, 3, Reg::B)),
+            0x99 => Some(Self::res(opcode, 3, Reg::C)),
+            0x9A => Some(Self::res(opcode, 3, Reg::D)),
+            0x9B => Some(Self::res(opcode, 3, Reg::E)),
+            0x9C => Some(Self::res(opcode, 3, Reg::H)),
+            0x9D => Some(Self::res(opcode, 3, Reg::L)),
+            0x9E => Some(InstructionInfo::new(
+                opcode,
+                Mnemonic::RES,
+                Some(vec![
+                    Operand::Value(ValueType::Constant(3)),
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                ]),
+                16
+            )),
+
+            0xA7 => Some(Self::res(opcode, 4, Reg::A)),
+            0xA0 => Some(Self::res(opcode, 4, Reg::B)),
+            0xA1 => Some(Self::res(opcode, 4, Reg::C)),
+            0xA2 => Some(Self::res(opcode, 4, Reg::D)),
+            0xA3 => Some(Self::res(opcode, 4, Reg::E)),
+            0xA4 => Some(Self::res(opcode, 4, Reg::H)),
+            0xA5 => Some(Self::res(opcode, 4, Reg::L)),
+            0xA6 => Some(InstructionInfo::new(
+                opcode,
+                Mnemonic::RES,
+                Some(vec![
+                    Operand::Value(ValueType::Constant(4)),
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                ]),
+                16
+            )),
+
+            0xAF => Some(Self::res(opcode, 5, Reg::A)),
+            0xA8 => Some(Self::res(opcode, 5, Reg::B)),
+            0xA9 => Some(Self::res(opcode, 5, Reg::C)),
+            0xAA => Some(Self::res(opcode, 5, Reg::D)),
+            0xAB => Some(Self::res(opcode, 5, Reg::E)),
+            0xAC => Some(Self::res(opcode, 5, Reg::H)),
+            0xAD => Some(Self::res(opcode, 5, Reg::L)),
+            0xAE => Some(InstructionInfo::new(
+                opcode,
+                Mnemonic::RES,
+                Some(vec![
+                    Operand::Value(ValueType::Constant(5)),
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                ]),
+                16
+            )),
+
+            0xB7 => Some(Self::res(opcode, 6, Reg::A)),
+            0xB0 => Some(Self::res(opcode, 6, Reg::B)),
+            0xB1 => Some(Self::res(opcode, 6, Reg::C)),
+            0xB2 => Some(Self::res(opcode, 6, Reg::D)),
+            0xB3 => Some(Self::res(opcode, 6, Reg::E)),
+            0xB4 => Some(Self::res(opcode, 6, Reg::H)),
+            0xB5 => Some(Self::res(opcode, 6, Reg::L)),
+            0xB6 => Some(InstructionInfo::new(
+                opcode,
+                Mnemonic::RES,
+                Some(vec![
+                    Operand::Value(ValueType::Constant(6)),
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                ]),
+                16
+            )),
+
+            0xBF => Some(Self::res(opcode, 7, Reg::A)),
+            0xB8 => Some(Self::res(opcode, 7, Reg::B)),
+            0xB9 => Some(Self::res(opcode, 7, Reg::C)),
+            0xBA => Some(Self::res(opcode, 7, Reg::D)),
+            0xBB => Some(Self::res(opcode, 7, Reg::E)),
+            0xBC => Some(Self::res(opcode, 7, Reg::H)),
+            0xBD => Some(Self::res(opcode, 7, Reg::L)),
+            0xBE => Some(InstructionInfo::new(
+                opcode,
+                Mnemonic::RES,
+                Some(vec![
+                    Operand::Value(ValueType::Constant(7)),
                     Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
                 ]),
                 16
@@ -1098,62 +1458,43 @@ impl Decoder {
         Self::rotates(opcode, register, Mnemonic::SRL)
     }
 
-    fn bitops(opcode: u8, register: Reg, mnemonic: Mnemonic)
-        -> InstructionInfo
-    {
-        let (cycle_count, reference) = if register.is16bit() {
-            (16, Ref::Address(Addr::Register(register)))
-        } else {
-            (8, Ref::Register(register))
-        };
-        let start_row = match mnemonic {
-            Mnemonic::BIT => 0x40,
-            Mnemonic::SET => 0x80,
-            _ => 0xC0
-        };
+    fn bit(opcode: u8, bit: u8, register: Reg) -> InstructionInfo {
         InstructionInfo::new(
             opcode,
             Mnemonic::BIT,
             Some(vec![
-                Operand::Value(
-                    ValueType::Constant(
-                        Self::parse_b(opcode, start_row) as u16
-                    )
-                ),
-                Operand::Reference(reference)
+                Operand::Value(ValueType::Constant(bit as u16)),
+                Operand::Reference(Ref::Register(register))
             ]),
-            cycle_count
+            8
         )
     }
 
-    fn bit(opcode: u8, register: Reg) -> InstructionInfo {
-        Self::bitops(opcode, register, Mnemonic::BIT)
+    fn set(opcode: u8, bit: u8, register: Reg) -> InstructionInfo {
+        InstructionInfo::new(
+            opcode,
+            Mnemonic::SET,
+            Some(vec![
+                Operand::Value(ValueType::Constant(bit as u16)),
+                Operand::Reference(Ref::Register(register))
+            ]),
+            8
+        )
     }
 
-    fn set(opcode: u8, register: Reg) -> InstructionInfo {
-        Self::bitops(opcode, register, Mnemonic::SET)
+    fn res(opcode: u8, bit: u16, register: Reg) -> InstructionInfo {
+        InstructionInfo::new(
+            opcode,
+            Mnemonic::RES,
+            Some(vec![
+                Operand::Value(ValueType::Constant(bit as u16)),
+                Operand::Reference(Ref::Register(register))
+            ]),
+            8
+        )
     }
 
-    fn res(opcode: u8, register: Reg) -> InstructionInfo {
-        Self::bitops(opcode, register, Mnemonic::RES)
-    }
-
-    fn parse_b(opcode: u8, start_row: u8) -> u8 {
-        let mut value = match (opcode & 0xF0) - start_row {
-            0 => 0,
-            0x10 => 2,
-            0x20 => 4,
-            _ => 6
-        };
-        if (opcode & 0x0F) < 0x08 {
-            value += 1
-        }
-        value
-    }
-
-    fn rotates(opcode: u8, register: Reg, mnemonic: Mnemonic)
-        -> InstructionInfo
-    {
+    fn rotates(opcode: u8, register: Reg, mnemonic: Mnemonic) -> InstructionInfo {
         InstructionInfo::new(
             opcode,
             mnemonic,

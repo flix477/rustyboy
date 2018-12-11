@@ -28,6 +28,8 @@ impl Cartridge {
             mbc
         });
     }
+
+    pub fn metadata(&self) -> &CartridgeMetadata { &self.metadata }
 }
 
 impl Readable for Cartridge {

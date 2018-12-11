@@ -31,10 +31,6 @@ impl FlagRegister {
     pub fn register(&self) -> &DualRegister {
         &self.register
     }
-
-    pub fn set_zero_from_result(&mut self, result: u8) {
-        self.set_flag(Flag::Zero, result == 0);
-    }
 }
 
 impl Bitflags<Flag> for FlagRegister {

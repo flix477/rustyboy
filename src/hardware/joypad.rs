@@ -72,11 +72,11 @@ pub enum Mode {
 }
 
 impl Mode {
-    pub fn from_value(value: u8) -> Option<Mode> {
+    pub fn from_value(value: u8) -> Mode {
         match value {
-            0x20 => Some(Mode::DirectionalKeys),
-            0x10 => Some(Mode::ButtonKeys),
-            _ => None
+            0x20 => Mode::DirectionalKeys,
+            0x10 => Mode::ButtonKeys,
+            _ => panic!("Invalid value.")
         }
     }
 }

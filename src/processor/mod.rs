@@ -7,7 +7,6 @@ mod registers;
 mod program_counter;
 mod stack_pointer;
 pub mod interrupt;
-
 use crate::processor::flag_register::Flag;
 use crate::processor::decoder::Decoder;
 use crate::processor::lr35902::LR35902;
@@ -17,11 +16,13 @@ use crate::bus::Bus;
 use crate::util::bitflags::Bitflags;
 use crate::processor::register::Register;
 
-const CLOCK_FREQUENCY: f64 = 4.194304; // MHz
+const CLOCK_FREQUENCY: f64 = 4194304.0; // Hz
 
 pub struct Processor {
     registers: Registers,
     clock_frequency: f64,
+    leftover_time: f64,
+    last_instruction_cycles: u8
 }
 
 impl Processor {
@@ -29,15 +30,33 @@ impl Processor {
         return Processor {
             registers: Registers::new(),
             clock_frequency: CLOCK_FREQUENCY,
+            leftover_time: 0.0,
+            last_instruction_cycles: 0
         };
     }
 
-    pub fn step<H: Bus>(&mut self, bus: &mut H) {
+    pub fn update<H: Bus>(&mut self, bus: &mut H, delta: f64) {
+        let last_instruction_cycles = self.last_instruction_cycles as f64;
+
+        self.leftover_time += delta;
+        while self.last_instruction_cycles == 0 ||
+            self.leftover_time >= (last_instruction_cycles / CLOCK_FREQUENCY)
+        {
+            self.leftover_time -= if self.last_instruction_cycles > 0 {
+                last_instruction_cycles / CLOCK_FREQUENCY
+            } else { self.leftover_time };
+            self.last_instruction_cycles = self.step(bus);
+        }
+    }
+
+    pub fn step<H: Bus>(&mut self, bus: &mut H) -> u8 {
         let interrupt = bus.fetch_interrupt();
         if let Some(interrupt) = interrupt {
+            println!("{:?}, interrupt!", interrupt);
             let pc = self.registers.program_counter.get();
             self.push_stack(bus, pc);
-            self.jp(interrupt.address())
+            self.jp(interrupt.address());
+            0 // lol TODO
         } else {
             self.execute_next(bus, Prefix::None)
         }
@@ -85,12 +104,16 @@ impl LR35902 for Processor {
         self.registers.stack_pointer.pop(bus)
     }
 
-    fn execute_next<H: Bus>(&mut self, bus: &mut H, prefix: Prefix) {
+    fn execute_next<H: Bus>(&mut self, bus: &mut H, prefix: Prefix) -> u8 {
         let opcode = self.immediate(bus);
         if let Some(instruction) = Decoder::decode_opcode(opcode, prefix) {
+            let cycle_count = instruction.cycle_count();
             if let Err(err) = self.execute(bus, instruction) {
                 println!("Error with instruction: {:?}", err);
+                panic!()
             }
+            return cycle_count;
         }
+        0 // i guess lol
     }
 }

@@ -115,4 +115,8 @@ impl InstructionInfo {
     pub fn operands(&self) -> &Option<Vec<Operand>> {
         &self.operands
     }
+
+    pub fn cycle_count(&self) -> u8 {
+        self.cycle_count
+    }
 }

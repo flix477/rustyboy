@@ -2,6 +2,8 @@ use crate::processor::Processor;
 use crate::hardware::Hardware;
 use std::error::Error;
 use crate::config::Config;
+use std::time::Instant;
+use crate::util::as_millis;
 
 pub struct Gameboy {
     processor: Processor,
@@ -17,8 +19,13 @@ impl Gameboy {
     }
 
     pub fn start(&mut self) {
+        let mut last_time = Instant::now();
         loop {
-            self.processor.step(&mut self.hardware);
+            let now = Instant::now();
+            let delta = now.duration_since(last_time);
+            self.processor.update(&mut self.hardware, as_millis(delta));
+            self.hardware.update(as_millis(delta));
+            last_time = now;
         }
     }
 }

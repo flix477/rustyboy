@@ -29,10 +29,10 @@ impl Register for ProgramCounter {
     }
 
     fn increment(&mut self) {
-        self.value += 1;
+        self.value = self.value.wrapping_add(1);
     }
 
     fn decrement(&mut self) {
-        self.value -= 1;
+        self.value = self.value.wrapping_sub(1);
     }
 }
