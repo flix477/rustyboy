@@ -1,7 +1,9 @@
-mod sprite_attribute_table;
+pub mod sprite_attribute_table;
+pub mod background_tile_map;
 use crate::bus::{Readable, Writable};
 use crate::video::tile::Tile;
 use self::sprite_attribute_table::SpriteAttributeTable;
+use self::background_tile_map::BackgroundTileMap;
 
 pub struct VideoMemory {
     tile_data: [Tile; 384],
@@ -64,33 +66,5 @@ impl Writable for VideoMemory {
             0xFE00...0xFE9F => self.oam.write(address, value),
             _ => unimplemented!()
         }
-    }
-}
-
-struct BackgroundTileMap {
-    tiles: [[u8; 32]; 32]
-}
-
-impl BackgroundTileMap {
-    pub fn new() -> Self {
-        BackgroundTileMap {
-            tiles: [[0; 32]; 32]
-        }
-    }
-
-    fn tile_info_at(&self, address: u16) -> (usize, usize) {
-        let row = (address - (address % 32)) / 32;
-        let column = address - row * 32;
-        (row as usize, column as usize)
-    }
-
-    pub fn tile_idx_at(&self, address: u16) -> u8 {
-        let (row, column) = self.tile_info_at(address);
-        self.tiles[row][column]
-    }
-
-    pub fn set_tile_idx_at(&mut self, address: u16, value: u8) {
-        let (row, column) = self.tile_info_at(address);
-        self.tiles[row][column] = value;
     }
 }

@@ -4,7 +4,7 @@ use crate::processor::program_counter::ProgramCounter;
 use crate::processor::stack_pointer::StackPointer;
 
 pub struct Registers {
-    pub af: FlagRegister, // accumulator and flags
+    pub af: FlagRegister,
     pub bc: DualRegister,
     pub de: DualRegister,
     pub hl: DualRegister,
@@ -16,9 +16,9 @@ impl Registers {
     pub fn new() -> Registers {
         return Registers {
             af: FlagRegister::new(),
-            bc: DualRegister::new(),
-            de: DualRegister::new(),
-            hl: DualRegister::new(),
+            bc: DualRegister::from(0x0013),
+            de: DualRegister::from(0x00D8),
+            hl: DualRegister::from(0x014D),
             stack_pointer: StackPointer::new(),
             program_counter: ProgramCounter::new()
         };

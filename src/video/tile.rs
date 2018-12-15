@@ -1,6 +1,6 @@
 use crate::video::color::Color;
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct Tile {
     data: [u16; 8]
 }

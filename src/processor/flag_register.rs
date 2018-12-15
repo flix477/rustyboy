@@ -7,9 +7,9 @@ pub struct FlagRegister {
 
 impl FlagRegister {
     pub fn new() -> FlagRegister {
-        return FlagRegister {
-            register: DualRegister::new()
-        };
+        FlagRegister {
+            register: DualRegister::from(0x01B0)
+        }
     }
 
     pub fn accumulator(&self) -> &SingleRegister {

@@ -18,14 +18,17 @@ impl ControlRegister {
         get_bit(self.register, 7)
     }
 
-//    pub fn window_tilemap(&self) -> bool {
-//        get_bit(self.register, 6)
-//    }
+    // which background map the window uses for rendering
+    pub fn window_bg_map(&self) -> u8 {
+        get_bit(self.register, 6) as u8
+    }
 
+    // whether the window shall be displayed or not
     pub fn window_enabled(&self) -> bool {
         get_bit(self.register, 5)
     }
 
+    // which addressing mode the background and window use to pick tiles
     pub fn bg_tile_data_addressing(&self) -> TileDataAddressing {
         if get_bit(self.register, 4) {
             TileDataAddressing::Mode8000
@@ -34,21 +37,25 @@ impl ControlRegister {
         }
     }
 
-//    pub fn bg_tilemap(&self) -> bool {
-//        get_bit(self.register, 3)
-//    }
+    // which background map the background uses for rendering
+    pub fn bg_map(&self) -> u8 {
+        get_bit(self.register, 3) as u8
+    }
 
-//    pub fn obj_size(&self) -> bool {
-//        get_bit(self.register, 2)
-//    }
+    // controls the sprite size (false = 1 tile, true = 2 stacked vertically)
+    pub fn obj_big_size(&self) -> bool {
+        get_bit(self.register, 2)
+    }
 
-//    pub fn obj_enabled(&self) -> bool {
-//        get_bit(self.register, 1)
-//    }
+    // whether sprites are displayed or not
+    pub fn obj_enabled(&self) -> bool {
+        get_bit(self.register, 1)
+    }
 
-//    pub fn layer_priority(&self) -> bool {
-//        get_bit(self.register, 0)
-//    }
+    // when false, both background and window become blank, regardless of window_enabled
+    pub fn bg_window_enabled(&self) -> bool {
+        get_bit(self.register, 0)
+    }
 }
 
 impl Register for ControlRegister {

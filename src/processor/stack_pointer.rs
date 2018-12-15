@@ -8,7 +8,7 @@ pub struct StackPointer {
 impl StackPointer {
     pub fn new() -> StackPointer {
         StackPointer {
-            value: 0
+            value: 0xFFFE
         }
     }
 

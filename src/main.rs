@@ -37,24 +37,18 @@ fn main() {
         let now = Instant::now();
         let delta = now.duration_since(last_time);
 
-
-        gameboy.update(as_millis(delta));
-        let tiles = gameboy.hardware().video().memory().tile_data();
         let mut target = display.draw();
         target.clear_color(0.0, 0.0, 1.0, 1.0);
-        if tiles.len() > 0 {
-            let colors = tiles[0..64].iter().map(|tile| tile.colored()).flat_map(|colors| {
-                colors.iter().flat_map(|color| {
-                    let color = color.to_rgb();
-                    vec![color.0, color.1, color.2]
-                }).collect::<Vec<u8>>()
-            }).collect::<Vec<u8>>();
-            let img = RawImage2d::from_raw_rgb_reversed(&colors, (64, 64));
-            glium::Texture2d::new(&display, img)
-                .unwrap()
-                .as_surface()
-                .fill(&target, MagnifySamplerFilter::Nearest);
-        }
+        gameboy.update(as_millis(delta));
+
+        let screen = gameboy.hardware().video().screen();
+        let buf = screen.draw(gameboy.hardware().video());
+
+        let img = RawImage2d::from_raw_rgb_reversed(&buf, (screen.dimensions.0 as u32, screen.dimensions.1 as u32));
+        glium::Texture2d::new(&display, img)
+            .unwrap()
+            .as_surface()
+            .fill(&target, MagnifySamplerFilter::Nearest);
 
         target.finish().unwrap();
         events_loop.poll_events(|event| {

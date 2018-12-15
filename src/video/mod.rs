@@ -1,5 +1,6 @@
 pub mod color;
 pub mod tile;
+mod screen;
 mod palette;
 mod register;
 mod status_register;
@@ -11,6 +12,7 @@ use self::register::Register;
 use self::status_register::{StatusRegister, StatusMode};
 use self::control_register::ControlRegister;
 use self::memory::VideoMemory;
+use self::screen::Screen;
 
 pub struct Video {
     control: ControlRegister,
@@ -24,7 +26,8 @@ pub struct Video {
     obj_palette0: Palette,
     obj_palette1: Palette,
     // TODO: CGB color palettes
-    vram: VideoMemory
+    vram: VideoMemory,
+    screen: Screen
 }
 
 impl Video {
@@ -40,11 +43,15 @@ impl Video {
             bg_palette: Palette::new(),
             obj_palette0: Palette::new(),
             obj_palette1: Palette::new(),
-            vram: VideoMemory::new()
+            vram: VideoMemory::new(),
+            screen: Screen::new()
         }
     }
 
     pub fn memory(&self) -> &VideoMemory { &self.vram }
+    pub fn screen(&self) -> &Screen { &self.screen }
+    pub fn obj_palette0(&self) -> &Palette { &self.obj_palette0 }
+    pub fn obj_palette1(&self) -> &Palette { &self.obj_palette1 }
 }
 
 impl Readable for Video {

@@ -60,6 +60,15 @@ impl DualRegister {
             low: SingleRegister::new()
         };
     }
+
+    pub fn from(value: u16) -> DualRegister {
+        let mut reg = DualRegister {
+            high: SingleRegister::new(),
+            low: SingleRegister::new()
+        };
+        reg.set(value);
+        reg
+    }
 }
 
 impl Register for DualRegister {

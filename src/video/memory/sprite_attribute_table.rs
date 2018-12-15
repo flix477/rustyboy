@@ -1,4 +1,5 @@
 use crate::bus::{Readable, Writable};
+use crate::util::bits::get_bit;
 
 pub struct SpriteAttributeTable {
     table: [OAMEntry; 40]
@@ -17,6 +18,8 @@ impl SpriteAttributeTable {
         let byte_idx = address - entry_idx * 4;
         (entry_idx as u8, byte_idx as u8)
     }
+
+    pub fn entries(&self) -> &[OAMEntry; 40] { &self.table }
 }
 
 impl Readable for SpriteAttributeTable {
@@ -33,7 +36,7 @@ impl Writable for SpriteAttributeTable {
     }
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct OAMEntry {
     pub position: (u8, u8),
     pub tile_number: u8,
@@ -67,5 +70,29 @@ impl OAMEntry {
             3 => self.attributes = value,
             _ => panic!("Invalid byte.")
         }
+    }
+
+    pub fn obj_palette_number(&self) -> u8 {
+        (self.attributes & 0b10000) >> 4
+    }
+
+    pub fn x_flipped(&self) -> bool {
+        get_bit(self.attributes, 5)
+    }
+
+    pub fn y_flipped(&self) -> bool {
+        get_bit(self.attributes, 6)
+    }
+
+    pub fn tile_vram_bank(&self) -> u8 {
+        (self.attributes & 0b1000) >> 3
+    }
+
+    pub fn cgb_palette_number(&self) -> u8 {
+        self.attributes & 0b11
+    }
+
+    pub fn priority(&self) -> u8 {
+        (self.attributes & 0b10000000) >> 7
     }
 }

@@ -15,6 +15,7 @@ use crate::processor::instruction::Prefix;
 use crate::bus::Bus;
 use crate::util::bitflags::Bitflags;
 use crate::processor::register::Register;
+use crate::processor::instruction::Mnemonic;
 
 const CLOCK_FREQUENCY: f64 = 4194304.0; // Hz
 
@@ -38,14 +39,20 @@ impl Processor {
     }
 
     pub fn update<H: Bus>(&mut self, bus: &mut H, delta: f64) {
-        self.leftover_time += delta;
-        while self.last_instruction_cycles == 0||
-            self.leftover_time >= (self.last_instruction_cycles as f64 / CLOCK_FREQUENCY)
-        {
-            self.leftover_time -= if self.last_instruction_cycles > 0 {
-                self.last_instruction_cycles as f64 / CLOCK_FREQUENCY
-            } else { self.leftover_time };
-            self.last_instruction_cycles = self.step(bus);
+        if !self.stopped {
+            self.leftover_time += delta;
+            while
+                !self.stopped &&
+                (self.last_instruction_cycles == 0||
+                self.leftover_time >= (self.last_instruction_cycles as f64 / CLOCK_FREQUENCY))
+            {
+                self.leftover_time -= if self.last_instruction_cycles > 0 {
+                    self.last_instruction_cycles as f64 / CLOCK_FREQUENCY
+                } else { self.leftover_time };
+                self.last_instruction_cycles = self.step(bus);
+            }
+        } else {
+            self.step(bus);
         }
     }
 

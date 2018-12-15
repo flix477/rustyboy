@@ -1,19 +1,12 @@
 use super::color::Color;
 
 pub struct Palette {
-    palette: [Color; 4],
     register: u8
 }
 
 impl Palette {
     pub fn new() -> Self {
         Palette {
-            palette: [
-                Color::White,
-                Color::LightGray,
-                Color::DarkGray,
-                Color::Black
-            ],
             register: 0b00011011
         }
     }
