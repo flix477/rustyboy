@@ -27,4 +27,16 @@ impl Tile {
         }
         colors
     }
+
+    pub fn get(&self, x: u8, y: u8) -> u8 {
+        ((self.data[y as usize] as u8).wrapping_shr(2 * x as u32)) & 0b11
+    }
+
+    pub fn formatted_line(&self, y: u8) -> [u8; 8] {
+        let mut colors: [u8; 8] = [0; 8];
+        for col in 0..8 {
+            colors[(y * 8 + col) as usize] = ((self.data[y as usize] as u8).wrapping_shr(2 * col as u32)) & 0b11;
+        }
+        colors
+    }
 }

@@ -81,7 +81,8 @@ impl Registers {
             RegisterType::HL => {
                 self.hl.set(value);
             },
-            _ => {}
+            RegisterType::PC => { self.program_counter.set(value) },
+            RegisterType::SP => { self.stack_pointer.set(value) }
         }
     }
 }

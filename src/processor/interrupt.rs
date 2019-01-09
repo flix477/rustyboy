@@ -79,7 +79,7 @@ impl InterruptHandler {
         InterruptHandler {
             interrupt_request: InterruptRegister::new(),
             interrupt_enable: InterruptRegister::from_value(0xFF),
-            interrupt_master_enable: true
+            interrupt_master_enable: false
         }
     }
 

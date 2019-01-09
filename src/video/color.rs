@@ -7,12 +7,12 @@ pub enum Color {
 }
 
 impl Color {
-    pub fn to_rgb(&self) -> (u8, u8, u8) {
+    pub fn to_rgb(&self) -> [u8; 3] {
         match self {
-            Color::White => (255, 255, 255),
-            Color::LightGray => (170, 170, 170),
-            Color::DarkGray => (85, 85, 85),
-            Color::Black => (0, 0, 0)
+            Color::White => [255, 255, 255],
+            Color::LightGray => [170, 170, 170],
+            Color::DarkGray => [85, 85, 85],
+            Color::Black => [0, 0, 0]
         }
     }
 }

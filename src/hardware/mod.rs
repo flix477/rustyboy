@@ -35,6 +35,7 @@ impl Hardware {
 
     pub fn update(&mut self, delta: f64) {
         self.timer.update(&mut self.interrupt_handler, delta);
+        self.video.update(&mut self.interrupt_handler, delta);
     }
 
     pub fn video(&self) -> &Video { &self.video }

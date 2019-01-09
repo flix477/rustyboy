@@ -10,7 +10,7 @@ pub struct ControlRegister {
 impl ControlRegister {
     pub fn new() -> Self {
         ControlRegister {
-            register: 0
+            register: 0x91
         }
     }
 

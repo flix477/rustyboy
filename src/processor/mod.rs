@@ -114,8 +114,10 @@ impl LR35902 for Processor {
     }
 
     fn execute_next<H: Bus>(&mut self, bus: &mut H, prefix: Prefix) -> u8 {
+        let line = self.registers.program_counter.get();
         let opcode = self.immediate(bus);
         if let Some(instruction) = Decoder::decode_opcode(opcode, prefix) {
+            println!("0x{:X}: {:?}", line, instruction);
             let cycle_count = instruction.cycle_count();
             if let Err(err) = self.execute(bus, instruction) {
                 println!("Error with instruction: {:?}", err);

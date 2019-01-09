@@ -304,7 +304,7 @@ pub trait LR35902 {
                 let address = match address {
                     AddressType::Immediate => self.immediate16(bus),
                     AddressType::IncImmediate =>
-                        self.immediate16(bus).wrapping_add(0xFF00),
+                        (self.immediate(bus) as u16).wrapping_add(0xFF00),
                     AddressType::Register(reg) => self.reg(reg),
                     AddressType::IncRegister(reg) => self.reg(reg) + 0xFF00
                 };
@@ -319,7 +319,7 @@ pub trait LR35902 {
             AddressType::IncRegister(reg) => self.reg(reg) + 0xFF00,
             AddressType::Immediate => self.immediate16(bus),
             AddressType::IncImmediate =>
-                self.immediate16(bus).wrapping_add(0xFF00)
+                (self.immediate(bus) as u16).wrapping_add(0xFF00)
         }
     }
 
@@ -666,7 +666,7 @@ pub trait LR35902 {
 
     fn jr(&mut self, inc: i8) {
         let pc = self.reg(RegisterType::PC) as i32;
-        let result = pc - inc as i32;
+        let result = pc + inc as i32;
         self.set_reg(RegisterType::PC, result as u16);
     }
 

@@ -7,7 +7,7 @@ pub enum Prefix {
     None
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Mnemonic {
     CB,
     LD,

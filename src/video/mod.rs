@@ -13,6 +13,11 @@ use self::status_register::{StatusRegister, StatusMode};
 use self::control_register::ControlRegister;
 use self::memory::VideoMemory;
 use self::screen::Screen;
+use crate::processor::interrupt::{InterruptHandler, Interrupt};
+use crate::video::memory::background_tile_map::BackgroundTileMap;
+use crate::video::tile::Tile;
+
+const CLOCK_FREQUENCY: f64 = 4194304.0; // Hz
 
 pub struct Video {
     control: ControlRegister,
@@ -27,24 +32,35 @@ pub struct Video {
     obj_palette1: Palette,
     // TODO: CGB color palettes
     vram: VideoMemory,
-    screen: Screen
+    screen: Screen,
+    leftover_time: f64
 }
 
 impl Video {
     pub fn new() -> Video {
+        let mut bg_palette = Palette::new();
+        bg_palette.set(0xFC);
+
+        let mut obj_palette0 = Palette::new();
+        obj_palette0.set(0xFF);
+
+        let mut obj_palette1 = Palette::new();
+        obj_palette1.set(0xFF);
+
         Video {
             control: ControlRegister::new(),
             status: StatusRegister::new(), // TODO: is it tho
-            mode: StatusMode::HBlank,
+            mode: StatusMode::ReadingOAM,
             scroll: (0, 0),
             window: (0, 0),
             ly: 0,
             lyc: 0,
-            bg_palette: Palette::new(),
-            obj_palette0: Palette::new(),
-            obj_palette1: Palette::new(),
+            bg_palette,
+            obj_palette0,
+            obj_palette1,
             vram: VideoMemory::new(),
-            screen: Screen::new()
+            screen: Screen::new(),
+            leftover_time: 0.0
         }
     }
 
@@ -52,16 +68,132 @@ impl Video {
     pub fn screen(&self) -> &Screen { &self.screen }
     pub fn obj_palette0(&self) -> &Palette { &self.obj_palette0 }
     pub fn obj_palette1(&self) -> &Palette { &self.obj_palette1 }
+
+    pub fn update(&mut self, interrupt_handler: &mut InterruptHandler, delta: f64) {
+        // TODO: might need to refactor to sync cpu clocks to gpu clocks
+        self.leftover_time += delta;
+        while self.leftover_time >= (self.mode_cycle_length() as f64 / CLOCK_FREQUENCY) {
+            self.leftover_time -= self.mode_cycle_length() as f64 / CLOCK_FREQUENCY;
+            self.step(interrupt_handler);
+        }
+    }
+
+    fn step(&mut self, interrupt_handler: &mut InterruptHandler) {
+        if self.mode == StatusMode::ReadingOAM {
+            self.mode = StatusMode::LCDTransfer;
+            self.render_scanline();
+        } else if self.mode == StatusMode::LCDTransfer {
+            self.ly += 1;
+            self.check_lyc(interrupt_handler);
+            self.mode = StatusMode::HBlank;
+            if self.status.hblank_interrupt_enabled() {
+                interrupt_handler.request_interrupt(Interrupt::LCDCStat);
+            }
+        } else if self.mode == StatusMode::VBlank || (self.mode == StatusMode::HBlank && self.ly < 144) {
+            self.mode = StatusMode::ReadingOAM;
+            if self.status.oam_interrupt_enabled() {
+                interrupt_handler.request_interrupt(Interrupt::LCDCStat);
+            }
+        } else {
+            self.ly = 0;
+            self.mode = StatusMode::VBlank;
+            interrupt_handler.request_interrupt(Interrupt::VBlank);
+            if self.status.vblank_interrupt_enabled() {
+                interrupt_handler.request_interrupt(Interrupt::LCDCStat);
+            }
+        }
+    }
+
+    fn mode_cycle_length(&self) -> u16 {
+        match self.mode {
+            StatusMode::ReadingOAM => 80,
+            StatusMode::VBlank => 4560,
+            StatusMode::LCDTransfer => {
+                let mut length = 172;
+                // TODO: accurate timing
+                length
+            },
+            StatusMode::HBlank => {
+                // TODO: accurate timing
+                204
+            }
+        }
+    }
+
+    fn check_lyc(&self, interrupt_handler: &mut InterruptHandler) {
+        if self.status.lyc_interrupt_enabled() && self.ly == self.lyc {
+            interrupt_handler.request_interrupt(Interrupt::LCDCStat);
+        }
+    }
+
+    fn render_scanline(&mut self) {
+//        const MAX: u8 = 160;
+//        let y = self.ly;
+//        let tile_data = self.vram.tile_data();
+//        let (scroll_x, scroll_y) = self.scroll;
+//        println!("{} + {}", scroll_y, y);
+//        let (rel_x, rel_y) = ((scroll_x + 8) as u16, (scroll_y + y) as u16);
+//
+//        let mut line: Vec<u8> = vec![0; 160];
+//
+//        if self.control.bg_window_enabled() {
+//            // 1: background
+//            let background = if self.control.bg_map() == 0 {
+//                &self.vram.background_tile_maps().0
+//            } else {
+//                &self.vram.background_tile_maps().1
+//            };
+//
+//            let bg_line = self.line_from_bg_map(rel_x, rel_y, background, tile_data);
+//
+//            // 2: window
+//            if self.control.window_enabled() &&
+//                self.window.1 <= rel_y &&
+//                self.window.0 > 6 && self.window.0 < 166
+//            {
+//                let window = if self.control.window_bg_map() == 0 {
+//                    &self.vram.background_tile_maps().0
+//                } else {
+//                    &self.vram.background_tile_maps().1
+//                };
+//
+//                let window_line = self.line_from_bg_map(rel_x, rel_y, window, tile_data);
+//            }
+//        }
+//
+//        // 3: sprites
+    }
+
+    fn line_from_bg_map(&self, rel_x: u8, rel_y: u8, bg_map: &BackgroundTileMap, tile_data: &[Tile; 384]) -> Vec<u8> {
+        let first_tile_x = ((rel_x - rel_x % 8) / 8) as usize;
+        // TODO: the last_tile thing might be optimised
+        let last_tile_x = ((rel_x + 160 - (rel_x + 160) % 8) / 8) as usize;
+        let tile_y = ((rel_y - rel_y % 8) / 8) as usize;
+        bg_map.tiles()[tile_y][first_tile_x..=last_tile_x].iter()
+            .map(|tile_id| tile_data[*tile_id as usize])
+            .flat_map(|tile| tile.formatted_line(rel_y).to_vec())
+            .collect::<Vec<u8>>()
+    }
 }
 
 impl Readable for Video {
     fn read(&self, address: u16) -> u8 {
         match address {
-            0xFE00...0xFE9F |
-            0x9800...0x9FFF => self.vram.read(address),
+            0xFE00...0xFE9F => {
+                if self.mode != StatusMode::LCDTransfer && self.mode != StatusMode::ReadingOAM {
+                    self.vram.read(address)
+                } else { 0xFF }
+            }, // oam
+            0x9800...0x9FFF |
             0x8000...0x97FF => {
-                let addressing_mode = self.control.bg_tile_data_addressing();
-                self.vram.read(addressing_mode.adjust_address(address))
+                if self.mode != StatusMode::LCDTransfer {
+                    let mut address = address;
+                    if 0x8000 <= address && 0x97FF >= address {
+                        let addressing_mode = self.control.bg_tile_data_addressing();
+                        address = addressing_mode.adjust_address(address);
+                    }
+                    self.vram.read(address)
+                } else { 0xFF }
             }, // video ram
             0xFF40 => self.control.get(), // lcdc control
             0xFF41 => self.status.generate(&self), // lcdc status
@@ -82,11 +214,21 @@ impl Readable for Video {
 impl Writable for Video {
     fn write(&mut self, address: u16, value: u8) {
         match address {
-            0xFE00...0xFE9F |
-            0x9800...0x9FFF => self.vram.write(address, value),
+            0xFE00...0xFE9F => {
+                if self.mode != StatusMode::LCDTransfer && self.mode != StatusMode::ReadingOAM {
+                    self.vram.write(address, value);
+                }
+            }, // oam
+            0x9800...0x9FFF |
             0x8000...0x97FF => {
-                let addressing_mode = self.control.bg_tile_data_addressing();
-                self.vram.write(addressing_mode.adjust_address(address), value)
+                if self.mode != StatusMode::LCDTransfer {
+                    let mut address = address;
+                    if 0x8000 <= address && 0x97FF >= address {
+                        let addressing_mode = self.control.bg_tile_data_addressing();
+                        address = addressing_mode.adjust_address(address);
+                    }
+                    self.vram.write(address, value);
+                }
             }, // video ram
             0xFF40 => self.control.set(value), // lcdc control
             0xFF41 => self.status.set(value), // lcdc status

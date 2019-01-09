@@ -1,4 +1,5 @@
 use crate::video::Video;
+use crate::util::bits::get_bit;
 
 pub struct StatusRegister {
     register: u8
@@ -22,9 +23,25 @@ impl StatusRegister {
     pub fn set(&mut self, value: u8) {
         self.register = (self.register & 0b111) | (value & 0b11111000);
     }
+
+    pub fn lyc_interrupt_enabled(&self) -> bool {
+        get_bit(self.register, 6)
+    }
+
+    pub fn oam_interrupt_enabled(&self) -> bool {
+        get_bit(self.register, 5)
+    }
+
+    pub fn vblank_interrupt_enabled(&self) -> bool {
+        get_bit(self.register, 4)
+    }
+
+    pub fn hblank_interrupt_enabled(&self) -> bool {
+        get_bit(self.register, 3)
+    }
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum StatusMode {
     HBlank = 0,
     VBlank = 1,

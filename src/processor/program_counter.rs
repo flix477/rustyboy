@@ -8,7 +8,7 @@ pub struct ProgramCounter {
 impl ProgramCounter {
     pub fn new() -> ProgramCounter {
         ProgramCounter {
-            value: 100
+            value: 0x100
         }
     }
 

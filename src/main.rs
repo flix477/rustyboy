@@ -17,9 +17,10 @@ use glium::texture::RawImage2d;
 use std::time::Instant;
 use crate::util::as_millis;
 use glium::uniforms::MagnifySamplerFilter;
+use crate::video::color::Color;
 
 fn main() {
-    let cartridge = Cartridge::from_file("tetris.gb").unwrap();
+    let cartridge = Cartridge::from_file("tests/cpu_instrs.gb").unwrap();
     println!("{:?}", cartridge.metadata());
     let config = Config {
         cartridge,
@@ -41,10 +42,14 @@ fn main() {
         target.clear_color(0.0, 0.0, 1.0, 1.0);
         gameboy.update(as_millis(delta));
 
-        let screen = gameboy.hardware().video().screen();
-        let buf = screen.draw(gameboy.hardware().video());
+//        let screen = gameboy.hardware().video().screen();
+//        let buf = screen.draw(gameboy.hardware().video());
 
-        let img = RawImage2d::from_raw_rgb_reversed(&buf, (screen.dimensions.0 as u32, screen.dimensions.1 as u32));
+        let tile_data = gameboy.hardware().video().memory().tile_data();
+        let colors = tile_data.iter().flat_map(|tile| tile.colored().to_vec()).collect::<Vec<Color>>();
+        let buf = colors.iter().flat_map(|color| color.to_rgb().to_vec()).collect::<Vec<u8>>();
+
+        let img = RawImage2d::from_raw_rgb_reversed(&buf, (16 * 8, 24 * 8));
         glium::Texture2d::new(&display, img)
             .unwrap()
             .as_surface()

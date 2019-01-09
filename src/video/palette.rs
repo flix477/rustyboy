@@ -7,7 +7,7 @@ pub struct Palette {
 impl Palette {
     pub fn new() -> Self {
         Palette {
-            register: 0b00011011
+            register: 0
         }
     }
 

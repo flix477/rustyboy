@@ -39,7 +39,6 @@ impl VideoMemory {
 
     fn set_tile_line_at(&mut self, address: u16, value: u8) {
         let (tile_address, tile_idx, line_idx) = self.tile_idx_at(address);
-        println!("yo tile: {}", tile_idx);
         let value = (value as u16).wrapping_shl((!(tile_address % 2).saturating_mul(8)) as u32);
         self.tile_data[tile_idx as usize].set_line(line_idx, value);
     }

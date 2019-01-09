@@ -18,7 +18,7 @@ impl Gameboy {
 
     pub fn update(&mut self, delta: f64) {
         self.processor.update(&mut self.hardware, delta);
-        self.hardware.update(delta);
+//        self.hardware.update(delta);
     }
 
     pub fn hardware(&self) -> &Hardware { &self.hardware }

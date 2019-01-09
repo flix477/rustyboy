@@ -64,7 +64,7 @@ impl Decoder {
                 Mnemonic::LD,
                 Some(vec![
                     Operand::Reference(Ref::Register(Reg::A)),
-                    Operand::Value(ValueType::Address(Addr::Immediate))
+                    Operand::Value(ValueType::Immediate)
                 ]),
                 8
             )),
@@ -548,7 +548,7 @@ impl Decoder {
                 opcode,
                 Mnemonic::JP,
                 Some(vec![
-                    Operand::Value(ValueType::Address(Addr::Immediate))
+                    Operand::Value(ValueType::Immediate16)
                 ]),
                 12
             )),
@@ -574,7 +574,7 @@ impl Decoder {
                 opcode,
                 Mnemonic::JR,
                 Some(vec![
-                    Operand::Value(ValueType::Address(Addr::Immediate))
+                    Operand::Value(ValueType::Immediate)
                 ]),
                 8
             )),
@@ -590,7 +590,7 @@ impl Decoder {
                 opcode,
                 Mnemonic::CALL,
                 Some(vec![
-                    Operand::Value(ValueType::Address(Addr::Immediate))
+                    Operand::Value(ValueType::Immediate16)
                 ]),
                 12
             )),
@@ -1523,7 +1523,7 @@ impl Decoder {
             Mnemonic::JP,
             Some(vec![
                 Operand::Condition(condition),
-                Operand::Value(ValueType::Address(Addr::Immediate))
+                Operand::Value(ValueType::Immediate)
             ]),
             8
         )
