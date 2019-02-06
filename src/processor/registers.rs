@@ -70,7 +70,7 @@ impl Registers {
                 self.de.low.set(value);
             },
             RegisterType::DE => {
-                self.bc.set(value);
+                self.de.set(value);
             },
             RegisterType::H => {
                 self.hl.high.set(value);

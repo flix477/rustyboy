@@ -73,7 +73,7 @@ impl DualRegister {
 
 impl Register for DualRegister {
     fn get(&self) -> u16 {
-        return (self.high.get() as u16) | self.low.get() as u16;
+        return ((self.high.get() as u16) << 8) | self.low.get() as u16;
     }
 
     fn set(&mut self, value: u16) {

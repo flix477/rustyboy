@@ -312,7 +312,7 @@ impl Decoder {
                 opcode,
                 Mnemonic::AND,
                 Some(vec![
-                    Operand::Value(ValueType::Address(Addr::Immediate))
+                    Operand::Value(ValueType::Immediate)
                 ]),
                 8
             )),
@@ -369,7 +369,7 @@ impl Decoder {
                 opcode,
                 Mnemonic::CP,
                 Some(vec![
-                    Operand::Value(ValueType::Address(Addr::Immediate))
+                    Operand::Value(ValueType::Immediate)
                 ]),
                 8
             )),
@@ -1520,7 +1520,7 @@ impl Decoder {
     fn jr(opcode: u8, condition: (Flag, bool)) -> InstructionInfo {
         InstructionInfo::new(
             opcode,
-            Mnemonic::JP,
+            Mnemonic::JR,
             Some(vec![
                 Operand::Condition(condition),
                 Operand::Value(ValueType::Immediate)

@@ -241,8 +241,8 @@ pub trait LR35902 {
                         }
                     } else if operands.len() == 2 {
                         if let (Operand::Condition(condition), Operand::Value(value)) = (operands[0], operands[1]) {
+                            let address = self.operand_value(bus, value);
                             if self.operand_condition(condition) {
-                                let address = self.operand_value(bus, value);
                                 match mnemonic {
                                     Mnemonic::JP => {
                                         self.jp(address);
@@ -478,12 +478,38 @@ pub trait LR35902 {
 
     fn inc<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
         let value = self.reference(bus, reference);
-        self.set_reference(bus, reference, value + 1);
+        let result = value as u32 + 1;
+
+        let safe_result = value.wrapping_add(1);
+        self.set_reference(bus, reference, safe_result);
+        let safe_result = self.reference(bus, reference);
+
+        if let Reference::Register(reg) = reference {
+            if reg.is16bit() { return; }
+        }
+
+        self.set_flag(Flag::Zero, safe_result == 0);
+        self.set_flag(Flag::AddSub, false);
+        self.set_flag(Flag::HalfCarry, result > 0xF);
+        self.set_flag(Flag::Carry, result > 0xFF);
     }
 
     fn dec<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
-        let value = self.reference(bus, reference).wrapping_sub(1);
-        self.set_reference(bus, reference, value);
+        let value = self.reference(bus, reference);
+        let result = value.wrapping_sub(1);
+        self.set_reference(bus, reference, result);
+        let result = self.reference(bus, reference);
+
+        if let Reference::Register(reg) = reference {
+            if reg.is16bit() { return; }
+        }
+
+        self.set_flag(Flag::AddSub, true);
+        self.set_flag(Flag::Zero, result == 0);
+        self.set_flag(
+            Flag::HalfCarry,
+            value & 0xF < 1
+        );
     }
 
     fn daa(&mut self) {

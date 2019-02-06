@@ -42,7 +42,7 @@ impl Register for StackPointer {
     }
 
     fn increment(&mut self) {
-        self.value.wrapping_add(1);
+        self.value = self.value.wrapping_add(1);
     }
 
     fn decrement(&mut self) {

@@ -17,6 +17,14 @@ impl ProgramCounter {
         self.increment();
         value
     }
+
+    pub fn peek<H: Bus>(&mut self, bus: &H) -> u8 {
+        bus.read(self.value)
+    }
+
+    pub fn peek16<H: Bus>(&mut self, bus: &H) -> u16 {
+        ((bus.read(self.value + 1) as u16) << 8) | (bus.read(self.value) as u16)
+    }
 }
 
 impl Register for ProgramCounter {

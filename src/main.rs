@@ -20,7 +20,7 @@ use glium::uniforms::MagnifySamplerFilter;
 use crate::video::color::Color;
 
 fn main() {
-    let cartridge = Cartridge::from_file("tests/cpu_instrs.gb").unwrap();
+    let cartridge = Cartridge::from_file("tests/individual/03-op sp,hl.gb").unwrap();
     println!("{:?}", cartridge.metadata());
     let config = Config {
         cartridge,

@@ -117,7 +117,7 @@ impl LR35902 for Processor {
         let line = self.registers.program_counter.get();
         let opcode = self.immediate(bus);
         if let Some(instruction) = Decoder::decode_opcode(opcode, prefix) {
-            println!("0x{:X}: {:?}", line, instruction);
+            println!("0x{:X}: {:?}, 0x{:X}", line, instruction, self.registers.program_counter.peek16(bus));
             let cycle_count = instruction.cycle_count();
             if let Err(err) = self.execute(bus, instruction) {
                 println!("Error with instruction: {:?}", err);
