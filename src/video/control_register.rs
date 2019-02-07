@@ -1,17 +1,15 @@
-use crate::video::register::Register;
 use crate::util::bits::get_bit;
+use crate::video::register::Register;
 
 pub struct ControlRegister {
-    register: u8
+    register: u8,
 }
 
 // TODO: bunch of stuff
 
 impl ControlRegister {
     pub fn new() -> Self {
-        ControlRegister {
-            register: 0x91
-        }
+        ControlRegister { register: 0x91 }
     }
 
     pub fn lcd_enabled(&self) -> bool {
@@ -59,13 +57,17 @@ impl ControlRegister {
 }
 
 impl Register for ControlRegister {
-    fn get(&self) -> u8 { self.register }
-    fn set(&mut self, value: u8) { self.register = value; }
+    fn get(&self) -> u8 {
+        self.register
+    }
+    fn set(&mut self, value: u8) {
+        self.register = value;
+    }
 }
 
 pub enum TileDataAddressing {
     Mode8000,
-    Mode8800
+    Mode8800,
 }
 
 impl TileDataAddressing {
@@ -77,7 +79,7 @@ impl TileDataAddressing {
             match address {
                 0x8000...0x87FF => address + 0x1000,
                 0x9000...0x97FF => address - 0x1000,
-                _ => address
+                _ => address,
             }
         }
     }

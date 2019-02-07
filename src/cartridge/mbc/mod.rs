@@ -13,21 +13,20 @@ use crate::cartridge::mbc::mbc5::MBC5;
 
 pub struct MBCFactory {}
 impl MBCFactory {
-    pub fn from_metadata(metadata: &CartridgeMetadata)
-        -> Option<Box<dyn MemoryBankController>>
-    {
+    pub fn from_metadata(metadata: &CartridgeMetadata) -> Option<Box<dyn MemoryBankController>> {
         let variant = MBCVariant::from_capabilities(&metadata.capabilities)?;
         Self::from_variant(&variant, &metadata.capabilities)
     }
 
-    pub fn from_variant(variant: &MBCVariant, capabilities: &Vec<CartridgeCapability>)
-        -> Option<Box<dyn MemoryBankController>>
-    {
+    pub fn from_variant(
+        variant: &MBCVariant,
+        capabilities: &Vec<CartridgeCapability>,
+    ) -> Option<Box<dyn MemoryBankController>> {
         match variant {
             MBCVariant::MBC1 => Some(Box::new(MBC1::new(capabilities))),
             MBCVariant::MBC2 => Some(Box::new(MBC2::new(capabilities))),
             MBCVariant::MBC3 => Some(Box::new(MBC3::new(capabilities))),
-            MBCVariant::MBC5 => Some(Box::new(MBC5::new(capabilities)))
+            MBCVariant::MBC5 => Some(Box::new(MBC5::new(capabilities))),
         }
     }
 }
@@ -38,7 +37,11 @@ pub trait MemoryBankController {
     fn ram_enabled(&self) -> bool;
 
     fn relative_rom_address(&self, address: usize) -> usize {
-        let current_bank = if self.rom_bank() > 0 { (self.rom_bank() - 1) as usize } else { 0 }; // TODO: ew
+        let current_bank = if self.rom_bank() > 0 {
+            (self.rom_bank() - 1) as usize
+        } else {
+            0
+        }; // TODO: ew
         address + current_bank * 0x4000
     }
 
@@ -64,13 +67,11 @@ pub enum MBCVariant {
     MBC1,
     MBC2,
     MBC3,
-    MBC5
+    MBC5,
 }
 
 impl MBCVariant {
-    pub fn from_capabilities(capabilities: &Vec<CartridgeCapability>)
-        -> Option<MBCVariant>
-    {
+    pub fn from_capabilities(capabilities: &Vec<CartridgeCapability>) -> Option<MBCVariant> {
         if capabilities.contains(&CartridgeCapability::MBC1) {
             Some(MBCVariant::MBC1)
         } else if capabilities.contains(&CartridgeCapability::MBC2) {
@@ -93,7 +94,7 @@ mod tests {
         MBCVariant::MBC1,
         MBCVariant::MBC2,
         MBCVariant::MBC3,
-        MBCVariant::MBC5
+        MBCVariant::MBC5,
     ];
 
     #[test]
@@ -104,6 +105,5 @@ mod tests {
             }
         }
     }
-
 
 }

@@ -1,16 +1,14 @@
-use std::ops::RangeInclusive;
-use std::error::Error;
-use crate::util::ut8_decode_trim;
-use crate::util::bytes_convert::BytesConvert;
 use crate::cartridge::cartridge_capability::CartridgeCapability;
+use crate::util::bytes_convert::BytesConvert;
+use crate::util::ut8_decode_trim;
+use std::error::Error;
+use std::ops::RangeInclusive;
 
 // The bitmap of the Nintendo logo displayed on boot.
 const NINTENDO_LOGO: [u8; 48] = [
-    0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B, 0x03, 0x73, 0x00,
-    0x83, 0x00, 0x0C, 0x00, 0x0D, 0x00, 0x08, 0x11, 0x1F, 0x88, 0x89,
-    0x00, 0x0E, 0xDC, 0xCC, 0x6E, 0xE6, 0xDD, 0xDD, 0xD9, 0x99, 0xBB,
-    0xBB, 0x67, 0x63, 0x6E, 0x0E, 0xEC, 0xCC, 0xDD, 0xDC, 0x99, 0x9F,
-    0xBB, 0xB9, 0x33, 0x3E
+    0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B, 0x03, 0x73, 0x00, 0x83, 0x00, 0x0C, 0x00, 0x0D,
+    0x00, 0x08, 0x11, 0x1F, 0x88, 0x89, 0x00, 0x0E, 0xDC, 0xCC, 0x6E, 0xE6, 0xDD, 0xDD, 0xD9, 0x99,
+    0xBB, 0xBB, 0x67, 0x63, 0x6E, 0x0E, 0xEC, 0xCC, 0xDD, 0xDC, 0x99, 0x9F, 0xBB, 0xB9, 0x33, 0x3E,
 ];
 
 // The range where the game's title resides in ASCII uppercase characters
@@ -58,7 +56,6 @@ const HEADER_CHECKSUM_OFFSET: usize = 0x014D;
 // obtained by summing the bytes of the cartridge (without checksums)
 const GLOBAL_CHECKSUM_RANGE: RangeInclusive<usize> = (0x014E..=0x014F);
 
-
 #[derive(Debug)]
 pub struct CartridgeMetadata {
     pub title: String,
@@ -73,18 +70,12 @@ pub struct CartridgeMetadata {
     pub old_licensee_code: Option<u8>,
     pub version: u8,
     pub header_checksum: u8,
-    pub global_checksum: u8
+    pub global_checksum: u8,
 }
 
 impl CartridgeMetadata {
-    pub fn from_buffer(buffer: &Vec<u8>)
-        -> Result<CartridgeMetadata, Box<dyn Error>>
-    {
-        let (
-            title,
-            manufacturer_code,
-            cgb_flag
-        ) = Self::parse_title_section(buffer)?;
+    pub fn from_buffer(buffer: &Vec<u8>) -> Result<CartridgeMetadata, Box<dyn Error>> {
+        let (title, manufacturer_code, cgb_flag) = Self::parse_title_section(buffer)?;
 
         return Ok(CartridgeMetadata {
             title,
@@ -92,23 +83,21 @@ impl CartridgeMetadata {
             cgb_flag,
             new_licensee_code: Self::parse_new_licensee_code(buffer)?,
             sgb_enhanced: buffer[SGB_FLAG_OFFSET] == SBG_FLAG_ENABLED,
-            capabilities: CartridgeCapability::from_byte(
-                buffer[CARTRIDGE_TYPE_OFFSET]
-            )?,
+            capabilities: CartridgeCapability::from_byte(buffer[CARTRIDGE_TYPE_OFFSET])?,
             rom_size: Self::parse_rom_size(buffer)? as usize,
             ram_size: Self::parse_ram_size(buffer)? as usize,
             destination: Destination::from(buffer[DESTINATION_OFFSET])?,
             old_licensee_code: Self::parse_old_licensee_code(buffer),
             version: buffer[VERSION_OFFSET],
             header_checksum: buffer[HEADER_CHECKSUM_OFFSET],
-//            global_checksum: buffer[GLOBAL_CHECKSUM_RANGE].iter().map(|x| *x).sum() // lol clearly not
-            global_checksum: 0
+            //            global_checksum: buffer[GLOBAL_CHECKSUM_RANGE].iter().map(|x| *x).sum() // lol clearly not
+            global_checksum: 0,
         });
     }
 
-    fn parse_title_section(buffer: &Vec<u8>)
-        -> Result<(String, Option<String>, Option<CGBFlag>), Box<dyn Error>>
-    {
+    fn parse_title_section(
+        buffer: &Vec<u8>,
+    ) -> Result<(String, Option<String>, Option<CGBFlag>), Box<dyn Error>> {
         let mut title_end_offset = CGB_FLAG_OFFSET;
         let cgb_flag = CGBFlag::from(buffer[CGB_FLAG_OFFSET]);
         let manufacturer_code = Self::parse_manufacturer_code(buffer)?;
@@ -121,17 +110,13 @@ impl CartridgeMetadata {
             }
         }
         return Ok((
-            ut8_decode_trim(
-                buffer[(GAME_TITLE_OFFSET..title_end_offset)].to_vec()
-            )?,
+            ut8_decode_trim(buffer[(GAME_TITLE_OFFSET..title_end_offset)].to_vec())?,
             manufacturer_code,
-            cgb_flag
+            cgb_flag,
         ));
     }
 
-    fn parse_manufacturer_code(buffer: &Vec<u8>)
-        -> Result<Option<String>, Box<dyn Error>>
-    {
+    fn parse_manufacturer_code(buffer: &Vec<u8>) -> Result<Option<String>, Box<dyn Error>> {
         let code = ut8_decode_trim(buffer[MANUFACTURER_CODE_RANGE].to_vec())?;
         if code.len() == 4 {
             return Ok(Some(code));
@@ -139,9 +124,7 @@ impl CartridgeMetadata {
         return Ok(None);
     }
 
-    fn parse_new_licensee_code(buffer: &Vec<u8>)
-        -> Result<Option<String>, Box<dyn Error>>
-    {
+    fn parse_new_licensee_code(buffer: &Vec<u8>) -> Result<Option<String>, Box<dyn Error>> {
         let code = ut8_decode_trim(buffer[NEW_LICENSEE_CODE_RANGE].to_vec())?;
         if code.len() == 2 {
             return Ok(Some(code));
@@ -162,7 +145,7 @@ impl CartridgeMetadata {
             0x52 => Ok(BytesConvert::from_mb(1.1)),
             0x53 => Ok(BytesConvert::from_mb(1.2)),
             0x54 => Ok(BytesConvert::from_mb(1.5)),
-            _ => Err(String::from("invalid ROM size value"))
+            _ => Err(String::from("invalid ROM size value")),
         };
     }
 
@@ -172,7 +155,7 @@ impl CartridgeMetadata {
             0x01 => Ok(BytesConvert::from_kb(2.0)),
             0x02 => Ok(BytesConvert::from_kb(8.0)),
             0x03 => Ok(BytesConvert::from_kb(32.0)),
-            _ => Err(String::from("invalid RAM size value"))
+            _ => Err(String::from("invalid RAM size value")),
         };
     }
 
@@ -180,7 +163,7 @@ impl CartridgeMetadata {
         let value = buffer[OLD_LICENSEE_CODE_OFFSET];
         return match value {
             0x33 => None,
-            _ => Some(value)
+            _ => Some(value),
         };
     }
 }
@@ -188,7 +171,7 @@ impl CartridgeMetadata {
 #[derive(Debug)]
 pub enum CGBFlag {
     CGBOnly = 0x80,
-    SupportsCGB = 0xC0
+    SupportsCGB = 0xC0,
 }
 
 impl CGBFlag {
@@ -196,7 +179,7 @@ impl CGBFlag {
         return match value {
             0x80 => Some(CGBFlag::CGBOnly),
             0xC0 => Some(CGBFlag::SupportsCGB),
-            _ => None
+            _ => None,
         };
     }
 }
@@ -204,7 +187,7 @@ impl CGBFlag {
 #[derive(Debug)]
 pub enum Destination {
     Japanese = 0x00,
-    NonJapanese = 0x01
+    NonJapanese = 0x01,
 }
 
 impl Destination {
@@ -212,11 +195,10 @@ impl Destination {
         return match value {
             0x00 => Ok(Destination::Japanese),
             0x01 => Ok(Destination::NonJapanese),
-            _ => Err(String::from("invalid destination code"))
-        }
+            _ => Err(String::from("invalid destination code")),
+        };
     }
 }
-
 
 #[cfg(test)]
 mod tests {

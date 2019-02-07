@@ -1,26 +1,28 @@
 use super::MemoryBankController;
-use std::cmp;
 use crate::cartridge::cartridge_capability::CartridgeCapability;
+use std::cmp;
 
 pub struct MBC1 {
     mode: MBC1Mode,
     rom_bank: u8,
     ram_enabled: bool,
-    ram_bank: u8
+    ram_bank: u8,
 }
 
 impl MBC1 {
     pub fn new(_capabilities: &[CartridgeCapability]) -> MBC1 {
-//        let has_ram = capabilities.contains(&CartridgeCapability::RAM);
+        //        let has_ram = capabilities.contains(&CartridgeCapability::RAM);
         MBC1 {
             mode: MBC1Mode::MaxROM,
             rom_bank: 1,
             ram_enabled: false,
-            ram_bank: 0
+            ram_bank: 0,
         }
     }
 
-    pub fn mode(&self) -> &MBC1Mode { &self.mode }
+    pub fn mode(&self) -> &MBC1Mode {
+        &self.mode
+    }
 
     pub fn set_mode(&mut self, mode: MBC1Mode) {
         self.mode = mode;
@@ -32,21 +34,30 @@ impl MBC1 {
 }
 
 impl MemoryBankController for MBC1 {
-    fn rom_bank(&self) -> u16 { self.rom_bank as u16 }
+    fn rom_bank(&self) -> u16 {
+        self.rom_bank as u16
+    }
 
-    fn ram_bank(&self) -> u8 { self.ram_bank }
+    fn ram_bank(&self) -> u8 {
+        self.ram_bank
+    }
 
-    fn ram_enabled(&self) -> bool { self.ram_enabled }
+    fn ram_enabled(&self) -> bool {
+        self.ram_enabled
+    }
 
     fn write_rom(&mut self, address: usize, value: u8) {
         match address {
-            0...0x1FFF => { // toggle ram bank
+            0...0x1FFF => {
+                // toggle ram bank
                 self.ram_enabled = value == 0x0A;
-            },
-            0x2000...0x3FFF => { // change rom bank
+            }
+            0x2000...0x3FFF => {
+                // change rom bank
                 self.rom_bank = cmp::max(value & 0b11111, 1) | (self.rom_bank & 0b1100000);
-            },
-            0x4000...0x5FFF => { // change ram bank/rom bank set
+            }
+            0x4000...0x5FFF => {
+                // change ram bank/rom bank set
                 if let MBC1Mode::MaxRAM = self.mode {
                     if self.ram_enabled {
                         self.ram_bank = value & 0b11;
@@ -54,14 +65,15 @@ impl MemoryBankController for MBC1 {
                 } else {
                     self.rom_bank = (self.rom_bank & 0b11111) | (value << 5);
                 }
-            },
-            0x6000...0x7FFF => { // change mode
+            }
+            0x6000...0x7FFF => {
+                // change mode
                 self.mode = if value == 1 {
                     MBC1Mode::MaxRAM
                 } else {
                     MBC1Mode::MaxROM
                 };
-            },
+            }
             _ => {}
         }
     }
@@ -70,7 +82,7 @@ impl MemoryBankController for MBC1 {
 #[derive(Debug, PartialEq)]
 pub enum MBC1Mode {
     MaxROM,
-    MaxRAM
+    MaxRAM,
 }
 
 #[cfg(test)]

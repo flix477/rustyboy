@@ -1,10 +1,10 @@
-use crate::processor::registers::RegisterType;
 use crate::processor::flag_register::Flag;
+use crate::processor::registers::RegisterType;
 
 #[derive(Copy, Clone)]
 pub enum Prefix {
     CB,
-    None
+    None,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]
@@ -51,20 +51,20 @@ pub enum Mnemonic {
     CALL,
     RET,
     RETI,
-    RST
+    RST,
 }
 
 #[derive(Copy, Clone, Debug)]
 pub enum Operand {
     Reference(Reference),
     Value(ValueType),
-    Condition((Flag, bool))
+    Condition((Flag, bool)),
 }
 
 #[derive(Copy, Clone, Debug)]
 pub enum Reference {
     Register(RegisterType),
-    Address(AddressType)
+    Address(AddressType),
 }
 
 // Increment versions are incremented with 0xFF00
@@ -73,7 +73,7 @@ pub enum AddressType {
     Register(RegisterType),
     IncRegister(RegisterType),
     Immediate,
-    IncImmediate
+    IncImmediate,
 }
 
 #[derive(Copy, Clone, Debug)]
@@ -82,7 +82,7 @@ pub enum ValueType {
     Immediate,
     Immediate16,
     Address(AddressType),
-    Constant(u16)
+    Constant(u16),
 }
 
 #[derive(Debug)]
@@ -90,7 +90,7 @@ pub struct InstructionInfo {
     opcode: u8,
     mnemonic: Mnemonic,
     operands: Option<Vec<Operand>>,
-    cycle_count: u8
+    cycle_count: u8,
 }
 
 impl InstructionInfo {
@@ -98,13 +98,13 @@ impl InstructionInfo {
         opcode: u8,
         mnemonic: Mnemonic,
         operands: Option<Vec<Operand>>,
-        cycle_count: u8
+        cycle_count: u8,
     ) -> InstructionInfo {
         return InstructionInfo {
             opcode,
             mnemonic,
             operands,
-            cycle_count
+            cycle_count,
         };
     }
 

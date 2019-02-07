@@ -1,11 +1,11 @@
-use crate::processor::instruction::{Operand, ValueType, AddressType};
-use crate::processor::registers::RegisterType;
-use crate::processor::instruction::{InstructionInfo, Mnemonic};
-use crate::processor::flag_register::Flag;
-use crate::processor::instruction::Reference;
-use crate::processor::instruction::Prefix;
-use crate::util::bits;
 use crate::bus::Bus;
+use crate::processor::flag_register::Flag;
+use crate::processor::instruction::Prefix;
+use crate::processor::instruction::Reference;
+use crate::processor::instruction::{AddressType, Operand, ValueType};
+use crate::processor::instruction::{InstructionInfo, Mnemonic};
+use crate::processor::registers::RegisterType;
+use crate::util::bits;
 
 pub trait LR35902 {
     fn immediate<H: Bus>(&mut self, bus: &H) -> u8;
@@ -36,9 +36,8 @@ pub trait LR35902 {
                 } else {
                     return Err("Requires arguments");
                 }
-            },
-            Mnemonic::LDD |
-            Mnemonic::LDI => {
+            }
+            Mnemonic::LDD | Mnemonic::LDI => {
                 if let Some(operands) = instruction.operands() {
                     if let (Operand::Reference(r), Operand::Value(v)) = (operands[0], operands[1]) {
                         match mnemonic {
@@ -65,7 +64,7 @@ pub trait LR35902 {
                 } else {
                     return Err("Requires an argument");
                 }
-            },
+            }
             Mnemonic::POP => {
                 if let Some(operands) = instruction.operands() {
                     if let Operand::Reference(Reference::Register(r)) = operands[0] {
@@ -76,10 +75,12 @@ pub trait LR35902 {
                 } else {
                     return Err("Requires an argument");
                 }
-            },
+            }
             Mnemonic::ADD => {
                 if let Some(operands) = instruction.operands() {
-                    if let (Operand::Reference(Reference::Register(r)), Operand::Value(v)) = (operands[0], operands[1]) {
+                    if let (Operand::Reference(Reference::Register(r)), Operand::Value(v)) =
+                        (operands[0], operands[1])
+                    {
                         let value = self.operand_value(bus, v);
                         if r.is16bit() {
                             self.add16(r, value);
@@ -93,12 +94,12 @@ pub trait LR35902 {
                     return Err("Requires arguments");
                 }
             }
-            Mnemonic::ADC |
-            Mnemonic::SUB |
-            Mnemonic::SBC |
-            Mnemonic::AND |
-            Mnemonic::OR |
-            Mnemonic::XOR => {
+            Mnemonic::ADC
+            | Mnemonic::SUB
+            | Mnemonic::SBC
+            | Mnemonic::AND
+            | Mnemonic::OR
+            | Mnemonic::XOR => {
                 if let Some(operands) = instruction.operands() {
                     if let Operand::Value(v) = operands[0] {
                         let value = self.operand_value(bus, v) as u8;
@@ -117,7 +118,7 @@ pub trait LR35902 {
                 } else {
                     return Err("Requires arguments");
                 }
-            },
+            }
             Mnemonic::CP => {
                 if let Some(operands) = instruction.operands() {
                     if let Operand::Value(value) = operands[0] {
@@ -129,9 +130,8 @@ pub trait LR35902 {
                 } else {
                     return Err("Requires an argument");
                 }
-            },
-            Mnemonic::INC |
-            Mnemonic::DEC => {
+            }
+            Mnemonic::INC | Mnemonic::DEC => {
                 if let Some(operands) = instruction.operands() {
                     if let Operand::Reference(reference) = operands[0] {
                         if let Mnemonic::INC = mnemonic {
@@ -145,21 +145,17 @@ pub trait LR35902 {
                 } else {
                     return Err("Requires an argument");
                 }
-            },
+            }
             Mnemonic::DAA => self.daa(),
             Mnemonic::CPL => self.cpl(),
             Mnemonic::CCF => self.ccf(),
             Mnemonic::SCF => self.scf(),
-            Mnemonic::NOP => {},
+            Mnemonic::NOP => {}
             Mnemonic::HALT => self.halt(),
             Mnemonic::STOP => self.stop(),
             Mnemonic::DI => self.di(bus),
             Mnemonic::EI => self.ei(bus),
-            Mnemonic::RLC |
-            Mnemonic::RL |
-            Mnemonic::RRC |
-            Mnemonic::RR |
-            Mnemonic::SWAP => {
+            Mnemonic::RLC | Mnemonic::RL | Mnemonic::RRC | Mnemonic::RR | Mnemonic::SWAP => {
                 if let Some(operands) = instruction.operands() {
                     if let Operand::Reference(r) = operands[0] {
                         match mnemonic {
@@ -176,10 +172,8 @@ pub trait LR35902 {
                 } else {
                     return Err("Requires an argument");
                 }
-            },
-            Mnemonic::SLA |
-            Mnemonic::SRA |
-            Mnemonic::SRL => {
+            }
+            Mnemonic::SLA | Mnemonic::SRA | Mnemonic::SRL => {
                 if let Some(operands) = instruction.operands() {
                     if let Operand::Reference(r) = operands[0] {
                         match mnemonic {
@@ -194,15 +188,12 @@ pub trait LR35902 {
                 } else {
                     return Err("Requires an argument");
                 }
-            },
-            Mnemonic::BIT |
-            Mnemonic::SET |
-            Mnemonic::RES => {
+            }
+            Mnemonic::BIT | Mnemonic::SET | Mnemonic::RES => {
                 if let Some(operands) = instruction.operands() {
-                    if let (
-                        Operand::Value(ValueType::Constant(value)),
-                        Operand::Reference(r)
-                    ) = (operands[0], operands[1]) {
+                    if let (Operand::Value(ValueType::Constant(value)), Operand::Reference(r)) =
+                        (operands[0], operands[1])
+                    {
                         let value = value as u8;
                         match mnemonic {
                             Mnemonic::BIT => self.bit(bus, value, r),
@@ -216,10 +207,8 @@ pub trait LR35902 {
                 } else {
                     return Err("Requires an argument");
                 }
-            },
-            Mnemonic::JP |
-            Mnemonic::JR |
-            Mnemonic::CALL => {
+            }
+            Mnemonic::JP | Mnemonic::JR | Mnemonic::CALL => {
                 if let Some(operands) = instruction.operands() {
                     if operands.len() == 1 {
                         if let Operand::Value(value) = operands[0] {
@@ -227,32 +216,34 @@ pub trait LR35902 {
                             match mnemonic {
                                 Mnemonic::JP => {
                                     self.jp(address);
-                                },
+                                }
                                 Mnemonic::JR => {
                                     self.jr(address as i8);
-                                },
+                                }
                                 Mnemonic::CALL => {
                                     self.call(bus, address);
-                                },
+                                }
                                 _ => {}
                             }
                         } else {
                             return Err("Wrong argument");
                         }
                     } else if operands.len() == 2 {
-                        if let (Operand::Condition(condition), Operand::Value(value)) = (operands[0], operands[1]) {
+                        if let (Operand::Condition(condition), Operand::Value(value)) =
+                            (operands[0], operands[1])
+                        {
                             let address = self.operand_value(bus, value);
                             if self.operand_condition(condition) {
                                 match mnemonic {
                                     Mnemonic::JP => {
                                         self.jp(address);
-                                    },
+                                    }
                                     Mnemonic::JR => {
                                         self.jr(address as i8);
-                                    },
+                                    }
                                     Mnemonic::CALL => {
                                         self.call(bus, address);
-                                    },
+                                    }
                                     _ => {}
                                 }
                             }
@@ -263,7 +254,7 @@ pub trait LR35902 {
                 } else {
                     return Err("Requires arguments");
                 }
-            },
+            }
             Mnemonic::RST => {
                 if let Some(operands) = instruction.operands() {
                     if let Operand::Value(ValueType::Constant(v)) = operands[0] {
@@ -274,7 +265,7 @@ pub trait LR35902 {
                 } else {
                     return Err("Requires argument");
                 }
-            },
+            }
             Mnemonic::RET => {
                 if let Some(operands) = instruction.operands() {
                     if let Operand::Condition(condition) = operands[0] {
@@ -287,7 +278,7 @@ pub trait LR35902 {
                 } else {
                     self.ret(bus);
                 }
-            },
+            }
             Mnemonic::RETI => self.reti(bus),
             Mnemonic::CB => self.cb(bus),
         };
@@ -303,10 +294,9 @@ pub trait LR35902 {
             ValueType::Address(address) => {
                 let address = match address {
                     AddressType::Immediate => self.immediate16(bus),
-                    AddressType::IncImmediate =>
-                        (self.immediate(bus) as u16).wrapping_add(0xFF00),
+                    AddressType::IncImmediate => (self.immediate(bus) as u16).wrapping_add(0xFF00),
                     AddressType::Register(reg) => self.reg(reg),
-                    AddressType::IncRegister(reg) => self.reg(reg) + 0xFF00
+                    AddressType::IncRegister(reg) => self.reg(reg) + 0xFF00,
                 };
                 self.address(bus, address) as u16
             }
@@ -318,8 +308,7 @@ pub trait LR35902 {
             AddressType::Register(reg) => self.reg(reg),
             AddressType::IncRegister(reg) => self.reg(reg) + 0xFF00,
             AddressType::Immediate => self.immediate16(bus),
-            AddressType::IncImmediate =>
-                (self.immediate(bus) as u16).wrapping_add(0xFF00)
+            AddressType::IncImmediate => (self.immediate(bus) as u16).wrapping_add(0xFF00),
         }
     }
 
@@ -331,7 +320,7 @@ pub trait LR35902 {
     fn reference<H: Bus>(&mut self, bus: &mut H, reference: Reference) -> u16 {
         match reference {
             Reference::Register(register) => self.reg(register),
-            Reference::Address(address) => self.operand_address(bus, address)
+            Reference::Address(address) => self.operand_address(bus, address),
         }
     }
 
@@ -422,10 +411,7 @@ pub trait LR35902 {
 
         self.set_flag(Flag::AddSub, true);
         self.set_flag(Flag::Zero, result == 0);
-        self.set_flag(
-            Flag::HalfCarry,
-            reg_value & 0xF < value & 0xF
-        );
+        self.set_flag(Flag::HalfCarry, reg_value & 0xF < value & 0xF);
         self.set_flag(Flag::Carry, reg_value < value);
     }
 
@@ -469,10 +455,7 @@ pub trait LR35902 {
         let result = a.wrapping_sub(value) as u16;
         self.set_flag(Flag::Zero, result == 0);
         self.set_flag(Flag::AddSub, true);
-        self.set_flag(
-            Flag::HalfCarry,
-            result & 0xF < value as u16 & 0xF
-        );
+        self.set_flag(Flag::HalfCarry, result & 0xF < value as u16 & 0xF);
         self.set_flag(Flag::Carry, result < value as u16);
     }
 
@@ -485,7 +468,9 @@ pub trait LR35902 {
         let safe_result = self.reference(bus, reference);
 
         if let Reference::Register(reg) = reference {
-            if reg.is16bit() { return; }
+            if reg.is16bit() {
+                return;
+            }
         }
 
         self.set_flag(Flag::Zero, safe_result == 0);
@@ -501,15 +486,14 @@ pub trait LR35902 {
         let result = self.reference(bus, reference);
 
         if let Reference::Register(reg) = reference {
-            if reg.is16bit() { return; }
+            if reg.is16bit() {
+                return;
+            }
         }
 
         self.set_flag(Flag::AddSub, true);
         self.set_flag(Flag::Zero, result == 0);
-        self.set_flag(
-            Flag::HalfCarry,
-            value & 0xF < 1
-        );
+        self.set_flag(Flag::HalfCarry, value & 0xF < 1);
     }
 
     fn daa(&mut self) {

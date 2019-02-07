@@ -2,7 +2,7 @@ use crate::video::color::Color;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Tile {
-    data: [u16; 8]
+    data: [u16; 8],
 }
 
 impl Tile {
@@ -22,7 +22,8 @@ impl Tile {
         let mut colors: [Color; 64] = [Color::Black; 64];
         for row in 0..8 {
             for col in 0..8 {
-                colors[row * 8 + col] = Color::from(((self.data[row] as u8).wrapping_shr(2 * col as u32)) & 0b11);
+                colors[row * 8 + col] =
+                    Color::from(((self.data[row] as u8).wrapping_shr(2 * col as u32)) & 0b11);
             }
         }
         colors
@@ -35,7 +36,8 @@ impl Tile {
     pub fn formatted_line(&self, y: u8) -> [u8; 8] {
         let mut colors: [u8; 8] = [0; 8];
         for col in 0..8 {
-            colors[(y * 8 + col) as usize] = ((self.data[y as usize] as u8).wrapping_shr(2 * col as u32)) & 0b11;
+            colors[(y * 8 + col) as usize] =
+                ((self.data[y as usize] as u8).wrapping_shr(2 * col as u32)) & 0b11;
         }
         colors
     }

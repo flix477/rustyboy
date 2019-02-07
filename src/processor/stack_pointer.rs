@@ -2,14 +2,12 @@ use crate::bus::Bus;
 use crate::processor::register::Register;
 
 pub struct StackPointer {
-    value: u16
+    value: u16,
 }
 
 impl StackPointer {
     pub fn new() -> StackPointer {
-        StackPointer {
-            value: 0xFFFE
-        }
+        StackPointer { value: 0xFFFE }
     }
 
     pub fn peek<H: Bus>(&mut self, bus: &H) -> u8 {

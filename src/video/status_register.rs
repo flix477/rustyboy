@@ -1,17 +1,15 @@
-use crate::video::Video;
 use crate::util::bits::get_bit;
+use crate::video::Video;
 
 pub struct StatusRegister {
-    register: u8
+    register: u8,
 }
 
 // TODO: bunch of stuff
 
 impl StatusRegister {
     pub fn new() -> Self {
-        StatusRegister {
-            register: 0
-        }
+        StatusRegister { register: 0 }
     }
 
     pub fn generate(&self, video: &Video) -> u8 {
@@ -46,7 +44,7 @@ pub enum StatusMode {
     HBlank = 0,
     VBlank = 1,
     ReadingOAM = 2,
-    LCDTransfer = 3
+    LCDTransfer = 3,
 }
 
 impl From<u8> for StatusMode {
@@ -56,7 +54,7 @@ impl From<u8> for StatusMode {
             1 => StatusMode::VBlank,
             2 => StatusMode::ReadingOAM,
             3 => StatusMode::LCDTransfer,
-            _ => panic!("Invalid value.")
+            _ => panic!("Invalid value."),
         }
     }
 }
@@ -65,5 +63,5 @@ pub enum InterruptCondition {
     LYCEquality = 0b1000000,
     OAM = 0b100000,
     VBlank = 0b10000,
-    HBlank = 0b1000
+    HBlank = 0b1000,
 }

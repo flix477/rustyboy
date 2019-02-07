@@ -11,7 +11,7 @@ pub struct Timer {
     counter: u8,
     modulo: u8,
     clock_speed: usize, // is actually cpu clock speed divided by this value
-    leftover_time: f64
+    leftover_time: f64,
 }
 
 impl Timer {
@@ -22,7 +22,7 @@ impl Timer {
             counter: 0,
             modulo: 0,
             clock_speed: CLOCK_SPEEDS[0],
-            leftover_time: 0.0
+            leftover_time: 0.0,
         }
     }
 
@@ -56,7 +56,7 @@ impl Timer {
             16 => 1,
             64 => 2,
             256 => 3,
-            _ => panic!("Invalid clock speed")
+            _ => panic!("Invalid clock speed"),
         };
         clock_speed | ((self.counter_enabled as u8) << 2)
     }
@@ -70,11 +70,11 @@ impl Timer {
 impl Readable for Timer {
     fn read(&self, address: u16) -> u8 {
         match address {
-            0xFF04 => self.divider, // divider register
-            0xFF05 => self.counter, // timer counter
-            0xFF06 => self.modulo, // timer modulo
+            0xFF04 => self.divider,   // divider register
+            0xFF05 => self.counter,   // timer counter
+            0xFF06 => self.modulo,    // timer modulo
             0xFF07 => self.control(), // timer control
-            _ => panic!("Invalid address")
+            _ => panic!("Invalid address"),
         }
     }
 }
@@ -82,11 +82,11 @@ impl Readable for Timer {
 impl Writable for Timer {
     fn write(&mut self, address: u16, value: u8) {
         match address {
-            0xFF04 => self.divider = 0, // divider register reset
-            0xFF05 => self.counter = value, // timer counter
-            0xFF06 => self.modulo = value, // timer modulo
+            0xFF04 => self.divider = 0,        // divider register reset
+            0xFF05 => self.counter = value,    // timer counter
+            0xFF06 => self.modulo = value,     // timer modulo
             0xFF07 => self.set_control(value), // timer control
-            _ => panic!("Invalid address")
+            _ => panic!("Invalid address"),
         }
     }
 }

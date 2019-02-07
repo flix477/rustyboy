@@ -1,6 +1,6 @@
 use super::MemoryBankController;
-use std::cmp;
 use crate::cartridge::cartridge_capability::CartridgeCapability;
+use std::cmp;
 
 // TODO: RAM is 512*4bit, maybe should only return the 4 necessary bits on read
 pub struct MBC2 {
@@ -12,30 +12,38 @@ impl MBC2 {
     pub fn new(_capabilities: &[CartridgeCapability]) -> MBC2 {
         MBC2 {
             rom_bank: 1,
-            ram_enabled: false
+            ram_enabled: false,
         }
     }
 }
 
 impl MemoryBankController for MBC2 {
-    fn rom_bank(&self) -> u16 { self.rom_bank as u16 }
+    fn rom_bank(&self) -> u16 {
+        self.rom_bank as u16
+    }
 
-    fn ram_bank(&self) -> u8 { 0 }
+    fn ram_bank(&self) -> u8 {
+        0
+    }
 
-    fn ram_enabled(&self) -> bool { self.ram_enabled }
+    fn ram_enabled(&self) -> bool {
+        self.ram_enabled
+    }
 
     fn write_rom(&mut self, address: usize, value: u8) {
         match address {
-            0...0x1FFF => { // toggle ram bank
+            0...0x1FFF => {
+                // toggle ram bank
                 if address & 0x100 == 0 {
                     self.ram_enabled = value == 0x0A;
                 }
-            },
-            0x2000...0x3FFF => { // change rom bank
+            }
+            0x2000...0x3FFF => {
+                // change rom bank
                 if address & 0x100 != 0 {
                     self.rom_bank = cmp::max(value & 0xF, 1);
                 }
-            },
+            }
             _ => {}
         }
     }

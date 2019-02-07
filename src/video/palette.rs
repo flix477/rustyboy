@@ -1,14 +1,12 @@
 use super::color::Color;
 
 pub struct Palette {
-    register: u8
+    register: u8,
 }
 
 impl Palette {
     pub fn new() -> Self {
-        Palette {
-            register: 0
-        }
+        Palette { register: 0 }
     }
 
     pub fn color(&self, idx: u8) -> Color {

@@ -1,14 +1,14 @@
-use crate::processor::register::{Register, SingleRegister, DualRegister};
+use crate::processor::register::{DualRegister, Register, SingleRegister};
 use crate::util::bitflags::Bitflags;
 
 pub struct FlagRegister {
-    pub register: DualRegister
+    pub register: DualRegister,
 }
 
 impl FlagRegister {
     pub fn new() -> FlagRegister {
         FlagRegister {
-            register: DualRegister::from(0x01B0)
+            register: DualRegister::from(0x01B0),
         }
     }
 
@@ -45,10 +45,10 @@ impl Bitflags<Flag> for FlagRegister {
 
 #[derive(Copy, Clone, Debug)]
 pub enum Flag {
-    Carry = 16, // c, set when an addition becomes bigger than 0xFF or 0xFFFF
+    Carry = 16,     // c, set when an addition becomes bigger than 0xFF or 0xFFFF
     HalfCarry = 32, // h
-    AddSub = 64, // n
-    Zero = 128 // z, set when an operation has been zero
+    AddSub = 64,    // n
+    Zero = 128,     // z, set when an operation has been zero
 }
 
 impl Into<u8> for Flag {

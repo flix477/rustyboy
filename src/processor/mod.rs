@@ -1,21 +1,21 @@
-mod register;
+mod decoder;
 mod flag_register;
 mod instruction;
-mod decoder;
-mod lr35902;
-mod registers;
-mod program_counter;
-mod stack_pointer;
 pub mod interrupt;
-use crate::processor::flag_register::Flag;
-use crate::processor::decoder::Decoder;
-use crate::processor::lr35902::LR35902;
-use crate::processor::registers::{Registers, RegisterType};
-use crate::processor::instruction::Prefix;
+mod lr35902;
+mod program_counter;
+mod register;
+mod registers;
+mod stack_pointer;
 use crate::bus::Bus;
-use crate::util::bitflags::Bitflags;
-use crate::processor::register::Register;
+use crate::processor::decoder::Decoder;
+use crate::processor::flag_register::Flag;
 use crate::processor::instruction::Mnemonic;
+use crate::processor::instruction::Prefix;
+use crate::processor::lr35902::LR35902;
+use crate::processor::register::Register;
+use crate::processor::registers::{RegisterType, Registers};
+use crate::util::bitflags::Bitflags;
 
 const CLOCK_FREQUENCY: f64 = 4194304.0; // Hz
 
@@ -24,7 +24,7 @@ pub struct Processor {
     clock_frequency: f64,
     leftover_time: f64,
     last_instruction_cycles: u8,
-    stopped: bool
+    stopped: bool,
 }
 
 impl Processor {
@@ -34,21 +34,23 @@ impl Processor {
             clock_frequency: CLOCK_FREQUENCY,
             leftover_time: 0.0,
             last_instruction_cycles: 0,
-            stopped: false
+            stopped: false,
         };
     }
 
     pub fn update<H: Bus>(&mut self, bus: &mut H, delta: f64) {
         if !self.stopped {
             self.leftover_time += delta;
-            while
-                !self.stopped &&
-                (self.last_instruction_cycles == 0||
-                self.leftover_time >= (self.last_instruction_cycles as f64 / CLOCK_FREQUENCY))
+            while !self.stopped
+                && (self.last_instruction_cycles == 0
+                    || self.leftover_time
+                        >= (self.last_instruction_cycles as f64 / CLOCK_FREQUENCY))
             {
                 self.leftover_time -= if self.last_instruction_cycles > 0 {
                     self.last_instruction_cycles as f64 / CLOCK_FREQUENCY
-                } else { self.leftover_time };
+                } else {
+                    self.leftover_time
+                };
                 self.last_instruction_cycles = self.step(bus);
             }
         } else {
@@ -117,7 +119,12 @@ impl LR35902 for Processor {
         let line = self.registers.program_counter.get();
         let opcode = self.immediate(bus);
         if let Some(instruction) = Decoder::decode_opcode(opcode, prefix) {
-            println!("0x{:X}: {:?}, 0x{:X}", line, instruction, self.registers.program_counter.peek16(bus));
+            println!(
+                "0x{:X}: {:?}, 0x{:X}",
+                line,
+                instruction,
+                self.registers.program_counter.peek16(bus)
+            );
             let cycle_count = instruction.cycle_count();
             if let Err(err) = self.execute(bus, instruction) {
                 println!("Error with instruction: {:?}", err);

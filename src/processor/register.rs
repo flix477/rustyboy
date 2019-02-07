@@ -6,14 +6,12 @@ pub trait Register {
 }
 
 pub struct SingleRegister {
-    value: u8
+    value: u8,
 }
 
 impl SingleRegister {
     pub fn new() -> SingleRegister {
-        return SingleRegister {
-            value: 0
-        };
+        return SingleRegister { value: 0 };
     }
 
     pub fn get_bit(&self, idx: u8) -> bool {
@@ -50,21 +48,21 @@ impl Register for SingleRegister {
 
 pub struct DualRegister {
     pub high: SingleRegister,
-    pub low: SingleRegister
+    pub low: SingleRegister,
 }
 
 impl DualRegister {
     pub fn new() -> DualRegister {
         return DualRegister {
             high: SingleRegister::new(),
-            low: SingleRegister::new()
+            low: SingleRegister::new(),
         };
     }
 
     pub fn from(value: u16) -> DualRegister {
         let mut reg = DualRegister {
             high: SingleRegister::new(),
-            low: SingleRegister::new()
+            low: SingleRegister::new(),
         };
         reg.set(value);
         reg
@@ -97,7 +95,8 @@ mod tests {
     use super::*;
 
     #[test]
-    fn get_high() { // lol
+    fn get_high() {
+        // lol
         let mut register = DualRegister::new();
         register.set(0b1010101001010101);
         assert_eq!(register.high.get(), 0b10101010);

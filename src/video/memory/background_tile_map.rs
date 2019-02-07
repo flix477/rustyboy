@@ -1,15 +1,17 @@
 pub struct BackgroundTileMap {
-    tiles: [[u8; 32]; 32]
+    tiles: [[u8; 32]; 32],
 }
 
 impl BackgroundTileMap {
     pub fn new() -> Self {
         BackgroundTileMap {
-            tiles: [[0; 32]; 32]
+            tiles: [[0; 32]; 32],
         }
     }
 
-    pub fn tiles(&self) -> &[[u8; 32]; 32] { &self.tiles }
+    pub fn tiles(&self) -> &[[u8; 32]; 32] {
+        &self.tiles
+    }
 
     fn tile_info_at(&self, address: u16) -> (usize, usize) {
         let row = (address - (address % 32)) / 32;

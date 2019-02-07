@@ -3,5 +3,5 @@ use crate::gameboy::DeviceType;
 
 pub struct Config {
     pub cartridge: Cartridge,
-    pub device_type: DeviceType
+    pub device_type: DeviceType,
 }

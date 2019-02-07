@@ -1,20 +1,20 @@
 pub mod color;
-pub mod tile;
-mod screen;
-mod palette;
-mod register;
-mod status_register;
 mod control_register;
 mod memory;
-use crate::bus::{Readable, Writable};
-use crate::video::palette::Palette;
-use self::register::Register;
-use self::status_register::{StatusRegister, StatusMode};
+mod palette;
+mod register;
+mod screen;
+mod status_register;
+pub mod tile;
 use self::control_register::ControlRegister;
 use self::memory::VideoMemory;
+use self::register::Register;
 use self::screen::Screen;
-use crate::processor::interrupt::{InterruptHandler, Interrupt};
+use self::status_register::{StatusMode, StatusRegister};
+use crate::bus::{Readable, Writable};
+use crate::processor::interrupt::{Interrupt, InterruptHandler};
 use crate::video::memory::background_tile_map::BackgroundTileMap;
+use crate::video::palette::Palette;
 use crate::video::tile::Tile;
 
 const CLOCK_FREQUENCY: f64 = 4194304.0; // Hz
@@ -33,7 +33,7 @@ pub struct Video {
     // TODO: CGB color palettes
     vram: VideoMemory,
     screen: Screen,
-    leftover_time: f64
+    leftover_time: f64,
 }
 
 impl Video {
@@ -60,14 +60,22 @@ impl Video {
             obj_palette1,
             vram: VideoMemory::new(),
             screen: Screen::new(),
-            leftover_time: 0.0
+            leftover_time: 0.0,
         }
     }
 
-    pub fn memory(&self) -> &VideoMemory { &self.vram }
-    pub fn screen(&self) -> &Screen { &self.screen }
-    pub fn obj_palette0(&self) -> &Palette { &self.obj_palette0 }
-    pub fn obj_palette1(&self) -> &Palette { &self.obj_palette1 }
+    pub fn memory(&self) -> &VideoMemory {
+        &self.vram
+    }
+    pub fn screen(&self) -> &Screen {
+        &self.screen
+    }
+    pub fn obj_palette0(&self) -> &Palette {
+        &self.obj_palette0
+    }
+    pub fn obj_palette1(&self) -> &Palette {
+        &self.obj_palette1
+    }
 
     pub fn update(&mut self, interrupt_handler: &mut InterruptHandler, delta: f64) {
         // TODO: might need to refactor to sync cpu clocks to gpu clocks
@@ -89,7 +97,9 @@ impl Video {
             if self.status.hblank_interrupt_enabled() {
                 interrupt_handler.request_interrupt(Interrupt::LCDCStat);
             }
-        } else if self.mode == StatusMode::VBlank || (self.mode == StatusMode::HBlank && self.ly < 144) {
+        } else if self.mode == StatusMode::VBlank
+            || (self.mode == StatusMode::HBlank && self.ly < 144)
+        {
             self.mode = StatusMode::ReadingOAM;
             if self.status.oam_interrupt_enabled() {
                 interrupt_handler.request_interrupt(Interrupt::LCDCStat);
@@ -112,7 +122,7 @@ impl Video {
                 let mut length = 172;
                 // TODO: accurate timing
                 length
-            },
+            }
             StatusMode::HBlank => {
                 // TODO: accurate timing
                 204
@@ -127,49 +137,56 @@ impl Video {
     }
 
     fn render_scanline(&mut self) {
-//        const MAX: u8 = 160;
-//        let y = self.ly;
-//        let tile_data = self.vram.tile_data();
-//        let (scroll_x, scroll_y) = self.scroll;
-//        println!("{} + {}", scroll_y, y);
-//        let (rel_x, rel_y) = ((scroll_x + 8) as u16, (scroll_y + y) as u16);
-//
-//        let mut line: Vec<u8> = vec![0; 160];
-//
-//        if self.control.bg_window_enabled() {
-//            // 1: background
-//            let background = if self.control.bg_map() == 0 {
-//                &self.vram.background_tile_maps().0
-//            } else {
-//                &self.vram.background_tile_maps().1
-//            };
-//
-//            let bg_line = self.line_from_bg_map(rel_x, rel_y, background, tile_data);
-//
-//            // 2: window
-//            if self.control.window_enabled() &&
-//                self.window.1 <= rel_y &&
-//                self.window.0 > 6 && self.window.0 < 166
-//            {
-//                let window = if self.control.window_bg_map() == 0 {
-//                    &self.vram.background_tile_maps().0
-//                } else {
-//                    &self.vram.background_tile_maps().1
-//                };
-//
-//                let window_line = self.line_from_bg_map(rel_x, rel_y, window, tile_data);
-//            }
-//        }
-//
-//        // 3: sprites
+        //        const MAX: u8 = 160;
+        //        let y = self.ly;
+        //        let tile_data = self.vram.tile_data();
+        //        let (scroll_x, scroll_y) = self.scroll;
+        //        println!("{} + {}", scroll_y, y);
+        //        let (rel_x, rel_y) = ((scroll_x + 8) as u16, (scroll_y + y) as u16);
+        //
+        //        let mut line: Vec<u8> = vec![0; 160];
+        //
+        //        if self.control.bg_window_enabled() {
+        //            // 1: background
+        //            let background = if self.control.bg_map() == 0 {
+        //                &self.vram.background_tile_maps().0
+        //            } else {
+        //                &self.vram.background_tile_maps().1
+        //            };
+        //
+        //            let bg_line = self.line_from_bg_map(rel_x, rel_y, background, tile_data);
+        //
+        //            // 2: window
+        //            if self.control.window_enabled() &&
+        //                self.window.1 <= rel_y &&
+        //                self.window.0 > 6 && self.window.0 < 166
+        //            {
+        //                let window = if self.control.window_bg_map() == 0 {
+        //                    &self.vram.background_tile_maps().0
+        //                } else {
+        //                    &self.vram.background_tile_maps().1
+        //                };
+        //
+        //                let window_line = self.line_from_bg_map(rel_x, rel_y, window, tile_data);
+        //            }
+        //        }
+        //
+        //        // 3: sprites
     }
 
-    fn line_from_bg_map(&self, rel_x: u8, rel_y: u8, bg_map: &BackgroundTileMap, tile_data: &[Tile; 384]) -> Vec<u8> {
+    fn line_from_bg_map(
+        &self,
+        rel_x: u8,
+        rel_y: u8,
+        bg_map: &BackgroundTileMap,
+        tile_data: &[Tile; 384],
+    ) -> Vec<u8> {
         let first_tile_x = ((rel_x - rel_x % 8) / 8) as usize;
         // TODO: the last_tile thing might be optimised
         let last_tile_x = ((rel_x + 160 - (rel_x + 160) % 8) / 8) as usize;
         let tile_y = ((rel_y - rel_y % 8) / 8) as usize;
-        bg_map.tiles()[tile_y][first_tile_x..=last_tile_x].iter()
+        bg_map.tiles()[tile_y][first_tile_x..=last_tile_x]
+            .iter()
             .map(|tile_id| tile_data[*tile_id as usize])
             .flat_map(|tile| tile.formatted_line(rel_y).to_vec())
             .collect::<Vec<u8>>()
@@ -182,10 +199,11 @@ impl Readable for Video {
             0xFE00...0xFE9F => {
                 if self.mode != StatusMode::LCDTransfer && self.mode != StatusMode::ReadingOAM {
                     self.vram.read(address)
-                } else { 0xFF }
-            }, // oam
-            0x9800...0x9FFF |
-            0x8000...0x97FF => {
+                } else {
+                    0xFF
+                }
+            } // oam
+            0x9800...0x9FFF | 0x8000...0x97FF => {
                 if self.mode != StatusMode::LCDTransfer {
                     let mut address = address;
                     if 0x8000 <= address && 0x97FF >= address {
@@ -193,20 +211,22 @@ impl Readable for Video {
                         address = addressing_mode.adjust_address(address);
                     }
                     self.vram.read(address)
-                } else { 0xFF }
-            }, // video ram
-            0xFF40 => self.control.get(), // lcdc control
+                } else {
+                    0xFF
+                }
+            } // video ram
+            0xFF40 => self.control.get(),          // lcdc control
             0xFF41 => self.status.generate(&self), // lcdc status
-            0xFF42 => self.scroll.1, // lcdc scroll y
-            0xFF43 => self.scroll.0, // lcdc scroll x
-            0xFF44 => self.ly, // lcdc LY
-            0xFF45 => self.lyc, // lcdc LYC
-            0xFF47 => self.bg_palette.get(), // background & window palette
-            0xFF48 => self.obj_palette0.get(), // object palette 0
-            0xFF49 => self.obj_palette1.get(), // object palette 1
-            0xFF4A => self.window.1, // window y position
-            0xFF4B => self.window.0, // window x position
-            _ => unimplemented!()
+            0xFF42 => self.scroll.1,               // lcdc scroll y
+            0xFF43 => self.scroll.0,               // lcdc scroll x
+            0xFF44 => self.ly,                     // lcdc LY
+            0xFF45 => self.lyc,                    // lcdc LYC
+            0xFF47 => self.bg_palette.get(),       // background & window palette
+            0xFF48 => self.obj_palette0.get(),     // object palette 0
+            0xFF49 => self.obj_palette1.get(),     // object palette 1
+            0xFF4A => self.window.1,               // window y position
+            0xFF4B => self.window.0,               // window x position
+            _ => unimplemented!(),
         }
     }
 }
@@ -218,9 +238,8 @@ impl Writable for Video {
                 if self.mode != StatusMode::LCDTransfer && self.mode != StatusMode::ReadingOAM {
                     self.vram.write(address, value);
                 }
-            }, // oam
-            0x9800...0x9FFF |
-            0x8000...0x97FF => {
+            } // oam
+            0x9800...0x9FFF | 0x8000...0x97FF => {
                 if self.mode != StatusMode::LCDTransfer {
                     let mut address = address;
                     if 0x8000 <= address && 0x97FF >= address {
@@ -229,19 +248,19 @@ impl Writable for Video {
                     }
                     self.vram.write(address, value);
                 }
-            }, // video ram
-            0xFF40 => self.control.set(value), // lcdc control
-            0xFF41 => self.status.set(value), // lcdc status
-            0xFF42 => self.scroll.1 = value, // lcdc scroll y
-            0xFF43 => self.scroll.0 = value, // lcdc scroll x
-            0xFF44 => self.ly = 0, // reset lcdc LY
-            0xFF45 => self.lyc = value, // lcdc LYC
-            0xFF47 => self.bg_palette.set(value), // background & window palette
+            } // video ram
+            0xFF40 => self.control.set(value),      // lcdc control
+            0xFF41 => self.status.set(value),       // lcdc status
+            0xFF42 => self.scroll.1 = value,        // lcdc scroll y
+            0xFF43 => self.scroll.0 = value,        // lcdc scroll x
+            0xFF44 => self.ly = 0,                  // reset lcdc LY
+            0xFF45 => self.lyc = value,             // lcdc LYC
+            0xFF47 => self.bg_palette.set(value),   // background & window palette
             0xFF48 => self.obj_palette0.set(value), // object palette 0
             0xFF49 => self.obj_palette1.set(value), // object palette 1
-            0xFF4A => self.window.1 = value, // window y position
-            0xFF4B => self.window.0 = value, // window x position
-            _ => unimplemented!()
+            0xFF4A => self.window.1 = value,        // window y position
+            0xFF4B => self.window.0 = value,        // window x position
+            _ => unimplemented!(),
         }
     }
 }

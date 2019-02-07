@@ -1,17 +1,17 @@
-pub mod cartridge_metadata;
 mod cartridge_capability;
+pub mod cartridge_metadata;
 mod mbc;
 
-use std::fs;
-use std::error::Error;
-use crate::cartridge::cartridge_metadata::CartridgeMetadata;
 use crate::bus::{Readable, Writable};
-use crate::cartridge::mbc::{MemoryBankController, MBCFactory};
+use crate::cartridge::cartridge_metadata::CartridgeMetadata;
+use crate::cartridge::mbc::{MBCFactory, MemoryBankController};
+use std::error::Error;
+use std::fs;
 
 pub struct Cartridge {
     buffer: Vec<u8>,
     metadata: CartridgeMetadata,
-    mbc: Option<Box<dyn MemoryBankController>>
+    mbc: Option<Box<dyn MemoryBankController>>,
 }
 
 impl Cartridge {
@@ -25,11 +25,13 @@ impl Cartridge {
         return Ok(Cartridge {
             metadata,
             buffer,
-            mbc
+            mbc,
         });
     }
 
-    pub fn metadata(&self) -> &CartridgeMetadata { &self.metadata }
+    pub fn metadata(&self) -> &CartridgeMetadata {
+        &self.metadata
+    }
 }
 
 impl Readable for Cartridge {
@@ -39,9 +41,11 @@ impl Readable for Cartridge {
             0x4000...0x7FFF => {
                 let address = if let Some(mbc) = &self.mbc {
                     mbc.relative_rom_address(address as usize)
-                } else { address as usize };
+                } else {
+                    address as usize
+                };
                 self.buffer[address]
-            }, // switchable rom bank
+            } // switchable rom bank
             0xA000...0xBFFF => {
                 if let Some(mbc) = &self.mbc {
                     if mbc.ram_enabled() {
@@ -50,8 +54,8 @@ impl Readable for Cartridge {
                     }
                 }
                 return 0; // TODO: should do something else maybe?
-            }, // switchable ram bank
-            _ => 0
+            } // switchable ram bank
+            _ => 0,
         }
     }
 }
@@ -63,14 +67,14 @@ impl Writable for Cartridge {
                 if let Some(ref mut mbc) = self.mbc {
                     mbc.write_rom(address as usize, value);
                 }
-            },
+            }
             0xA000...0xBFFF => {
                 if let Some(ref mut mbc) = self.mbc {
                     if mbc.ram_enabled() {
                         mbc.write_ram(address as usize, value, &mut self.buffer);
                     }
                 }
-            }, // switchable ram bank
+            } // switchable ram bank
             _ => {}
         }
     }

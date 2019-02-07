@@ -4,16 +4,16 @@ use crate::cartridge::cartridge_capability::CartridgeCapability;
 pub struct MBC5 {
     rom_bank: u16,
     ram_enabled: bool,
-    ram_bank: u8
+    ram_bank: u8,
 }
 
 impl MBC5 {
     pub fn new(_capabilities: &[CartridgeCapability]) -> MBC5 {
-//        let has_ram = capabilities.contains(&CartridgeCapability::RAM);
+        //        let has_ram = capabilities.contains(&CartridgeCapability::RAM);
         MBC5 {
             rom_bank: 0,
             ram_enabled: false,
-            ram_bank: 0
+            ram_bank: 0,
         }
     }
 
@@ -23,28 +23,38 @@ impl MBC5 {
 }
 
 impl MemoryBankController for MBC5 {
-    fn rom_bank(&self) -> u16 { self.rom_bank }
+    fn rom_bank(&self) -> u16 {
+        self.rom_bank
+    }
 
-    fn ram_bank(&self) -> u8 { self.ram_bank }
+    fn ram_bank(&self) -> u8 {
+        self.ram_bank
+    }
 
-    fn ram_enabled(&self) -> bool { self.ram_enabled }
+    fn ram_enabled(&self) -> bool {
+        self.ram_enabled
+    }
 
     fn write_rom(&mut self, address: usize, value: u8) {
         match address {
-            0...0x1FFF => { // toggle ram bank
+            0...0x1FFF => {
+                // toggle ram bank
                 self.ram_enabled = value == 0x0A;
-            },
-            0x2000...0x2FFF => { // change rom bank lower 8 bits
+            }
+            0x2000...0x2FFF => {
+                // change rom bank lower 8 bits
                 self.rom_bank = value as u16;
-            },
-            0x3000...0x3FFF => { // change rom bank higher bit
+            }
+            0x3000...0x3FFF => {
+                // change rom bank higher bit
                 self.rom_bank = self.rom_bank & 0xFF | ((value as u16) << 8);
-            },
-            0x4000...0x5FFF => { // change ram bank
+            }
+            0x4000...0x5FFF => {
+                // change ram bank
                 if self.ram_enabled {
                     self.ram_bank = value & 0xF;
                 }
-            },
+            }
             _ => {}
         }
     }

@@ -1,37 +1,44 @@
-use crate::util::bitflags::Bitflags;
 use crate::bus::{Readable, Writable};
+use crate::util::bitflags::Bitflags;
 
 pub struct Joypad {
     mode: Mode,
-    pushed_keys: u8
+    pushed_keys: u8,
 }
 
 impl Joypad {
     pub fn new() -> Joypad {
         Joypad {
             mode: Mode::DirectionalKeys,
-            pushed_keys: 0
+            pushed_keys: 0,
         }
     }
 
-    pub fn set_mode(&mut self, mode: Mode) { self.mode = mode; }
+    pub fn set_mode(&mut self, mode: Mode) {
+        self.mode = mode;
+    }
 }
 
 impl Readable for Joypad {
     fn read(&self, _: u16) -> u8 {
-        (self.mode as u8) | if let Mode::DirectionalKeys = self.mode {
-            !self.pushed_keys >> 4
-        } else {
-            !self.pushed_keys & 0xF
-        }
+        (self.mode as u8)
+            | if let Mode::DirectionalKeys = self.mode {
+                !self.pushed_keys >> 4
+            } else {
+                !self.pushed_keys & 0xF
+            }
     }
 }
 
 impl Writable for Joypad {
     fn write(&mut self, _: u16, value: u8) {
         match value {
-            0x20 => { self.mode = Mode::DirectionalKeys; },
-            0x10 => { self.mode = Mode::ButtonKeys; }
+            0x20 => {
+                self.mode = Mode::DirectionalKeys;
+            }
+            0x10 => {
+                self.mode = Mode::ButtonKeys;
+            }
             _ => {}
         };
     }
@@ -55,7 +62,7 @@ pub enum Button {
     Right = 16,
     Left = 32,
     Up = 64,
-    Down = 128
+    Down = 128,
 }
 
 impl Into<u8> for Button {
@@ -64,11 +71,10 @@ impl Into<u8> for Button {
     }
 }
 
-
 #[derive(Copy, Clone)]
 pub enum Mode {
     DirectionalKeys = 0x20,
-    ButtonKeys = 0x10
+    ButtonKeys = 0x10,
 }
 
 impl Mode {
@@ -76,7 +82,7 @@ impl Mode {
         match value {
             0x20 => Mode::DirectionalKeys,
             0x10 => Mode::ButtonKeys,
-            _ => panic!("Invalid value.")
+            _ => panic!("Invalid value."),
         }
     }
 }

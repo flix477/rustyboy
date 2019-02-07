@@ -2,14 +2,12 @@ use crate::bus::Bus;
 use crate::processor::register::Register;
 
 pub struct ProgramCounter {
-    value: u16
+    value: u16,
 }
 
 impl ProgramCounter {
     pub fn new() -> ProgramCounter {
-        ProgramCounter {
-            value: 0x100
-        }
+        ProgramCounter { value: 0x100 }
     }
 
     pub fn fetch<H: Bus>(&mut self, bus: &H) -> u8 {

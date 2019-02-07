@@ -3,7 +3,7 @@
 pub struct RealTimeClock {
     active_register: RTCRegister,
     latched_state: ClockState,
-    prelatch_triggered: bool
+    prelatch_triggered: bool,
 }
 
 impl RealTimeClock {
@@ -11,7 +11,7 @@ impl RealTimeClock {
         RealTimeClock {
             active_register: RTCRegister::Seconds, // TODO: is it tho
             latched_state: ClockState::now(),
-            prelatch_triggered: false
+            prelatch_triggered: false,
         }
     }
 
@@ -21,7 +21,7 @@ impl RealTimeClock {
             RTCRegister::Minutes => self.latched_state.minutes,
             RTCRegister::Hours => self.latched_state.hours,
             RTCRegister::DayLow => self.latched_state.day_counter as u8,
-            RTCRegister::DayHigh => (self.latched_state.day_counter >> 8) as u8
+            RTCRegister::DayHigh => (self.latched_state.day_counter >> 8) as u8,
         }
     }
 
@@ -49,7 +49,7 @@ pub enum RTCRegister {
     Minutes,
     Hours,
     DayLow,
-    DayHigh
+    DayHigh,
 }
 
 impl RTCRegister {
@@ -60,7 +60,7 @@ impl RTCRegister {
             0xA => Some(RTCRegister::Hours),
             0xB => Some(RTCRegister::DayLow),
             0xC => Some(RTCRegister::DayHigh),
-            _ => None
+            _ => None,
         }
     }
 }
@@ -69,7 +69,7 @@ pub struct ClockState {
     seconds: u8,
     minutes: u8,
     hours: u8,
-    day_counter: u16
+    day_counter: u16,
 }
 
 impl ClockState {
@@ -78,7 +78,7 @@ impl ClockState {
             seconds: 0,
             minutes: 0,
             hours: 0,
-            day_counter: 0
+            day_counter: 0,
         }
     }
 }

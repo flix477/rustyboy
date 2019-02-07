@@ -1,35 +1,23 @@
-use crate::processor::instruction::*;
+use crate::processor::flag_register::Flag;
 use crate::processor::instruction::AddressType as Addr;
 use crate::processor::instruction::Reference as Ref;
+use crate::processor::instruction::*;
 use crate::processor::registers::RegisterType as Reg;
-use crate::processor::flag_register::Flag;
 
 pub struct Decoder;
 
 impl Decoder {
-    pub fn decode_opcode(opcode: u8, prefix: Prefix)
-        -> Option<InstructionInfo>
-    {
+    pub fn decode_opcode(opcode: u8, prefix: Prefix) -> Option<InstructionInfo> {
         if let Prefix::CB = prefix {
             return Self::decode_cb_opcode(opcode);
         }
 
         match opcode {
             // NOP
-            0 => Some(InstructionInfo::new(
-                opcode,
-                Mnemonic::NOP,
-                None,
-                4
-            )),
+            0 => Some(InstructionInfo::new(opcode, Mnemonic::NOP, None, 4)),
 
             // CB prefix
-            0xCB => Some(InstructionInfo::new(
-                opcode,
-                Mnemonic::CB,
-                None,
-                0
-            )),
+            0xCB => Some(InstructionInfo::new(opcode, Mnemonic::CB, None, 0)),
 
             // LD nn,n
             // put value nn into n
@@ -43,12 +31,7 @@ impl Decoder {
             0x36 => Some(Self::ld_rn(opcode, Reg::HL)),
 
             // HALT
-            0x76 => Some(InstructionInfo::new(
-                opcode,
-                Mnemonic::HALT,
-                None,
-                4
-            )),
+            0x76 => Some(InstructionInfo::new(opcode, Mnemonic::HALT, None, 4)),
 
             // LD r1,r2
             // put value r2 in r1
@@ -64,9 +47,9 @@ impl Decoder {
                 Mnemonic::LD,
                 Some(vec![
                     Operand::Reference(Ref::Register(Reg::A)),
-                    Operand::Value(ValueType::Immediate)
+                    Operand::Value(ValueType::Immediate),
                 ]),
-                8
+                8,
             )),
 
             // LD n,A
@@ -81,11 +64,9 @@ impl Decoder {
                 Mnemonic::LD,
                 Some(vec![
                     Operand::Reference(Ref::Register(Reg::A)),
-                    Operand::Value(
-                        ValueType::Address(Addr::IncRegister(Reg::C))
-                    )
+                    Operand::Value(ValueType::Address(Addr::IncRegister(Reg::C))),
                 ]),
-                8
+                8,
             )),
 
             // LD (C),A
@@ -94,12 +75,10 @@ impl Decoder {
                 opcode,
                 Mnemonic::LD,
                 Some(vec![
-                    Operand::Reference(
-                        Ref::Address(Addr::IncRegister(Reg::C))
-                    ),
-                    Operand::Value(ValueType::Register(Reg::A))
+                    Operand::Reference(Ref::Address(Addr::IncRegister(Reg::C))),
+                    Operand::Value(ValueType::Register(Reg::A)),
                 ]),
-                8
+                8,
             )),
 
             // LDD A,(HL)
@@ -108,9 +87,9 @@ impl Decoder {
                 Mnemonic::LDD,
                 Some(vec![
                     Operand::Reference(Ref::Register(Reg::A)),
-                    Operand::Value(ValueType::Address(Addr::Register(Reg::HL)))
+                    Operand::Value(ValueType::Address(Addr::Register(Reg::HL))),
                 ]),
-                8
+                8,
             )),
 
             // LDD (HL),A
@@ -119,9 +98,9 @@ impl Decoder {
                 Mnemonic::LDD,
                 Some(vec![
                     Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
-                    Operand::Value(ValueType::Register(Reg::A))
+                    Operand::Value(ValueType::Register(Reg::A)),
                 ]),
-                8
+                8,
             )),
 
             // LDI A,(HL)
@@ -130,9 +109,9 @@ impl Decoder {
                 Mnemonic::LDI,
                 Some(vec![
                     Operand::Reference(Ref::Register(Reg::A)),
-                    Operand::Value(ValueType::Address(Addr::Register(Reg::HL)))
+                    Operand::Value(ValueType::Address(Addr::Register(Reg::HL))),
                 ]),
-                8
+                8,
             )),
 
             // LDI (HL),A
@@ -141,9 +120,9 @@ impl Decoder {
                 Mnemonic::LDI,
                 Some(vec![
                     Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
-                    Operand::Value(ValueType::Register(Reg::A))
+                    Operand::Value(ValueType::Register(Reg::A)),
                 ]),
-                8
+                8,
             )),
 
             // LDH (n),A
@@ -152,9 +131,9 @@ impl Decoder {
                 Mnemonic::LD,
                 Some(vec![
                     Operand::Reference(Ref::Address(Addr::IncImmediate)),
-                    Operand::Value(ValueType::Register(Reg::A))
+                    Operand::Value(ValueType::Register(Reg::A)),
                 ]),
-                12
+                12,
             )),
 
             // LDH A,(n)
@@ -163,11 +142,9 @@ impl Decoder {
                 Mnemonic::LD,
                 Some(vec![
                     Operand::Reference(Ref::Register(Reg::A)),
-                    Operand::Value(
-                        ValueType::Address(Addr::IncImmediate)
-                    )
+                    Operand::Value(ValueType::Address(Addr::IncImmediate)),
                 ]),
-                12
+                12,
             )),
 
             // LD n,nn 16bit
@@ -182,9 +159,9 @@ impl Decoder {
                 Mnemonic::LD,
                 Some(vec![
                     Operand::Reference(Ref::Register(Reg::SP)),
-                    Operand::Value(ValueType::Register(Reg::HL))
+                    Operand::Value(ValueType::Register(Reg::HL)),
                 ]),
-                8
+                8,
             )),
 
             // LDHL SP,n
@@ -193,9 +170,9 @@ impl Decoder {
                 Mnemonic::LDHL,
                 Some(vec![
                     Operand::Value(ValueType::Register(Reg::SP)),
-                    Operand::Value(ValueType::Immediate)
+                    Operand::Value(ValueType::Immediate),
                 ]),
-                12
+                12,
             )),
 
             // LD (nn),SP
@@ -204,9 +181,9 @@ impl Decoder {
                 Mnemonic::LD,
                 Some(vec![
                     Operand::Reference(Ref::Address(Addr::Immediate)),
-                    Operand::Value(ValueType::Register(Reg::SP))
+                    Operand::Value(ValueType::Register(Reg::SP)),
                 ]),
-                20
+                20,
             )),
 
             // PUSH nn
@@ -236,9 +213,9 @@ impl Decoder {
                 Mnemonic::ADD,
                 Some(vec![
                     Operand::Reference(Ref::Register(Reg::A)),
-                    Operand::Value(ValueType::Address(Addr::Immediate))
+                    Operand::Value(ValueType::Address(Addr::Immediate)),
                 ]),
-                8
+                8,
             )),
 
             // ADC A,n
@@ -254,10 +231,8 @@ impl Decoder {
             0xCE => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::ADC,
-                Some(vec![
-                    Operand::Value(ValueType::Address(Addr::Immediate))
-                ]),
-                8
+                Some(vec![Operand::Value(ValueType::Address(Addr::Immediate))]),
+                8,
             )),
 
             // SUB A,n
@@ -273,10 +248,8 @@ impl Decoder {
             0xD6 => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::SUB,
-                Some(vec![
-                    Operand::Value(ValueType::Address(Addr::Immediate))
-                ]),
-                8
+                Some(vec![Operand::Value(ValueType::Address(Addr::Immediate))]),
+                8,
             )),
 
             // SBC A,n
@@ -292,10 +265,8 @@ impl Decoder {
             0xDE => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::SBC,
-                Some(vec![
-                    Operand::Value(ValueType::Address(Addr::Immediate))
-                ]),
-                8
+                Some(vec![Operand::Value(ValueType::Address(Addr::Immediate))]),
+                8,
             )),
 
             // AND n
@@ -311,10 +282,8 @@ impl Decoder {
             0xE6 => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::AND,
-                Some(vec![
-                    Operand::Value(ValueType::Immediate)
-                ]),
-                8
+                Some(vec![Operand::Value(ValueType::Immediate)]),
+                8,
             )),
 
             // OR n
@@ -330,10 +299,8 @@ impl Decoder {
             0xF6 => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::OR,
-                Some(vec![
-                    Operand::Value(ValueType::Address(Addr::Immediate))
-                ]),
-                8
+                Some(vec![Operand::Value(ValueType::Address(Addr::Immediate))]),
+                8,
             )),
 
             // XOR n
@@ -349,10 +316,8 @@ impl Decoder {
             0xEE => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::XOR,
-                Some(vec![
-                    Operand::Value(ValueType::Address(Addr::Immediate))
-                ]),
-                8
+                Some(vec![Operand::Value(ValueType::Address(Addr::Immediate))]),
+                8,
             )),
 
             // CP n
@@ -368,10 +333,8 @@ impl Decoder {
             0xFE => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::CP,
-                Some(vec![
-                    Operand::Value(ValueType::Immediate)
-                ]),
-                8
+                Some(vec![Operand::Value(ValueType::Immediate)]),
+                8,
             )),
 
             // INC n
@@ -386,10 +349,8 @@ impl Decoder {
             0x34 => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::INC,
-                Some(vec![
-                    Operand::Reference(Ref::Address(Addr::Immediate))
-                ]),
-                12
+                Some(vec![Operand::Reference(Ref::Address(Addr::Immediate))]),
+                12,
             )),
 
             // DEC n
@@ -404,10 +365,8 @@ impl Decoder {
             0x35 => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::DEC,
-                Some(vec![
-                    Operand::Reference(Ref::Address(Addr::Immediate))
-                ]),
-                12
+                Some(vec![Operand::Reference(Ref::Address(Addr::Immediate))]),
+                12,
             )),
 
             // ADD HL,n
@@ -424,9 +383,9 @@ impl Decoder {
                 Mnemonic::ADD,
                 Some(vec![
                     Operand::Reference(Ref::Register(Reg::SP)),
-                    Operand::Value(ValueType::Immediate)
+                    Operand::Value(ValueType::Immediate),
                 ]),
-                16
+                16,
             )),
 
             // INC nn
@@ -445,112 +404,67 @@ impl Decoder {
 
             // DAA
             // Decimal adjust register A
-            0x27 => Some(InstructionInfo::new(
-                opcode,
-                Mnemonic::DAA,
-                None,
-                4
-            )),
+            0x27 => Some(InstructionInfo::new(opcode, Mnemonic::DAA, None, 4)),
 
             // CPL
             // Complement register A (flip all bits)
-            0x2F => Some(InstructionInfo::new(
-                opcode,
-                Mnemonic::CPL,
-                None,
-                4
-            )),
+            0x2F => Some(InstructionInfo::new(opcode, Mnemonic::CPL, None, 4)),
 
             // CCF
             // Complement carry flag (toggle it)
-            0x3F => Some(InstructionInfo::new(
-                opcode,
-                Mnemonic::CCF,
-                None,
-                4
-            )),
+            0x3F => Some(InstructionInfo::new(opcode, Mnemonic::CCF, None, 4)),
 
             // SCF
             // Set carry flag
-            0x37 => Some(InstructionInfo::new(
-                opcode,
-                Mnemonic::SCF,
-                None,
-                4
-            )),
+            0x37 => Some(InstructionInfo::new(opcode, Mnemonic::SCF, None, 4)),
 
             // STOP
-            0x10 => Some(InstructionInfo::new(
-                opcode,
-                Mnemonic::STOP,
-                None,
-                4
-            )),
+            0x10 => Some(InstructionInfo::new(opcode, Mnemonic::STOP, None, 4)),
 
             // DI
-            0xF3 => Some(InstructionInfo::new(
-                opcode,
-                Mnemonic::DI,
-                None,
-                4
-            )),
+            0xF3 => Some(InstructionInfo::new(opcode, Mnemonic::DI, None, 4)),
 
             // EI
-            0xFB => Some(InstructionInfo::new(
-                opcode,
-                Mnemonic::EI,
-                None,
-                4
-            )),
+            0xFB => Some(InstructionInfo::new(opcode, Mnemonic::EI, None, 4)),
 
             // RLCA
             0x07 => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::RLC,
-                Some(vec![
-                    Operand::Reference(Ref::Register(Reg::A))
-                ]),
-                4
+                Some(vec![Operand::Reference(Ref::Register(Reg::A))]),
+                4,
             )),
 
             // RLA
             0x17 => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::RL,
-                Some(vec![
-                    Operand::Reference(Ref::Register(Reg::A))
-                ]),
-                4
+                Some(vec![Operand::Reference(Ref::Register(Reg::A))]),
+                4,
             )),
 
             // RRCA
             0x0F => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::RRC,
-                Some(vec![
-                    Operand::Reference(Ref::Register(Reg::A))
-                ]),
-                4
+                Some(vec![Operand::Reference(Ref::Register(Reg::A))]),
+                4,
             )),
 
             // RRA
             0x1F => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::RR,
-                Some(vec![
-                    Operand::Reference(Ref::Register(Reg::A))
-                ]),
-                4
+                Some(vec![Operand::Reference(Ref::Register(Reg::A))]),
+                4,
             )),
 
             // JP nn
             0xC3 => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::JP,
-                Some(vec![
-                    Operand::Value(ValueType::Immediate16)
-                ]),
-                12
+                Some(vec![Operand::Value(ValueType::Immediate16)]),
+                12,
             )),
 
             // JP cc,nn
@@ -563,20 +477,18 @@ impl Decoder {
             0xE9 => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::JP,
-                Some(vec![
-                    Operand::Value(ValueType::Address(Addr::Register(Reg::HL)))
-                ]),
-                4
+                Some(vec![Operand::Value(ValueType::Address(Addr::Register(
+                    Reg::HL,
+                )))]),
+                4,
             )),
 
             // JR n
             0x18 => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::JR,
-                Some(vec![
-                    Operand::Value(ValueType::Immediate)
-                ]),
-                8
+                Some(vec![Operand::Value(ValueType::Immediate)]),
+                8,
             )),
 
             // JR cc,nn
@@ -589,10 +501,8 @@ impl Decoder {
             0xCD => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::CALL,
-                Some(vec![
-                    Operand::Value(ValueType::Immediate16)
-                ]),
-                12
+                Some(vec![Operand::Value(ValueType::Immediate16)]),
+                12,
             )),
 
             // CALL cc,nn
@@ -612,12 +522,7 @@ impl Decoder {
             0xFF => Some(Self::rst(opcode, 0x38)),
 
             // RET
-            0xC9 => Some(InstructionInfo::new(
-                opcode,
-                Mnemonic::RET,
-                None,
-                8
-            )),
+            0xC9 => Some(InstructionInfo::new(opcode, Mnemonic::RET, None, 8)),
 
             // RET cc
             0xC0 => Some(Self::ret(opcode, (Flag::Zero, false))),
@@ -626,14 +531,9 @@ impl Decoder {
             0xD8 => Some(Self::ret(opcode, (Flag::Carry, true))),
 
             // RETI
-            0xD9 => Some(InstructionInfo::new(
-                opcode,
-                Mnemonic::RETI,
-                None,
-                8
-            )),
+            0xD9 => Some(InstructionInfo::new(opcode, Mnemonic::RETI, None, 8)),
 
-            _ => None
+            _ => None,
         }
     }
 
@@ -651,10 +551,10 @@ impl Decoder {
             0x06 => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::RLC,
-                Some(vec![
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
-                ]),
-                16
+                Some(vec![Operand::Reference(Ref::Address(Addr::Register(
+                    Reg::HL,
+                )))]),
+                16,
             )),
 
             // RL n
@@ -669,10 +569,10 @@ impl Decoder {
             0x16 => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::RL,
-                Some(vec![
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
-                ]),
-                16
+                Some(vec![Operand::Reference(Ref::Address(Addr::Register(
+                    Reg::HL,
+                )))]),
+                16,
             )),
 
             // RRC n
@@ -687,10 +587,10 @@ impl Decoder {
             0x0E => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::RRC,
-                Some(vec![
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
-                ]),
-                16
+                Some(vec![Operand::Reference(Ref::Address(Addr::Register(
+                    Reg::HL,
+                )))]),
+                16,
             )),
 
             // RR n
@@ -705,10 +605,10 @@ impl Decoder {
             0x1E => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::RR,
-                Some(vec![
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
-                ]),
-                16
+                Some(vec![Operand::Reference(Ref::Address(Addr::Register(
+                    Reg::HL,
+                )))]),
+                16,
             )),
 
             // SWAP n
@@ -723,10 +623,10 @@ impl Decoder {
             0x36 => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::SWAP,
-                Some(vec![
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
-                ]),
-                16
+                Some(vec![Operand::Reference(Ref::Address(Addr::Register(
+                    Reg::HL,
+                )))]),
+                16,
             )),
 
             // SLA n
@@ -741,10 +641,10 @@ impl Decoder {
             0x26 => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::SLA,
-                Some(vec![
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
-                ]),
-                16
+                Some(vec![Operand::Reference(Ref::Address(Addr::Register(
+                    Reg::HL,
+                )))]),
+                16,
             )),
 
             // SRA n
@@ -759,10 +659,10 @@ impl Decoder {
             0x2E => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::SRA,
-                Some(vec![
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
-                ]),
-                16
+                Some(vec![Operand::Reference(Ref::Address(Addr::Register(
+                    Reg::HL,
+                )))]),
+                16,
             )),
 
             // SRL n
@@ -777,10 +677,10 @@ impl Decoder {
             0x3E => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::SRL,
-                Some(vec![
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
-                ]),
-                16
+                Some(vec![Operand::Reference(Ref::Address(Addr::Register(
+                    Reg::HL,
+                )))]),
+                16,
             )),
 
             // BIT b,r
@@ -797,9 +697,9 @@ impl Decoder {
                 Mnemonic::BIT,
                 Some(vec![
                     Operand::Value(ValueType::Constant(0)),
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
                 ]),
-                16
+                16,
             )),
 
             0x4F => Some(Self::bit(opcode, 1, Reg::A)),
@@ -814,9 +714,9 @@ impl Decoder {
                 Mnemonic::BIT,
                 Some(vec![
                     Operand::Value(ValueType::Constant(1)),
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
                 ]),
-                16
+                16,
             )),
 
             0x57 => Some(Self::bit(opcode, 2, Reg::A)),
@@ -831,9 +731,9 @@ impl Decoder {
                 Mnemonic::BIT,
                 Some(vec![
                     Operand::Value(ValueType::Constant(2)),
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
                 ]),
-                16
+                16,
             )),
 
             0x5F => Some(Self::bit(opcode, 3, Reg::A)),
@@ -848,9 +748,9 @@ impl Decoder {
                 Mnemonic::BIT,
                 Some(vec![
                     Operand::Value(ValueType::Constant(3)),
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
                 ]),
-                16
+                16,
             )),
 
             0x67 => Some(Self::bit(opcode, 4, Reg::A)),
@@ -865,9 +765,9 @@ impl Decoder {
                 Mnemonic::BIT,
                 Some(vec![
                     Operand::Value(ValueType::Constant(4)),
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
                 ]),
-                16
+                16,
             )),
 
             0x6F => Some(Self::bit(opcode, 5, Reg::A)),
@@ -882,9 +782,9 @@ impl Decoder {
                 Mnemonic::BIT,
                 Some(vec![
                     Operand::Value(ValueType::Constant(5)),
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
                 ]),
-                16
+                16,
             )),
 
             0x77 => Some(Self::bit(opcode, 6, Reg::A)),
@@ -899,9 +799,9 @@ impl Decoder {
                 Mnemonic::BIT,
                 Some(vec![
                     Operand::Value(ValueType::Constant(6)),
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
                 ]),
-                16
+                16,
             )),
 
             0x7F => Some(Self::bit(opcode, 7, Reg::A)),
@@ -916,9 +816,9 @@ impl Decoder {
                 Mnemonic::BIT,
                 Some(vec![
                     Operand::Value(ValueType::Constant(7)),
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
                 ]),
-                16
+                16,
             )),
 
             // SET b,r
@@ -935,9 +835,9 @@ impl Decoder {
                 Mnemonic::SET,
                 Some(vec![
                     Operand::Value(ValueType::Constant(0)),
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
                 ]),
-                16
+                16,
             )),
 
             0xCF => Some(Self::set(opcode, 1, Reg::A)),
@@ -952,9 +852,9 @@ impl Decoder {
                 Mnemonic::SET,
                 Some(vec![
                     Operand::Value(ValueType::Constant(1)),
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
                 ]),
-                16
+                16,
             )),
 
             0xD7 => Some(Self::set(opcode, 2, Reg::A)),
@@ -969,9 +869,9 @@ impl Decoder {
                 Mnemonic::SET,
                 Some(vec![
                     Operand::Value(ValueType::Constant(2)),
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
                 ]),
-                16
+                16,
             )),
 
             0xDF => Some(Self::set(opcode, 3, Reg::A)),
@@ -986,9 +886,9 @@ impl Decoder {
                 Mnemonic::SET,
                 Some(vec![
                     Operand::Value(ValueType::Constant(3)),
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
                 ]),
-                16
+                16,
             )),
 
             0xE7 => Some(Self::set(opcode, 4, Reg::A)),
@@ -1003,9 +903,9 @@ impl Decoder {
                 Mnemonic::SET,
                 Some(vec![
                     Operand::Value(ValueType::Constant(4)),
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
                 ]),
-                16
+                16,
             )),
 
             0xEF => Some(Self::set(opcode, 5, Reg::A)),
@@ -1020,9 +920,9 @@ impl Decoder {
                 Mnemonic::SET,
                 Some(vec![
                     Operand::Value(ValueType::Constant(5)),
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
                 ]),
-                16
+                16,
             )),
 
             0xF7 => Some(Self::set(opcode, 6, Reg::A)),
@@ -1037,9 +937,9 @@ impl Decoder {
                 Mnemonic::SET,
                 Some(vec![
                     Operand::Value(ValueType::Constant(6)),
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
                 ]),
-                16
+                16,
             )),
 
             0xFF => Some(Self::set(opcode, 7, Reg::A)),
@@ -1054,9 +954,9 @@ impl Decoder {
                 Mnemonic::SET,
                 Some(vec![
                     Operand::Value(ValueType::Constant(7)),
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
                 ]),
-                16
+                16,
             )),
 
             // RES b,r
@@ -1073,9 +973,9 @@ impl Decoder {
                 Mnemonic::RES,
                 Some(vec![
                     Operand::Value(ValueType::Constant(0)),
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
                 ]),
-                16
+                16,
             )),
 
             0x8F => Some(Self::res(opcode, 1, Reg::A)),
@@ -1090,9 +990,9 @@ impl Decoder {
                 Mnemonic::RES,
                 Some(vec![
                     Operand::Value(ValueType::Constant(1)),
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
                 ]),
-                16
+                16,
             )),
 
             0x97 => Some(Self::res(opcode, 2, Reg::A)),
@@ -1107,9 +1007,9 @@ impl Decoder {
                 Mnemonic::RES,
                 Some(vec![
                     Operand::Value(ValueType::Constant(2)),
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
                 ]),
-                16
+                16,
             )),
 
             0x9F => Some(Self::res(opcode, 3, Reg::A)),
@@ -1124,9 +1024,9 @@ impl Decoder {
                 Mnemonic::RES,
                 Some(vec![
                     Operand::Value(ValueType::Constant(3)),
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
                 ]),
-                16
+                16,
             )),
 
             0xA7 => Some(Self::res(opcode, 4, Reg::A)),
@@ -1141,9 +1041,9 @@ impl Decoder {
                 Mnemonic::RES,
                 Some(vec![
                     Operand::Value(ValueType::Constant(4)),
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
                 ]),
-                16
+                16,
             )),
 
             0xAF => Some(Self::res(opcode, 5, Reg::A)),
@@ -1158,9 +1058,9 @@ impl Decoder {
                 Mnemonic::RES,
                 Some(vec![
                     Operand::Value(ValueType::Constant(5)),
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
                 ]),
-                16
+                16,
             )),
 
             0xB7 => Some(Self::res(opcode, 6, Reg::A)),
@@ -1175,9 +1075,9 @@ impl Decoder {
                 Mnemonic::RES,
                 Some(vec![
                     Operand::Value(ValueType::Constant(6)),
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
                 ]),
-                16
+                16,
             )),
 
             0xBF => Some(Self::res(opcode, 7, Reg::A)),
@@ -1192,12 +1092,12 @@ impl Decoder {
                 Mnemonic::RES,
                 Some(vec![
                     Operand::Value(ValueType::Constant(7)),
-                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))
+                    Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
                 ]),
-                16
+                16,
             )),
 
-            _ => None
+            _ => None,
         }
     }
 
@@ -1211,10 +1111,12 @@ impl Decoder {
             0x60..=0x67 => Some(Reg::H),
             0x68..=0x6F => Some(Reg::L),
             0x70..=0x77 => Some(Reg::HL),
-            _ => None
+            _ => None,
         };
 
-        if r1.is_none() { return None; }
+        if r1.is_none() {
+            return None;
+        }
         let r1 = r1.unwrap();
 
         // get second hex value (f7 -> 7)
@@ -1227,7 +1129,7 @@ impl Decoder {
             5 | 0xD => Some(Reg::L),
             6 | 0xE => Some(Reg::HL),
             7 | 0xF => Some(Reg::A),
-            _ => None
+            _ => None,
         };
 
         if let Some(r2) = r2 {
@@ -1253,7 +1155,7 @@ impl Decoder {
             opcode,
             Mnemonic::LD,
             Some(vec![Operand::Reference(r1), Operand::Value(r2)]),
-            cycle_count
+            cycle_count,
         )
     }
 
@@ -1269,9 +1171,9 @@ impl Decoder {
             Mnemonic::LD,
             Some(vec![
                 Operand::Reference(op),
-                Operand::Value(ValueType::Immediate)
+                Operand::Value(ValueType::Immediate),
             ]),
-            cycle_count
+            cycle_count,
         )
     }
 
@@ -1281,9 +1183,9 @@ impl Decoder {
             Mnemonic::LD,
             Some(vec![
                 Operand::Reference(Ref::Register(register)),
-                Operand::Value(ValueType::Address(Addr::Immediate))
+                Operand::Value(ValueType::Address(Addr::Immediate)),
             ]),
-            16
+            16,
         )
     }
 
@@ -1293,9 +1195,9 @@ impl Decoder {
             Mnemonic::LD,
             Some(vec![
                 Operand::Reference(Ref::Address(Addr::Immediate)),
-                Operand::Value(ValueType::Register(register))
+                Operand::Value(ValueType::Register(register)),
             ]),
-            16
+            16,
         )
     }
 
@@ -1305,9 +1207,9 @@ impl Decoder {
             Mnemonic::LD,
             Some(vec![
                 Operand::Reference(Ref::Register(register)),
-                Operand::Value(ValueType::Immediate16)
+                Operand::Value(ValueType::Immediate16),
             ]),
-            12
+            12,
         )
     }
 
@@ -1315,10 +1217,8 @@ impl Decoder {
         InstructionInfo::new(
             opcode,
             Mnemonic::PUSH,
-            Some(vec![
-                Operand::Value(ValueType::Register(register))
-            ]),
-            16
+            Some(vec![Operand::Value(ValueType::Register(register))]),
+            16,
         )
     }
 
@@ -1326,10 +1226,8 @@ impl Decoder {
         InstructionInfo::new(
             opcode,
             Mnemonic::POP,
-            Some(vec![
-                Operand::Reference(Ref::Register(register))
-            ]),
-            12
+            Some(vec![Operand::Reference(Ref::Register(register))]),
+            12,
         )
     }
 
@@ -1339,9 +1237,9 @@ impl Decoder {
             Mnemonic::ADD,
             Some(vec![
                 Operand::Reference(Ref::Register(Reg::A)),
-                Operand::Value(ValueType::Register(register))
+                Operand::Value(ValueType::Register(register)),
             ]),
-            4
+            4,
         )
     }
 
@@ -1381,23 +1279,17 @@ impl Decoder {
         Self::incdec(opcode, register, Mnemonic::DEC)
     }
 
-    fn incdec(opcode: u8, register: Reg, mnemonic: Mnemonic)
-        -> InstructionInfo
-    {
+    fn incdec(opcode: u8, register: Reg, mnemonic: Mnemonic) -> InstructionInfo {
         let cycle_count = if register.is16bit() { 8 } else { 4 };
         InstructionInfo::new(
             opcode,
             mnemonic,
-            Some(vec![
-                Operand::Reference(Ref::Register(register))
-            ]),
-            cycle_count
+            Some(vec![Operand::Reference(Ref::Register(register))]),
+            cycle_count,
         )
     }
 
-    fn alu(opcode: u8, register: Reg, mnemonic: Mnemonic)
-           -> InstructionInfo
-    {
+    fn alu(opcode: u8, register: Reg, mnemonic: Mnemonic) -> InstructionInfo {
         let cycle_count = if register == Reg::HL { 8 } else { 4 };
         let op = if register == Reg::HL {
             ValueType::Address(Addr::Register(Reg::HL))
@@ -1407,10 +1299,8 @@ impl Decoder {
         InstructionInfo::new(
             opcode,
             mnemonic,
-            Some(vec![
-                Operand::Value(op)
-            ]),
-            cycle_count
+            Some(vec![Operand::Value(op)]),
+            cycle_count,
         )
     }
 
@@ -1420,9 +1310,9 @@ impl Decoder {
             Mnemonic::ADD,
             Some(vec![
                 Operand::Reference(Ref::Register(Reg::HL)),
-                Operand::Value(ValueType::Register(register))
+                Operand::Value(ValueType::Register(register)),
             ]),
-            8
+            8,
         )
     }
 
@@ -1464,9 +1354,9 @@ impl Decoder {
             Mnemonic::BIT,
             Some(vec![
                 Operand::Value(ValueType::Constant(bit as u16)),
-                Operand::Reference(Ref::Register(register))
+                Operand::Reference(Ref::Register(register)),
             ]),
-            8
+            8,
         )
     }
 
@@ -1476,9 +1366,9 @@ impl Decoder {
             Mnemonic::SET,
             Some(vec![
                 Operand::Value(ValueType::Constant(bit as u16)),
-                Operand::Reference(Ref::Register(register))
+                Operand::Reference(Ref::Register(register)),
             ]),
-            8
+            8,
         )
     }
 
@@ -1488,9 +1378,9 @@ impl Decoder {
             Mnemonic::RES,
             Some(vec![
                 Operand::Value(ValueType::Constant(bit as u16)),
-                Operand::Reference(Ref::Register(register))
+                Operand::Reference(Ref::Register(register)),
             ]),
-            8
+            8,
         )
     }
 
@@ -1498,10 +1388,8 @@ impl Decoder {
         InstructionInfo::new(
             opcode,
             mnemonic,
-            Some(vec![
-                Operand::Reference(Ref::Register(register))
-            ]),
-            8
+            Some(vec![Operand::Reference(Ref::Register(register))]),
+            8,
         )
     }
 
@@ -1511,9 +1399,9 @@ impl Decoder {
             Mnemonic::JP,
             Some(vec![
                 Operand::Condition(condition),
-                Operand::Value(ValueType::Address(Addr::Immediate))
+                Operand::Value(ValueType::Address(Addr::Immediate)),
             ]),
-            12
+            12,
         )
     }
 
@@ -1523,9 +1411,9 @@ impl Decoder {
             Mnemonic::JR,
             Some(vec![
                 Operand::Condition(condition),
-                Operand::Value(ValueType::Immediate)
+                Operand::Value(ValueType::Immediate),
             ]),
-            8
+            8,
         )
     }
 
@@ -1535,9 +1423,9 @@ impl Decoder {
             Mnemonic::CALL,
             Some(vec![
                 Operand::Condition(condition),
-                Operand::Value(ValueType::Address(Addr::Immediate))
+                Operand::Value(ValueType::Address(Addr::Immediate)),
             ]),
-            12
+            12,
         )
     }
 
@@ -1545,10 +1433,8 @@ impl Decoder {
         InstructionInfo::new(
             opcode,
             Mnemonic::RST,
-            Some(vec![
-                Operand::Value(ValueType::Constant(address))
-            ]),
-            32
+            Some(vec![Operand::Value(ValueType::Constant(address))]),
+            32,
         )
     }
 
@@ -1556,10 +1442,8 @@ impl Decoder {
         InstructionInfo::new(
             opcode,
             Mnemonic::RET,
-            Some(vec![
-                Operand::Condition(condition)
-            ]),
-            8
+            Some(vec![Operand::Condition(condition)]),
+            8,
         )
     }
 }
@@ -1572,13 +1456,11 @@ mod tests {
     fn coverage() {
         let mut not_covered = Vec::new();
         let empty_instr = vec![
-            0xD3, 0xDB, 0xDD, 0xE3, 0xE4, 0xEB, 0xEC, 0xED, 0xF4, 0xFC, 0xFD
+            0xD3, 0xDB, 0xDD, 0xE3, 0xE4, 0xEB, 0xEC, 0xED, 0xF4, 0xFC, 0xFD,
         ];
         let empty: Vec<&str> = Vec::new();
         for i in 0..0xff {
-            if !empty_instr.contains(&i) &&
-                Decoder::decode_opcode(i, Prefix::None).is_none()
-            {
+            if !empty_instr.contains(&i) && Decoder::decode_opcode(i, Prefix::None).is_none() {
                 not_covered.push(format!("{:X}", i));
             }
         }

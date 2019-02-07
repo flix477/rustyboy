@@ -1,6 +1,6 @@
-use crate::processor::register::*;
 use crate::processor::flag_register::FlagRegister;
 use crate::processor::program_counter::ProgramCounter;
+use crate::processor::register::*;
 use crate::processor::stack_pointer::StackPointer;
 
 pub struct Registers {
@@ -9,7 +9,7 @@ pub struct Registers {
     pub de: DualRegister,
     pub hl: DualRegister,
     pub stack_pointer: StackPointer,
-    pub program_counter: ProgramCounter
+    pub program_counter: ProgramCounter,
 }
 
 impl Registers {
@@ -20,7 +20,7 @@ impl Registers {
             de: DualRegister::from(0x00D8),
             hl: DualRegister::from(0x014D),
             stack_pointer: StackPointer::new(),
-            program_counter: ProgramCounter::new()
+            program_counter: ProgramCounter::new(),
         };
     }
 
@@ -39,50 +39,50 @@ impl Registers {
             RegisterType::D => self.de.high.get(),
             RegisterType::E => self.de.low.get(),
             RegisterType::H => self.hl.high.get(),
-            RegisterType::L => self.hl.low.get()
-        }
+            RegisterType::L => self.hl.low.get(),
+        };
     }
 
     pub fn set_reg(&mut self, register: RegisterType, value: u16) {
         match register {
             RegisterType::A => {
                 self.af.set_accumulator(value as u8);
-            },
+            }
             RegisterType::F => {
                 self.af.set_flags(value as u8);
-            },
+            }
             RegisterType::AF => {
                 self.af.register.set(value);
-            },
+            }
             RegisterType::B => {
                 self.bc.high.set(value);
-            },
+            }
             RegisterType::C => {
                 self.bc.low.set(value);
-            },
+            }
             RegisterType::BC => {
                 self.bc.set(value);
-            },
+            }
             RegisterType::D => {
                 self.de.high.set(value);
-            },
+            }
             RegisterType::E => {
                 self.de.low.set(value);
-            },
+            }
             RegisterType::DE => {
                 self.de.set(value);
-            },
+            }
             RegisterType::H => {
                 self.hl.high.set(value);
-            },
+            }
             RegisterType::L => {
                 self.hl.low.set(value);
-            },
+            }
             RegisterType::HL => {
                 self.hl.set(value);
-            },
-            RegisterType::PC => { self.program_counter.set(value) },
-            RegisterType::SP => { self.stack_pointer.set(value) }
+            }
+            RegisterType::PC => self.program_counter.set(value),
+            RegisterType::SP => self.stack_pointer.set(value),
         }
     }
 }
@@ -102,18 +102,16 @@ pub enum RegisterType {
     H,
     L,
     SP,
-    PC
+    PC,
 }
 
 impl RegisterType {
     pub fn is16bit(&self) -> bool {
-        return
-            *self == RegisterType::AF ||
-            *self == RegisterType::BC ||
-            *self == RegisterType::DE ||
-            *self == RegisterType::HL ||
-            *self == RegisterType::SP ||
-            *self == RegisterType::PC
-        ;
+        return *self == RegisterType::AF
+            || *self == RegisterType::BC
+            || *self == RegisterType::DE
+            || *self == RegisterType::HL
+            || *self == RegisterType::SP
+            || *self == RegisterType::PC;
     }
 }

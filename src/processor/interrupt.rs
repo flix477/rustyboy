@@ -1,5 +1,5 @@
-use crate::util::bitflags::Bitflags;
 use crate::bus::{Readable, Writable};
+use crate::util::bitflags::Bitflags;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Interrupt {
@@ -7,7 +7,7 @@ pub enum Interrupt {
     LCDCStat = 2,
     Timer = 4,
     Serial = 8,
-    Keypad = 16
+    Keypad = 16,
 }
 
 impl Interrupt {
@@ -17,7 +17,7 @@ impl Interrupt {
             Interrupt::LCDCStat => 0x0048,
             Interrupt::Timer => 0x0050,
             Interrupt::Serial => 0x0058,
-            Interrupt::Keypad => 0x0060
+            Interrupt::Keypad => 0x0060,
         }
     }
 }
@@ -36,26 +36,22 @@ impl From<u8> for Interrupt {
             4 => Interrupt::Timer,
             8 => Interrupt::Serial,
             16 => Interrupt::Keypad,
-            _ => panic!("Invalid value.")
+            _ => panic!("Invalid value."),
         }
     }
 }
 
 pub struct InterruptRegister {
-    register: u8
+    register: u8,
 }
 
 impl InterruptRegister {
     pub fn new() -> InterruptRegister {
-        return InterruptRegister {
-            register: 0
-        };
+        return InterruptRegister { register: 0 };
     }
 
     pub fn from_value(value: u8) -> InterruptRegister {
-        return InterruptRegister {
-            register: value
-        };
+        return InterruptRegister { register: value };
     }
 }
 
@@ -71,7 +67,7 @@ impl Bitflags<Interrupt> for InterruptRegister {
 pub struct InterruptHandler {
     interrupt_request: InterruptRegister,
     interrupt_enable: InterruptRegister,
-    interrupt_master_enable: bool
+    interrupt_master_enable: bool,
 }
 
 impl InterruptHandler {
@@ -79,12 +75,16 @@ impl InterruptHandler {
         InterruptHandler {
             interrupt_request: InterruptRegister::new(),
             interrupt_enable: InterruptRegister::from_value(0xFF),
-            interrupt_master_enable: false
+            interrupt_master_enable: false,
         }
     }
 
     pub fn fetch_interrupt(&mut self) -> Option<Interrupt> {
-        let mask = if self.interrupt_master_enable { 0xFF } else { 0 };
+        let mask = if self.interrupt_master_enable {
+            0xFF
+        } else {
+            0
+        };
         let value = mask & self.interrupt_enable.register() & self.interrupt_request.register();
 
         for x in 0..=4 {
@@ -92,7 +92,7 @@ impl InterruptHandler {
             if (value & interrupt as u8) != 0 {
                 self.interrupt_master_enable = false;
                 self.interrupt_request.set_flag(interrupt, false);
-                return Some(interrupt)
+                return Some(interrupt);
             }
         }
 
@@ -113,7 +113,7 @@ impl Readable for InterruptHandler {
         match address {
             0xFFFF => self.interrupt_master_enable as u8,
             0xFF0F => self.interrupt_request.register,
-            _ => 0
+            _ => 0,
         }
     }
 }
@@ -128,7 +128,6 @@ impl Writable for InterruptHandler {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -137,15 +136,21 @@ mod tests {
     fn fetch_interrupt_ime_false() {
         let mut interrupt_handler = InterruptHandler::new();
         interrupt_handler.interrupt_master_enable = false;
-        interrupt_handler.interrupt_request.set_flag(Interrupt::Keypad, true);
+        interrupt_handler
+            .interrupt_request
+            .set_flag(Interrupt::Keypad, true);
         assert!(interrupt_handler.fetch_interrupt().is_none())
     }
 
     #[test]
     fn fetch_interrupt_ie_false() {
         let mut interrupt_handler = InterruptHandler::new();
-        interrupt_handler.interrupt_enable.set_flag(Interrupt::Serial, false);
-        interrupt_handler.interrupt_request.set_flag(Interrupt::Serial, true);
+        interrupt_handler
+            .interrupt_enable
+            .set_flag(Interrupt::Serial, false);
+        interrupt_handler
+            .interrupt_request
+            .set_flag(Interrupt::Serial, true);
         assert!(interrupt_handler.fetch_interrupt().is_none())
     }
 
@@ -158,7 +163,9 @@ mod tests {
     #[test]
     fn fetch_interrupt_one() {
         let mut interrupt_handler = InterruptHandler::new();
-        interrupt_handler.interrupt_request.set_flag(Interrupt::LCDCStat, true);
+        interrupt_handler
+            .interrupt_request
+            .set_flag(Interrupt::LCDCStat, true);
         let interrupt = interrupt_handler.fetch_interrupt().unwrap();
         assert_eq!(interrupt, Interrupt::LCDCStat);
     }
@@ -167,15 +174,30 @@ mod tests {
     fn fetch_interrupt_multiple() {
         let mut interrupt_handler = InterruptHandler::new();
         interrupt_handler.interrupt_request.set_register(0xFF);
-        assert_eq!(interrupt_handler.fetch_interrupt().unwrap(), Interrupt::VBlank);
+        assert_eq!(
+            interrupt_handler.fetch_interrupt().unwrap(),
+            Interrupt::VBlank
+        );
         interrupt_handler.interrupt_master_enable = true;
-        assert_eq!(interrupt_handler.fetch_interrupt().unwrap(), Interrupt::LCDCStat);
+        assert_eq!(
+            interrupt_handler.fetch_interrupt().unwrap(),
+            Interrupt::LCDCStat
+        );
         interrupt_handler.interrupt_master_enable = true;
-        assert_eq!(interrupt_handler.fetch_interrupt().unwrap(), Interrupt::Timer);
+        assert_eq!(
+            interrupt_handler.fetch_interrupt().unwrap(),
+            Interrupt::Timer
+        );
         interrupt_handler.interrupt_master_enable = true;
-        assert_eq!(interrupt_handler.fetch_interrupt().unwrap(), Interrupt::Serial);
+        assert_eq!(
+            interrupt_handler.fetch_interrupt().unwrap(),
+            Interrupt::Serial
+        );
         interrupt_handler.interrupt_master_enable = true;
-        assert_eq!(interrupt_handler.fetch_interrupt().unwrap(), Interrupt::Keypad);
+        assert_eq!(
+            interrupt_handler.fetch_interrupt().unwrap(),
+            Interrupt::Keypad
+        );
         interrupt_handler.interrupt_master_enable = true;
         assert!(interrupt_handler.fetch_interrupt().is_none());
     }

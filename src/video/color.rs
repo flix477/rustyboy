@@ -3,7 +3,7 @@ pub enum Color {
     White = 0,
     LightGray = 1,
     DarkGray = 2,
-    Black = 3
+    Black = 3,
 }
 
 impl Color {
@@ -12,7 +12,7 @@ impl Color {
             Color::White => [255, 255, 255],
             Color::LightGray => [170, 170, 170],
             Color::DarkGray => [85, 85, 85],
-            Color::Black => [0, 0, 0]
+            Color::Black => [0, 0, 0],
         }
     }
 }
@@ -24,7 +24,7 @@ impl From<u8> for Color {
             1 => Color::LightGray,
             2 => Color::DarkGray,
             3 => Color::Black,
-            _ => panic!("Invalid value.")
+            _ => panic!("Invalid value."),
         }
     }
 }

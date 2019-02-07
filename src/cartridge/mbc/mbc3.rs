@@ -1,14 +1,14 @@
+use super::real_time_clock::{RTCRegister, RealTimeClock};
 use super::MemoryBankController;
-use std::cmp;
 use crate::cartridge::cartridge_capability::CartridgeCapability;
-use super::real_time_clock::{RealTimeClock, RTCRegister};
+use std::cmp;
 
 pub struct MBC3 {
     rom_bank: u8,
     ram_enabled: bool,
     ram_bank: u8,
     mode: MBC3Mode,
-    clock: Option<RealTimeClock>
+    clock: Option<RealTimeClock>,
 }
 
 impl MBC3 {
@@ -23,57 +23,73 @@ impl MBC3 {
             ram_enabled: false,
             ram_bank: 0,
             mode: MBC3Mode::RAM,
-            clock
+            clock,
         }
     }
 
-    pub fn mode(&self) -> &MBC3Mode { &self.mode }
+    pub fn mode(&self) -> &MBC3Mode {
+        &self.mode
+    }
 
     pub fn set_ram_enabled(&mut self, value: bool) {
         self.ram_enabled = value;
     }
 
-    pub fn clock(&self) -> &Option<RealTimeClock> { &self.clock }
+    pub fn clock(&self) -> &Option<RealTimeClock> {
+        &self.clock
+    }
 }
 
 // TODO: implement RTC correctly
 impl MemoryBankController for MBC3 {
-    fn rom_bank(&self) -> u16 { self.rom_bank as u16 }
+    fn rom_bank(&self) -> u16 {
+        self.rom_bank as u16
+    }
 
-    fn ram_bank(&self) -> u8 { self.ram_bank }
+    fn ram_bank(&self) -> u8 {
+        self.ram_bank
+    }
 
-    fn ram_enabled(&self) -> bool { self.ram_enabled }
+    fn ram_enabled(&self) -> bool {
+        self.ram_enabled
+    }
 
     fn write_rom(&mut self, address: usize, value: u8) {
         match address {
-            0...0x1FFF => { // toggle ram bank
+            0...0x1FFF => {
+                // toggle ram bank
                 self.ram_enabled = value == 0x0A;
-            },
-            0x2000...0x3FFF => { // change rom bank
+            }
+            0x2000...0x3FFF => {
+                // change rom bank
                 self.rom_bank = cmp::max(value & 0x7F, 1);
-            },
-            0x4000...0x5FFF => { // change ram bank/rtc register
+            }
+            0x4000...0x5FFF => {
+                // change ram bank/rtc register
                 match value {
-                    0...0x7 => { // ram bank
+                    0...0x7 => {
+                        // ram bank
                         self.mode = MBC3Mode::RAM;
                         self.ram_bank = value;
-                    },
-                    0x8...0xC => { // rtc register
+                    }
+                    0x8...0xC => {
+                        // rtc register
                         if let (Some(clock), Some(value)) =
                             (&mut self.clock, RTCRegister::from_value(value))
                         {
                             self.mode = MBC3Mode::RTC;
                             clock.set_active_register(value);
                         }
-                    },
+                    }
                     _ => {}
                 }
-            },
-            0x6000...0x7FFF => { // latch clock data
+            }
+            0x6000...0x7FFF => {
+                // latch clock data
                 if let Some(clock) = &mut self.clock {
                     clock.latch();
                 }
-            },
+            }
             _ => {}
         }
     }
@@ -93,9 +109,8 @@ impl MemoryBankController for MBC3 {
 #[derive(Debug, PartialEq)]
 pub enum MBC3Mode {
     RAM,
-    RTC
+    RTC,
 }
-
 
 #[cfg(test)]
 mod tests {

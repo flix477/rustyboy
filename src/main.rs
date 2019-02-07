@@ -1,30 +1,30 @@
-mod gameboy;
+mod bus;
 mod cartridge;
+mod config;
+mod gameboy;
+mod hardware;
 mod processor;
 mod util;
-mod bus;
-mod config;
 mod video;
-mod hardware;
 
-use crate::gameboy::{Gameboy, DeviceType};
-use crate::config::Config;
 use crate::cartridge::Cartridge;
-use crate::video::tile::Tile;
-use glium::{Display, Surface};
-use glium::glutin::{EventsLoop, WindowBuilder, ContextBuilder, WindowEvent, Event};
-use glium::texture::RawImage2d;
-use std::time::Instant;
+use crate::config::Config;
+use crate::gameboy::{DeviceType, Gameboy};
 use crate::util::as_millis;
-use glium::uniforms::MagnifySamplerFilter;
 use crate::video::color::Color;
+use crate::video::tile::Tile;
+use glium::glutin::{ContextBuilder, Event, EventsLoop, WindowBuilder, WindowEvent};
+use glium::texture::RawImage2d;
+use glium::uniforms::MagnifySamplerFilter;
+use glium::{Display, Surface};
+use std::time::Instant;
 
 fn main() {
     let cartridge = Cartridge::from_file("tests/individual/03-op sp,hl.gb").unwrap();
     println!("{:?}", cartridge.metadata());
     let config = Config {
         cartridge,
-        device_type: DeviceType::GameBoy
+        device_type: DeviceType::GameBoy,
     };
     let mut gameboy = Gameboy::new(config).unwrap();
     let mut events_loop = EventsLoop::new();
@@ -42,12 +42,18 @@ fn main() {
         target.clear_color(0.0, 0.0, 1.0, 1.0);
         gameboy.update(as_millis(delta));
 
-//        let screen = gameboy.hardware().video().screen();
-//        let buf = screen.draw(gameboy.hardware().video());
+        //        let screen = gameboy.hardware().video().screen();
+        //        let buf = screen.draw(gameboy.hardware().video());
 
         let tile_data = gameboy.hardware().video().memory().tile_data();
-        let colors = tile_data.iter().flat_map(|tile| tile.colored().to_vec()).collect::<Vec<Color>>();
-        let buf = colors.iter().flat_map(|color| color.to_rgb().to_vec()).collect::<Vec<u8>>();
+        let colors = tile_data
+            .iter()
+            .flat_map(|tile| tile.colored().to_vec())
+            .collect::<Vec<Color>>();
+        let buf = colors
+            .iter()
+            .flat_map(|color| color.to_rgb().to_vec())
+            .collect::<Vec<u8>>();
 
         let img = RawImage2d::from_raw_rgb_reversed(&buf, (16 * 8, 24 * 8));
         glium::Texture2d::new(&display, img)
@@ -56,14 +62,15 @@ fn main() {
             .fill(&target, MagnifySamplerFilter::Nearest);
 
         target.finish().unwrap();
-        events_loop.poll_events(|event| {
-            match event {
-                Event::WindowEvent { event: WindowEvent::CloseRequested, .. } => {
-                    println!("The close button was pressed; stopping");
-                    closed = true;
-                },
-                _ => {}
+        events_loop.poll_events(|event| match event {
+            Event::WindowEvent {
+                event: WindowEvent::CloseRequested,
+                ..
+            } => {
+                println!("The close button was pressed; stopping");
+                closed = true;
             }
+            _ => {}
         });
         last_time = now;
     }
