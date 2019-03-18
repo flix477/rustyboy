@@ -77,7 +77,7 @@ impl CartridgeMetadata {
     pub fn from_buffer(buffer: &Vec<u8>) -> Result<CartridgeMetadata, Box<dyn Error>> {
         let (title, manufacturer_code, cgb_flag) = Self::parse_title_section(buffer)?;
 
-        return Ok(CartridgeMetadata {
+        Ok(CartridgeMetadata {
             title,
             manufacturer_code,
             cgb_flag,
@@ -90,9 +90,9 @@ impl CartridgeMetadata {
             old_licensee_code: Self::parse_old_licensee_code(buffer),
             version: buffer[VERSION_OFFSET],
             header_checksum: buffer[HEADER_CHECKSUM_OFFSET],
-            //            global_checksum: buffer[GLOBAL_CHECKSUM_RANGE].iter().map(|x| *x).sum() // lol clearly not
+            // global_checksum: buffer[GLOBAL_CHECKSUM_RANGE].iter().map(|x| *x).sum() // lol clearly not
             global_checksum: 0,
-        });
+        })
     }
 
     fn parse_title_section(
@@ -109,11 +109,11 @@ impl CartridgeMetadata {
                 title_end_offset -= 4;
             }
         }
-        return Ok((
+        Ok((
             ut8_decode_trim(buffer[(GAME_TITLE_OFFSET..title_end_offset)].to_vec())?,
             manufacturer_code,
             cgb_flag,
-        ));
+        ))
     }
 
     fn parse_manufacturer_code(buffer: &Vec<u8>) -> Result<Option<String>, Box<dyn Error>> {
@@ -121,7 +121,7 @@ impl CartridgeMetadata {
         if code.len() == 4 {
             return Ok(Some(code));
         }
-        return Ok(None);
+        Ok(None)
     }
 
     fn parse_new_licensee_code(buffer: &Vec<u8>) -> Result<Option<String>, Box<dyn Error>> {
@@ -129,11 +129,11 @@ impl CartridgeMetadata {
         if code.len() == 2 {
             return Ok(Some(code));
         }
-        return Ok(None);
+        Ok(None)
     }
 
     fn parse_rom_size(buffer: &Vec<u8>) -> Result<f64, String> {
-        return match buffer[ROM_SIZE_OFFSET] {
+        match buffer[ROM_SIZE_OFFSET] {
             0x00 => Ok(BytesConvert::from_kb(32.0)),
             0x01 => Ok(BytesConvert::from_kb(64.0)),
             0x02 => Ok(BytesConvert::from_kb(128.0)),
@@ -146,25 +146,25 @@ impl CartridgeMetadata {
             0x53 => Ok(BytesConvert::from_mb(1.2)),
             0x54 => Ok(BytesConvert::from_mb(1.5)),
             _ => Err(String::from("invalid ROM size value")),
-        };
+        }
     }
 
     fn parse_ram_size(buffer: &Vec<u8>) -> Result<f64, String> {
-        return match buffer[RAM_SIZE_OFFSET] {
+        match buffer[RAM_SIZE_OFFSET] {
             0x00 => Ok(0.0),
             0x01 => Ok(BytesConvert::from_kb(2.0)),
             0x02 => Ok(BytesConvert::from_kb(8.0)),
             0x03 => Ok(BytesConvert::from_kb(32.0)),
             _ => Err(String::from("invalid RAM size value")),
-        };
+        }
     }
 
     fn parse_old_licensee_code(buffer: &Vec<u8>) -> Option<u8> {
         let value = buffer[OLD_LICENSEE_CODE_OFFSET];
-        return match value {
+        match value {
             0x33 => None,
             _ => Some(value),
-        };
+        }
     }
 }
 
@@ -176,11 +176,11 @@ pub enum CGBFlag {
 
 impl CGBFlag {
     pub fn from(value: u8) -> Option<CGBFlag> {
-        return match value {
+        match value {
             0x80 => Some(CGBFlag::CGBOnly),
             0xC0 => Some(CGBFlag::SupportsCGB),
             _ => None,
-        };
+        }
     }
 }
 
@@ -192,11 +192,11 @@ pub enum Destination {
 
 impl Destination {
     pub fn from(value: u8) -> Result<Destination, String> {
-        return match value {
+        match value {
             0x00 => Ok(Destination::Japanese),
             0x01 => Ok(Destination::NonJapanese),
             _ => Err(String::from("invalid destination code")),
-        };
+        }
     }
 }
 

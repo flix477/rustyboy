@@ -19,7 +19,7 @@ pub enum CartridgeCapability {
 
 impl CartridgeCapability {
     pub fn from_byte(value: u8) -> Result<Vec<CartridgeCapability>, String> {
-        return match value {
+        match value {
             0x00 => Ok(vec![CartridgeCapability::ROM]),
             0x01 => Ok(vec![CartridgeCapability::MBC1]),
             0x02 => Ok(vec![CartridgeCapability::MBC1, CartridgeCapability::RAM]),
@@ -99,6 +99,6 @@ impl CartridgeCapability {
                 CartridgeCapability::Battery,
             ]),
             _ => Err(String::from("invalid cartridge type value")),
-        };
+        }
     }
 }

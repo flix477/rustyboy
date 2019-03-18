@@ -16,17 +16,17 @@ pub struct Cartridge {
 
 impl Cartridge {
     pub fn from_file(filename: &str) -> Result<Cartridge, Box<dyn Error>> {
-        return Cartridge::from_buffer(fs::read(filename)?);
+        Cartridge::from_buffer(fs::read(filename)?)
     }
 
     pub fn from_buffer(buffer: Vec<u8>) -> Result<Cartridge, Box<dyn Error>> {
         let metadata = CartridgeMetadata::from_buffer(&buffer)?;
         let mbc = MBCFactory::from_metadata(&metadata);
-        return Ok(Cartridge {
+        Ok(Cartridge {
             metadata,
             buffer,
             mbc,
-        });
+        })
     }
 
     pub fn metadata(&self) -> &CartridgeMetadata {
@@ -53,7 +53,7 @@ impl Readable for Cartridge {
                         return mbc.read_ram(address, &self.buffer);
                     }
                 }
-                return 0; // TODO: should do something else maybe?
+                0 // TODO: should do something else maybe?
             } // switchable ram bank
             _ => 0,
         }

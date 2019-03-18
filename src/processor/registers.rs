@@ -3,6 +3,10 @@ use crate::processor::program_counter::ProgramCounter;
 use crate::processor::register::*;
 use crate::processor::stack_pointer::StackPointer;
 
+pub const DEFAULT_BC: u16 = 0x0013;
+pub const DEFAULT_DE: u16 = 0x00D8;
+pub const DEFAULT_HL: u16 = 0x014D;
+
 pub struct Registers {
     pub af: FlagRegister,
     pub bc: DualRegister,
@@ -14,18 +18,18 @@ pub struct Registers {
 
 impl Registers {
     pub fn new() -> Registers {
-        return Registers {
+        Registers {
             af: FlagRegister::new(),
-            bc: DualRegister::from(0x0013),
-            de: DualRegister::from(0x00D8),
-            hl: DualRegister::from(0x014D),
+            bc: DualRegister::from(DEFAULT_BC),
+            de: DualRegister::from(DEFAULT_DE),
+            hl: DualRegister::from(DEFAULT_HL),
             stack_pointer: StackPointer::new(),
             program_counter: ProgramCounter::new(),
-        };
+        }
     }
 
     pub fn reg(&self, register: RegisterType) -> u16 {
-        return match register {
+        match register {
             RegisterType::AF => self.af.register.get(),
             RegisterType::BC => self.bc.get(),
             RegisterType::DE => self.de.get(),
@@ -40,7 +44,7 @@ impl Registers {
             RegisterType::E => self.de.low.get(),
             RegisterType::H => self.hl.high.get(),
             RegisterType::L => self.hl.low.get(),
-        };
+        }
     }
 
     pub fn set_reg(&mut self, register: RegisterType, value: u16) {
@@ -107,11 +111,11 @@ pub enum RegisterType {
 
 impl RegisterType {
     pub fn is16bit(&self) -> bool {
-        return *self == RegisterType::AF
+        *self == RegisterType::AF
             || *self == RegisterType::BC
             || *self == RegisterType::DE
             || *self == RegisterType::HL
             || *self == RegisterType::SP
-            || *self == RegisterType::PC;
+            || *self == RegisterType::PC
     }
 }

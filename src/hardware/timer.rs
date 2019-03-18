@@ -62,7 +62,7 @@ impl Timer {
     }
 
     fn set_control(&mut self, value: u8) {
-        self.counter_enabled = (value & 0b100) == 1;
+        self.counter_enabled = (value & 0b100) != 0;
         self.clock_speed = CLOCK_SPEEDS[value as usize & 0b11];
     }
 }

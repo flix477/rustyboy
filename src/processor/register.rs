@@ -11,11 +11,11 @@ pub struct SingleRegister {
 
 impl SingleRegister {
     pub fn new() -> SingleRegister {
-        return SingleRegister { value: 0 };
+        SingleRegister { value: 0 }
     }
 
     pub fn get_bit(&self, idx: u8) -> bool {
-        return self.value >> (7 - idx) == 1;
+        self.value >> (7 - idx) == 1
     }
 
     pub fn set_bit(&mut self, idx: u8, value: bool) {
@@ -53,10 +53,10 @@ pub struct DualRegister {
 
 impl DualRegister {
     pub fn new() -> DualRegister {
-        return DualRegister {
+        DualRegister {
             high: SingleRegister::new(),
             low: SingleRegister::new(),
-        };
+        }
     }
 
     pub fn from(value: u16) -> DualRegister {
@@ -71,7 +71,7 @@ impl DualRegister {
 
 impl Register for DualRegister {
     fn get(&self) -> u16 {
-        return ((self.high.get() as u16) << 8) | self.low.get() as u16;
+        ((self.high.get() as u16) << 8) | self.low.get() as u16
     }
 
     fn set(&mut self, value: u16) {

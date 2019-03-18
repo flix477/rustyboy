@@ -67,6 +67,16 @@ pub enum Reference {
     Address(AddressType),
 }
 
+impl Reference {
+    pub fn is16bit(&self) -> bool {
+        if let Reference::Register(register) = self {
+            register.is16bit()
+        } else {
+            true
+        }
+    }
+}
+
 // Increment versions are incremented with 0xFF00
 #[derive(Copy, Clone, Debug)]
 pub enum AddressType {
@@ -100,12 +110,12 @@ impl InstructionInfo {
         operands: Option<Vec<Operand>>,
         cycle_count: u8,
     ) -> InstructionInfo {
-        return InstructionInfo {
+        InstructionInfo {
             opcode,
             mnemonic,
             operands,
             cycle_count,
-        };
+        }
     }
 
     pub fn mnemonic(&self) -> &Mnemonic {

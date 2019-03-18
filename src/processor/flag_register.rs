@@ -56,3 +56,11 @@ impl Into<u8> for Flag {
         self as u8
     }
 }
+
+pub const fn half_carry_add(value1: u8, value2: u8) -> bool {
+    (((value1 & 0xf) + (value2 & 0xf)) & 0x10) == 0x10
+}
+
+pub fn carry_add(value1: u8, value2: u8) -> bool {
+    (value1 & 0xff).overflowing_add(value2 & 0xff).1
+}

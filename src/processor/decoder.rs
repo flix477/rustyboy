@@ -1114,9 +1114,7 @@ impl Decoder {
             _ => None,
         };
 
-        if r1.is_none() {
-            return None;
-        }
+        r1?;
         let r1 = r1.unwrap();
 
         // get second hex value (f7 -> 7)
@@ -1135,7 +1133,7 @@ impl Decoder {
         if let Some(r2) = r2 {
             return Some(Self::ld_rr(opcode, r1, r2));
         }
-        return None;
+        None
     }
 
     fn ld_rr(opcode: u8, r1: Reg, r2: Reg) -> InstructionInfo {

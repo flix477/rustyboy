@@ -52,7 +52,7 @@ impl Readable for Hardware {
 
             0xFF46 => {
                 0
-                //                unimplemented!()
+                // unimplemented!()
             } // dma transfer
             0xFF40...0xFF4B | 0x8000...0x9FFF | 0xFE00...0xFE9F => self.video.read(address), // lcdc|video ram,
 
@@ -116,9 +116,9 @@ impl Readable for Hardware {
             } // high ram
 
             _ => {
-                //                println!("Unrecognised read at 0x{:X}", address);
+                // println!("Unrecognised read at 0x{:X}", address);
                 0
-                //                unimplemented!()
+                // unimplemented!()
             } // empty
         }
     }
@@ -190,8 +190,8 @@ impl Writable for Hardware {
             } // high ram
 
             _ => {
-                //                println!("Unrecognised write at 0x{:X}: {}", address, value);
-                //                unimplemented!()
+                // println!("Unrecognised write at 0x{:X}: {}", address, value);
+                // unimplemented!()
             } // empty
         }
     }

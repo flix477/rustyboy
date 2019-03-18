@@ -12,7 +12,6 @@ use crate::config::Config;
 use crate::gameboy::{DeviceType, Gameboy};
 use crate::util::as_millis;
 use crate::video::color::Color;
-use crate::video::tile::Tile;
 use glium::glutin::{ContextBuilder, Event, EventsLoop, WindowBuilder, WindowEvent};
 use glium::texture::RawImage2d;
 use glium::uniforms::MagnifySamplerFilter;

@@ -47,11 +47,11 @@ pub struct InterruptRegister {
 
 impl InterruptRegister {
     pub fn new() -> InterruptRegister {
-        return InterruptRegister { register: 0 };
+        InterruptRegister { register: 0 }
     }
 
     pub fn from_value(value: u8) -> InterruptRegister {
-        return InterruptRegister { register: value };
+        InterruptRegister { register: value }
     }
 }
 
@@ -163,6 +163,7 @@ mod tests {
     #[test]
     fn fetch_interrupt_one() {
         let mut interrupt_handler = InterruptHandler::new();
+        interrupt_handler.toggle_interrupts(true);
         interrupt_handler
             .interrupt_request
             .set_flag(Interrupt::LCDCStat, true);
@@ -173,6 +174,7 @@ mod tests {
     #[test]
     fn fetch_interrupt_multiple() {
         let mut interrupt_handler = InterruptHandler::new();
+        interrupt_handler.toggle_interrupts(true);
         interrupt_handler.interrupt_request.set_register(0xFF);
         assert_eq!(
             interrupt_handler.fetch_interrupt().unwrap(),
