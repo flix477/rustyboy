@@ -563,13 +563,13 @@ pub trait LR35902 {
     }
 
     fn rlc<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
-        let value = self.reference(bus, reference);
-        self.set_flag(Flag::Carry, bits::get_bit(value as u8, 7));
+        let value = self.reference(bus, reference) as u8;
+        self.set_flag(Flag::Carry, bits::get_bit(value, 7));
 
-        value.rotate_left(1);
-        self.set_reference(bus, reference, value);
+        let result = value.rotate_left(1);
+        self.set_reference(bus, reference, result as u16);
 
-        self.set_flag(Flag::Zero, value == 0);
+        self.set_flag(Flag::Zero, result == 0);
         self.set_flag(Flag::AddSub, false);
         self.set_flag(Flag::HalfCarry, false);
     }
@@ -588,11 +588,11 @@ pub trait LR35902 {
     }
 
     fn rrc<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
-        let value = self.reference(bus, reference);
-        self.set_flag(Flag::Carry, bits::get_bit(value as u8, 0));
+        let value = self.reference(bus, reference) as u8;
+        self.set_flag(Flag::Carry, bits::get_bit(value, 0));
 
-        value.rotate_right(1);
-        self.set_reference(bus, reference, value);
+        let result = value.rotate_right(1);
+        self.set_reference(bus, reference, result as u16);
 
         self.set_flag(Flag::Zero, value == 0);
         self.set_flag(Flag::AddSub, false);
@@ -663,7 +663,7 @@ pub trait LR35902 {
 
     fn bit<H: Bus>(&mut self, bus: &mut H, bit: u8, reference: Reference) {
         let value = self.reference(bus, reference) as u8;
-        self.set_flag(Flag::Zero, bits::get_bit(value, bit));
+        self.set_flag(Flag::Zero, !bits::get_bit(value, bit));
         self.set_flag(Flag::AddSub, false);
         self.set_flag(Flag::HalfCarry, true);
     }

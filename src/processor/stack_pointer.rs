@@ -10,7 +10,7 @@ impl StackPointer {
         StackPointer { value: 0xFFFE }
     }
 
-    pub fn peek<H: Bus>(&mut self, bus: &H) -> u8 {
+    pub fn peek<H: Bus>(&self, bus: &H) -> u8 {
         bus.read(self.value)
     }
 
