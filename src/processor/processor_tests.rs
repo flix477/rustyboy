@@ -1,8 +1,9 @@
-use crate::processor::Processor;
-use crate::processor::lr35902::LR35902;
 use crate::processor::flag_register::Flag;
 use crate::processor::instruction::{AddressType as Addr, Reference, ValueType as Value};
+use crate::processor::lr35902::LR35902;
+use crate::processor::register::Register;
 use crate::processor::registers::RegisterType as Reg;
+use crate::processor::Processor;
 use crate::tests::util::mock_bus::MockBus;
 
 fn setup() -> Processor {
@@ -1351,4 +1352,42 @@ fn call() {
     let higher = cpu.registers.stack_pointer.pop(&bus) as u16;
 
     assert_eq!(next_instruction, lower | (higher << 8))
+}
+
+#[test]
+fn call_and_ret() {
+    let mut cpu = setup();
+    let mut bus = MockBus::default();
+    let stack_pointer = cpu.reg(Reg::SP);
+    let base_address = 0xF000;
+    let address = 0xFE00;
+
+    cpu.set_reg(Reg::PC, base_address);
+
+    cpu.call(&mut bus, address);
+    assert_eq!(address, cpu.reg(Reg::PC));
+    assert_eq!(stack_pointer - 2, cpu.reg(Reg::SP));
+
+    cpu.ret(&mut bus);
+    assert_eq!(stack_pointer, cpu.reg(Reg::SP));
+}
+
+#[test]
+fn call_and_reti() {
+    let mut cpu = setup();
+    let mut bus = MockBus::default();
+    let stack_pointer = cpu.reg(Reg::SP);
+    let base_address = 0xF000;
+    let address = 0xFE00;
+    assert_eq!(false, bus.interrupts_enabled);
+
+    cpu.set_reg(Reg::PC, base_address);
+
+    cpu.call(&mut bus, address);
+    assert_eq!(address, cpu.reg(Reg::PC));
+    assert_eq!(stack_pointer - 2, cpu.reg(Reg::SP));
+
+    cpu.reti(&mut bus);
+    assert_eq!(stack_pointer, cpu.reg(Reg::SP));
+    assert_eq!(true, bus.interrupts_enabled);
 }

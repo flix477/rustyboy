@@ -20,7 +20,7 @@ use glium::{Display, Surface};
 use std::time::Instant;
 
 fn main() {
-    let cartridge = Cartridge::from_file("operation_tests/individual/03-op sp,hl.gb").unwrap();
+    let cartridge = Cartridge::from_file("tetris.gb").unwrap();
     println!("{:?}", cartridge.metadata());
     let config = Config {
         cartridge,
