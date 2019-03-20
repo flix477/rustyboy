@@ -8,10 +8,11 @@ mod program_counter;
 mod register;
 mod registers;
 mod stack_pointer;
+use self::instruction::{AddressType, Operand, Reference, ValueType};
 use crate::bus::Bus;
 use crate::processor::decoder::Decoder;
 use crate::processor::flag_register::Flag;
-use crate::processor::instruction::Prefix;
+use crate::processor::instruction::{InstructionInfo, Prefix};
 use crate::processor::lr35902::LR35902;
 use crate::processor::register::Register;
 use crate::processor::registers::{RegisterType, Registers};
@@ -72,6 +73,47 @@ impl Processor {
             0
         }
     }
+
+    fn peek<H: Bus>(&self, bus: &H) -> u8 {
+        self.registers.program_counter.peek(bus)
+    }
+
+    fn peek16<H: Bus>(&self, bus: &H) -> u16 {
+        self.registers.program_counter.peek16(bus)
+    }
+
+    fn debug_instruction<H: Bus>(
+        &self,
+        line: u16,
+        bus: &H,
+        instruction: &InstructionInfo,
+    ) -> String {
+        let base_log = format!("0x{:X}: {:?}", line, instruction.mnemonic());
+        let operands = if let Some(operands) = instruction.operands() {
+            operands.iter().fold("".to_string(), |acc, value| {
+                let operand = match value {
+                    Operand::Reference(Reference::Address(address)) => {
+                        let address = match address {
+                            AddressType::Register(reg) => self.reg(*reg),
+                            AddressType::IncRegister(reg) => self.reg(*reg).wrapping_add(0xFF00),
+                            AddressType::Immediate => self.peek16(bus),
+                            AddressType::IncImmediate => {
+                                (self.peek(bus) as u16).wrapping_add(0xFF00)
+                            }
+                        };
+                        format!("0x{:X}", address)
+                    }
+                    _ => format!("{:?}", value),
+                };
+
+                format!("{} {}", acc, operand)
+            })
+        } else {
+            "".to_string()
+        };
+
+        format!("{}\t{}", base_log, operands)
+    }
 }
 
 impl LR35902 for Processor {
@@ -119,7 +161,7 @@ impl LR35902 for Processor {
         let line = self.registers.program_counter.get();
         let opcode = self.immediate(bus);
         if let Some(instruction) = Decoder::decode_opcode(opcode, prefix) {
-            println!("0x{:X}: {:?}", line, instruction);
+            println!("{}", self.debug_instruction(line, bus, &instruction));
             let cycle_count = instruction.cycle_count();
             if let Err(err) = self.execute(bus, instruction) {
                 println!("Error with instruction: {:?}", err);

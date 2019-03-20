@@ -285,19 +285,14 @@ pub trait LR35902 {
         Ok(())
     }
 
-    fn operand_value<H: Bus>(&mut self, bus: &H, value: ValueType) -> u16 {
+    fn operand_value<H: Bus>(&mut self, bus: &mut H, value: ValueType) -> u16 {
         match value {
             ValueType::Constant(value) => value,
             ValueType::Register(reg) => self.reg(reg),
             ValueType::Immediate => self.immediate(bus) as u16,
             ValueType::Immediate16 => self.immediate16(bus),
             ValueType::Address(address) => {
-                let address = match address {
-                    AddressType::Immediate => self.immediate16(bus),
-                    AddressType::IncImmediate => (self.immediate(bus) as u16).wrapping_add(0xFF00),
-                    AddressType::Register(reg) => self.reg(reg),
-                    AddressType::IncRegister(reg) => self.reg(reg) + 0xFF00,
-                };
+                let address = self.operand_address(bus, address);
                 self.address(bus, address) as u16
             }
         }
@@ -306,7 +301,7 @@ pub trait LR35902 {
     fn operand_address<H: Bus>(&mut self, bus: &mut H, address: AddressType) -> u16 {
         match address {
             AddressType::Register(reg) => self.reg(reg),
-            AddressType::IncRegister(reg) => self.reg(reg) + 0xFF00,
+            AddressType::IncRegister(reg) => self.reg(reg).wrapping_add(0xFF00),
             AddressType::Immediate => self.immediate16(bus),
             AddressType::IncImmediate => (self.immediate(bus) as u16).wrapping_add(0xFF00),
         }
@@ -696,6 +691,7 @@ pub trait LR35902 {
 
     fn rst<H: Bus>(&mut self, bus: &mut H, address: u16) {
         let pc = self.reg(RegisterType::PC);
+        dbg!(address);
         self.push_stack(bus, pc);
         self.jp(address);
     }

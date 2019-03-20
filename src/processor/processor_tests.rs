@@ -1370,6 +1370,7 @@ fn call_and_ret() {
 
     cpu.ret(&mut bus);
     assert_eq!(stack_pointer, cpu.reg(Reg::SP));
+    assert_eq!(base_address, cpu.reg(Reg::PC))
 }
 
 #[test]
