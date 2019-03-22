@@ -82,6 +82,27 @@ impl Processor {
         self.registers.program_counter.peek16(bus)
     }
 
+    fn peek_addr_value<H: Bus>(&self, address: AddressType, bus: &H) -> u16 {
+        match address {
+            AddressType::Register(reg) => self.reg(reg),
+            AddressType::IncRegister(reg) => self.reg(reg).wrapping_add(0xFF00),
+            AddressType::Immediate => self.peek16(bus),
+            AddressType::IncImmediate => {
+                (self.peek(bus) as u16).wrapping_add(0xFF00)
+            }
+        }
+    }
+
+    fn peek_value<H: Bus>(&self, value: ValueType, bus: &H) -> u16 {
+        match value {
+            ValueType::Immediate => self.peek(bus) as u16,
+            ValueType::Immediate16 => self.peek16(bus),
+            ValueType::Address(addr) => self.peek_addr_value(addr, bus),
+            ValueType::Register(reg) => self.reg(reg),
+            ValueType::Constant(constant) => constant
+        }
+    }
+
     fn debug_instruction<H: Bus>(
         &self,
         line: u16,
@@ -93,16 +114,13 @@ impl Processor {
             operands.iter().fold("".to_string(), |acc, value| {
                 let operand = match value {
                     Operand::Reference(Reference::Address(address)) => {
-                        let address = match address {
-                            AddressType::Register(reg) => self.reg(*reg),
-                            AddressType::IncRegister(reg) => self.reg(*reg).wrapping_add(0xFF00),
-                            AddressType::Immediate => self.peek16(bus),
-                            AddressType::IncImmediate => {
-                                (self.peek(bus) as u16).wrapping_add(0xFF00)
-                            }
-                        };
+                        let address = self.peek_addr_value(*address, bus);
                         format!("0x{:X}", address)
-                    }
+                    },
+                    Operand::Value(value) => {
+                        let value = self.peek_value(*value, bus);
+                        format!("0x{:X}", value)
+                    },
                     _ => format!("{:?}", value),
                 };
 
@@ -163,6 +181,10 @@ impl LR35902 for Processor {
         if let Some(instruction) = Decoder::decode_opcode(opcode, prefix) {
             println!("{}", self.debug_instruction(line, bus, &instruction));
             let cycle_count = instruction.cycle_count();
+            println!("{:?}", self.registers);
+            if line == 0x220 {
+                println!(":o");
+            }
             if let Err(err) = self.execute(bus, instruction) {
                 println!("Error with instruction: {:?}", err);
                 panic!()
