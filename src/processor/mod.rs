@@ -6,7 +6,7 @@ mod lr35902;
 mod processor_tests;
 mod program_counter;
 mod register;
-mod registers;
+pub mod registers;
 mod stack_pointer;
 use self::instruction::{AddressType, Operand, Reference, ValueType};
 use crate::bus::Bus;

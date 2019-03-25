@@ -1,6 +1,7 @@
 mod bus;
 mod cartridge;
 mod config;
+mod debugger;
 mod gameboy;
 mod hardware;
 mod processor;
