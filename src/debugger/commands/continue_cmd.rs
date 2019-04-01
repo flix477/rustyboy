@@ -17,13 +17,7 @@ impl Command for ContinueCommand {
         MATCHING_VALUES
     }
 
-    fn execute(
-        &self,
-        _: &[&str],
-        _: &mut DebuggerState,
-        _: &DebugInfo,
-        _: &Bus,
-    ) -> CommandResult {
+    fn execute(&self, _: &[&str], _: &mut DebuggerState, _: &DebugInfo, _: &Bus) -> CommandResult {
         CommandResult::Quit
     }
 }

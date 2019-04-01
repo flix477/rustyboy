@@ -17,13 +17,7 @@ impl Command for QuitCommand {
         MATCHING_VALUES
     }
 
-    fn execute(
-        &self,
-        _: &[&str],
-        _: &mut DebuggerState,
-        _: &DebugInfo,
-        _: &Bus,
-    ) -> CommandResult {
+    fn execute(&self, _: &[&str], _: &mut DebuggerState, _: &DebugInfo, _: &Bus) -> CommandResult {
         std::process::exit(0);
     }
 }
