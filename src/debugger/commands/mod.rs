@@ -22,4 +22,13 @@ pub trait Command {
         debug_info: &DebugInfo,
         bus: &Bus,
     ) -> CommandResult;
+
+    fn help(&self) -> &str {
+        self.matching_value()
+            .iter()
+            .fold(String::new(), |acc, matching_value| {
+                format!("{}|{}", acc, matching_value)
+            })
+            .as_str()
+    }
 }

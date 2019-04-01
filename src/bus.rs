@@ -1,4 +1,3 @@
-
 use crate::processor::interrupt::Interrupt;
 
 pub trait Readable {

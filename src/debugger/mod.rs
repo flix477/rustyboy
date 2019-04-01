@@ -89,6 +89,19 @@ impl Debugger {
         }
     }
 
+    fn help(&self) {
+        println!(
+            "Available commands:{}",
+            self.commands
+                .iter()
+                .fold(String::new(), |acc, command| format!(
+                    "{}\n{}",
+                    acc,
+                    command.help()
+                ))
+        )
+    }
+
     pub fn should_run(&self, line: u16) -> bool {
         self.state.breakpoints.contains(&line) || self.state.forced_break
     }
