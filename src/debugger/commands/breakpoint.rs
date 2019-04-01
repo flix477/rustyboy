@@ -17,8 +17,14 @@ impl BreakpointAction {
     pub fn parse(values: &[&str]) -> Option<BreakpointAction> {
         let action = *values.get(0)?;
         match action {
-            "add" | "a" => None,
-            "remove" | "r" => None,
+            "add" | "a" => {
+                let line: u16 = values.get(1)?.parse().ok()?;
+                Some(BreakpointAction::Add(line))
+            }
+            "remove" | "r" => {
+                let line: u16 = values.get(1)?.parse().ok()?;
+                Some(BreakpointAction::Remove(line))
+            }
             "list" | "l" => Some(BreakpointAction::List),
             _ => None,
         }
@@ -47,24 +53,35 @@ impl Command for BreakpointCommand {
     ) -> CommandResult {
         if let Some(action) = BreakpointAction::parse(&input[1..]) {
             match action {
-                BreakpointAction::Add(address) => {
-                    debugger.breakpoints.insert(address);
+                BreakpointAction::Add(line) => {
+                    debugger.breakpoints.insert(line);
                 }
-                BreakpointAction::Remove(address) => {
-                    debugger.breakpoints.remove(&address);
+                BreakpointAction::Remove(line) => {
+                    debugger.breakpoints.remove(&line);
                 }
                 BreakpointAction::List => println!("{}", list_breakpoints(debugger)),
             }
         } else {
-            println!("Invalid input for breakpoint (add [address]| remove [address] | list)");
+            println!("Invalid input for breakpoint (add [line]| remove [line] | list)");
         }
-        CommandResult::None
+        CommandResult::Continue
     }
 }
 
 fn list_breakpoints(debugger: &DebuggerState) -> String {
-    debugger
-        .breakpoints
-        .iter()
-        .fold(String::new(), |acc, value| format!("{}, {}", acc, value))
+    if debugger.breakpoints.len() == 0 {
+        "No breakpoints set".to_string()
+    } else {
+        debugger
+            .breakpoints
+            .iter()
+            .enumerate()
+            .fold(String::new(), |acc, (idx, value)| {
+                if idx == 0 {
+                    value.to_string()
+                } else {
+                    format!("{}, {}", acc, value)
+                }
+            })
+    }
 }

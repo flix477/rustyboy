@@ -27,6 +27,6 @@ impl Command for StepOverCommand {
     ) -> CommandResult {
         // this is stupid, will refactor later
         debugger.breakpoints.insert(debug_info.line + 1);
-        CommandResult::Continue
+        CommandResult::Quit
     }
 }

@@ -23,6 +23,7 @@ impl StatusType {
                 Some(StatusType::Register(register))
             }
             "address" | "a" => None,
+            "registers" => Some(StatusType::Registers),
             _ => None,
         }
     }
@@ -68,7 +69,7 @@ impl Command for StatusCommand {
         debug_info: &DebugInfo,
         bus: &Bus,
     ) -> CommandResult {
-        if let Some(status_type) = StatusType::parse(input) {
+        if let Some(status_type) = StatusType::parse(&input[1..]) {
             match status_type {
                 StatusType::Address(address) => println!("0x{:X}", bus.read(address)),
                 StatusType::Register(register) => {
@@ -82,6 +83,6 @@ impl Command for StatusCommand {
             )
         }
 
-        CommandResult::None
+        CommandResult::Continue
     }
 }

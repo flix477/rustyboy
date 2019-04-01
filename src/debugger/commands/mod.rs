@@ -3,6 +3,8 @@ use crate::debugger::{DebugInfo, Debugger, DebuggerState};
 use crate::processor::registers::Registers;
 
 pub mod breakpoint;
+pub mod continue_cmd;
+pub mod quit;
 pub mod status;
 pub mod step_into;
 pub mod step_over;
@@ -10,7 +12,6 @@ pub mod step_over;
 pub enum CommandResult {
     Continue,
     Quit,
-    None,
 }
 
 pub trait Command {
@@ -23,12 +24,16 @@ pub trait Command {
         bus: &Bus,
     ) -> CommandResult;
 
-    fn help(&self) -> &str {
-        self.matching_value()
-            .iter()
-            .fold(String::new(), |acc, matching_value| {
-                format!("{}|{}", acc, matching_value)
-            })
-            .as_str()
+    fn help(&self) -> String {
+        self.matching_value().iter().enumerate().fold(
+            String::new(),
+            |acc, (idx, matching_value)| {
+                if idx == 0 {
+                    matching_value.to_string()
+                } else {
+                    format!("{}|{}", acc, matching_value)
+                }
+            },
+        )
     }
 }
