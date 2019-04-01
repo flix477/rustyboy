@@ -1,9 +1,7 @@
 use crate::bus::Bus;
-use crate::debugger::commands::{Command, CommandResult, Debugger};
+use crate::debugger::commands::{Command, CommandResult};
 use crate::debugger::{DebugInfo, DebuggerState};
-use crate::processor::lr35902::LR35902;
-use crate::processor::registers::{RegisterType, Registers};
-use crate::processor::Processor;
+use crate::processor::registers::RegisterType;
 
 const MATCHING_VALUES: &'static [&'static str] = &["status", "s"];
 

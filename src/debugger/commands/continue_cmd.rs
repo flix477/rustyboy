@@ -1,7 +1,6 @@
 use crate::bus::Bus;
-use crate::debugger::commands::{Command, CommandResult, Debugger};
+use crate::debugger::commands::{Command, CommandResult};
 use crate::debugger::{DebugInfo, DebuggerState};
-use crate::processor::registers::Registers;
 
 const MATCHING_VALUES: &'static [&'static str] = &["continue", "c"];
 
@@ -20,9 +19,9 @@ impl Command for ContinueCommand {
 
     fn execute(
         &self,
-        input: &[&str],
-        debugger: &mut DebuggerState,
-        debug_info: &DebugInfo,
+        _: &[&str],
+        _: &mut DebuggerState,
+        _: &DebugInfo,
         _: &Bus,
     ) -> CommandResult {
         CommandResult::Quit

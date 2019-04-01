@@ -1,7 +1,6 @@
 use crate::bus::Bus;
-use crate::debugger::commands::{Command, CommandResult, Debugger};
+use crate::debugger::commands::{Command, CommandResult};
 use crate::debugger::{DebugInfo, DebuggerState};
-use crate::processor::registers::Registers;
 
 const MATCHING_VALUES: &'static [&'static str] = &["stepinto", "si"];
 
@@ -20,9 +19,9 @@ impl Command for StepIntoCommand {
 
     fn execute(
         &self,
-        input: &[&str],
+        _: &[&str],
         debugger: &mut DebuggerState,
-        debug_info: &DebugInfo,
+        _: &DebugInfo,
         _: &Bus,
     ) -> CommandResult {
         debugger.forced_break = true;

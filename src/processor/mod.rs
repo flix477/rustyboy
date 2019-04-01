@@ -10,7 +10,6 @@ pub mod registers;
 mod stack_pointer;
 use self::instruction::{AddressType, ValueType};
 use crate::bus::Bus;
-use crate::config::Config;
 use crate::debugger::{DebugInfo, Debugger, DebuggerState};
 use crate::processor::decoder::Decoder;
 use crate::processor::flag_register::Flag;

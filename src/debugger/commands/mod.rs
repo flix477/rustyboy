@@ -1,6 +1,5 @@
 use crate::bus::Bus;
-use crate::debugger::{DebugInfo, Debugger, DebuggerState};
-use crate::processor::registers::Registers;
+use crate::debugger::{DebugInfo, DebuggerState};
 
 pub mod breakpoint;
 pub mod continue_cmd;

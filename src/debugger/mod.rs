@@ -10,7 +10,7 @@ use crate::processor::instruction::InstructionInfo;
 use crate::processor::registers::Registers;
 use std::collections::HashSet;
 use std::fmt::{Debug, Error, Formatter};
-use std::io::{self, Read, Write};
+use std::io::{self, Write};
 
 pub mod commands;
 

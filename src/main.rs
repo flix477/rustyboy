@@ -19,19 +19,17 @@ use glium::glutin::{ContextBuilder, Event, EventsLoop, WindowBuilder, WindowEven
 use glium::texture::RawImage2d;
 use glium::uniforms::MagnifySamplerFilter;
 use glium::{Display, Surface};
-use std::collections::HashSet;
 use std::time::Instant;
 
 fn main() {
     let cartridge = Cartridge::from_file("tetris.gb").unwrap();
     println!("{:?}", cartridge.metadata());
-    let mut breakpoints = HashSet::new();
     let config = Config {
         cartridge,
         device_type: DeviceType::GameBoy,
         debugger_config: Some(DebuggerState {
-            breakpoints,
             forced_break: true,
+            ..DebuggerState::default()
         }),
     };
     let mut gameboy = Gameboy::new(config).unwrap();

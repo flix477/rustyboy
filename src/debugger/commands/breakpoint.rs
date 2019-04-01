@@ -1,9 +1,7 @@
 use super::Command;
 use crate::bus::Bus;
-use crate::debugger::commands::{CommandResult, Debugger};
+use crate::debugger::commands::CommandResult;
 use crate::debugger::{DebugInfo, DebuggerState};
-use crate::processor::registers::Registers;
-use crate::processor::Processor;
 
 const MATCHING_VALUES: &'static [&'static str] = &["breakpoint", "b"];
 
