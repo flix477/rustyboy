@@ -10,7 +10,8 @@ pub mod registers;
 mod stack_pointer;
 use self::instruction::{AddressType, ValueType};
 use crate::bus::Bus;
-use crate::debugger::{DebugInfo, Debugger};
+use crate::config::Config;
+use crate::debugger::{DebugInfo, Debugger, DebuggerState};
 use crate::processor::decoder::Decoder;
 use crate::processor::flag_register::Flag;
 use crate::processor::instruction::{InstructionInfo, Prefix};
@@ -31,14 +32,18 @@ pub struct Processor {
 }
 
 impl Processor {
-    pub fn new() -> Processor {
+    pub fn new(debugger_config: Option<DebuggerState>) -> Processor {
         Processor {
             registers: Registers::new(),
             clock_frequency: CLOCK_FREQUENCY,
             leftover_time: 0.0,
             last_instruction_cycles: 0,
             stopped: false,
-            debugger: None,
+            debugger: if let Some(state) = debugger_config {
+                Some(Debugger::from_state(state))
+            } else {
+                None
+            },
         }
     }
 

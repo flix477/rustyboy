@@ -11,7 +11,7 @@ pub struct Gameboy {
 impl Gameboy {
     pub fn new(config: Config) -> Result<Gameboy, Box<dyn Error>> {
         Ok(Gameboy {
-            processor: Processor::new(),
+            processor: Processor::new(config.debugger_config.clone()),
             hardware: Hardware::new(config)?,
         })
     }

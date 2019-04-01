@@ -2,7 +2,7 @@ use crate::processor::flag_register::FlagRegister;
 use crate::processor::program_counter::ProgramCounter;
 use crate::processor::register::*;
 use crate::processor::stack_pointer::StackPointer;
-use std::fmt::Debug;
+use std::fmt::{Debug, Error, Formatter};
 
 pub const DEFAULT_BC: u16 = 0x0013;
 pub const DEFAULT_DE: u16 = 0x00D8;
@@ -15,6 +15,21 @@ pub struct Registers {
     pub hl: DualRegister,
     pub stack_pointer: StackPointer,
     pub program_counter: ProgramCounter,
+}
+
+impl Debug for Registers {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        write!(
+            f,
+            "AF: 0x{:X}\nBC: 0x{:X}\nDE: 0x{:X}\nHL: 0x{:X}\nSP: 0x{:X}\nPC: 0x{:X}",
+            self.reg(RegisterType::AF),
+            self.reg(RegisterType::BC),
+            self.reg(RegisterType::DE),
+            self.reg(RegisterType::HL),
+            self.reg(RegisterType::SP),
+            self.reg(RegisterType::PC)
+        )
+    }
 }
 
 impl Registers {
@@ -89,21 +104,6 @@ impl Registers {
             RegisterType::PC => self.program_counter.set(value),
             RegisterType::SP => self.stack_pointer.set(value),
         }
-    }
-}
-
-impl Debug for Registers {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(
-            f,
-            "AF: 0x{:X}\nBC: 0x{:X}\nDE: 0x{:X}\nHL: 0x{:X}\nPC: 0x{:X}\nSP: 0x{:X}\n",
-            self.af.register().get(),
-            self.bc.get(),
-            self.de.get(),
-            self.hl.get(),
-            self.program_counter.get(),
-            self.stack_pointer.get()
-        )
     }
 }
 

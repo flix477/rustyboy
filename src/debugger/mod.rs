@@ -7,6 +7,7 @@ use crate::debugger::commands::{Command, CommandResult};
 use crate::processor::instruction::InstructionInfo;
 use crate::processor::registers::Registers;
 use std::collections::HashSet;
+use std::fmt::{Debug, Error, Formatter};
 use std::io::{self, Read};
 
 pub mod commands;
@@ -16,9 +17,19 @@ pub struct Debugger {
     pub commands: Vec<Box<dyn Command>>,
 }
 
+#[derive(Clone)]
 pub struct DebuggerState {
     pub breakpoints: HashSet<u16>,
     pub forced_break: bool,
+}
+
+impl Default for DebuggerState {
+    fn default() -> Self {
+        Self {
+            breakpoints: HashSet::new(),
+            forced_break: false,
+        }
+    }
 }
 
 pub struct DebugInfo<'a> {
@@ -27,13 +38,28 @@ pub struct DebugInfo<'a> {
     pub instruction: &'a InstructionInfo,
 }
 
+impl<'a> Debug for DebugInfo<'a> {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        write!(f, "0x{:X}: {:?}", self.line, self.instruction.mnemonic())
+    }
+}
+
 impl Debugger {
     pub fn new() -> Debugger {
         Debugger {
-            state: DebuggerState {
-                breakpoints: HashSet::new(),
-                forced_break: false,
-            },
+            state: DebuggerState::default(),
+            commands: vec![
+                BreakpointCommand::create_command(),
+                StatusCommand::create_command(),
+                StepIntoCommand::create_command(),
+                StepOverCommand::create_command(),
+            ],
+        }
+    }
+
+    pub fn from_state(state: DebuggerState) -> Debugger {
+        Debugger {
+            state,
             commands: vec![
                 BreakpointCommand::create_command(),
                 StatusCommand::create_command(),
@@ -47,6 +73,7 @@ impl Debugger {
         if self.state.forced_break {
             self.state.forced_break = false;
         }
+        println!("{:?}", debug_info);
         loop {
             if let Some(result) = self.parse(&debug_info, bus) {
                 match result {

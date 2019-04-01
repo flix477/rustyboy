@@ -6,7 +6,7 @@ use crate::processor::Processor;
 use crate::tests::util::mock_bus::MockBus;
 
 fn setup() -> Processor {
-    let mut cpu = Processor::new();
+    let mut cpu = Processor::new(None);
     cpu.set_flag(Flag::HalfCarry, false);
     cpu.set_flag(Flag::Carry, false);
     cpu.set_flag(Flag::Zero, false);

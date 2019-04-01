@@ -11,6 +11,7 @@ mod video;
 
 use crate::cartridge::Cartridge;
 use crate::config::Config;
+use crate::debugger::DebuggerState;
 use crate::gameboy::{DeviceType, Gameboy};
 use crate::util::as_millis;
 use crate::video::color::Color;
@@ -18,14 +19,20 @@ use glium::glutin::{ContextBuilder, Event, EventsLoop, WindowBuilder, WindowEven
 use glium::texture::RawImage2d;
 use glium::uniforms::MagnifySamplerFilter;
 use glium::{Display, Surface};
+use std::collections::HashSet;
 use std::time::Instant;
 
 fn main() {
     let cartridge = Cartridge::from_file("tetris.gb").unwrap();
     println!("{:?}", cartridge.metadata());
+    let mut breakpoints = HashSet::new();
     let config = Config {
         cartridge,
         device_type: DeviceType::GameBoy,
+        debugger_config: Some(DebuggerState {
+            breakpoints,
+            forced_break: true,
+        }),
     };
     let mut gameboy = Gameboy::new(config).unwrap();
     let mut events_loop = EventsLoop::new();

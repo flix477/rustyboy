@@ -74,17 +74,7 @@ impl Command for StatusCommand {
                 StatusType::Register(register) => {
                     println!("0x{:X}", debug_info.registers.reg(register))
                 }
-                StatusType::Registers => {
-                    println!(
-                        "AF: 0x{:X}\nBC: 0x{:X}\nDE: 0x{:X}\nHL: 0x{:X}\nSP: 0x{:X}\nPC: 0x{:X}",
-                        debug_info.registers.reg(RegisterType::AF),
-                        debug_info.registers.reg(RegisterType::BC),
-                        debug_info.registers.reg(RegisterType::DE),
-                        debug_info.registers.reg(RegisterType::HL),
-                        debug_info.registers.reg(RegisterType::SP),
-                        debug_info.registers.reg(RegisterType::PC)
-                    );
-                }
+                StatusType::Registers => println!("{:?}", debug_info.registers),
             }
         } else {
             println!(
