@@ -19,6 +19,8 @@ use glium::texture::RawImage2d;
 use glium::uniforms::MagnifySamplerFilter;
 use glium::{Display, Surface};
 use std::time::Instant;
+#[macro_use]
+extern crate lazy_static;
 
 fn main() {
     let cartridge = Cartridge::from_file("tetris.gb").unwrap();

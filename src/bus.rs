@@ -1,4 +1,4 @@
-use crate::processor::interrupt::Interrupt;
+    use crate::processor::interrupt::Interrupt;
 
 pub trait Readable {
     fn read(&self, address: u16) -> u8;

@@ -2,7 +2,7 @@ mod decoder;
 mod flag_register;
 mod instruction;
 pub mod interrupt;
-mod lr35902;
+pub mod lr35902;
 mod processor_tests;
 mod program_counter;
 mod register;
@@ -97,40 +97,10 @@ impl Processor {
         match value {
             ValueType::Immediate => self.peek(bus) as u16,
             ValueType::Immediate16 => self.peek16(bus),
-            ValueType::Address(addr) => self.peek_addr_value(addr, bus),
+            ValueType::Address(address) => self.peek_addr_value(address, bus),
             ValueType::Register(reg) => self.reg(reg),
             ValueType::Constant(constant) => constant
         }
-    }
-
-    fn debug_instruction<H: Bus>(
-        &self,
-        line: u16,
-        bus: &H,
-        instruction: &InstructionInfo,
-    ) -> String {
-        let base_log = format!("0x{:X}: {:?}", line, instruction.mnemonic());
-        let operands = if let Some(operands) = instruction.operands() {
-            operands.iter().fold("".to_string(), |acc, value| {
-                let operand = match value {
-                    Operand::Reference(Reference::Address(address)) => {
-                        let address = self.peek_addr_value(*address, bus);
-                        format!("0x{:X}", address)
-                    },
-                    Operand::Value(value) => {
-                        let value = self.peek_value(*value, bus);
-                        format!("0x{:X}", value)
-                    },
-                    _ => format!("{:?}", value),
-                };
-
-                format!("{} {}", acc, operand)
-            })
-        } else {
-            "".to_string()
-        };
-
-        format!("{}\t{}", base_log, operands)
     }
 }
 
@@ -179,12 +149,7 @@ impl LR35902 for Processor {
         let line = self.registers.program_counter.get();
         let opcode = self.immediate(bus);
         if let Some(instruction) = Decoder::decode_opcode(opcode, prefix) {
-            println!("{}", self.debug_instruction(line, bus, &instruction));
             let cycle_count = instruction.cycle_count();
-            println!("{:?}", self.registers);
-            if line == 0x220 {
-                println!(":o");
-            }
             if let Err(err) = self.execute(bus, instruction) {
                 println!("Error with instruction: {:?}", err);
                 panic!()
