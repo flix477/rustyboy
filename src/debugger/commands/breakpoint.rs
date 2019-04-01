@@ -1,52 +1,70 @@
 use super::Command;
+use crate::bus::Bus;
 use crate::debugger::commands::{CommandResult, Debugger};
-use crate::debugger::DebuggerState;
+use crate::debugger::{DebugInfo, DebuggerState};
+use crate::processor::registers::Registers;
+use crate::processor::Processor;
+
+const MATCHING_VALUES: &'static [&'static str] = &["breakpoint", "b"];
 
 pub enum BreakpointAction {
     Add(u16),
     Remove(u16),
-    List
+    List,
 }
 
 impl BreakpointAction {
     pub fn parse(values: &[&str]) -> Option<BreakpointAction> {
         let action = *values.get(0)?;
         match action {
-            "add" | "a" => {
-                None
-            },
-            "remove" | "r" => {
-                None
-            },
+            "add" | "a" => None,
+            "remove" | "r" => None,
             "list" | "l" => Some(BreakpointAction::List),
-            _ => None
+            _ => None,
         }
+    }
+}
+
+pub struct BreakpointCommand {}
+
+impl BreakpointCommand {
+    pub fn create_command() -> Box<dyn Command> {
+        Box::new(BreakpointCommand {})
+    }
+}
+
+impl Command for BreakpointCommand {
+    fn matching_value(&self) -> &[&str] {
+        MATCHING_VALUES
+    }
+
+    fn execute(
+        &self,
+        input: &[&str],
+        debugger: &mut DebuggerState,
+        _: &DebugInfo,
+        _: &Bus,
+    ) -> CommandResult {
+        if let Some(action) = BreakpointAction::parse(&input[1..]) {
+            match action {
+                BreakpointAction::Add(address) => {
+                    debugger.breakpoints.insert(address);
+                }
+                BreakpointAction::Remove(address) => {
+                    debugger.breakpoints.remove(&address);
+                }
+                BreakpointAction::List => println!("{}", list_breakpoints(debugger)),
+            }
+        } else {
+            println!("Invalid input for breakpoint (add [address]| remove [address] | list)");
+        }
+        CommandResult::None
     }
 }
 
 fn list_breakpoints(debugger: &DebuggerState) -> String {
-    debugger.breakpoints.iter()
+    debugger
+        .breakpoints
+        .iter()
         .fold(String::new(), |acc, value| format!("{}, {}", acc, value))
-}
-
-fn execute_command(values: &Vec<&str>, debugger: &mut DebuggerState) {
-    if let Some(action) = BreakpointAction::parse(&values[1..]) {
-        match action {
-            BreakpointAction::Add(address) => { debugger.breakpoints.insert(address); },
-            BreakpointAction::Remove(address) => { debugger.breakpoints.remove(&address); },
-            BreakpointAction::List => println!("{}", list_breakpoints(debugger))
-        }
-    } else {
-        println!("Invalid input for breakpoint (add [address]| remove [address] | list)");
-    }
-}
-
-pub fn create_command<'a>() -> Command<'a> {
-    Command {
-        matching_values: vec!["breakpoint", "b"],
-        callback: Box::new(|values, debugger, _, _| {
-            execute_command(values, debugger);
-            CommandResult::None
-        })
-    }
 }

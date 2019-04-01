@@ -1,11 +1,11 @@
-use std::collections::HashSet;
-use std::io::{self, Read};
-
-use crate::debugger::commands::{Command, CommandResult, Debugger};
-use crate::processor::lr35902::LR35902;
-use crate::processor::registers::RegisterType;
-use crate::processor::Processor;
 use crate::bus::Bus;
+use crate::debugger::commands::{Command, CommandResult, Debugger};
+use crate::debugger::{DebugInfo, DebuggerState};
+use crate::processor::lr35902::LR35902;
+use crate::processor::registers::{RegisterType, Registers};
+use crate::processor::Processor;
+
+const MATCHING_VALUES: &'static [&'static str] = &["status", "s"];
 
 pub enum StatusType {
     Address(u16),
@@ -21,11 +21,9 @@ impl StatusType {
                 let register = values.get(1)?;
                 let register = StatusType::parse_register(register)?;
                 Some(StatusType::Register(register))
-            },
-            "address" | "a" => {
-                None
             }
-            _ => None
+            "address" | "a" => None,
+            _ => None,
         }
     }
 
@@ -45,39 +43,55 @@ impl StatusType {
             "hl" => Some(RegisterType::HL),
             "sp" => Some(RegisterType::SP),
             "pc" => Some(RegisterType::PC),
-            _ => None
+            _ => None,
         }
     }
 }
 
-pub fn create_command<'a>() -> Command<'a> {
-    Command {
-        matching_values: vec!["status", "s"],
-        callback: Box::new(|values, _, cpu, bus| {
-            execute_command(values, cpu, bus);
-            CommandResult::None
-        })
+pub struct StatusCommand {}
+
+impl StatusCommand {
+    pub fn create_command() -> Box<dyn Command> {
+        Box::new(StatusCommand {})
     }
 }
 
-fn execute_command(values: &Vec<&str>, cpu: &Processor, bus: &Bus) {
-    if let Some(status_type) = StatusType::parse(values) {
-        match status_type {
-            StatusType::Address(address) => println!("0x{:X}", bus.read(address)),
-            StatusType::Register(register) => println!("0x{:X}", cpu.reg(register)),
-            StatusType::Registers => {
-                println!(
-                    "AF: 0x{:X}\nBC: 0x{:X}\nDE: 0x{:X}\nHL: 0x{:X}\nSP: 0x{:X}\nPC: 0x{:X}",
-                    cpu.reg(RegisterType::AF),
-                    cpu.reg(RegisterType::BC),
-                    cpu.reg(RegisterType::DE),
-                    cpu.reg(RegisterType::HL),
-                    cpu.reg(RegisterType::SP),
-                    cpu.reg(RegisterType::PC)
-                );
+impl Command for StatusCommand {
+    fn matching_value(&self) -> &[&str] {
+        MATCHING_VALUES
+    }
+
+    fn execute(
+        &self,
+        input: &[&str],
+        _: &mut DebuggerState,
+        debug_info: &DebugInfo,
+        bus: &Bus,
+    ) -> CommandResult {
+        if let Some(status_type) = StatusType::parse(input) {
+            match status_type {
+                StatusType::Address(address) => println!("0x{:X}", bus.read(address)),
+                StatusType::Register(register) => {
+                    println!("0x{:X}", debug_info.registers.reg(register))
+                }
+                StatusType::Registers => {
+                    println!(
+                        "AF: 0x{:X}\nBC: 0x{:X}\nDE: 0x{:X}\nHL: 0x{:X}\nSP: 0x{:X}\nPC: 0x{:X}",
+                        debug_info.registers.reg(RegisterType::AF),
+                        debug_info.registers.reg(RegisterType::BC),
+                        debug_info.registers.reg(RegisterType::DE),
+                        debug_info.registers.reg(RegisterType::HL),
+                        debug_info.registers.reg(RegisterType::SP),
+                        debug_info.registers.reg(RegisterType::PC)
+                    );
+                }
             }
+        } else {
+            println!(
+                "Invalid command for status (address [address] | register [register] | registers)"
+            )
         }
-    } else {
-        println!("Invalid command for status (address [address] | register [register] | registers)")
+
+        CommandResult::None
     }
 }

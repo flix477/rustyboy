@@ -1,6 +1,6 @@
 mod decoder;
 mod flag_register;
-mod instruction;
+pub mod instruction;
 pub mod interrupt;
 pub mod lr35902;
 mod processor_tests;
@@ -8,8 +8,9 @@ mod program_counter;
 mod register;
 pub mod registers;
 mod stack_pointer;
-use self::instruction::{AddressType, Operand, Reference, ValueType};
+use self::instruction::{AddressType, ValueType};
 use crate::bus::Bus;
+use crate::debugger::{DebugInfo, Debugger};
 use crate::processor::decoder::Decoder;
 use crate::processor::flag_register::Flag;
 use crate::processor::instruction::{InstructionInfo, Prefix};
@@ -26,6 +27,7 @@ pub struct Processor {
     leftover_time: f64,
     last_instruction_cycles: u8,
     stopped: bool,
+    pub debugger: Option<Debugger>,
 }
 
 impl Processor {
@@ -36,6 +38,7 @@ impl Processor {
             leftover_time: 0.0,
             last_instruction_cycles: 0,
             stopped: false,
+            debugger: None,
         }
     }
 
@@ -87,9 +90,7 @@ impl Processor {
             AddressType::Register(reg) => self.reg(reg),
             AddressType::IncRegister(reg) => self.reg(reg).wrapping_add(0xFF00),
             AddressType::Immediate => self.peek16(bus),
-            AddressType::IncImmediate => {
-                (self.peek(bus) as u16).wrapping_add(0xFF00)
-            }
+            AddressType::IncImmediate => (self.peek(bus) as u16).wrapping_add(0xFF00),
         }
     }
 
@@ -99,7 +100,20 @@ impl Processor {
             ValueType::Immediate16 => self.peek16(bus),
             ValueType::Address(address) => self.peek_addr_value(address, bus),
             ValueType::Register(reg) => self.reg(reg),
-            ValueType::Constant(constant) => constant
+            ValueType::Constant(constant) => constant,
+        }
+    }
+
+    fn debugger_check<H: Bus>(&mut self, bus: &H, line: u16, instruction: &InstructionInfo) {
+        if let Some(ref mut debugger) = self.debugger {
+            if debugger.should_run(line) {
+                let debug_info = DebugInfo {
+                    registers: &self.registers,
+                    line,
+                    instruction: &instruction,
+                };
+                debugger.run(debug_info, bus);
+            }
         }
     }
 }
@@ -150,10 +164,9 @@ impl LR35902 for Processor {
         let opcode = self.immediate(bus);
         if let Some(instruction) = Decoder::decode_opcode(opcode, prefix) {
             let cycle_count = instruction.cycle_count();
-            if let Err(err) = self.execute(bus, instruction) {
-                println!("Error with instruction: {:?}", err);
-                panic!()
-            }
+            self.debugger_check(bus, line, &instruction);
+            self.execute(bus, instruction)
+                .expect("Error with instruction");
             return cycle_count;
         }
         0 // i guess lol

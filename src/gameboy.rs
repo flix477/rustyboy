@@ -2,20 +2,17 @@ use crate::config::Config;
 use crate::hardware::Hardware;
 use crate::processor::Processor;
 use std::error::Error;
-use crate::debugger::Debugger;
 
-pub struct Gameboy<'a> {
+pub struct Gameboy {
     processor: Processor,
     hardware: Hardware,
-    debugger: Debugger<'a>
 }
 
-impl<'a> Gameboy<'a> {
-    pub fn new(config: Config) -> Result<Gameboy<'a>, Box<dyn Error>> {
+impl Gameboy {
+    pub fn new(config: Config) -> Result<Gameboy, Box<dyn Error>> {
         Ok(Gameboy {
             processor: Processor::new(),
             hardware: Hardware::new(config)?,
-            debugger: Debugger::new()
         })
     }
 

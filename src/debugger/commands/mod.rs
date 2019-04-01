@@ -1,17 +1,25 @@
-use crate::debugger::{Debugger, DebuggerState};
-use crate::processor::Processor;
 use crate::bus::Bus;
+use crate::debugger::{DebugInfo, Debugger, DebuggerState};
+use crate::processor::registers::Registers;
 
 pub mod breakpoint;
 pub mod status;
+pub mod step_into;
+pub mod step_over;
 
 pub enum CommandResult {
     Continue,
     Quit,
-    None
+    None,
 }
 
-pub struct Command<'a> {
-    pub matching_values: Vec<&'a str>,
-    pub callback: Box<Fn(&Vec<&str>, &mut DebuggerState, &Processor, &Bus) -> CommandResult>
+pub trait Command {
+    fn matching_value(&self) -> &[&str];
+    fn execute(
+        &self,
+        input: &[&str],
+        debugger: &mut DebuggerState,
+        debug_info: &DebugInfo,
+        bus: &Bus,
+    ) -> CommandResult;
 }

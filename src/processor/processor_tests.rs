@@ -1,7 +1,6 @@
 use crate::processor::flag_register::Flag;
 use crate::processor::instruction::{AddressType as Addr, Reference, ValueType as Value};
 use crate::processor::lr35902::LR35902;
-use crate::processor::register::Register;
 use crate::processor::registers::RegisterType as Reg;
 use crate::processor::Processor;
 use crate::tests::util::mock_bus::MockBus;

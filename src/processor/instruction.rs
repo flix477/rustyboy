@@ -95,7 +95,7 @@ pub enum ValueType {
     Constant(u16),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct InstructionInfo {
     opcode: u8,
     mnemonic: Mnemonic,
