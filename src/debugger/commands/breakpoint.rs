@@ -2,6 +2,7 @@ use super::Command;
 use crate::bus::Bus;
 use crate::debugger::commands::CommandResult;
 use crate::debugger::{DebugInfo, DebuggerState};
+use crate::util::parse_hex::parse_hex;
 
 const MATCHING_VALUES: &'static [&'static str] = &["breakpoint", "b"];
 
@@ -16,11 +17,11 @@ impl BreakpointAction {
         let action = *values.get(0)?;
         match action {
             "add" | "a" => {
-                let line: u16 = values.get(1)?.parse().ok()?;
+                let line: u16 = parse_hex(values.get(1)?)?;
                 Some(BreakpointAction::Add(line))
             }
             "remove" | "r" => {
-                let line: u16 = values.get(1)?.parse().ok()?;
+                let line: u16 = parse_hex(values.get(1)?)?;
                 Some(BreakpointAction::Remove(line))
             }
             "list" | "l" => Some(BreakpointAction::List),
