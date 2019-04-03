@@ -1,13 +1,12 @@
 use crate::processor::flag_register::Flag;
 use crate::processor::instruction::{AddressType as Addr, Reference, ValueType as Value};
 use crate::processor::lr35902::LR35902;
-use crate::processor::register::Register;
 use crate::processor::registers::RegisterType as Reg;
 use crate::processor::Processor;
 use crate::tests::util::mock_bus::MockBus;
 
 fn setup() -> Processor {
-    let mut cpu = Processor::new();
+    let mut cpu = Processor::new(None);
     cpu.set_flag(Flag::HalfCarry, false);
     cpu.set_flag(Flag::Carry, false);
     cpu.set_flag(Flag::Zero, false);

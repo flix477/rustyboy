@@ -21,7 +21,7 @@ impl Screen {
             oam_entries
                 .iter()
                 .enumerate()
-                .filter(|(id, entry)| entry.attributes != 0)
+                .filter(|(_, entry)| entry.attributes != 0)
                 .map(|(id, entry)| Sprite {
                     id: id as u8,
                     tile: tile_data[entry.tile_number as usize],

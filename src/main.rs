@@ -1,6 +1,7 @@
 mod bus;
 mod cartridge;
 mod config;
+mod debugger;
 mod gameboy;
 mod hardware;
 mod processor;
@@ -10,6 +11,7 @@ mod video;
 
 use crate::cartridge::Cartridge;
 use crate::config::Config;
+use crate::debugger::DebuggerState;
 use crate::gameboy::{DeviceType, Gameboy};
 use crate::util::as_millis;
 use crate::video::color::Color;
@@ -25,6 +27,10 @@ fn main() {
     let config = Config {
         cartridge,
         device_type: DeviceType::GameBoy,
+        debugger_config: Some(DebuggerState {
+            forced_break: true,
+            ..DebuggerState::default()
+        }),
     };
     let mut gameboy = Gameboy::new(config).unwrap();
     let mut events_loop = EventsLoop::new();

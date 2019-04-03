@@ -1,15 +1,17 @@
 mod decoder;
 mod flag_register;
-mod instruction;
+pub mod instruction;
 pub mod interrupt;
-mod lr35902;
+pub mod lr35902;
 mod processor_tests;
 mod program_counter;
 mod register;
-mod registers;
+pub mod registers;
 mod stack_pointer;
-use self::instruction::{AddressType, Operand, Reference, ValueType};
+
 use crate::bus::Bus;
+use crate::debugger::debug_info::DebugInfo;
+use crate::debugger::{Debugger, DebuggerState};
 use crate::processor::decoder::Decoder;
 use crate::processor::flag_register::Flag;
 use crate::processor::instruction::{InstructionInfo, Prefix};
@@ -17,6 +19,9 @@ use crate::processor::lr35902::LR35902;
 use crate::processor::register::Register;
 use crate::processor::registers::{RegisterType, Registers};
 use crate::util::bitflags::Bitflags;
+
+use self::instruction::{AddressType, ValueType};
+use crate::processor::interrupt::Interrupt;
 
 const CLOCK_FREQUENCY: f64 = 4194304.0; // Hz
 
@@ -26,16 +31,22 @@ pub struct Processor {
     leftover_time: f64,
     last_instruction_cycles: u8,
     stopped: bool,
+    pub debugger: Option<Debugger>,
 }
 
 impl Processor {
-    pub fn new() -> Processor {
+    pub fn new(debugger_config: Option<DebuggerState>) -> Processor {
         Processor {
             registers: Registers::new(),
             clock_frequency: CLOCK_FREQUENCY,
             leftover_time: 0.0,
             last_instruction_cycles: 0,
             stopped: false,
+            debugger: if let Some(state) = debugger_config {
+                Some(Debugger::from_state(state))
+            } else {
+                None
+            },
         }
     }
 
@@ -87,9 +98,7 @@ impl Processor {
             AddressType::Register(reg) => self.reg(reg),
             AddressType::IncRegister(reg) => self.reg(reg).wrapping_add(0xFF00),
             AddressType::Immediate => self.peek16(bus),
-            AddressType::IncImmediate => {
-                (self.peek(bus) as u16).wrapping_add(0xFF00)
-            }
+            AddressType::IncImmediate => (self.peek(bus) as u16).wrapping_add(0xFF00),
         }
     }
 
@@ -97,40 +106,23 @@ impl Processor {
         match value {
             ValueType::Immediate => self.peek(bus) as u16,
             ValueType::Immediate16 => self.peek16(bus),
-            ValueType::Address(addr) => self.peek_addr_value(addr, bus),
+            ValueType::Address(address) => self.peek_addr_value(address, bus),
             ValueType::Register(reg) => self.reg(reg),
-            ValueType::Constant(constant) => constant
+            ValueType::Constant(constant) => constant,
         }
     }
 
-    fn debug_instruction<H: Bus>(
-        &self,
-        line: u16,
-        bus: &H,
-        instruction: &InstructionInfo,
-    ) -> String {
-        let base_log = format!("0x{:X}: {:?}", line, instruction.mnemonic());
-        let operands = if let Some(operands) = instruction.operands() {
-            operands.iter().fold("".to_string(), |acc, value| {
-                let operand = match value {
-                    Operand::Reference(Reference::Address(address)) => {
-                        let address = self.peek_addr_value(*address, bus);
-                        format!("0x{:X}", address)
-                    },
-                    Operand::Value(value) => {
-                        let value = self.peek_value(*value, bus);
-                        format!("0x{:X}", value)
-                    },
-                    _ => format!("{:?}", value),
+    fn debugger_check<H: Bus>(&mut self, bus: &H, line: u16, instruction: &InstructionInfo) {
+        if let Some(ref mut debugger) = self.debugger {
+            if debugger.should_run(line) {
+                let debug_info = DebugInfo {
+                    registers: &self.registers,
+                    line,
+                    instruction: &instruction,
                 };
-
-                format!("{} {}", acc, operand)
-            })
-        } else {
-            "".to_string()
-        };
-
-        format!("{}\t{}", base_log, operands)
+                debugger.run(debug_info, bus);
+            }
+        }
     }
 }
 
@@ -179,19 +171,14 @@ impl LR35902 for Processor {
         let line = self.registers.program_counter.get();
         let opcode = self.immediate(bus);
         if let Some(instruction) = Decoder::decode_opcode(opcode, prefix) {
-            println!("{}", self.debug_instruction(line, bus, &instruction));
             let cycle_count = instruction.cycle_count();
-            println!("{:?}", self.registers);
-            if line == 0x220 {
-                println!(":o");
-            }
-            if let Err(err) = self.execute(bus, instruction) {
-                println!("Error with instruction: {:?}", err);
-                panic!()
-            }
-            return cycle_count;
+            self.debugger_check(bus, line, &instruction);
+            self.execute(bus, instruction)
+                .expect("Error with instruction");
+            cycle_count
+        } else {
+            0 // i guess?
         }
-        0 // i guess lol
     }
 
     fn halt(&mut self) {

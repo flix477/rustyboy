@@ -691,7 +691,6 @@ pub trait LR35902 {
 
     fn rst<H: Bus>(&mut self, bus: &mut H, address: u16) {
         let pc = self.reg(RegisterType::PC);
-        dbg!(address);
         self.push_stack(bus, pc);
         self.jp(address);
     }
