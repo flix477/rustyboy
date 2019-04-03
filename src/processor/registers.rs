@@ -141,7 +141,7 @@ impl ToString for RegisterType {
             RegisterType::L => "l".to_string(),
             RegisterType::HL => "hl".to_string(),
             RegisterType::SP => "sp".to_string(),
-            RegisterType::PC => "pc".to_string()
+            RegisterType::PC => "pc".to_string(),
         }
     }
 }

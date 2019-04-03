@@ -10,8 +10,8 @@ pub mod registers;
 mod stack_pointer;
 
 use crate::bus::Bus;
-use crate::debugger::{Debugger, DebuggerState};
 use crate::debugger::debug_info::DebugInfo;
+use crate::debugger::{Debugger, DebuggerState};
 use crate::processor::decoder::Decoder;
 use crate::processor::flag_register::Flag;
 use crate::processor::instruction::{InstructionInfo, Prefix};
@@ -71,7 +71,7 @@ impl Processor {
     }
 
     pub fn step<H: Bus>(&mut self, bus: &mut H) -> u8 {
-//        let interrupt = bus.fetch_interrupt();
+        //        let interrupt = bus.fetch_interrupt();
         let interrupt: Option<Interrupt> = None;
         if let Some(interrupt) = interrupt {
             self.stopped = false;

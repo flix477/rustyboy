@@ -10,7 +10,7 @@ pub enum StatusType {
     Address(u16),
     Immediate,
     Register(RegisterType),
-    Registers
+    Registers,
 }
 
 impl StatusType {
@@ -20,7 +20,7 @@ impl StatusType {
             "address" | "a" => {
                 let line: u16 = parse_hex(values.get(1)?)?;
                 Some(StatusType::Address(line))
-            },
+            }
             "immediate" | "i" => Some(StatusType::Immediate),
             "register" | "r" => {
                 let register = values.get(1)?;
