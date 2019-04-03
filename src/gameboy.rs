@@ -2,6 +2,7 @@ use std::error::Error;
 
 use crate::config::Config;
 use crate::hardware::Hardware;
+use crate::processor::interrupt::Interrupt;
 use crate::processor::Processor;
 use crate::video::status_register::StatusMode;
 
@@ -19,14 +20,16 @@ impl Gameboy {
     }
 
     pub fn run_to_vblank(&mut self) {
-        while self.hardware.video().mode() != StatusMode::VBlank {
-            self.step();
+        loop {
+            if self.step() {
+                break;
+            }
         }
     }
 
-    fn step(&mut self) {
+    fn step(&mut self) -> bool {
         let cycles = self.processor.step(&mut self.hardware);
-        self.hardware.clock(cycles);
+        self.hardware.clock(cycles)
     }
 
     pub fn hardware(&self) -> &Hardware {

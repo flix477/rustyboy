@@ -81,15 +81,18 @@ impl Video {
         &self.obj_palette1
     }
 
-    pub fn clock(&mut self, interrupt_handler: &mut InterruptHandler, cycles: u8) {
+    pub fn clock(&mut self, interrupt_handler: &mut InterruptHandler, cycles: u8) -> bool {
         self.cycles_left = self.cycles_left.saturating_sub(cycles as u16);
         if self.cycles_left == 0 {
-            self.step(interrupt_handler);
+            let vblank = self.step(interrupt_handler);
             self.cycles_left = self.mode_cycle_length();
+            vblank
+        } else {
+            false
         }
     }
 
-    fn step(&mut self, interrupt_handler: &mut InterruptHandler) {
+    fn step(&mut self, interrupt_handler: &mut InterruptHandler) -> bool {
         if self.mode == StatusMode::ReadingOAM {
             self.mode = StatusMode::LCDTransfer;
             self.render_scanline();
@@ -116,7 +119,10 @@ impl Video {
             if self.status.vblank_interrupt_enabled() {
                 interrupt_handler.request_interrupt(Interrupt::LCDCStat);
             }
+            return true;
         }
+
+        false
     }
 
     fn mode_cycle_length(&self) -> u16 {

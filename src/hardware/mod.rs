@@ -35,13 +35,16 @@ impl Hardware {
         })
     }
 
-    pub fn clock(&mut self, cycles: u8) {
+    pub fn clock(&mut self, cycles: u8) -> bool {
         self.timer.clock(&mut self.interrupt_handler, cycles);
-        self.video.clock(&mut self.interrupt_handler, cycles);
+        self.video.clock(&mut self.interrupt_handler, cycles)
     }
 
     pub fn video(&self) -> &Video {
         &self.video
+    }
+    pub fn interrupt_handler(&self) -> &InterruptHandler {
+        &self.interrupt_handler
     }
 
     fn audio_unimplemented(&self) {}
