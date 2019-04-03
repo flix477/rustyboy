@@ -8,9 +8,10 @@ mod program_counter;
 mod register;
 pub mod registers;
 mod stack_pointer;
-use self::instruction::{AddressType, ValueType};
+
 use crate::bus::Bus;
-use crate::debugger::{DebugInfo, Debugger, DebuggerState};
+use crate::debugger::{Debugger, DebuggerState};
+use crate::debugger::debug_info::DebugInfo;
 use crate::processor::decoder::Decoder;
 use crate::processor::flag_register::Flag;
 use crate::processor::instruction::{InstructionInfo, Prefix};
@@ -18,6 +19,9 @@ use crate::processor::lr35902::LR35902;
 use crate::processor::register::Register;
 use crate::processor::registers::{RegisterType, Registers};
 use crate::util::bitflags::Bitflags;
+
+use self::instruction::{AddressType, ValueType};
+use crate::processor::interrupt::Interrupt;
 
 const CLOCK_FREQUENCY: f64 = 4194304.0; // Hz
 
@@ -67,7 +71,8 @@ impl Processor {
     }
 
     pub fn step<H: Bus>(&mut self, bus: &mut H) -> u8 {
-        let interrupt = bus.fetch_interrupt();
+//        let interrupt = bus.fetch_interrupt();
+        let interrupt: Option<Interrupt> = None;
         if let Some(interrupt) = interrupt {
             self.stopped = false;
             let pc = self.registers.program_counter.get();
@@ -171,9 +176,10 @@ impl LR35902 for Processor {
             self.debugger_check(bus, line, &instruction);
             self.execute(bus, instruction)
                 .expect("Error with instruction");
-            return cycle_count;
+            cycle_count
+        } else {
+            0 // i guess?
         }
-        0 // i guess lol
     }
 
     fn halt(&mut self) {

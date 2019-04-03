@@ -2,25 +2,31 @@ use crate::bus::Bus;
 use crate::debugger::commands::{Command, CommandResult};
 use crate::debugger::{DebugInfo, DebuggerState};
 use crate::processor::registers::RegisterType;
+use crate::util::parse_hex::parse_hex;
 
 const MATCHING_VALUES: &'static [&'static str] = &["status", "s"];
 
 pub enum StatusType {
     Address(u16),
+    Immediate,
     Register(RegisterType),
-    Registers,
+    Registers
 }
 
 impl StatusType {
     pub fn parse(values: &[&str]) -> Option<StatusType> {
         let status = *values.get(0)?;
         match status {
+            "address" | "a" => {
+                let line: u16 = parse_hex(values.get(1)?)?;
+                Some(StatusType::Address(line))
+            },
+            "immediate" | "i" => Some(StatusType::Immediate),
             "register" | "r" => {
                 let register = values.get(1)?;
                 let register = StatusType::parse_register(register)?;
                 Some(StatusType::Register(register))
             }
-            "address" | "a" => None,
             "registers" => Some(StatusType::Registers),
             _ => None,
         }
@@ -70,6 +76,10 @@ impl Command for StatusCommand {
         if let Some(status_type) = StatusType::parse(&input[1..]) {
             match status_type {
                 StatusType::Address(address) => println!("0x{:X}", bus.read(address)),
+                StatusType::Immediate => {
+                    let pc = debug_info.registers.reg(RegisterType::PC);
+                    println!("0x{:X}", bus.read(pc));
+                }
                 StatusType::Register(register) => {
                     println!("0x{:X}", debug_info.registers.reg(register))
                 }

@@ -77,9 +77,9 @@ fn list_breakpoints(debugger: &DebuggerState) -> String {
             .enumerate()
             .fold(String::new(), |acc, (idx, value)| {
                 if idx == 0 {
-                    value.to_string()
+                    format!("0x{:X}", value)
                 } else {
-                    format!("{}, {}", acc, value)
+                    format!("{}, 0x{:X}", acc, value)
                 }
             })
     }

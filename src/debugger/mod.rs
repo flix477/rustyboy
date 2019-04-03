@@ -1,18 +1,24 @@
+use std::collections::HashSet;
+use std::fmt::{Debug, Error, Formatter};
+use std::io::{self, Write};
+
+use crate::bus::Bus;
+use crate::debugger::commands::{Command, CommandResult};
+use crate::processor::instruction::InstructionInfo;
+use crate::processor::registers::Registers;
+
 use self::commands::breakpoint::BreakpointCommand;
 use self::commands::continue_cmd::ContinueCommand;
 use self::commands::quit::QuitCommand;
 use self::commands::status::StatusCommand;
 use self::commands::step_into::StepIntoCommand;
 use self::commands::step_over::StepOverCommand;
-use crate::bus::Bus;
-use crate::debugger::commands::{Command, CommandResult};
-use crate::processor::instruction::InstructionInfo;
-use crate::processor::registers::Registers;
-use std::collections::HashSet;
-use std::fmt::{Debug, Error, Formatter};
-use std::io::{self, Write};
+use self::debug_info::DebugInfo;
 
 pub mod commands;
+pub mod debug_info;
+
+const HEADER: &'static str = "-- Rustyboy Debugger --";
 
 pub struct Debugger {
     pub state: DebuggerState,
@@ -34,18 +40,6 @@ impl Default for DebuggerState {
     }
 }
 
-pub struct DebugInfo<'a> {
-    pub registers: &'a Registers,
-    pub line: u16,
-    pub instruction: &'a InstructionInfo,
-}
-
-impl<'a> Debug for DebugInfo<'a> {
-    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-        write!(f, "0x{:X}: {:?}", self.line, self.instruction.mnemonic())
-    }
-}
-
 impl Debugger {
     pub fn from_state(state: DebuggerState) -> Debugger {
         Debugger {
@@ -64,13 +58,13 @@ impl Debugger {
     pub fn run(&mut self, debug_info: DebugInfo, bus: &Bus) {
         if self.state.forced_break {
             self.state.forced_break = false;
+        } else {
+            println!("{}", HEADER);
         }
-        println!("-- Rustyboy Debugger --");
         println!("{:?}", debug_info);
         loop {
-            print!("> ");
-            io::stdout().flush().unwrap();
-            if let Some(result) = self.parse(&debug_info, bus) {
+            let input = user_input();
+            if let Some(result) = self.parse(&input, &debug_info, bus) {
                 match result {
                     CommandResult::Continue => {}
                     CommandResult::Quit => {
@@ -101,9 +95,7 @@ impl Debugger {
         self.state.breakpoints.contains(&line) || self.state.forced_break
     }
 
-    fn parse(&mut self, debug_info: &DebugInfo, bus: &Bus) -> Option<CommandResult> {
-        let mut input = String::new();
-        io::stdin().read_line(&mut input).ok()?;
+    fn parse(&mut self, input: &str, debug_info: &DebugInfo, bus: &Bus) -> Option<CommandResult> {
         let separated: Vec<&str> = input.split(' ').map(|x| x.trim()).collect();
         let command = matching_command(&self.commands, separated[0].to_string())?;
         Some(command.execute(&separated, &mut self.state, debug_info, bus))
@@ -114,4 +106,12 @@ fn matching_command(commands: &Vec<Box<dyn Command>>, value: String) -> Option<&
     commands
         .iter()
         .find(|cmd| cmd.matching_value().contains(&value.as_str()))
+}
+
+fn user_input() -> String {
+    print!("> ");
+    io::stdout().flush().unwrap();
+    let mut input = String::new();
+    io::stdin().read_line(&mut input);
+    input
 }

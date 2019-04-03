@@ -125,6 +125,27 @@ pub enum RegisterType {
     PC,
 }
 
+impl ToString for RegisterType {
+    fn to_string(&self) -> String {
+        match self {
+            RegisterType::A => "a".to_string(),
+            RegisterType::F => "f".to_string(),
+            RegisterType::AF => "af".to_string(),
+            RegisterType::B => "b".to_string(),
+            RegisterType::C => "c".to_string(),
+            RegisterType::BC => "bc".to_string(),
+            RegisterType::D => "d".to_string(),
+            RegisterType::E => "e".to_string(),
+            RegisterType::DE => "de".to_string(),
+            RegisterType::H => "h".to_string(),
+            RegisterType::L => "l".to_string(),
+            RegisterType::HL => "hl".to_string(),
+            RegisterType::SP => "sp".to_string(),
+            RegisterType::PC => "pc".to_string()
+        }
+    }
+}
+
 impl RegisterType {
     pub fn is16bit(&self) -> bool {
         *self == RegisterType::AF
