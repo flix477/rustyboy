@@ -71,8 +71,7 @@ impl Processor {
     }
 
     pub fn step<H: Bus>(&mut self, bus: &mut H) -> u8 {
-        //        let interrupt = bus.fetch_interrupt();
-        let interrupt: Option<Interrupt> = None;
+        let interrupt = bus.fetch_interrupt();
         if let Some(interrupt) = interrupt {
             self.stopped = false;
             let pc = self.registers.program_counter.get();
