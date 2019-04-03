@@ -46,7 +46,7 @@ fn main() {
 
         let mut target = display.draw();
         target.clear_color(0.0, 0.0, 1.0, 1.0);
-        gameboy.update(as_millis(delta));
+        gameboy.run_to_vblank();
 
         //        let screen = gameboy.hardware().video().screen();
         //        let buf = screen.draw(gameboy.hardware().video());

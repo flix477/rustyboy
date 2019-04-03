@@ -4,8 +4,9 @@ mod memory;
 mod palette;
 mod register;
 mod screen;
-mod status_register;
+pub mod status_register;
 pub mod tile;
+
 use self::control_register::ControlRegister;
 use self::memory::VideoMemory;
 use self::register::Register;
@@ -33,7 +34,7 @@ pub struct Video {
     // TODO: CGB color palettes
     vram: VideoMemory,
     screen: Screen,
-    leftover_time: f64,
+    cycles_left: u16,
 }
 
 impl Video {
@@ -60,12 +61,15 @@ impl Video {
             obj_palette1,
             vram: VideoMemory::new(),
             screen: Screen::new(),
-            leftover_time: 0.0,
+            cycles_left: 0,
         }
     }
 
     pub fn memory(&self) -> &VideoMemory {
         &self.vram
+    }
+    pub fn mode(&self) -> StatusMode {
+        self.mode
     }
     pub fn screen(&self) -> &Screen {
         &self.screen
@@ -77,12 +81,11 @@ impl Video {
         &self.obj_palette1
     }
 
-    pub fn update(&mut self, interrupt_handler: &mut InterruptHandler, delta: f64) {
-        // TODO: might need to refactor to sync cpu clocks to gpu clocks
-        self.leftover_time += delta;
-        while self.leftover_time >= (self.mode_cycle_length() as f64 / CLOCK_FREQUENCY) {
-            self.leftover_time -= self.mode_cycle_length() as f64 / CLOCK_FREQUENCY;
+    pub fn clock(&mut self, interrupt_handler: &mut InterruptHandler, cycles: u8) {
+        self.cycles_left = self.cycles_left.saturating_sub(cycles as u16);
+        if self.cycles_left == 0 {
             self.step(interrupt_handler);
+            self.cycles_left = self.mode_cycle_length();
         }
     }
 
@@ -92,7 +95,9 @@ impl Video {
             self.render_scanline();
         } else if self.mode == StatusMode::LCDTransfer {
             self.ly += 1;
-            self.check_lyc(interrupt_handler);
+            if self.check_lyc(interrupt_handler) {
+                interrupt_handler.request_interrupt(Interrupt::LCDCStat);
+            }
             self.mode = StatusMode::HBlank;
             if self.status.hblank_interrupt_enabled() {
                 interrupt_handler.request_interrupt(Interrupt::LCDCStat);
@@ -130,10 +135,8 @@ impl Video {
         }
     }
 
-    fn check_lyc(&self, interrupt_handler: &mut InterruptHandler) {
-        if self.status.lyc_interrupt_enabled() && self.ly == self.lyc {
-            interrupt_handler.request_interrupt(Interrupt::LCDCStat);
-        }
+    fn check_lyc(&self, interrupt_handler: &mut InterruptHandler) -> bool {
+        self.status.lyc_interrupt_enabled() && self.ly == self.lyc
     }
 
     fn render_scanline(&mut self) {

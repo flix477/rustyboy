@@ -1,14 +1,16 @@
-mod joypad;
-mod timer;
-use self::joypad::Joypad;
-use self::timer::Timer;
+use std::error::Error;
+
 use crate::bus::{Bus, Readable, Writable};
 use crate::cartridge::Cartridge;
 use crate::config::Config;
-use crate::processor::interrupt::Interrupt;
-use crate::processor::interrupt::InterruptHandler;
+use crate::processor::interrupt::{Interrupt, InterruptHandler};
 use crate::video::Video;
-use std::error::Error;
+
+use self::joypad::Joypad;
+use self::timer::Timer;
+
+mod joypad;
+mod timer;
 
 pub struct Hardware {
     cartridge: Cartridge,
@@ -33,9 +35,9 @@ impl Hardware {
         })
     }
 
-    pub fn update(&mut self, delta: f64) {
-        self.timer.update(&mut self.interrupt_handler, delta);
-        self.video.update(&mut self.interrupt_handler, delta);
+    pub fn clock(&mut self, cycles: u8) {
+        self.timer.clock(&mut self.interrupt_handler, cycles);
+        self.video.clock(&mut self.interrupt_handler, cycles);
     }
 
     pub fn video(&self) -> &Video {

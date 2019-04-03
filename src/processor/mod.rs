@@ -28,8 +28,6 @@ const CLOCK_FREQUENCY: f64 = 4194304.0; // Hz
 pub struct Processor {
     registers: Registers,
     clock_frequency: f64,
-    leftover_time: f64,
-    last_instruction_cycles: u8,
     stopped: bool,
     pub debugger: Option<Debugger>,
 }
@@ -39,34 +37,12 @@ impl Processor {
         Processor {
             registers: Registers::new(),
             clock_frequency: CLOCK_FREQUENCY,
-            leftover_time: 0.0,
-            last_instruction_cycles: 0,
             stopped: false,
             debugger: if let Some(state) = debugger_config {
                 Some(Debugger::from_state(state))
             } else {
                 None
             },
-        }
-    }
-
-    pub fn update<H: Bus>(&mut self, bus: &mut H, delta: f64) {
-        if !self.stopped {
-            self.leftover_time += delta;
-            while !self.stopped
-                && (self.last_instruction_cycles == 0
-                    || self.leftover_time
-                        >= (self.last_instruction_cycles as f64 / CLOCK_FREQUENCY))
-            {
-                self.leftover_time -= if self.last_instruction_cycles > 0 {
-                    self.last_instruction_cycles as f64 / CLOCK_FREQUENCY
-                } else {
-                    self.leftover_time
-                };
-                self.last_instruction_cycles = self.step(bus);
-            }
-        } else {
-            self.step(bus);
         }
     }
 
@@ -82,33 +58,6 @@ impl Processor {
             self.execute_next(bus, Prefix::None)
         } else {
             0
-        }
-    }
-
-    fn peek<H: Bus>(&self, bus: &H) -> u8 {
-        self.registers.program_counter.peek(bus)
-    }
-
-    fn peek16<H: Bus>(&self, bus: &H) -> u16 {
-        self.registers.program_counter.peek16(bus)
-    }
-
-    fn peek_addr_value<H: Bus>(&self, address: AddressType, bus: &H) -> u16 {
-        match address {
-            AddressType::Register(reg) => self.reg(reg),
-            AddressType::IncRegister(reg) => self.reg(reg).wrapping_add(0xFF00),
-            AddressType::Immediate => self.peek16(bus),
-            AddressType::IncImmediate => (self.peek(bus) as u16).wrapping_add(0xFF00),
-        }
-    }
-
-    fn peek_value<H: Bus>(&self, value: ValueType, bus: &H) -> u16 {
-        match value {
-            ValueType::Immediate => self.peek(bus) as u16,
-            ValueType::Immediate16 => self.peek16(bus),
-            ValueType::Address(address) => self.peek_addr_value(address, bus),
-            ValueType::Register(reg) => self.reg(reg),
-            ValueType::Constant(constant) => constant,
         }
     }
 
