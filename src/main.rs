@@ -22,7 +22,7 @@ use glium::{Display, Surface};
 use std::time::Instant;
 
 fn main() {
-    let cartridge = Cartridge::from_file("tetris.gb").unwrap();
+    let cartridge = Cartridge::from_file("Tetris.gb").unwrap();
     println!("{:?}", cartridge.metadata());
     let config = Config {
         cartridge,
@@ -74,6 +74,7 @@ fn main() {
                 ..
             } => {
                 println!("The close button was pressed; stopping");
+                println!("{:?}", gameboy.hardware().video().memory().tile_data()[0]);
                 closed = true;
             }
             _ => {}

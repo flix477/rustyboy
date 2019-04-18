@@ -28,8 +28,8 @@ impl Gameboy {
     }
 
     fn step(&mut self) -> bool {
-        let cycles = self.processor.step(&mut self.hardware);
-        self.hardware.clock(cycles)
+        self.processor.step(&mut self.hardware);
+        self.hardware.clock()
     }
 
     pub fn hardware(&self) -> &Hardware {

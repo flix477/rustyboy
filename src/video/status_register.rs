@@ -39,7 +39,7 @@ impl StatusRegister {
     }
 }
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum StatusMode {
     HBlank = 0,
     VBlank = 1,

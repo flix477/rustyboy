@@ -30,6 +30,8 @@ pub struct Processor {
     clock_frequency: f64,
     stopped: bool,
     pub debugger: Option<Debugger>,
+    cycles_left: u8,
+    pending_ei: bool
 }
 
 impl Processor {
@@ -43,21 +45,27 @@ impl Processor {
             } else {
                 None
             },
+            cycles_left: 0,
+            pending_ei: false
         }
     }
 
-    pub fn step<H: Bus>(&mut self, bus: &mut H) -> u8 {
+    pub fn step<H: Bus>(&mut self, bus: &mut H) {
         let interrupt = bus.fetch_interrupt();
         if let Some(interrupt) = interrupt {
             self.stopped = false;
             let pc = self.registers.program_counter.get();
             self.push_stack(bus, pc);
             self.jp(interrupt.address());
-            0 // lol TODO
-        } else if !self.stopped {
-            self.execute_next(bus, Prefix::None)
-        } else {
-            0
+        } else if !self.stopped && self.cycles_left == 0 {
+            if self.pending_ei {
+                bus.toggle_interrupts(true);
+                self.pending_ei = false;
+            }
+
+            self.cycles_left = self.execute_next(bus, Prefix::None);
+        } else if self.cycles_left > 0 {
+            self.cycles_left -= 1;
         }
     }
 
@@ -120,7 +128,8 @@ impl LR35902 for Processor {
         let line = self.registers.program_counter.get();
         let opcode = self.immediate(bus);
         if let Some(instruction) = Decoder::decode_opcode(opcode, prefix) {
-            println!("0x{:X}", line);
+//            println!("0x2BA is where u should look", line);
+            // à 0x33 register F diffère
             let cycle_count = instruction.cycle_count();
             self.debugger_check(bus, line, &instruction);
             self.execute(bus, instruction)
@@ -137,5 +146,9 @@ impl LR35902 for Processor {
 
     fn stop(&mut self) {
         self.stopped = true;
+    }
+
+    fn ei<H: Bus>(&mut self, bus: &mut H) {
+        self.pending_ei = true;
     }
 }

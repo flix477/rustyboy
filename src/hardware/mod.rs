@@ -35,9 +35,9 @@ impl Hardware {
         })
     }
 
-    pub fn clock(&mut self, cycles: u8) -> bool {
-        self.timer.clock(&mut self.interrupt_handler, cycles);
-        self.video.clock(&mut self.interrupt_handler, cycles)
+    pub fn clock(&mut self) -> bool {
+//        self.timer.clock(&mut self.interrupt_handler);
+        self.video.clock(&mut self.interrupt_handler)
     }
 
     pub fn video(&self) -> &Video {
@@ -56,8 +56,8 @@ impl Readable for Hardware {
             0...0x7FFF | 0xA000...0xBFFF => self.cartridge.read(address), // cartridge
 
             0xFF46 => {
-                0
-                // unimplemented!()
+//                0
+                 unimplemented!()
             } // dma transfer
             0xFF40...0xFF4B | 0x8000...0x9FFF | 0xFE00...0xFE9F => self.video.read(address), // lcdc|video ram,
 

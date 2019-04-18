@@ -64,6 +64,9 @@ impl Readable for VideoMemory {
 
 impl Writable for VideoMemory {
     fn write(&mut self, address: u16, value: u8) {
+        if value == 60 {
+            println!("hello 0x{:X}", address);
+        }
         match address {
             0x8000...0x97FF => self.set_tile_line_at(address, value),
             0x9800...0x9BFF => self

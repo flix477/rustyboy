@@ -1,5 +1,5 @@
 use crate::bus::Bus;
-use crate::processor::flag_register::{carry_add, half_carry_add, Flag};
+use crate::processor::flag_register::{carry_add, half_carry_add, Flag, half_carry_add16};
 use crate::processor::instruction::Prefix;
 use crate::processor::instruction::Reference;
 use crate::processor::instruction::{AddressType, Operand, ValueType};
@@ -387,7 +387,7 @@ pub trait LR35902 {
         self.set_reg(register, result);
         self.set_flag(Flag::AddSub, false);
         self.set_flag(Flag::Zero, result == 0);
-        self.set_flag(Flag::HalfCarry, carry_add(reg_value as u8, value as u8));
+        self.set_flag(Flag::HalfCarry, half_carry_add16(reg_value, value));
         self.set_flag(Flag::Carry, carry);
     }
 
@@ -549,9 +549,7 @@ pub trait LR35902 {
         bus.toggle_interrupts(false);
     }
 
-    fn ei<H: Bus>(&mut self, bus: &mut H) {
-        bus.toggle_interrupts(true);
-    }
+    fn ei<H: Bus>(&mut self, bus: &mut H);
 
     fn cb<H: Bus>(&mut self, bus: &mut H) {
         self.execute_next(bus, Prefix::CB);

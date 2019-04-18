@@ -365,7 +365,7 @@ impl Decoder {
             0x35 => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::DEC,
-                Some(vec![Operand::Reference(Ref::Address(Addr::Immediate))]),
+                Some(vec![Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))]),
                 12,
             )),
 
@@ -477,9 +477,7 @@ impl Decoder {
             0xE9 => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::JP,
-                Some(vec![Operand::Value(ValueType::Address(Addr::Register(
-                    Reg::HL,
-                )))]),
+                Some(vec![Operand::Value(ValueType::Register(Reg::HL))]),
                 4,
             )),
 

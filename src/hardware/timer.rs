@@ -30,7 +30,7 @@ impl Timer {
         1.0 / (CPU_CLOCK_SPEED / self.clock_speed as f64)
     }
 
-    pub fn clock(&mut self, interrupt_handler: &mut InterruptHandler, cycles: u8) {
+    pub fn clock(&mut self, interrupt_handler: &mut InterruptHandler) {
         //        self.leftover_time += delta;
         while self.leftover_time >= self.time_per_tick() {
             self.leftover_time -= self.time_per_tick();
