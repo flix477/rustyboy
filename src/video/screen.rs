@@ -15,7 +15,7 @@ impl Screen {
         }
     }
 
-    pub fn draw(&self, video: &Video) -> Vec<Color> {
+    pub fn draw(&self, video: &Video) -> Vec<u8> {
         let mut buf = vec![Color::White; self.dimensions.0 as usize * self.dimensions.1 as usize];
         let oam_entries = video.vram.oam().entries();
         let tile_data = video.vram.tile_data();
@@ -60,7 +60,9 @@ impl Screen {
             let tiles: Vec<Tile> = Self::resolve_tiles(bg_map, tile_data);
         }
 
-        buf
+        buf.iter()
+            .flat_map(|color| color.to_rgb().to_vec())
+            .collect::<Vec<u8>>()
     }
 
     fn draw_entity(&self, entity: Entity, buf: &mut Vec<Color>) {
