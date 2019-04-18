@@ -2,19 +2,21 @@ use crate::video::memory::background_tile_map::BackgroundTileMap;
 use crate::video::memory::sprite_attribute_table::OAMEntry;
 use crate::video::tile::Tile;
 use crate::video::Video;
+use crate::video::color::Color;
 
 pub struct Screen {
-    pub dimensions: (u8, u8),
+    pub dimensions: (u8, u8)
 }
 
 impl Screen {
     pub fn new() -> Self {
         Screen {
-            dimensions: (160, 144),
+            dimensions: (160, 144)
         }
     }
 
-    pub fn draw(&self, video: &Video) -> Vec<u8> {
+    pub fn draw(&self, video: &Video) -> Vec<Color> {
+        let mut buf = vec![Color::White; self.dimensions.0 as usize * self.dimensions.1 as usize];
         let oam_entries = video.vram.oam().entries();
         let tile_data = video.vram.tile_data();
         let sprites: Vec<Sprite> = if video.control.obj_enabled() {
@@ -33,7 +35,8 @@ impl Screen {
         };
 
         for sprite in sprites.iter() {
-            println!("{:?}", sprite);
+            let entity = Entity::from_sprite(sprite);
+            self.draw_entity(entity, &mut buf);
         }
 
         if video.control.bg_window_enabled() {
@@ -57,7 +60,19 @@ impl Screen {
             let tiles: Vec<Tile> = Self::resolve_tiles(bg_map, tile_data);
         }
 
-        vec![0; self.dimensions.0 as usize * self.dimensions.1 as usize * 3]
+        buf
+    }
+
+    fn draw_entity(&self, entity: Entity, buf: &mut Vec<Color>) {
+        for y in 0..entity.height {
+            let base_idx = y as u16 * self.dimensions.0 as u16;
+            let entity_base_idx = y * entity.width;
+            for x in 0..entity.width {
+                let buf_idx = base_idx + entity.x as u16 + x as u16;
+                let entity_idx = entity_base_idx + x;
+                buf[buf_idx as usize] = entity.data[entity_idx as usize];
+            }
+        }
     }
 
     pub fn resolve_tiles(bg_map: &BackgroundTileMap, tile_data: &[Tile; 384]) -> Vec<Tile> {
@@ -66,6 +81,26 @@ impl Screen {
             .iter()
             .flat_map(|row| row.iter().map(|tile_idx| tile_data[*tile_idx as usize]))
             .collect()
+    }
+}
+
+struct Entity {
+    pub width: u8,
+    pub height: u8,
+    pub x: u8,
+    pub y: u8,
+    pub data: [Color; 64]
+}
+
+impl Entity {
+    pub fn from_sprite(sprite: &Sprite) -> Self {
+        Entity {
+            width: 8,
+            height: 8,
+            x: sprite.x(),
+            y: sprite.y(),
+            data: sprite.tile.colored()
+        }
     }
 }
 

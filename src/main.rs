@@ -28,7 +28,6 @@ fn main() {
         cartridge,
         device_type: DeviceType::GameBoy,
         debugger_config: Some(DebuggerState {
-            forced_break: true,
             ..DebuggerState::default()
         }),
     };
@@ -48,20 +47,13 @@ fn main() {
         target.clear_color(0.0, 0.0, 1.0, 1.0);
         gameboy.run_to_vblank();
 
-        //        let screen = gameboy.hardware().video().screen();
-        //        let buf = screen.draw(gameboy.hardware().video());
-
-        let tile_data = gameboy.hardware().video().memory().tile_data();
-        let colors = tile_data
-            .iter()
-            .flat_map(|tile| tile.colored().to_vec())
-            .collect::<Vec<Color>>();
-        let buf = colors
+        let screen = gameboy.hardware().video().screen();
+        let buf = screen.draw(gameboy.hardware().video());
+        let buf = buf
             .iter()
             .flat_map(|color| color.to_rgb().to_vec())
             .collect::<Vec<u8>>();
-
-        let img = RawImage2d::from_raw_rgb_reversed(&buf, (16 * 8, 24 * 8));
+        let img = RawImage2d::from_raw_rgb_reversed(&buf, (screen.dimensions.0 as u32, screen.dimensions.1 as u32));
         glium::Texture2d::new(&display, img)
             .unwrap()
             .as_surface()
@@ -74,7 +66,6 @@ fn main() {
                 ..
             } => {
                 println!("The close button was pressed; stopping");
-                println!("{:?}", gameboy.hardware().video().memory().tile_data()[0]);
                 closed = true;
             }
             _ => {}
