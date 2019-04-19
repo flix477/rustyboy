@@ -3,6 +3,8 @@ use crate::video::memory::sprite_attribute_table::OAMEntry;
 use crate::video::tile::Tile;
 use crate::video::Video;
 use crate::video::color::Color;
+use crate::util::drawer::Entity;
+use crate::util::drawer;
 
 pub struct Screen {
     pub dimensions: (u8, u8)
@@ -66,15 +68,7 @@ impl Screen {
     }
 
     fn draw_entity(&self, entity: Entity, buf: &mut Vec<Color>) {
-        for y in 0..entity.height {
-            let base_idx = y as u16 * self.dimensions.0 as u16;
-            let entity_base_idx = y * entity.width;
-            for x in 0..entity.width {
-                let buf_idx = base_idx + entity.x as u16 + x as u16;
-                let entity_idx = entity_base_idx + x;
-                buf[buf_idx as usize] = entity.data[entity_idx as usize];
-            }
-        }
+        drawer::draw_entity(entity, (self.dimensions.0 as usize, self.dimensions.1 as usize), buf);
     }
 
     pub fn resolve_tiles(bg_map: &BackgroundTileMap, tile_data: &[Tile; 384]) -> Vec<Tile> {
@@ -84,14 +78,6 @@ impl Screen {
             .flat_map(|row| row.iter().map(|tile_idx| tile_data[*tile_idx as usize]))
             .collect()
     }
-}
-
-struct Entity {
-    pub width: u8,
-    pub height: u8,
-    pub x: u8,
-    pub y: u8,
-    pub data: [Color; 64]
 }
 
 impl Entity {
@@ -107,7 +93,7 @@ impl Entity {
 }
 
 #[derive(Debug)]
-struct Sprite {
+pub struct Sprite {
     pub id: u8,
     pub tile: Tile,
     pub attributes: OAMEntry,
