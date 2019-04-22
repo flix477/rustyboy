@@ -1,11 +1,8 @@
 use std::collections::HashSet;
-use std::fmt::{Debug, Error, Formatter};
 use std::io::{self, Write};
 
 use crate::bus::Bus;
 use crate::debugger::commands::{Command, CommandResult};
-use crate::processor::instruction::InstructionInfo;
-use crate::processor::registers::Registers;
 
 use self::commands::breakpoint::BreakpointCommand;
 use self::commands::continue_cmd::ContinueCommand;

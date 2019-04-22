@@ -142,7 +142,7 @@ impl Video {
 
     fn set_ly(&mut self, value: u8, interrupt_handler: &mut InterruptHandler) {
         self.ly = value;
-        if self.check_lyc(interrupt_handler) {
+        if self.check_lyc() {
             interrupt_handler.request_interrupt(Interrupt::LCDCStat)
         }
     }
@@ -163,7 +163,7 @@ impl Video {
         }
     }
 
-    fn check_lyc(&self, interrupt_handler: &mut InterruptHandler) -> bool {
+    fn check_lyc(&self) -> bool {
         self.status.lyc_interrupt_enabled() && self.ly == self.lyc
     }
 

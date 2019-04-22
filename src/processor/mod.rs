@@ -20,9 +20,6 @@ use crate::processor::register::Register;
 use crate::processor::registers::{RegisterType, Registers};
 use crate::util::bitflags::Bitflags;
 
-use self::instruction::{AddressType, ValueType};
-use crate::processor::interrupt::Interrupt;
-
 const CLOCK_FREQUENCY: f64 = 4194304.0; // Hz
 
 pub struct Processor {
@@ -148,7 +145,7 @@ impl LR35902 for Processor {
         self.stopped = true;
     }
 
-    fn ei<H: Bus>(&mut self, bus: &mut H) {
+    fn ei(&mut self) {
         self.pending_ei = true;
     }
 }

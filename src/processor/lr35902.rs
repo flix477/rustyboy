@@ -154,7 +154,7 @@ pub trait LR35902 {
             Mnemonic::HALT => self.halt(),
             Mnemonic::STOP => self.stop(),
             Mnemonic::DI => self.di(bus),
-            Mnemonic::EI => self.ei(bus),
+            Mnemonic::EI => self.ei(),
             Mnemonic::RLC | Mnemonic::RL | Mnemonic::RRC | Mnemonic::RR | Mnemonic::SWAP => {
                 if let Some(operands) = instruction.operands() {
                     if let Operand::Reference(r) = operands[0] {
@@ -549,7 +549,7 @@ pub trait LR35902 {
         bus.toggle_interrupts(false);
     }
 
-    fn ei<H: Bus>(&mut self, bus: &mut H);
+    fn ei(&mut self);
 
     fn cb<H: Bus>(&mut self, bus: &mut H) {
         self.execute_next(bus, Prefix::CB);
@@ -700,6 +700,6 @@ pub trait LR35902 {
 
     fn reti<H: Bus>(&mut self, bus: &mut H) {
         self.ret(bus);
-        self.ei(bus);
+        self.ei();
     }
 }

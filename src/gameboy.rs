@@ -2,9 +2,7 @@ use std::error::Error;
 
 use crate::config::Config;
 use crate::hardware::Hardware;
-use crate::processor::interrupt::Interrupt;
 use crate::processor::Processor;
-use crate::video::status_register::StatusMode;
 
 pub struct Gameboy {
     processor: Processor,

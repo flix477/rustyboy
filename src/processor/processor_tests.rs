@@ -645,7 +645,6 @@ fn cpl() {
 #[test]
 fn ccf() {
     let mut cpu = setup();
-    let mut bus = MockBus::default();
 
     cpu.ccf();
     assert_eq!(true, cpu.flag(Flag::Carry));
@@ -677,7 +676,7 @@ fn ei() {
     let mut cpu = setup();
     let mut bus = MockBus::default();
 
-    cpu.ei(&mut bus);
+    cpu.ei();
     assert_eq!(true, bus.interrupts_enabled);
 
     // Flags affected
@@ -692,7 +691,7 @@ fn di() {
     let mut cpu = setup();
     let mut bus = MockBus::default();
 
-    cpu.ei(&mut bus);
+    cpu.ei();
     cpu.di(&mut bus);
     assert_eq!(false, bus.interrupts_enabled);
 

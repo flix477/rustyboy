@@ -1,6 +1,6 @@
 use crate::processor::instruction::{AddressType, Reference, ValueType};
 use crate::processor::instruction::{InstructionInfo, Operand};
-use crate::processor::registers::{RegisterType, Registers};
+use crate::processor::registers::Registers;
 use std::fmt::{Debug, Error, Formatter};
 
 const IMMEDIATE: &'static str = "n";

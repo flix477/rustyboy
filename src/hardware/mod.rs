@@ -36,7 +36,7 @@ impl Hardware {
     }
 
     pub fn clock(&mut self) -> bool {
-        //        self.timer.clock(&mut self.interrupt_handler);
+        self.timer.clock(&mut self.interrupt_handler);
         self.video.clock(&mut self.interrupt_handler)
     }
 
