@@ -46,9 +46,14 @@ impl VideoMemory {
 
     fn set_tile_line_at(&mut self, address: u16, value: u8) {
         let (tile_address, tile_idx, line_idx, byte_idx) = self.tile_idx_at(address);
+        if tile_idx == 4 && value != 0 {
+            println!("line: {}, 0b{:b}", line_idx, value);
+            dbg!(address);
+        }
         let initial_value = self.tile_data[tile_idx as usize].line(line_idx);
         let mask = 0xFF * 0x100u16.pow(byte_idx.into());
-        let value = (initial_value & mask) | (value as u16).wrapping_shl((8 * (1 - byte_idx)).into());
+        let value =
+            (initial_value & mask) | (value as u16).wrapping_shl((8 * (1 - byte_idx)).into());
         self.tile_data[tile_idx as usize].set_line(line_idx, value);
     }
 }

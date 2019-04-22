@@ -1,19 +1,19 @@
+use crate::util::drawer;
+use crate::util::drawer::Entity;
+use crate::video::color::Color;
 use crate::video::memory::background_tile_map::BackgroundTileMap;
 use crate::video::memory::sprite_attribute_table::OAMEntry;
 use crate::video::tile::Tile;
 use crate::video::Video;
-use crate::video::color::Color;
-use crate::util::drawer::Entity;
-use crate::util::drawer;
 
 pub struct Screen {
-    pub dimensions: (u8, u8)
+    pub dimensions: (u8, u8),
 }
 
 impl Screen {
     pub fn new() -> Self {
         Screen {
-            dimensions: (160, 144)
+            dimensions: (160, 144),
         }
     }
 
@@ -50,7 +50,6 @@ impl Screen {
                 };
 
                 let tiles: Vec<Tile> = Self::resolve_tiles(bg_map, tile_data);
-                println!("{:?}", tiles);
             }
 
             let bg_map = if video.control.bg_map() == 0 {
@@ -68,7 +67,11 @@ impl Screen {
     }
 
     fn draw_entity(&self, entity: Entity, buf: &mut Vec<Color>) {
-        drawer::draw_entity(entity, (self.dimensions.0 as usize, self.dimensions.1 as usize), buf);
+        drawer::draw_entity(
+            entity,
+            (self.dimensions.0 as usize, self.dimensions.1 as usize),
+            buf,
+        );
     }
 
     pub fn resolve_tiles(bg_map: &BackgroundTileMap, tile_data: &[Tile; 384]) -> Vec<Tile> {
@@ -87,7 +90,7 @@ impl Entity {
             height: 8,
             x: sprite.x(),
             y: sprite.y(),
-            data: sprite.tile.colored()
+            data: sprite.tile.colored(),
         }
     }
 }

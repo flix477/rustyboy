@@ -102,7 +102,7 @@ impl Debugger {
     }
 }
 
-fn matching_command(commands: &Vec<Box<dyn Command>>, value: String) -> Option<&Box<dyn Command>> {
+fn matching_command(commands: &[Box<dyn Command>], value: String) -> Option<&Box<dyn Command>> {
     commands
         .iter()
         .find(|cmd| cmd.matching_value().contains(&value.as_str()))

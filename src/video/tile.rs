@@ -1,5 +1,4 @@
 use crate::video::color::Color;
-use crate::util::bits;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Tile {

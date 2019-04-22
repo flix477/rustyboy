@@ -74,7 +74,7 @@ pub struct CartridgeMetadata {
 }
 
 impl CartridgeMetadata {
-    pub fn from_buffer(buffer: &Vec<u8>) -> Result<CartridgeMetadata, Box<dyn Error>> {
+    pub fn from_buffer(buffer: &[u8]) -> Result<CartridgeMetadata, Box<dyn Error>> {
         let (title, manufacturer_code, cgb_flag) = Self::parse_title_section(buffer)?;
 
         Ok(CartridgeMetadata {
@@ -90,13 +90,12 @@ impl CartridgeMetadata {
             old_licensee_code: Self::parse_old_licensee_code(buffer),
             version: buffer[VERSION_OFFSET],
             header_checksum: buffer[HEADER_CHECKSUM_OFFSET],
-            // global_checksum: buffer[GLOBAL_CHECKSUM_RANGE].iter().map(|x| *x).sum() // lol clearly not
             global_checksum: 0,
         })
     }
 
     fn parse_title_section(
-        buffer: &Vec<u8>,
+        buffer: &[u8],
     ) -> Result<(String, Option<String>, Option<CGBFlag>), Box<dyn Error>> {
         let mut title_end_offset = CGB_FLAG_OFFSET;
         let cgb_flag = CGBFlag::from(buffer[CGB_FLAG_OFFSET]);
@@ -116,7 +115,7 @@ impl CartridgeMetadata {
         ))
     }
 
-    fn parse_manufacturer_code(buffer: &Vec<u8>) -> Result<Option<String>, Box<dyn Error>> {
+    fn parse_manufacturer_code(buffer: &[u8]) -> Result<Option<String>, Box<dyn Error>> {
         let code = ut8_decode_trim(buffer[MANUFACTURER_CODE_RANGE].to_vec())?;
         if code.len() == 4 {
             return Ok(Some(code));
@@ -124,7 +123,7 @@ impl CartridgeMetadata {
         Ok(None)
     }
 
-    fn parse_new_licensee_code(buffer: &Vec<u8>) -> Result<Option<String>, Box<dyn Error>> {
+    fn parse_new_licensee_code(buffer: &[u8]) -> Result<Option<String>, Box<dyn Error>> {
         let code = ut8_decode_trim(buffer[NEW_LICENSEE_CODE_RANGE].to_vec())?;
         if code.len() == 2 {
             return Ok(Some(code));
@@ -132,7 +131,7 @@ impl CartridgeMetadata {
         Ok(None)
     }
 
-    fn parse_rom_size(buffer: &Vec<u8>) -> Result<f64, String> {
+    fn parse_rom_size(buffer: &[u8]) -> Result<f64, String> {
         match buffer[ROM_SIZE_OFFSET] {
             0x00 => Ok(BytesConvert::from_kb(32.0)),
             0x01 => Ok(BytesConvert::from_kb(64.0)),
@@ -149,7 +148,7 @@ impl CartridgeMetadata {
         }
     }
 
-    fn parse_ram_size(buffer: &Vec<u8>) -> Result<f64, String> {
+    fn parse_ram_size(buffer: &[u8]) -> Result<f64, String> {
         match buffer[RAM_SIZE_OFFSET] {
             0x00 => Ok(0.0),
             0x01 => Ok(BytesConvert::from_kb(2.0)),
@@ -159,7 +158,7 @@ impl CartridgeMetadata {
         }
     }
 
-    fn parse_old_licensee_code(buffer: &Vec<u8>) -> Option<u8> {
+    fn parse_old_licensee_code(buffer: &[u8]) -> Option<u8> {
         let value = buffer[OLD_LICENSEE_CODE_OFFSET];
         match value {
             0x33 => None,

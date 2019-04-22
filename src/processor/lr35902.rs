@@ -1,5 +1,5 @@
 use crate::bus::Bus;
-use crate::processor::flag_register::{carry_add, half_carry_add, Flag, half_carry_add16};
+use crate::processor::flag_register::{carry_add, half_carry_add, half_carry_add16, Flag};
 use crate::processor::instruction::Prefix;
 use crate::processor::instruction::Reference;
 use crate::processor::instruction::{AddressType, Operand, ValueType};

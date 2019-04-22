@@ -68,7 +68,7 @@ impl Command for BreakpointCommand {
 }
 
 fn list_breakpoints(debugger: &DebuggerState) -> String {
-    if debugger.breakpoints.len() == 0 {
+    if debugger.breakpoints.is_empty() {
         "No breakpoints set".to_string()
     } else {
         debugger

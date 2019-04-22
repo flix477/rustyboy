@@ -31,7 +31,7 @@ pub struct Processor {
     stopped: bool,
     pub debugger: Option<Debugger>,
     cycles_left: u8,
-    pending_ei: bool
+    pending_ei: bool,
 }
 
 impl Processor {
@@ -46,7 +46,7 @@ impl Processor {
                 None
             },
             cycles_left: 0,
-            pending_ei: false
+            pending_ei: false,
         }
     }
 
@@ -128,7 +128,7 @@ impl LR35902 for Processor {
         let line = self.registers.program_counter.get();
         let opcode = self.immediate(bus);
         if let Some(instruction) = Decoder::decode_opcode(opcode, prefix) {
-//            println!("0x2BA is where u should look", line);
+            //            println!("0x2BA is where u should look", line);
             // à 0x33 register F diffère
             let cycle_count = instruction.cycle_count();
             self.debugger_check(bus, line, &instruction);

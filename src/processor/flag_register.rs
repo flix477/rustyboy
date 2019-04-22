@@ -66,5 +66,5 @@ pub const fn half_carry_add16(value1: u16, value2: u16) -> bool {
 }
 
 pub fn carry_add(value1: u8, value2: u8) -> bool {
-    (value1 & 0xff).overflowing_add(value2 & 0xff).1
+    value1.overflowing_add(value2).1
 }

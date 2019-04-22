@@ -20,7 +20,7 @@ impl MBCFactory {
 
     pub fn from_variant(
         variant: &MBCVariant,
-        capabilities: &Vec<CartridgeCapability>,
+        capabilities: &[CartridgeCapability],
     ) -> Option<Box<dyn MemoryBankController>> {
         match variant {
             MBCVariant::MBC1 => Some(Box::new(MBC1::new(capabilities))),
@@ -71,7 +71,7 @@ pub enum MBCVariant {
 }
 
 impl MBCVariant {
-    pub fn from_capabilities(capabilities: &Vec<CartridgeCapability>) -> Option<MBCVariant> {
+    pub fn from_capabilities(capabilities: &[CartridgeCapability]) -> Option<MBCVariant> {
         if capabilities.contains(&CartridgeCapability::MBC1) {
             Some(MBCVariant::MBC1)
         } else if capabilities.contains(&CartridgeCapability::MBC2) {
