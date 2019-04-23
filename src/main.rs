@@ -21,10 +21,7 @@ fn main() {
     let config = Config {
         cartridge,
         device_type: DeviceType::GameBoy,
-        debugger_config: Some(DebuggerState {
-            forced_break: true,
-            ..DebuggerState::default()
-        }),
+        debugger_config: None,
     };
 
     run(config);

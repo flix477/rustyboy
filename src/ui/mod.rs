@@ -1,6 +1,7 @@
 use glium::Display;
 use glium::glutin::{ContextBuilder, Event, EventsLoop, WindowEvent, WindowBuilder};
 use glium::glutin::dpi::LogicalSize;
+use glium::texture::RawImage2d;
 
 use crate::gameboy::Gameboy;
 use crate::config::Config;
@@ -15,15 +16,19 @@ pub trait Window {
     fn update(&self, gameboy: &Gameboy);
 }
 
-pub fn create_display(title: &str, events_loop: &EventsLoop) -> Display {
+pub fn create_display(title: &str, events_loop: &EventsLoop, dimensions: (usize, usize)) -> Display {
     let window = WindowBuilder::new()
         .with_title(title)
         .with_dimensions(LogicalSize {
-            width: 320.0,
-            height: 288.0,
+            width: dimensions.0 as f64,
+            height: dimensions.1 as f64,
         });
     let ctx = ContextBuilder::new();
     Display::new(window, ctx, events_loop).unwrap()
+}
+
+pub fn to_raw_image(buf: &[u8], dimensions: (usize, usize)) -> RawImage2d<u8> {
+    RawImage2d::from_raw_rgb_reversed(&buf, (16 * 8, 24 * 8))
 }
 
 pub fn run(config: Config) {

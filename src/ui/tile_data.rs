@@ -11,6 +11,7 @@ use crate::video::color::Color;
 use super::{create_display, Window};
 
 const TILE_DATA_DIMENSIONS: (usize, usize) = (16, 24);
+const DIMENSIONS: (u8, u8) = (128, 192);
 
 pub struct TileDataWindow {
     pub display: Display,
@@ -19,7 +20,7 @@ pub struct TileDataWindow {
 impl TileDataWindow {
     pub fn new(events_loop: &EventsLoop) -> TileDataWindow {
         TileDataWindow {
-            display: create_display("Rustyboy | Tile Data", &events_loop),
+            display: create_display("Rustyboy | Tile Data", &events_loop, (128, 192)),
         }
     }
 }
@@ -32,7 +33,7 @@ impl Window for TileDataWindow {
         let mut buf = vec![Color::Black; 16 * 8 * 24 * 8];
 
         let tile_data = gameboy.hardware().video().memory().tile_data();
-        let entities = tile_data.iter().enumerate().map(|(idx, tile)| {
+        let entities = tile_data[1..2].iter().enumerate().map(|(idx, tile)| {
             let y = idx / TILE_DATA_DIMENSIONS.0;
             let x = idx - y * TILE_DATA_DIMENSIONS.0;
             Entity {

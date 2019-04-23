@@ -14,7 +14,7 @@ pub struct MainWindow {
 impl MainWindow {
     pub fn new(events_loop: &EventsLoop) -> MainWindow {
         MainWindow {
-            display: create_display("Rustyboy", &events_loop),
+            display: create_display("Rustyboy", &events_loop, (160, 144)),
         }
     }
 }
