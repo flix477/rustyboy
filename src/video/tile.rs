@@ -33,6 +33,7 @@ impl Tile {
     }
 
     pub fn color_at(&self, x: u8, y: u8) -> Color {
+        let x = 7 - x;
         let line = self.data[y as usize];
         let (msb, lsb) = ((line >> 8) as u8, line as u8);
         let value = (((lsb >> x) & 1) << 1) | ((msb >> x) & 1);
@@ -47,4 +48,23 @@ impl Tile {
         }
         colors
     }
+}
+
+#[test]
+fn colored() {
+    let tile_data = [0, 6168, 14392, 6168, 6168, 6168, 15420, 0];
+    let tile = Tile::new(tile_data);
+    let colored = tile.colored();
+    let expected = [
+        Color::White, Color::White, Color::White, Color::White, Color::White, Color::White, Color::White, Color::White,
+        Color::White, Color::White, Color::White, Color::Black, Color::Black, Color::White, Color::White, Color::White,
+        Color::White, Color::White, Color::Black, Color::Black, Color::Black, Color::White, Color::White, Color::White,
+        Color::White, Color::White, Color::White, Color::Black, Color::Black, Color::White, Color::White, Color::White,
+        Color::White, Color::White, Color::White, Color::Black, Color::Black, Color::White, Color::White, Color::White,
+        Color::White, Color::White, Color::White, Color::Black, Color::Black, Color::White, Color::White, Color::White,
+        Color::White, Color::White, Color::Black, Color::Black, Color::Black, Color::Black, Color::White, Color::White,
+        Color::White, Color::White, Color::White, Color::White, Color::White, Color::White, Color::White, Color::White,
+    ];
+
+    assert_eq!(colored.to_vec(), expected.to_vec());
 }

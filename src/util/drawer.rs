@@ -10,6 +10,7 @@ pub struct Entity {
 
 pub fn draw_entity(entity: Entity, dimensions: (usize, usize), buf: &mut Vec<Color>) {
     for y in 0..entity.height {
+        let y = y + entity.y;
         let base_idx = y as u16 * dimensions.0 as u16;
         let entity_base_idx = y * entity.width;
         for x in 0..entity.width {
