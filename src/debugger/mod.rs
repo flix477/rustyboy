@@ -1,5 +1,4 @@
 use std::collections::HashSet;
-use std::io::{self, Write};
 
 use crate::bus::Bus;
 use crate::debugger::commands::{Command, CommandResult};
@@ -11,15 +10,18 @@ use self::commands::status::StatusCommand;
 use self::commands::step_into::StepIntoCommand;
 use self::commands::step_over::StepOverCommand;
 use self::debug_info::DebugInfo;
+use self::shell::Shell;
 
 pub mod commands;
 pub mod debug_info;
+pub mod shell;
 
 const HEADER: &'static str = "-- Rustyboy Debugger --";
 
 pub struct Debugger {
     pub state: DebuggerState,
     pub commands: Vec<Box<dyn Command>>,
+    shell: Shell
 }
 
 #[derive(Clone)]
@@ -49,6 +51,7 @@ impl Debugger {
                 StepOverCommand::create_command(),
                 QuitCommand::create_command(),
             ],
+            shell: Shell::new()
         }
     }
 
@@ -60,7 +63,7 @@ impl Debugger {
         }
         println!("{:?}", debug_info);
         loop {
-            let input = user_input();
+            let input = self.shell.read_input();
             if let Some(result) = self.parse(&input, &debug_info, bus) {
                 match result {
                     CommandResult::Continue => {}
@@ -105,10 +108,3 @@ fn matching_command(commands: &[Box<dyn Command>], value: String) -> Option<&Box
         .find(|cmd| cmd.matching_value().contains(&value.as_str()))
 }
 
-fn user_input() -> String {
-    print!("> ");
-    io::stdout().flush().unwrap();
-    let mut input = String::new();
-    io::stdin().read_line(&mut input);
-    input
-}

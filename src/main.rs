@@ -14,14 +14,17 @@ use crate::cartridge::Cartridge;
 use crate::config::Config;
 use crate::debugger::DebuggerState;
 use crate::gameboy::DeviceType;
-use crate::ui::{run, Window};
+use crate::ui::run;
 
 fn main() {
-    let cartridge = Cartridge::from_file("Tetris.gb").unwrap();
+    let cartridge = Cartridge::from_file("test/cpu_instrs.gb").unwrap();
     let config = Config {
         cartridge,
         device_type: DeviceType::GameBoy,
-        debugger_config: None,
+        debugger_config: Some(DebuggerState {
+            forced_break: true,
+            ..DebuggerState::default()
+        }),
     };
 
     run(config);
