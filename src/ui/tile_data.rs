@@ -33,8 +33,9 @@ impl Window for TileDataWindow {
         let mut buf = vec![Color::Black; 16 * 8 * 24 * 8];
 
         let tile_data = gameboy.hardware().video().memory().tile_data();
-        let entities = tile_data[1..2].iter().enumerate().map(|(idx, tile)| {
+        let entities = tile_data[0..17].iter().enumerate().map(|(idx, tile)| {
             let y = idx / TILE_DATA_DIMENSIONS.0;
+            dbg!(y);
             let x = idx - y * TILE_DATA_DIMENSIONS.0;
             Entity {
                 width: 8,
