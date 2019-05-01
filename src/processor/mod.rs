@@ -14,11 +14,12 @@ use crate::debugger::debug_info::DebugInfo;
 use crate::debugger::{Debugger, DebuggerState};
 use crate::processor::decoder::Decoder;
 use crate::processor::flag_register::Flag;
-use crate::processor::instruction::{InstructionInfo, Prefix};
+use crate::processor::instruction::{InstructionInfo, Prefix, Operand, Reference, AddressType};
 use crate::processor::lr35902::LR35902;
 use crate::processor::register::Register;
 use crate::processor::registers::{RegisterType, Registers};
 use crate::util::bitflags::Bitflags;
+use crate::processor::instruction::Reference::Address;
 
 const CLOCK_FREQUENCY: f64 = 4194304.0; // Hz
 
@@ -68,12 +69,12 @@ impl Processor {
 
     fn debugger_check<H: Bus>(&mut self, bus: &H, line: u16, instruction: &InstructionInfo) {
         if let Some(ref mut debugger) = self.debugger {
-            if debugger.should_run(line) {
-                let debug_info = DebugInfo {
-                    registers: &self.registers,
-                    line,
-                    instruction: &instruction,
-                };
+            let debug_info = DebugInfo {
+                registers: &self.registers,
+                line,
+                instruction: &instruction,
+            };
+            if debugger.should_run(&debug_info) {
                 debugger.run(debug_info, bus);
             }
         }

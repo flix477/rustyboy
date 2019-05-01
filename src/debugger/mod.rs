@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 use crate::bus::Bus;
 use crate::debugger::commands::{Command, CommandResult};
 
@@ -11,6 +9,7 @@ use self::commands::step_into::StepIntoCommand;
 use self::commands::step_over::StepOverCommand;
 use self::debug_info::DebugInfo;
 use self::shell::Shell;
+use crate::processor::registers::RegisterType;
 
 pub mod commands;
 pub mod debug_info;
@@ -26,14 +25,35 @@ pub struct Debugger {
 
 #[derive(Clone)]
 pub struct DebuggerState {
-    pub breakpoints: HashSet<u16>,
+    pub breakpoints: Vec<Breakpoint>,
     pub forced_break: bool,
+}
+
+#[derive(Copy, Clone)]
+pub struct Breakpoint {
+    pub line: u16,
+    pub condition: Option<BreakpointCondition>
+}
+
+#[derive(Copy, Clone)]
+pub enum BreakpointCondition {
+    RegisterEquals(RegisterType, u16)
+}
+
+impl BreakpointCondition {
+    pub fn satisfied(&self, debug_info: &DebugInfo) -> bool {
+        match self {
+            BreakpointCondition::RegisterEquals(register, value) => {
+                debug_info.registers.reg(*register) == *value
+            }
+        }
+    }
 }
 
 impl Default for DebuggerState {
     fn default() -> Self {
         Self {
-            breakpoints: HashSet::new(),
+            breakpoints: Vec::new(),
             forced_break: false,
         }
     }
@@ -61,7 +81,9 @@ impl Debugger {
         } else {
             println!("{}", HEADER);
         }
+
         println!("{:?}", debug_info);
+
         loop {
             let input = self.shell.read_input();
             if let Some(result) = self.parse(&input, &debug_info, bus) {
@@ -91,8 +113,10 @@ impl Debugger {
         )
     }
 
-    pub fn should_run(&self, line: u16) -> bool {
-        self.state.breakpoints.contains(&line) || self.state.forced_break
+    pub fn should_run(&self, debug_info: &DebugInfo) -> bool {
+        self.state.forced_break
+            || self.state.breakpoints.iter()
+                .any(|b| b.line == debug_info.line && b.condition.map_or(true, |condition| condition.satisfied(debug_info)))
     }
 
     fn parse(&mut self, input: &str, debug_info: &DebugInfo, bus: &Bus) -> Option<CommandResult> {

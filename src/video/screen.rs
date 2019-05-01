@@ -21,6 +21,23 @@ impl Screen {
         let mut buf = vec![Color::White; self.dimensions.0 as usize * self.dimensions.1 as usize];
         let oam_entries = video.vram.oam().entries();
         let tile_data = video.vram.tile_data();
+
+        // Background
+        if video.control.bg_window_enabled() {
+            println!("enabled");
+            let background_tile_map = if video.control.bg_map() == 0 {
+                &video.vram.background_tile_maps().0
+            } else {
+                &video.vram.background_tile_maps().1
+            };
+
+            let origin = video.scroll;
+            let tiles = background_tile_map.tiles().iter()
+                .map(|tile_index| tile_data[*tile_index as usize]);
+
+        }
+
+        // Sprites
         let sprites: Vec<Sprite> = if video.control.obj_enabled() {
             oam_entries
                 .iter()
@@ -41,26 +58,6 @@ impl Screen {
             self.draw_entity(entity, &mut buf);
         }
 
-        if video.control.bg_window_enabled() {
-            if video.control.window_enabled() {
-                let bg_map = if video.control.window_bg_map() == 0 {
-                    &video.vram.background_tile_maps().0
-                } else {
-                    &video.vram.background_tile_maps().1
-                };
-
-                let tiles: Vec<Tile> = Self::resolve_tiles(bg_map, tile_data);
-            }
-
-            let bg_map = if video.control.bg_map() == 0 {
-                &video.vram.background_tile_maps().0
-            } else {
-                &video.vram.background_tile_maps().1
-            };
-
-            let tiles: Vec<Tile> = Self::resolve_tiles(bg_map, tile_data);
-        }
-
         buf.iter()
             .flat_map(|color| color.to_rgb().to_vec())
             .collect::<Vec<u8>>()
@@ -72,14 +69,6 @@ impl Screen {
             (self.dimensions.0 as usize, self.dimensions.1 as usize),
             buf,
         );
-    }
-
-    pub fn resolve_tiles(bg_map: &BackgroundTileMap, tile_data: &[Tile; 384]) -> Vec<Tile> {
-        bg_map
-            .tiles()
-            .iter()
-            .flat_map(|row| row.iter().map(|tile_idx| tile_data[*tile_idx as usize]))
-            .collect()
     }
 }
 

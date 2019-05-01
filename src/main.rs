@@ -12,19 +12,25 @@ mod video;
 
 use crate::cartridge::Cartridge;
 use crate::config::Config;
-use crate::debugger::DebuggerState;
+use crate::debugger::{DebuggerState, Breakpoint, BreakpointCondition};
 use crate::gameboy::DeviceType;
 use crate::ui::run;
+use crate::processor::registers::RegisterType;
 
 fn main() {
     let cartridge = Cartridge::from_file("test/cpu_instrs.gb").unwrap();
     let config = Config {
         cartridge,
         device_type: DeviceType::GameBoy,
-        debugger_config: Some(DebuggerState {
-            forced_break: true,
-            ..DebuggerState::default()
-        }),
+//        debugger_config: Some(DebuggerState {
+//            forced_break: false,
+//            breakpoints: vec![Breakpoint {
+//                line: 0x7D1,
+//                condition: Some(BreakpointCondition::RegisterEquals(RegisterType::HL, 0x821C))
+//            }]
+//
+//        }),
+        debugger_config: None
     };
 
     run(config);

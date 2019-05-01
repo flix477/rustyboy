@@ -166,24 +166,6 @@ impl Video {
     fn check_lyc(&self) -> bool {
         self.status.lyc_interrupt_enabled() && self.ly == self.lyc
     }
-
-    fn line_from_bg_map(
-        &self,
-        rel_x: u8,
-        rel_y: u8,
-        bg_map: &BackgroundTileMap,
-        tile_data: &[Tile; 384],
-    ) -> Vec<u8> {
-        let first_tile_x = ((rel_x - rel_x % 8) / 8) as usize;
-        // TODO: the last_tile thing might be optimised
-        let last_tile_x = ((rel_x + 160 - (rel_x + 160) % 8) / 8) as usize;
-        let tile_y = ((rel_y - rel_y % 8) / 8) as usize;
-        bg_map.tiles()[tile_y][first_tile_x..=last_tile_x]
-            .iter()
-            .map(|tile_id| tile_data[*tile_id as usize])
-            .flat_map(|tile| tile.formatted_line(rel_y).to_vec())
-            .collect::<Vec<u8>>()
-    }
 }
 
 impl Readable for Video {
@@ -233,14 +215,14 @@ impl Writable for Video {
                 }
             } // oam
             0x9800...0x9FFF | 0x8000...0x97FF => {
-                if self.mode != StatusMode::LCDTransfer {
+//                if self.mode != StatusMode::LCDTransfer {
                     let mut address = address;
                     //                    if 0x8000 <= address && 0x97FF >= address {
                     //                        let addressing_mode = self.control.bg_tile_data_addressing();
                     //                        address = addressing_mode.adjust_address(address);
                     //                    }
                     self.vram.write(address, value);
-                }
+//                }
             } // video ram
             0xFF40 => self.control.set(value),      // lcdc control
             0xFF41 => self.status.set(value),       // lcdc status
