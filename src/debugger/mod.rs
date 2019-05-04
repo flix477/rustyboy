@@ -20,7 +20,7 @@ const HEADER: &'static str = "-- Rustyboy Debugger --";
 pub struct Debugger {
     pub state: DebuggerState,
     pub commands: Vec<Box<dyn Command>>,
-    shell: Shell
+    shell: Shell,
 }
 
 #[derive(Clone)]
@@ -32,12 +32,12 @@ pub struct DebuggerState {
 #[derive(Copy, Clone)]
 pub struct Breakpoint {
     pub line: u16,
-    pub condition: Option<BreakpointCondition>
+    pub condition: Option<BreakpointCondition>,
 }
 
 #[derive(Copy, Clone)]
 pub enum BreakpointCondition {
-    RegisterEquals(RegisterType, u16)
+    RegisterEquals(RegisterType, u16),
 }
 
 impl BreakpointCondition {
@@ -71,7 +71,7 @@ impl Debugger {
                 StepOverCommand::create_command(),
                 QuitCommand::create_command(),
             ],
-            shell: Shell::new()
+            shell: Shell::new(),
         }
     }
 
@@ -115,8 +115,11 @@ impl Debugger {
 
     pub fn should_run(&self, debug_info: &DebugInfo) -> bool {
         self.state.forced_break
-            || self.state.breakpoints.iter()
-                .any(|b| b.line == debug_info.line && b.condition.map_or(true, |condition| condition.satisfied(debug_info)))
+            || self.state.breakpoints.iter().any(|b| {
+                b.line == debug_info.line
+                    && b.condition
+                        .map_or(true, |condition| condition.satisfied(debug_info))
+            })
     }
 
     fn parse(&mut self, input: &str, debug_info: &DebugInfo, bus: &Bus) -> Option<CommandResult> {
@@ -131,4 +134,3 @@ fn matching_command(commands: &[Box<dyn Command>], value: String) -> Option<&Box
         .iter()
         .find(|cmd| cmd.matching_value().contains(&value.as_str()))
 }
-

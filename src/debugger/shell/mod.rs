@@ -1,5 +1,5 @@
+use console::{Key, Term};
 use std::io::{self, Write};
-use console::{Term, Key};
 
 use self::log::Log;
 
@@ -10,17 +10,17 @@ enum Action {
     Forward,
     Char(char),
     Submit,
-    Backspace
+    Backspace,
 }
 
 pub struct Shell {
-    history: Log
+    history: Log,
 }
 
 impl Shell {
     pub fn new() -> Shell {
         Shell {
-            history: Log::new(500)
+            history: Log::new(500),
         }
     }
 
@@ -36,22 +36,22 @@ impl Shell {
                     self.history.push(input.clone());
                     println!();
                     break;
-                },
+                }
                 Action::Back => {
                     self.history.back();
                     if let Some(value) = self.history.get() {
                         input = value.clone();
                     }
-                },
+                }
                 Action::Forward => {
                     self.history.forward();
                     if let Some(value) = self.history.get() {
                         input = value.clone();
                     }
-                },
+                }
                 Action::Char(value) => {
                     input.push(value);
-                },
+                }
                 Action::Backspace => {
                     input.pop();
                 }
@@ -71,20 +71,20 @@ impl Shell {
                 match key {
                     Key::ArrowUp => {
                         return Action::Back;
-                    },
+                    }
                     Key::ArrowDown => {
                         return Action::Forward;
-                    },
+                    }
                     Key::Enter => {
                         return Action::Submit;
-                    },
+                    }
                     Key::Char(value) => {
                         if value.is_backspace() {
                             return Action::Backspace;
                         } else if value.is_valid_char() {
                             return Action::Char(value);
                         }
-                    },
+                    }
                     _ => {}
                 }
             }

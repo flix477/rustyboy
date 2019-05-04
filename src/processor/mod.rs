@@ -14,12 +14,12 @@ use crate::debugger::debug_info::DebugInfo;
 use crate::debugger::{Debugger, DebuggerState};
 use crate::processor::decoder::Decoder;
 use crate::processor::flag_register::Flag;
-use crate::processor::instruction::{InstructionInfo, Prefix, Operand, Reference, AddressType};
+use crate::processor::instruction::Reference::Address;
+use crate::processor::instruction::{AddressType, InstructionInfo, Operand, Prefix, Reference};
 use crate::processor::lr35902::LR35902;
 use crate::processor::register::Register;
 use crate::processor::registers::{RegisterType, Registers};
 use crate::util::bitflags::Bitflags;
-use crate::processor::instruction::Reference::Address;
 
 const CLOCK_FREQUENCY: f64 = 4194304.0; // Hz
 

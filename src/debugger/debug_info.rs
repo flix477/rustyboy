@@ -1,9 +1,9 @@
-use std::fmt::{Debug, Error, Formatter};
 use console::style;
+use std::fmt::{Debug, Error, Formatter};
 
 use crate::processor::instruction::{AddressType, Reference, ValueType};
 use crate::processor::instruction::{InstructionInfo, Operand};
-use crate::processor::registers::{Registers, RegisterType};
+use crate::processor::registers::{RegisterType, Registers};
 
 const IMMEDIATE: &'static str = "n";
 const IMMEDIATE_16: &'static str = "nn";

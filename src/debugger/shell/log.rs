@@ -1,7 +1,7 @@
 pub struct Log {
     limit: usize,
     data: Vec<String>,
-    pub index: usize
+    pub index: usize,
 }
 
 impl Log {
@@ -9,7 +9,7 @@ impl Log {
         Self {
             limit,
             data: vec![String::new()],
-            index: 0
+            index: 0,
         }
     }
 

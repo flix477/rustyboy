@@ -215,14 +215,14 @@ impl Writable for Video {
                 }
             } // oam
             0x9800...0x9FFF | 0x8000...0x97FF => {
-//                if self.mode != StatusMode::LCDTransfer {
-                    let mut address = address;
-                    //                    if 0x8000 <= address && 0x97FF >= address {
-                    //                        let addressing_mode = self.control.bg_tile_data_addressing();
-                    //                        address = addressing_mode.adjust_address(address);
-                    //                    }
-                    self.vram.write(address, value);
-//                }
+                //                if self.mode != StatusMode::LCDTransfer {
+                let mut address = address;
+                //                    if 0x8000 <= address && 0x97FF >= address {
+                //                        let addressing_mode = self.control.bg_tile_data_addressing();
+                //                        address = addressing_mode.adjust_address(address);
+                //                    }
+                self.vram.write(address, value);
+                //                }
             } // video ram
             0xFF40 => self.control.set(value),      // lcdc control
             0xFF41 => self.status.set(value),       // lcdc status

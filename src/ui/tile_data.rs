@@ -39,8 +39,8 @@ impl Window for TileDataWindow {
             Entity {
                 width: 8,
                 height: 8,
-                x: (x * 8) as u8,
-                y: (y * 8) as u8,
+                x: x * 8,
+                y: y * 8,
                 data: tile.colored(),
             }
         });
