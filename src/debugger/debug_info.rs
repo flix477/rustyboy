@@ -1,7 +1,9 @@
+use console::style;
+use std::fmt::{Debug, Error, Formatter};
+
 use crate::processor::instruction::{AddressType, Reference, ValueType};
 use crate::processor::instruction::{InstructionInfo, Operand};
 use crate::processor::registers::{RegisterType, Registers};
-use std::fmt::{Debug, Error, Formatter};
 
 const IMMEDIATE: &'static str = "n";
 const IMMEDIATE_16: &'static str = "nn";
@@ -29,11 +31,14 @@ impl<'a> Debug for DebugInfo<'a> {
             String::new()
         };
 
+        let line = format!("0x{:X}", self.line);
+        let mnemonic = format!("{:?}", self.instruction.mnemonic());
+
         write!(
             f,
-            "0x{:X}: {:?} {}",
-            self.line,
-            self.instruction.mnemonic(),
+            "{}: {} {}",
+            style(line).bold(),
+            style(mnemonic).blue(),
             operands
         )
     }
@@ -42,11 +47,11 @@ impl<'a> Debug for DebugInfo<'a> {
 fn parse_operand(operand: &Operand) -> String {
     match operand {
         Operand::Reference(reference) => match reference {
-            Reference::Register(register) => register.to_string(),
+            Reference::Register(register) => style_register(*register),
             Reference::Address(address) => parse_address(*address),
         },
         Operand::Value(value) => match value {
-            ValueType::Register(register) => register.to_string(),
+            ValueType::Register(register) => style_register(*register),
             ValueType::Address(address) => parse_address(*address),
             ValueType::Constant(constant) => format!("0x{:X}", constant),
             ValueType::Immediate => IMMEDIATE.to_string(),
@@ -56,6 +61,10 @@ fn parse_operand(operand: &Operand) -> String {
     }
 }
 
+fn style_register(register: RegisterType) -> String {
+    style(register.to_string()).yellow().to_string()
+}
+
 fn parse_address(address: AddressType) -> String {
     let address = match address {
         AddressType::Register(register) => register.to_string(),
@@ -63,7 +72,8 @@ fn parse_address(address: AddressType) -> String {
         AddressType::Immediate => IMMEDIATE_16.to_string(),
         AddressType::IncImmediate => format_increment(IMMEDIATE),
     };
-    format_address(&address)
+
+    style(format_address(&address)).magenta().to_string()
 }
 
 fn format_address(value: &str) -> String {

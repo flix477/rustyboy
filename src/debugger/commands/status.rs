@@ -15,7 +15,7 @@ pub enum StatusType {
 
 impl StatusType {
     pub fn parse(values: &[&str]) -> Option<StatusType> {
-        let status = *values.get(0)?;
+        let status = *values.get(0).unwrap_or(&"registers");
         match status {
             "address" | "a" => {
                 let line: u16 = parse_hex(values.get(1)?)?;

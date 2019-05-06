@@ -1,14 +1,16 @@
-mod joypad;
-mod timer;
-use self::joypad::Joypad;
-use self::timer::Timer;
+use std::error::Error;
+
 use crate::bus::{Bus, Readable, Writable};
 use crate::cartridge::Cartridge;
 use crate::config::Config;
-use crate::processor::interrupt::Interrupt;
-use crate::processor::interrupt::InterruptHandler;
+use crate::processor::interrupt::{Interrupt, InterruptHandler};
 use crate::video::Video;
-use std::error::Error;
+
+use self::joypad::Joypad;
+use self::timer::Timer;
+
+mod joypad;
+mod timer;
 
 pub struct Hardware {
     cartridge: Cartridge,
@@ -33,13 +35,16 @@ impl Hardware {
         })
     }
 
-    pub fn update(&mut self, delta: f64) {
-        self.timer.update(&mut self.interrupt_handler, delta);
-        self.video.update(&mut self.interrupt_handler, delta);
+    pub fn clock(&mut self) -> bool {
+        self.timer.clock(&mut self.interrupt_handler);
+        self.video.clock(&mut self.interrupt_handler)
     }
 
     pub fn video(&self) -> &Video {
         &self.video
+    }
+    pub fn interrupt_handler(&self) -> &InterruptHandler {
+        &self.interrupt_handler
     }
 
     fn audio_unimplemented(&self) {}
@@ -51,8 +56,8 @@ impl Readable for Hardware {
             0...0x7FFF | 0xA000...0xBFFF => self.cartridge.read(address), // cartridge
 
             0xFF46 => {
-                0
-                // unimplemented!()
+                //                0
+                unimplemented!()
             } // dma transfer
             0xFF40...0xFF4B | 0x8000...0x9FFF | 0xFE00...0xFE9F => self.video.read(address), // lcdc|video ram,
 
@@ -62,7 +67,7 @@ impl Readable for Hardware {
             } // 4kb internal ram
             0xD000...0xDFFF => {
                 // TODO: cgb internal ram bank switching
-                let address = address - 0xC000;
+                let address = address - 0xD000;
                 self.internal_ram[address as usize]
             } // 4kb internal ram bank
             0xE000...0xFDFF => {
@@ -138,7 +143,7 @@ impl Writable for Hardware {
             } // 4kb internal ram
             0xD000...0xDFFF => {
                 // TODO: cgb internal ram bank switching
-                let address = address - 0xC000;
+                let address = address - 0xD000;
                 self.internal_ram[address as usize] = value;
             } // 4kb internal ram bank
             0xE000...0xFDFF => {

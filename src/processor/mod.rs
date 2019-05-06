@@ -14,24 +14,22 @@ use crate::debugger::debug_info::DebugInfo;
 use crate::debugger::{Debugger, DebuggerState};
 use crate::processor::decoder::Decoder;
 use crate::processor::flag_register::Flag;
-use crate::processor::instruction::{InstructionInfo, Prefix};
+use crate::processor::instruction::Reference::Address;
+use crate::processor::instruction::{AddressType, InstructionInfo, Operand, Prefix, Reference};
 use crate::processor::lr35902::LR35902;
 use crate::processor::register::Register;
 use crate::processor::registers::{RegisterType, Registers};
 use crate::util::bitflags::Bitflags;
-
-use self::instruction::{AddressType, ValueType};
-use crate::processor::interrupt::Interrupt;
 
 const CLOCK_FREQUENCY: f64 = 4194304.0; // Hz
 
 pub struct Processor {
     registers: Registers,
     clock_frequency: f64,
-    leftover_time: f64,
-    last_instruction_cycles: u8,
     stopped: bool,
     pub debugger: Option<Debugger>,
+    cycles_left: u8,
+    pending_ei: bool,
 }
 
 impl Processor {
@@ -39,87 +37,44 @@ impl Processor {
         Processor {
             registers: Registers::new(),
             clock_frequency: CLOCK_FREQUENCY,
-            leftover_time: 0.0,
-            last_instruction_cycles: 0,
             stopped: false,
             debugger: if let Some(state) = debugger_config {
                 Some(Debugger::from_state(state))
             } else {
                 None
             },
+            cycles_left: 0,
+            pending_ei: false,
         }
     }
 
-    pub fn update<H: Bus>(&mut self, bus: &mut H, delta: f64) {
-        if !self.stopped {
-            self.leftover_time += delta;
-            while !self.stopped
-                && (self.last_instruction_cycles == 0
-                    || self.leftover_time
-                        >= (self.last_instruction_cycles as f64 / CLOCK_FREQUENCY))
-            {
-                self.leftover_time -= if self.last_instruction_cycles > 0 {
-                    self.last_instruction_cycles as f64 / CLOCK_FREQUENCY
-                } else {
-                    self.leftover_time
-                };
-                self.last_instruction_cycles = self.step(bus);
-            }
-        } else {
-            self.step(bus);
-        }
-    }
-
-    pub fn step<H: Bus>(&mut self, bus: &mut H) -> u8 {
+    pub fn step<H: Bus>(&mut self, bus: &mut H) {
         let interrupt = bus.fetch_interrupt();
         if let Some(interrupt) = interrupt {
             self.stopped = false;
             let pc = self.registers.program_counter.get();
             self.push_stack(bus, pc);
             self.jp(interrupt.address());
-            0 // lol TODO
-        } else if !self.stopped {
-            self.execute_next(bus, Prefix::None)
-        } else {
-            0
-        }
-    }
+        } else if !self.stopped && self.cycles_left == 0 {
+            if self.pending_ei {
+                bus.toggle_interrupts(true);
+                self.pending_ei = false;
+            }
 
-    fn peek<H: Bus>(&self, bus: &H) -> u8 {
-        self.registers.program_counter.peek(bus)
-    }
-
-    fn peek16<H: Bus>(&self, bus: &H) -> u16 {
-        self.registers.program_counter.peek16(bus)
-    }
-
-    fn peek_addr_value<H: Bus>(&self, address: AddressType, bus: &H) -> u16 {
-        match address {
-            AddressType::Register(reg) => self.reg(reg),
-            AddressType::IncRegister(reg) => self.reg(reg).wrapping_add(0xFF00),
-            AddressType::Immediate => self.peek16(bus),
-            AddressType::IncImmediate => (self.peek(bus) as u16).wrapping_add(0xFF00),
-        }
-    }
-
-    fn peek_value<H: Bus>(&self, value: ValueType, bus: &H) -> u16 {
-        match value {
-            ValueType::Immediate => self.peek(bus) as u16,
-            ValueType::Immediate16 => self.peek16(bus),
-            ValueType::Address(address) => self.peek_addr_value(address, bus),
-            ValueType::Register(reg) => self.reg(reg),
-            ValueType::Constant(constant) => constant,
+            self.cycles_left = self.execute_next(bus, Prefix::None);
+        } else if self.cycles_left > 0 {
+            self.cycles_left -= 1;
         }
     }
 
     fn debugger_check<H: Bus>(&mut self, bus: &H, line: u16, instruction: &InstructionInfo) {
         if let Some(ref mut debugger) = self.debugger {
-            if debugger.should_run(line) {
-                let debug_info = DebugInfo {
-                    registers: &self.registers,
-                    line,
-                    instruction: &instruction,
-                };
+            let debug_info = DebugInfo {
+                registers: &self.registers,
+                line,
+                instruction: &instruction,
+            };
+            if debugger.should_run(&debug_info) {
                 debugger.run(debug_info, bus);
             }
         }
@@ -171,6 +126,8 @@ impl LR35902 for Processor {
         let line = self.registers.program_counter.get();
         let opcode = self.immediate(bus);
         if let Some(instruction) = Decoder::decode_opcode(opcode, prefix) {
+            //            println!("0x2BA is where u should look", line);
+            // à 0x33 register F diffère
             let cycle_count = instruction.cycle_count();
             self.debugger_check(bus, line, &instruction);
             self.execute(bus, instruction)
@@ -187,5 +144,9 @@ impl LR35902 for Processor {
 
     fn stop(&mut self) {
         self.stopped = true;
+    }
+
+    fn ei(&mut self) {
+        self.pending_ei = true;
     }
 }

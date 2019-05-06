@@ -1,13 +1,13 @@
 use super::Command;
 use crate::bus::Bus;
 use crate::debugger::commands::CommandResult;
-use crate::debugger::{DebugInfo, DebuggerState};
+use crate::debugger::{Breakpoint, DebugInfo, DebuggerState};
 use crate::util::parse_hex::parse_hex;
 
 const MATCHING_VALUES: &'static [&'static str] = &["breakpoint", "b"];
 
 pub enum BreakpointAction {
-    Add(u16),
+    Add(Breakpoint),
     Remove(u16),
     List,
 }
@@ -17,8 +17,11 @@ impl BreakpointAction {
         let action = *values.get(0)?;
         match action {
             "add" | "a" => {
-                let line: u16 = parse_hex(values.get(1)?)?;
-                Some(BreakpointAction::Add(line))
+                let breakpoint = Breakpoint {
+                    line: parse_hex(values.get(1)?)?,
+                    condition: None,
+                };
+                Some(BreakpointAction::Add(breakpoint))
             }
             "remove" | "r" => {
                 let line: u16 = parse_hex(values.get(1)?)?;
@@ -52,11 +55,14 @@ impl Command for BreakpointCommand {
     ) -> CommandResult {
         if let Some(action) = BreakpointAction::parse(&input[1..]) {
             match action {
-                BreakpointAction::Add(line) => {
-                    debugger.breakpoints.insert(line);
-                }
+                BreakpointAction::Add(breakpoint) => debugger.breakpoints.push(breakpoint),
                 BreakpointAction::Remove(line) => {
-                    debugger.breakpoints.remove(&line);
+                    debugger.breakpoints = debugger
+                        .breakpoints
+                        .iter()
+                        .filter(|b| b.line != line)
+                        .cloned()
+                        .collect();
                 }
                 BreakpointAction::List => println!("{}", list_breakpoints(debugger)),
             }
@@ -68,18 +74,18 @@ impl Command for BreakpointCommand {
 }
 
 fn list_breakpoints(debugger: &DebuggerState) -> String {
-    if debugger.breakpoints.len() == 0 {
+    if debugger.breakpoints.is_empty() {
         "No breakpoints set".to_string()
     } else {
         debugger
             .breakpoints
             .iter()
             .enumerate()
-            .fold(String::new(), |acc, (idx, value)| {
+            .fold(String::new(), |acc, (idx, breakpoint)| {
                 if idx == 0 {
-                    format!("0x{:X}", value)
+                    format!("0x{:X}", breakpoint.line)
                 } else {
-                    format!("{}, 0x{:X}", acc, value)
+                    format!("{}, 0x{:X}", acc, breakpoint.line)
                 }
             })
     }

@@ -111,7 +111,7 @@ impl InterruptHandler {
 impl Readable for InterruptHandler {
     fn read(&self, address: u16) -> u8 {
         match address {
-            0xFFFF => self.interrupt_master_enable as u8,
+            0xFFFF => self.interrupt_enable.register as u8,
             0xFF0F => self.interrupt_request.register,
             _ => 0,
         }
@@ -121,7 +121,7 @@ impl Readable for InterruptHandler {
 impl Writable for InterruptHandler {
     fn write(&mut self, address: u16, value: u8) {
         match address {
-            0xFFFF => self.interrupt_master_enable = value == 1,
+            0xFFFF => self.interrupt_enable.register = value,
             0xFF0F => self.interrupt_request.register = value,
             _ => {}
         }

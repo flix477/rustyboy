@@ -1,7 +1,8 @@
+use std::error::Error;
+
 use crate::config::Config;
 use crate::hardware::Hardware;
 use crate::processor::Processor;
-use std::error::Error;
 
 pub struct Gameboy {
     processor: Processor,
@@ -16,9 +17,17 @@ impl Gameboy {
         })
     }
 
-    pub fn update(&mut self, delta: f64) {
-        self.processor.update(&mut self.hardware, delta);
-        self.hardware.update(delta);
+    pub fn run_to_vblank(&mut self) {
+        loop {
+            if self.step() {
+                break;
+            }
+        }
+    }
+
+    fn step(&mut self) -> bool {
+        self.processor.step(&mut self.hardware);
+        self.hardware.clock()
     }
 
     pub fn hardware(&self) -> &Hardware {

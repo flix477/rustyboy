@@ -9,8 +9,8 @@ impl BackgroundTileMap {
         }
     }
 
-    pub fn tiles(&self) -> &[[u8; 32]; 32] {
-        &self.tiles
+    pub fn tiles(&self) -> Vec<u8> {
+        self.tiles.iter().flat_map(|row| row).cloned().collect()
     }
 
     fn tile_info_at(&self, address: u16) -> (usize, usize) {

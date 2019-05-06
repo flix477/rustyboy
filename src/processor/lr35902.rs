@@ -1,5 +1,5 @@
 use crate::bus::Bus;
-use crate::processor::flag_register::{carry_add, half_carry_add, Flag};
+use crate::processor::flag_register::{carry_add, half_carry_add, half_carry_add16, Flag};
 use crate::processor::instruction::Prefix;
 use crate::processor::instruction::Reference;
 use crate::processor::instruction::{AddressType, Operand, ValueType};
@@ -154,7 +154,7 @@ pub trait LR35902 {
             Mnemonic::HALT => self.halt(),
             Mnemonic::STOP => self.stop(),
             Mnemonic::DI => self.di(bus),
-            Mnemonic::EI => self.ei(bus),
+            Mnemonic::EI => self.ei(),
             Mnemonic::RLC | Mnemonic::RL | Mnemonic::RRC | Mnemonic::RR | Mnemonic::SWAP => {
                 if let Some(operands) = instruction.operands() {
                     if let Operand::Reference(r) = operands[0] {
@@ -315,7 +315,10 @@ pub trait LR35902 {
     fn reference<H: Bus>(&mut self, bus: &mut H, reference: Reference) -> u16 {
         match reference {
             Reference::Register(register) => self.reg(register),
-            Reference::Address(address) => self.operand_address(bus, address),
+            Reference::Address(address) => {
+                let address = self.operand_address(bus, address);
+                bus.read(address) as u16
+            }
         }
     }
 
@@ -386,8 +389,7 @@ pub trait LR35902 {
         let (result, carry) = reg_value.overflowing_add(value);
         self.set_reg(register, result);
         self.set_flag(Flag::AddSub, false);
-        self.set_flag(Flag::Zero, result == 0);
-        self.set_flag(Flag::HalfCarry, carry_add(reg_value as u8, value as u8));
+        self.set_flag(Flag::HalfCarry, half_carry_add16(reg_value, value));
         self.set_flag(Flag::Carry, carry);
     }
 
@@ -487,7 +489,6 @@ pub trait LR35902 {
         let value = self.reference(bus, reference) as u8;
         let result = value.wrapping_sub(1);
         self.set_reference(bus, reference, result as u16);
-        let result = self.reference(bus, reference);
 
         self.set_flag(Flag::AddSub, true);
         self.set_flag(Flag::Zero, result == 0);
@@ -549,9 +550,7 @@ pub trait LR35902 {
         bus.toggle_interrupts(false);
     }
 
-    fn ei<H: Bus>(&mut self, bus: &mut H) {
-        bus.toggle_interrupts(true);
-    }
+    fn ei(&mut self);
 
     fn cb<H: Bus>(&mut self, bus: &mut H) {
         self.execute_next(bus, Prefix::CB);
@@ -702,6 +701,6 @@ pub trait LR35902 {
 
     fn reti<H: Bus>(&mut self, bus: &mut H) {
         self.ret(bus);
-        self.ei(bus);
+        self.ei();
     }
 }

@@ -30,22 +30,26 @@ impl VideoMemory {
         &self.background_tile_maps
     }
 
-    fn tile_idx_at(&self, address: u16) -> (u16, u16, u8) {
+    fn tile_idx_at(&self, address: u16) -> (u16, u16, u8, u8) {
         let tile_address = address.saturating_sub(0x8000);
         let tile_base_address = (tile_address - tile_address % 16) / 16;
         let line_idx = ((tile_address - tile_address % 2) - tile_base_address * 16) / 2;
-        (tile_address, tile_base_address, line_idx as u8)
+        let byte_idx = if address % 2 == 0 { 0 } else { 1 };
+        (tile_address, tile_base_address, line_idx as u8, byte_idx)
     }
 
     fn tile_line_at(&self, address: u16) -> u8 {
-        let (tile_address, tile_idx, line_idx) = self.tile_idx_at(address);
+        let (tile_address, tile_idx, line_idx, _) = self.tile_idx_at(address);
         let line = self.tile_data[tile_idx as usize].line(line_idx);
         (line >> ((tile_address % 2) * 8)) as u8
     }
 
     fn set_tile_line_at(&mut self, address: u16, value: u8) {
-        let (tile_address, tile_idx, line_idx) = self.tile_idx_at(address);
-        let value = (value as u16).wrapping_shl((!(tile_address % 2).saturating_mul(8)) as u32);
+        let (tile_address, tile_idx, line_idx, byte_idx) = self.tile_idx_at(address);
+        let initial_value = self.tile_data[tile_idx as usize].line(line_idx);
+        let mask = 0xFF * 0x100u16.pow(byte_idx.into());
+        let value =
+            (initial_value & mask) | (value as u16).wrapping_shl((8 * (1 - byte_idx)).into());
         self.tile_data[tile_idx as usize].set_line(line_idx, value);
     }
 }
