@@ -198,16 +198,3 @@ impl Destination {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use std::fs;
-
-    #[test]
-    fn loads_pokemon_blue_metadata() {
-        let buffer = fs::read("pokemonb.gb").unwrap();
-        let cm = CartridgeMetadata::from_buffer(&buffer).unwrap();
-        assert_eq!(cm.title, "POKEMON BLUE");
-    }
-}

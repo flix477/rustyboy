@@ -79,13 +79,3 @@ impl Writable for Cartridge {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn loads_pokemon_blue() {
-        assert!(Cartridge::from_file("pokemonb.gb").is_ok());
-    }
-}

@@ -240,23 +240,6 @@ mod add {
     }
 
     #[test]
-    fn add_16_half_carry() {
-        let mut cpu = setup();
-        let mut bus = MockBus::default();
-
-        cpu.ld(&mut bus, Reference::Register(Reg::BC), 0xFF);
-        cpu.add16(Reg::BC, 1);
-
-        assert_eq!(0x100, cpu.reg(Reg::BC));
-
-        // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(true, cpu.flag(Flag::HalfCarry));
-        assert_eq!(false, cpu.flag(Flag::Carry));
-    }
-
-    #[test]
     fn add_16_overflow() {
         let mut cpu = setup();
         let mut bus = MockBus::default();
