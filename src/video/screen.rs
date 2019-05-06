@@ -84,11 +84,7 @@ impl Screen {
                 let (x, y) = (8 * relative_x, 8 * relative_y);
                 let entity = Entity::from_tile(tile, x, y);
 
-                drawer::draw_entity(
-                    entity,
-                    SIZE,
-                    &mut background_buf
-                );
+                drawer::draw_entity(entity, SIZE, &mut background_buf);
             });
 
         background_buf

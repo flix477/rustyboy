@@ -26,15 +26,13 @@ impl Window for BackgroundWindow {
 
         let screen = gameboy.hardware().video().screen();
 
-        let buf: Vec<u8> = screen.background(gameboy.hardware().video())
+        let buf: Vec<u8> = screen
+            .background(gameboy.hardware().video())
             .iter()
             .flat_map(|color| color.to_rgb().to_vec())
             .collect();
 
-        let img = RawImage2d::from_raw_rgb_reversed(
-            &buf,
-            (256, 256),
-        );
+        let img = RawImage2d::from_raw_rgb_reversed(&buf, (256, 256));
 
         glium::Texture2d::new(&self.display, img)
             .unwrap()
