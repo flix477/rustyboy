@@ -22,16 +22,7 @@ fn main() {
     let config = Config {
         cartridge,
         device_type: DeviceType::GameBoy,
-        debugger_config: Some(DebuggerState {
-            forced_break: false,
-            breakpoints: vec![Breakpoint {
-                line: 0x870,
-//                condition: Some(BreakpointCondition::RegisterEquals(RegisterType::HL, 0x9800))
-                condition: None
-            }]
-
-        }),
-//        debugger_config: None,
+        debugger_config: None,
     };
 
     run(config);

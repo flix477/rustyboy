@@ -3,6 +3,7 @@ use crate::processor::instruction::AddressType as Addr;
 use crate::processor::instruction::Reference as Ref;
 use crate::processor::instruction::*;
 use crate::processor::registers::RegisterType as Reg;
+use crate::processor::instruction::Operand::Value;
 
 pub struct Decoder;
 
@@ -213,7 +214,7 @@ impl Decoder {
                 Mnemonic::ADD,
                 Some(vec![
                     Operand::Reference(Ref::Register(Reg::A)),
-                    Operand::Value(ValueType::Address(Addr::Immediate)),
+                    Operand::Value(ValueType::Immediate),
                 ]),
                 8,
             )),
@@ -231,7 +232,7 @@ impl Decoder {
             0xCE => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::ADC,
-                Some(vec![Operand::Value(ValueType::Address(Addr::Immediate))]),
+                Some(vec![Operand::Value(ValueType::Immediate)]),
                 8,
             )),
 
@@ -248,7 +249,7 @@ impl Decoder {
             0xD6 => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::SUB,
-                Some(vec![Operand::Value(ValueType::Address(Addr::Immediate))]),
+                Some(vec![Operand::Value(ValueType::Immediate)]),
                 8,
             )),
 
@@ -265,7 +266,7 @@ impl Decoder {
             0xDE => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::SBC,
-                Some(vec![Operand::Value(ValueType::Address(Addr::Immediate))]),
+                Some(vec![Operand::Value(ValueType::Immediate)]),
                 8,
             )),
 
@@ -299,7 +300,7 @@ impl Decoder {
             0xF6 => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::OR,
-                Some(vec![Operand::Value(ValueType::Address(Addr::Immediate))]),
+                Some(vec![Operand::Value(ValueType::Immediate)]),
                 8,
             )),
 
@@ -316,7 +317,7 @@ impl Decoder {
             0xEE => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::XOR,
-                Some(vec![Operand::Value(ValueType::Address(Addr::Immediate))]),
+                Some(vec![Operand::Value(ValueType::Immediate)]),
                 8,
             )),
 
@@ -1420,7 +1421,7 @@ impl Decoder {
             Mnemonic::CALL,
             Some(vec![
                 Operand::Condition(condition),
-                Operand::Value(ValueType::Address(Addr::Immediate)),
+                Operand::Value(ValueType::Immediate16),
             ]),
             12,
         )

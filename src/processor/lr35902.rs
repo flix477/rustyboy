@@ -315,7 +315,10 @@ pub trait LR35902 {
     fn reference<H: Bus>(&mut self, bus: &mut H, reference: Reference) -> u16 {
         match reference {
             Reference::Register(register) => self.reg(register),
-            Reference::Address(address) => self.operand_address(bus, address),
+            Reference::Address(address) => {
+                let address = self.operand_address(bus, address);
+                bus.read(address) as u16
+            }
         }
     }
 
@@ -386,7 +389,6 @@ pub trait LR35902 {
         let (result, carry) = reg_value.overflowing_add(value);
         self.set_reg(register, result);
         self.set_flag(Flag::AddSub, false);
-        self.set_flag(Flag::Zero, result == 0);
         self.set_flag(Flag::HalfCarry, half_carry_add16(reg_value, value));
         self.set_flag(Flag::Carry, carry);
     }
@@ -487,7 +489,6 @@ pub trait LR35902 {
         let value = self.reference(bus, reference) as u8;
         let result = value.wrapping_sub(1);
         self.set_reference(bus, reference, result as u16);
-        let result = self.reference(bus, reference);
 
         self.set_flag(Flag::AddSub, true);
         self.set_flag(Flag::Zero, result == 0);

@@ -72,7 +72,7 @@ impl Reference {
         if let Reference::Register(register) = self {
             register.is16bit()
         } else {
-            true
+            false
         }
     }
 }

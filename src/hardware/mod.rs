@@ -67,7 +67,7 @@ impl Readable for Hardware {
             } // 4kb internal ram
             0xD000...0xDFFF => {
                 // TODO: cgb internal ram bank switching
-                let address = address - 0xC000;
+                let address = address - 0xD000;
                 self.internal_ram[address as usize]
             } // 4kb internal ram bank
             0xE000...0xFDFF => {
@@ -143,7 +143,7 @@ impl Writable for Hardware {
             } // 4kb internal ram
             0xD000...0xDFFF => {
                 // TODO: cgb internal ram bank switching
-                let address = address - 0xC000;
+                let address = address - 0xD000;
                 self.internal_ram[address as usize] = value;
             } // 4kb internal ram bank
             0xE000...0xFDFF => {

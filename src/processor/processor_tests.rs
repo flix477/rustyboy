@@ -227,10 +227,10 @@ mod add {
         let mut cpu = setup();
         let mut bus = MockBus::default();
 
-        cpu.ld(&mut bus, Reference::Register(Reg::BC), 0xF000);
-        cpu.add16(Reg::BC, 0xE01);
+        cpu.ld(&mut bus, Reference::Register(Reg::HL), 0x2600);
+        cpu.add16(Reg::HL, 0x2600);
 
-        assert_eq!(0xFE01, cpu.reg(Reg::BC));
+        assert_eq!(0x4C00, cpu.reg(Reg::HL));
 
         // Flags affected
         assert_eq!(false, cpu.flag(Flag::Zero));
@@ -267,7 +267,7 @@ mod add {
         assert_eq!(0, cpu.reg(Reg::BC));
 
         // Flags affected
-        assert_eq!(true, cpu.flag(Flag::Zero));
+        assert_eq!(false, cpu.flag(Flag::Zero));
         assert_eq!(false, cpu.flag(Flag::AddSub));
         assert_eq!(true, cpu.flag(Flag::HalfCarry));
         assert_eq!(true, cpu.flag(Flag::Carry));
@@ -666,21 +666,6 @@ fn scf() {
     assert_eq!(true, cpu.flag(Flag::Carry));
 
     // Flags affected
-    assert_eq!(false, cpu.flag(Flag::Zero));
-    assert_eq!(false, cpu.flag(Flag::AddSub));
-    assert_eq!(false, cpu.flag(Flag::HalfCarry));
-}
-
-#[test]
-fn ei() {
-    let mut cpu = setup();
-    let mut bus = MockBus::default();
-
-    cpu.ei();
-    assert_eq!(true, bus.interrupts_enabled);
-
-    // Flags affected
-    assert_eq!(false, cpu.flag(Flag::Carry));
     assert_eq!(false, cpu.flag(Flag::Zero));
     assert_eq!(false, cpu.flag(Flag::AddSub));
     assert_eq!(false, cpu.flag(Flag::HalfCarry));
@@ -1369,24 +1354,4 @@ fn call_and_ret() {
     cpu.ret(&mut bus);
     assert_eq!(stack_pointer, cpu.reg(Reg::SP));
     assert_eq!(base_address, cpu.reg(Reg::PC))
-}
-
-#[test]
-fn call_and_reti() {
-    let mut cpu = setup();
-    let mut bus = MockBus::default();
-    let stack_pointer = cpu.reg(Reg::SP);
-    let base_address = 0xF000;
-    let address = 0xFE00;
-    assert_eq!(false, bus.interrupts_enabled);
-
-    cpu.set_reg(Reg::PC, base_address);
-
-    cpu.call(&mut bus, address);
-    assert_eq!(address, cpu.reg(Reg::PC));
-    assert_eq!(stack_pointer - 2, cpu.reg(Reg::SP));
-
-    cpu.reti(&mut bus);
-    assert_eq!(stack_pointer, cpu.reg(Reg::SP));
-    assert_eq!(true, bus.interrupts_enabled);
 }

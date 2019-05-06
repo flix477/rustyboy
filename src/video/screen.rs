@@ -17,7 +17,6 @@ impl Screen {
         }
     }
 
-    // TODO could memoize parts of this, but not prematurely (wait til video works)
     pub fn draw(&self, video: &Video) -> Vec<u8> {
         let mut buf = vec![Color::White; self.dimensions.0 as usize * self.dimensions.1 as usize];
         let oam_entries = video.vram.oam().entries();

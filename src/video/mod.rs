@@ -54,7 +54,7 @@ impl Video {
             mode: StatusMode::ReadingOAM,
             scroll: (0, 0),
             window: (0, 0),
-            ly: 0,
+            ly: 144,
             lyc: 0,
             bg_palette,
             obj_palette0,
