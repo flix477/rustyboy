@@ -9,7 +9,9 @@ jobs:
 
       - run:
           name: Check formatting
-          command: cargo fmt --all -- --check
+          command: |
+            rustup component add rustfmt
+            cargo fmt --all -- --check
 
       - run:
           name: Build
