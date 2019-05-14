@@ -605,7 +605,18 @@ mod dec {
 
 #[test]
 fn daa() {
-    // TODO
+    let mut cpu = setup();
+
+    cpu.set_reg(Reg::AF, 0x9A00);
+    cpu.daa();
+
+    assert_eq!(0x90, cpu.reg(Reg::AF));
+
+    // Flags affected
+    assert_eq!(true, cpu.flag(Flag::Zero));
+    assert_eq!(false, cpu.flag(Flag::AddSub));
+    assert_eq!(false, cpu.flag(Flag::HalfCarry));
+    assert_eq!(true, cpu.flag(Flag::Carry));
 }
 
 #[test]

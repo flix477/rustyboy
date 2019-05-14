@@ -6,6 +6,7 @@ use crate::processor::instruction::{AddressType, Operand, ValueType};
 use crate::processor::instruction::{InstructionInfo, Mnemonic};
 use crate::processor::registers::RegisterType;
 use crate::util::bits;
+use crate::processor::instruction::Reference::Register;
 
 pub trait LR35902 {
     fn immediate<H: Bus>(&mut self, bus: &H) -> u8;
@@ -500,28 +501,24 @@ pub trait LR35902 {
         self.set_reference(bus, reference, value.wrapping_sub(1));
     }
 
+    // implementation stolen from https://forums.nesdev.com/viewtopic.php?f=20&t=15944#p196282
     fn daa(&mut self) {
-        let mut a = self.reg(RegisterType::A);
-        if self.flag(Flag::AddSub) {
-            if self.flag(Flag::HalfCarry) {
-                a += 0xFA;
-            }
-            if self.flag(Flag::Carry) {
-                a += 0xA0;
-            }
-        } else {
-            if a & 0xF > 9 || self.flag(Flag::HalfCarry) {
-                a += 0x06;
-            }
-            // TODO: might be stupid
-            if a > 0x90 {
-                a += 0x60;
-                self.set_flag(Flag::Carry, true);
-            } else {
-                self.set_flag(Flag::Carry, false);
-            }
+        let mut a = self.reg(RegisterType::A) as u8;
+        let flag_n = self.flag(Flag::AddSub);
+        let flag_c = self.flag(Flag::Carry);
+        let flag_h = self.flag(Flag::HalfCarry);
+        let mut u = 0;
+
+        if self.flag(Flag::HalfCarry) || (!flag_n && (a & 0xf) > 9) {
+            u = 6;
         }
-        self.set_reg(RegisterType::A, a);
+        if self.flag(Flag::Carry) || (!flag_n && a > 0x99) {
+            u |= 0x60;
+            self.set_flag(Flag::Carry, true);
+        }
+        a = if flag_n { a.wrapping_sub(u) } else { a.wrapping_add(u) };
+
+        self.set_reg(RegisterType::A, a as u16);
         self.set_flag(Flag::Zero, a == 0);
         self.set_flag(Flag::HalfCarry, false);
     }
