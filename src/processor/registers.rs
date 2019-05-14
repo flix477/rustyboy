@@ -46,7 +46,7 @@ impl Registers {
 
     pub fn reg(&self, register: RegisterType) -> u16 {
         match register {
-            RegisterType::AF => self.af.register.get(),
+            RegisterType::AF => self.af.register().get(),
             RegisterType::BC => self.bc.get(),
             RegisterType::DE => self.de.get(),
             RegisterType::HL => self.hl.get(),
@@ -72,7 +72,7 @@ impl Registers {
                 self.af.set_flags(value as u8);
             }
             RegisterType::AF => {
-                self.af.register.set(value);
+                self.af.set(value);
             }
             RegisterType::B => {
                 self.bc.high.set(value);

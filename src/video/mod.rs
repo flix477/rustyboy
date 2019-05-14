@@ -50,7 +50,7 @@ impl Video {
 
         Video {
             control: ControlRegister::new(),
-            status: StatusRegister::new(), // TODO: is it tho
+            status: StatusRegister::new(),
             mode: StatusMode::ReadingOAM,
             scroll: (0, 0),
             window: (0, 0),

@@ -57,8 +57,7 @@ impl Processor {
             self.jp(interrupt.address());
         } else if !self.stopped && self.cycles_left == 0 {
             if self.pending_ei {
-                bus.toggle_interrupts(true);
-                self.pending_ei = false;
+                self.immediate_ei(bus);
             }
 
             self.cycles_left = self.execute_next(bus, Prefix::None);
@@ -126,8 +125,6 @@ impl LR35902 for Processor {
         let line = self.registers.program_counter.get();
         let opcode = self.immediate(bus);
         if let Some(instruction) = Decoder::decode_opcode(opcode, prefix) {
-            //            println!("0x2BA is where u should look", line);
-            // à 0x33 register F diffère
             let cycle_count = instruction.cycle_count();
             self.debugger_check(bus, line, &instruction);
             self.execute(bus, instruction)
@@ -148,5 +145,10 @@ impl LR35902 for Processor {
 
     fn ei(&mut self) {
         self.pending_ei = true;
+    }
+
+    fn immediate_ei<H: Bus>(&mut self, bus: &mut H) {
+        bus.toggle_interrupts(true);
+        self.pending_ei = false;
     }
 }

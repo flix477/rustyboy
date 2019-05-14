@@ -2,7 +2,7 @@ use crate::processor::register::{DualRegister, Register, SingleRegister};
 use crate::util::bitflags::Bitflags;
 
 pub struct FlagRegister {
-    pub register: DualRegister,
+    register: DualRegister,
 }
 
 impl FlagRegister {
@@ -25,11 +25,16 @@ impl FlagRegister {
     }
 
     pub fn set_flags(&mut self, value: u8) {
-        self.register.low.set(value as u16);
+        self.register.low.set(value as u16 & 0xF0);
     }
 
     pub fn register(&self) -> &DualRegister {
         &self.register
+    }
+
+    pub fn set(&mut self, value: u16) {
+        self.set_flags(value as u8);
+        self.set_accumulator((value >> 8) as u8);
     }
 }
 

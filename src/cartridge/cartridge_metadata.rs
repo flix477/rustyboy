@@ -53,7 +53,7 @@ const VERSION_OFFSET: usize = 0x014C;
 const HEADER_CHECKSUM_OFFSET: usize = 0x014D;
 
 // Offset that determines the checksum of the whole cartridge ROM,
-// obtained by summing the bytes of the cartridge (without checksums)
+// obtained by summing the bytes of the cartridge (without checksum)
 const GLOBAL_CHECKSUM_RANGE: RangeInclusive<usize> = (0x014E..=0x014F);
 
 #[derive(Debug)]
@@ -90,7 +90,7 @@ impl CartridgeMetadata {
             old_licensee_code: Self::parse_old_licensee_code(buffer),
             version: buffer[VERSION_OFFSET],
             header_checksum: buffer[HEADER_CHECKSUM_OFFSET],
-            global_checksum: 0,
+            global_checksum: 0, // TODO
         })
     }
 

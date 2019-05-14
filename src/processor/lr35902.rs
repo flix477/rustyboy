@@ -551,6 +551,7 @@ pub trait LR35902 {
     }
 
     fn ei(&mut self);
+    fn immediate_ei<H: Bus>(&mut self, bus: &mut H);
 
     fn cb<H: Bus>(&mut self, bus: &mut H) {
         self.execute_next(bus, Prefix::CB);
@@ -701,6 +702,6 @@ pub trait LR35902 {
 
     fn reti<H: Bus>(&mut self, bus: &mut H) {
         self.ret(bus);
-        self.ei();
+        self.immediate_ei(bus);
     }
 }
