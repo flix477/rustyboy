@@ -135,16 +135,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn fetch_interrupt_ime_false() {
-        let mut interrupt_handler = InterruptHandler::new();
-        interrupt_handler.interrupt_master_enable = false;
-        interrupt_handler
-            .interrupt_request
-            .set_flag(Interrupt::Keypad, true);
-        assert!(interrupt_handler.fetch_interrupt().is_none())
-    }
-
-    #[test]
     fn fetch_interrupt_ie_false() {
         let mut interrupt_handler = InterruptHandler::new();
         interrupt_handler
@@ -178,31 +168,42 @@ mod tests {
         let mut interrupt_handler = InterruptHandler::new();
         interrupt_handler.toggle_interrupts(true);
         interrupt_handler.interrupt_request.set_register(0xFF);
+
         assert_eq!(
             interrupt_handler.fetch_interrupt().unwrap(),
             Interrupt::VBlank
         );
-        interrupt_handler.interrupt_master_enable = true;
+        interrupt_handler.service_interrupt(Interrupt::VBlank);
+        interrupt_handler.toggle_interrupts(true);
+
         assert_eq!(
             interrupt_handler.fetch_interrupt().unwrap(),
             Interrupt::LCDCStat
         );
-        interrupt_handler.interrupt_master_enable = true;
+        interrupt_handler.service_interrupt(Interrupt::LCDCStat);
+        interrupt_handler.toggle_interrupts(true);
+
         assert_eq!(
             interrupt_handler.fetch_interrupt().unwrap(),
             Interrupt::Timer
         );
-        interrupt_handler.interrupt_master_enable = true;
+        interrupt_handler.service_interrupt(Interrupt::Timer);
+        interrupt_handler.toggle_interrupts(true);
+
         assert_eq!(
             interrupt_handler.fetch_interrupt().unwrap(),
             Interrupt::Serial
         );
-        interrupt_handler.interrupt_master_enable = true;
+        interrupt_handler.service_interrupt(Interrupt::Serial);
+        interrupt_handler.toggle_interrupts(true);
+
         assert_eq!(
             interrupt_handler.fetch_interrupt().unwrap(),
             Interrupt::Keypad
         );
-        interrupt_handler.interrupt_master_enable = true;
+        interrupt_handler.service_interrupt(Interrupt::Keypad);
+        interrupt_handler.toggle_interrupts(true);
+
         assert!(interrupt_handler.fetch_interrupt().is_none());
     }
 }

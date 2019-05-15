@@ -70,6 +70,10 @@ pub const fn half_carry_add16(value1: u16, value2: u16) -> bool {
     (((value1 & 0xfff) + (value2 & 0xfff)) & 0x1000) == 0x1000
 }
 
+pub const fn half_carry_sub(value1: u8, value2: u8) -> bool {
+    value1 & 0xF < value2 & 0xF
+}
+
 pub fn carry_add(value1: u8, value2: u8) -> bool {
     value1.overflowing_add(value2).1
 }

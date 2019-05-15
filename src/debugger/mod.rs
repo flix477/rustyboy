@@ -10,6 +10,8 @@ use self::commands::step_over::StepOverCommand;
 use self::debug_info::DebugInfo;
 use self::shell::Shell;
 use crate::processor::registers::RegisterType;
+use crate::processor::instruction::Mnemonic;
+use crate::processor::register::Register;
 
 pub mod commands;
 pub mod debug_info;
@@ -29,15 +31,16 @@ pub struct DebuggerState {
     pub forced_break: bool,
 }
 
-#[derive(Copy, Clone)]
+#[derive(Clone)]
 pub struct Breakpoint {
     pub line: u16,
-    pub condition: Option<BreakpointCondition>,
+    pub conditions: Option<Vec<BreakpointCondition>>,
 }
 
 #[derive(Copy, Clone)]
 pub enum BreakpointCondition {
     RegisterEquals(RegisterType, u16),
+    MnemonicEquals(Mnemonic)
 }
 
 impl BreakpointCondition {
@@ -45,6 +48,9 @@ impl BreakpointCondition {
         match self {
             BreakpointCondition::RegisterEquals(register, value) => {
                 debug_info.registers.reg(*register) == *value
+            },
+            BreakpointCondition::MnemonicEquals(mnemonic) => {
+                debug_info.instruction.mnemonic() == mnemonic
             }
         }
     }
@@ -117,8 +123,12 @@ impl Debugger {
         self.state.forced_break
             || self.state.breakpoints.iter().any(|b| {
                 b.line == debug_info.line
-                    && b.condition
-                        .map_or(true, |condition| condition.satisfied(debug_info))
+                    && b.conditions
+                        .clone()
+                        .map_or(true, |conditions|
+                            conditions.iter()
+                                .all(|condition| condition.satisfied(debug_info))
+                        )
             })
     }
 

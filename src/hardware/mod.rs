@@ -75,7 +75,7 @@ impl Readable for Hardware {
                 self.internal_ram[address as usize]
             } // echo ^^
 
-            0xFF4C...0xFF7F | 0xFEA0...0xFEFF => 0, // empty but unusable for i/o
+            0xFF4C...0xFF7F | 0xFEA0...0xFEFF => 0xFF, // empty but unusable for i/o
 
             0xFF00 => self.joypad.read(address), // joypad info
 

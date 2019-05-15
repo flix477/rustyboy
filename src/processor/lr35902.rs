@@ -1,5 +1,5 @@
 use crate::bus::Bus;
-use crate::processor::flag_register::{carry_add, half_carry_add, half_carry_add16, Flag};
+use crate::processor::flag_register::{carry_add, half_carry_add, half_carry_add16, Flag, half_carry_sub};
 use crate::processor::instruction::Prefix;
 use crate::processor::instruction::Reference;
 use crate::processor::instruction::{AddressType, Operand, ValueType};
@@ -396,7 +396,14 @@ pub trait LR35902 {
 
     fn adc(&mut self, value: u8) {
         let carry = self.flag(Flag::Carry) as u8;
-        self.add(RegisterType::A, value.wrapping_add(carry));
+        let a = self.reg(RegisterType::A) as u8;
+        let (add_value, overflow) = value.overflowing_add(carry);
+        let (result, result_overflow) = a.overflowing_add(add_value);
+        self.set_reg(RegisterType::A, result.into());
+        self.set_flag(Flag::AddSub, false);
+        self.set_flag(Flag::Zero, result == 0);
+        self.set_flag(Flag::HalfCarry, half_carry_add(value, carry) || half_carry_add(a, add_value));
+        self.set_flag(Flag::Carry, overflow || result_overflow);
     }
 
     fn base_sub(&mut self, value: u8) -> u8 {
@@ -405,7 +412,7 @@ pub trait LR35902 {
 
         self.set_flag(Flag::AddSub, true);
         self.set_flag(Flag::Zero, result == 0);
-        self.set_flag(Flag::HalfCarry, reg_value & 0xF < value & 0xF);
+        self.set_flag(Flag::HalfCarry, half_carry_sub(reg_value, value));
         self.set_flag(Flag::Carry, reg_value < value);
         result
     }
@@ -416,8 +423,16 @@ pub trait LR35902 {
     }
 
     fn sbc(&mut self, value: u8) {
-        let carry = self.flag(Flag::Carry);
-        self.sub(value.wrapping_add(carry as u8));
+        let carry = self.flag(Flag::Carry) as u8;
+        let reg_value = self.reg(RegisterType::A) as u8;
+        let (sub_value, overflow) = value.overflowing_add(carry);
+        let result = reg_value.wrapping_sub(sub_value);
+        self.set_reg(RegisterType::A, result as u16);
+
+        self.set_flag(Flag::AddSub, true);
+        self.set_flag(Flag::Zero, result == 0);
+        self.set_flag(Flag::HalfCarry, reg_value & 0xF < (value & 0xF).wrapping_add(carry));
+        self.set_flag(Flag::Carry, overflow || reg_value < sub_value);
     }
 
     fn and(&mut self, value: u8) {
