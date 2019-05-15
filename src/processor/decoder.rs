@@ -1397,7 +1397,7 @@ impl Decoder {
             Mnemonic::JP,
             Some(vec![
                 Operand::Condition(condition),
-                Operand::Value(ValueType::Address(Addr::Immediate)),
+                Operand::Value(ValueType::Immediate16),
             ]),
             12,
         )

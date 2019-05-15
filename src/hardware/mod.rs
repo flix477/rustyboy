@@ -203,12 +203,16 @@ impl Writable for Hardware {
 }
 
 impl Bus for Hardware {
-    fn fetch_interrupt(&mut self) -> Option<Interrupt> {
+    fn fetch_interrupt(&self) -> Option<Interrupt> {
         self.interrupt_handler.fetch_interrupt()
     }
 
     fn request_interrupt(&mut self, interrupt: Interrupt) {
         self.interrupt_handler.request_interrupt(interrupt);
+    }
+
+    fn service_interrupt(&mut self, interrupt: Interrupt) {
+        self.interrupt_handler.service_interrupt(interrupt);
     }
 
     fn toggle_interrupts(&mut self, value: bool) {
@@ -220,5 +224,9 @@ impl Bus for Hardware {
             let value = self.read(from + i);
             self.write(to + i, value);
         }
+    }
+
+    fn master_interrupt_enable(&self) -> bool {
+        self.interrupt_handler.master_interrupt_enable()
     }
 }

@@ -67,7 +67,7 @@ impl Bitflags<Interrupt> for InterruptRegister {
 pub struct InterruptHandler {
     interrupt_request: InterruptRegister,
     interrupt_enable: InterruptRegister,
-    interrupt_master_enable: bool,
+    interrupt_master_enable: bool
 }
 
 impl InterruptHandler {
@@ -79,19 +79,12 @@ impl InterruptHandler {
         }
     }
 
-    pub fn fetch_interrupt(&mut self) -> Option<Interrupt> {
-        let mask = if self.interrupt_master_enable {
-            0xFF
-        } else {
-            0
-        };
-        let value = mask & self.interrupt_enable.register() & self.interrupt_request.register();
+    pub fn fetch_interrupt(&self) -> Option<Interrupt> {
+        let value = self.interrupt_enable.register() & self.interrupt_request.register();
 
         for x in 0..=4 {
             let interrupt = Interrupt::from(2u8.pow(x as u32));
             if (value & interrupt as u8) != 0 {
-                self.interrupt_master_enable = false;
-                self.interrupt_request.set_flag(interrupt, false);
                 return Some(interrupt);
             }
         }
@@ -100,11 +93,21 @@ impl InterruptHandler {
     }
 
     pub fn toggle_interrupts(&mut self, value: bool) {
+        println!("{}", value);
         self.interrupt_master_enable = value;
     }
 
     pub fn request_interrupt(&mut self, interrupt: Interrupt) {
         self.interrupt_request.set_flag(interrupt, true);
+    }
+
+    pub fn service_interrupt(&mut self, interrupt: Interrupt) {
+        self.toggle_interrupts(false);
+        self.interrupt_request.set_flag(interrupt, false);
+    }
+
+    pub fn master_interrupt_enable(&self) -> bool {
+        self.interrupt_master_enable
     }
 }
 

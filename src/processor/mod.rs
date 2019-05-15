@@ -26,7 +26,7 @@ const CLOCK_FREQUENCY: f64 = 4194304.0; // Hz
 pub struct Processor {
     registers: Registers,
     clock_frequency: f64,
-    stopped: bool,
+    halt_mode: HaltMode,
     pub debugger: Option<Debugger>,
     cycles_left: u8,
     pending_ei: bool,
@@ -37,7 +37,7 @@ impl Processor {
         Processor {
             registers: Registers::new(),
             clock_frequency: CLOCK_FREQUENCY,
-            stopped: false,
+            halt_mode: HaltMode::None,
             debugger: if let Some(state) = debugger_config {
                 Some(Debugger::from_state(state))
             } else {
@@ -51,16 +51,31 @@ impl Processor {
     pub fn step<H: Bus>(&mut self, bus: &mut H) {
         let interrupt = bus.fetch_interrupt();
         if let Some(interrupt) = interrupt {
-            self.stopped = false;
-            let pc = self.registers.program_counter.get();
-            self.push_stack(bus, pc);
-            self.jp(interrupt.address());
-        } else if !self.stopped && self.cycles_left == 0 {
+            self.halt_mode = HaltMode::None;
+            if bus.master_interrupt_enable() {
+                println!("interrupt");
+                bus.service_interrupt(interrupt);
+                let pc = self.registers.program_counter.get();
+                self.push_stack(bus, pc);
+                self.jp(interrupt.address());
+            }
+        }
+
+        if self.cycles_left == 0 && self.halt_mode != HaltMode::Normal {
             if self.pending_ei {
                 self.immediate_ei(bus);
             }
 
+            let pc = self.registers.program_counter.get();
             self.cycles_left = self.execute_next(bus, Prefix::None);
+
+            // emulate this one weird bug
+            // https://github.com/AntonioND/giibiiadvance/blob/master/docs/TCAGBD.pdf section 4.10
+            if self.halt_mode == HaltMode::Bugged {
+                self.halt_mode = HaltMode::None;
+                self.registers.program_counter.set(pc);
+                self.cycles_left += self.execute_next(bus, Prefix::None);
+            }
         } else if self.cycles_left > 0 {
             self.cycles_left -= 1;
         }
@@ -135,12 +150,16 @@ impl LR35902 for Processor {
         }
     }
 
-    fn halt(&mut self) {
-        self.stopped = true;
+    fn halt<H: Bus>(&mut self, bus: &H) {
+        if !bus.master_interrupt_enable() && bus.fetch_interrupt().is_some() {
+            self.halt_mode = HaltMode::Bugged;
+        } else {
+            self.halt_mode = HaltMode::Normal;
+        }
     }
 
     fn stop(&mut self) {
-        self.stopped = true;
+        self.halt_mode = HaltMode::Normal;
     }
 
     fn ei(&mut self) {
@@ -151,4 +170,11 @@ impl LR35902 for Processor {
         bus.toggle_interrupts(true);
         self.pending_ei = false;
     }
+}
+
+#[derive(PartialEq)]
+enum HaltMode {
+    Normal,
+    Bugged,
+    None
 }

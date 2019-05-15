@@ -18,13 +18,13 @@ use crate::processor::registers::RegisterType;
 use crate::ui::run;
 
 fn main() {
-    let cartridge = Cartridge::from_file("test/individual/01-special.gb").unwrap();
+    let cartridge = Cartridge::from_file("test/individual/02-interrupts.gb").unwrap();
 //    let cartridge = Cartridge::from_file("tetris.gb").unwrap();
     let config = Config {
         cartridge,
         device_type: DeviceType::GameBoy,
         debugger_config: Some(DebuggerState {
-            forced_break: false,
+            forced_break: true,
             breakpoints: vec![]
         }),
     };

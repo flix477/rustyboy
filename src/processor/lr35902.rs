@@ -20,7 +20,7 @@ pub trait LR35902 {
     fn push_stack<H: Bus>(&mut self, bus: &mut H, value: u16);
     fn pop_stack<H: Bus>(&mut self, bus: &mut H) -> u16;
     fn execute_next<H: Bus>(&mut self, bus: &mut H, prefix: Prefix) -> u8;
-    fn halt(&mut self);
+    fn halt<H: Bus>(&mut self, bus: &H);
     fn stop(&mut self);
 
     fn execute<H: Bus>(&mut self, bus: &mut H, instruction: InstructionInfo) -> Result<(), &str> {
@@ -152,7 +152,7 @@ pub trait LR35902 {
             Mnemonic::CCF => self.ccf(),
             Mnemonic::SCF => self.scf(),
             Mnemonic::NOP => {}
-            Mnemonic::HALT => self.halt(),
+            Mnemonic::HALT => self.halt(bus),
             Mnemonic::STOP => self.stop(),
             Mnemonic::DI => self.di(bus),
             Mnemonic::EI => self.ei(),

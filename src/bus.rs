@@ -9,8 +9,10 @@ pub trait Writable {
 }
 
 pub trait Bus: Readable + Writable {
-    fn fetch_interrupt(&mut self) -> Option<Interrupt>;
+    fn fetch_interrupt(&self) -> Option<Interrupt>;
     fn request_interrupt(&mut self, interrupt: Interrupt);
+    fn service_interrupt(&mut self, interrupt: Interrupt);
     fn toggle_interrupts(&mut self, value: bool);
     fn dma_transfer(&mut self, from: u16, to: u16, size: u16);
+    fn master_interrupt_enable(&self) -> bool;
 }
