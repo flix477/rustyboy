@@ -93,7 +93,6 @@ impl InterruptHandler {
     }
 
     pub fn toggle_interrupts(&mut self, value: bool) {
-        println!("{}", value);
         self.interrupt_master_enable = value;
     }
 

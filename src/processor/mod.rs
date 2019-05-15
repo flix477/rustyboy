@@ -53,7 +53,6 @@ impl Processor {
         if let Some(interrupt) = interrupt {
             self.halt_mode = HaltMode::None;
             if bus.master_interrupt_enable() {
-                println!("interrupt");
                 bus.service_interrupt(interrupt);
                 let pc = self.registers.program_counter.get();
                 self.push_stack(bus, pc);
