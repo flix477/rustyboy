@@ -433,32 +433,32 @@ impl Decoder {
             // RLCA
             0x07 => Some(InstructionInfo::new(
                 opcode,
-                Mnemonic::RLC,
-                Some(vec![Operand::Reference(Ref::Register(Reg::A))]),
+                Mnemonic::RLCA,
+                None,
                 4,
             )),
 
             // RLA
             0x17 => Some(InstructionInfo::new(
                 opcode,
-                Mnemonic::RL,
-                Some(vec![Operand::Reference(Ref::Register(Reg::A))]),
+                Mnemonic::RLA,
+                None,
                 4,
             )),
 
             // RRCA
             0x0F => Some(InstructionInfo::new(
                 opcode,
-                Mnemonic::RRC,
-                Some(vec![Operand::Reference(Ref::Register(Reg::A))]),
+                Mnemonic::RRCA,
+                None,
                 4,
             )),
 
             // RRA
             0x1F => Some(InstructionInfo::new(
                 opcode,
-                Mnemonic::RR,
-                Some(vec![Operand::Reference(Ref::Register(Reg::A))]),
+                Mnemonic::RRA,
+                None,
                 4,
             )),
 

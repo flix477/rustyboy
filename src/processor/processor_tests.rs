@@ -1095,6 +1095,23 @@ mod sla {
         assert_eq!(false, cpu.flag(Flag::HalfCarry));
         assert_eq!(false, cpu.flag(Flag::Carry));
     }
+
+    #[test]
+    fn sla_misc() {
+        let mut cpu = setup();
+        let mut bus = MockBus::default();
+
+        cpu.ld(&mut bus, Reference::Register(Reg::AF), 0);
+        cpu.ld(&mut bus, Reference::Register(Reg::B), 0x80);
+        cpu.sla(&mut bus, Reference::Register(Reg::B));
+        assert_eq!(0, cpu.reg(Reg::B));
+
+        // Flags affected
+        assert_eq!(true, cpu.flag(Flag::Zero));
+        assert_eq!(false, cpu.flag(Flag::AddSub));
+        assert_eq!(false, cpu.flag(Flag::HalfCarry));
+        assert_eq!(true, cpu.flag(Flag::Carry));
+    }
 }
 
 #[cfg(test)]

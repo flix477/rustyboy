@@ -173,7 +173,11 @@ pub trait LR35902 {
                 } else {
                     return Err("Requires an argument");
                 }
-            }
+            },
+            Mnemonic::RLCA => self.rlca(bus),
+            Mnemonic::RLA => self.rla(bus),
+            Mnemonic::RRCA => self.rrca(bus),
+            Mnemonic::RRA => self.rra(bus),
             Mnemonic::SLA | Mnemonic::SRA | Mnemonic::SRL => {
                 if let Some(operands) = instruction.operands() {
                     if let Operand::Reference(r) = operands[0] {
@@ -569,19 +573,30 @@ pub trait LR35902 {
         self.execute_next(bus, Prefix::CB);
     }
 
-    fn rlc<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
+    fn base_rlc<H: Bus>(&mut self, bus: &mut H, reference: Reference) -> u8 {
         let value = self.reference(bus, reference) as u8;
         self.set_flag(Flag::Carry, bits::get_bit(value, 7));
 
         let result = value.rotate_left(1);
         self.set_reference(bus, reference, result as u16);
 
-        self.set_flag(Flag::Zero, result == 0);
         self.set_flag(Flag::AddSub, false);
         self.set_flag(Flag::HalfCarry, false);
+
+        result
     }
 
-    fn rl<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
+    fn rlc<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
+        let result = self.base_rlc(bus, reference);
+        self.set_flag(Flag::Zero, result == 0);
+    }
+
+    fn rlca<H: Bus>(&mut self, bus: &mut H) {
+        self.base_rlc(bus, Reference::Register(RegisterType::A));
+        self.set_flag(Flag::Zero, false);
+    }
+
+    fn base_rl<H: Bus>(&mut self, bus: &mut H, reference: Reference) -> u8 {
         let value = self.reference(bus, reference) as u8;
         let old_flag = self.flag(Flag::Carry) as u8;
         self.set_flag(Flag::Carry, bits::get_bit(value as u8, 7));
@@ -589,24 +604,46 @@ pub trait LR35902 {
         let value = (value << 1) | old_flag;
         self.set_reference(bus, reference, value as u16);
 
-        self.set_flag(Flag::Zero, value == 0);
         self.set_flag(Flag::AddSub, false);
         self.set_flag(Flag::HalfCarry, false);
+
+        value
     }
 
-    fn rrc<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
+    fn rl<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
+        let value = self.base_rl(bus, reference);
+        self.set_flag(Flag::Zero, value == 0);
+    }
+
+    fn rla<H: Bus>(&mut self, bus: &mut H) {
+        self.base_rl(bus, Reference::Register(RegisterType::A));
+        self.set_flag(Flag::Zero, false);
+    }
+
+    fn base_rrc<H: Bus>(&mut self, bus: &mut H, reference: Reference) -> u8 {
         let value = self.reference(bus, reference) as u8;
         self.set_flag(Flag::Carry, bits::get_bit(value, 0));
 
         let result = value.rotate_right(1);
         self.set_reference(bus, reference, result as u16);
 
-        self.set_flag(Flag::Zero, value == 0);
         self.set_flag(Flag::AddSub, false);
         self.set_flag(Flag::HalfCarry, false);
+
+        result
     }
 
-    fn rr<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
+    fn rrc<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
+        let value = self.base_rrc(bus, reference);
+        self.set_flag(Flag::Zero, value == 0);
+    }
+
+    fn rrca<H: Bus>(&mut self, bus: &mut H) {
+        self.base_rrc(bus, Reference::Register(RegisterType::A));
+        self.set_flag(Flag::Zero, false);
+    }
+
+    fn base_rr<H: Bus>(&mut self, bus: &mut H, reference: Reference) -> u8 {
         let value = self.reference(bus, reference) as u8;
         let old_flag = self.flag(Flag::Carry) as u8;
         self.set_flag(Flag::Carry, bits::get_bit(value as u8, 0));
@@ -614,9 +651,20 @@ pub trait LR35902 {
         let value = (value >> 1) | (old_flag << 7);
         self.set_reference(bus, reference, value as u16);
 
-        self.set_flag(Flag::Zero, value == 0);
         self.set_flag(Flag::AddSub, false);
         self.set_flag(Flag::HalfCarry, false);
+
+        value
+    }
+
+    fn rr<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
+        let result = self.base_rr(bus, reference);
+        self.set_flag(Flag::Zero, result == 0);
+    }
+
+    fn rra<H: Bus>(&mut self, bus: &mut H) {
+        self.base_rr(bus, Reference::Register(RegisterType::A));
+        self.set_flag(Flag::Zero, false);
     }
 
     fn swap<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
@@ -632,11 +680,11 @@ pub trait LR35902 {
     }
 
     fn sla<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
-        let value = self.reference(bus, reference);
-        self.set_flag(Flag::Carry, bits::get_bit(value as u8, 7));
+        let value = self.reference(bus, reference) as u8;
+        self.set_flag(Flag::Carry, bits::get_bit(value, 7));
 
         let value = value << 1;
-        self.set_reference(bus, reference, value);
+        self.set_reference(bus, reference, value as u16);
 
         self.set_flag(Flag::Zero, value == 0);
         self.set_flag(Flag::AddSub, false);
