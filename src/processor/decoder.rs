@@ -431,36 +431,16 @@ impl Decoder {
             0xFB => Some(InstructionInfo::new(opcode, Mnemonic::EI, None, 4)),
 
             // RLCA
-            0x07 => Some(InstructionInfo::new(
-                opcode,
-                Mnemonic::RLCA,
-                None,
-                4,
-            )),
+            0x07 => Some(InstructionInfo::new(opcode, Mnemonic::RLCA, None, 4)),
 
             // RLA
-            0x17 => Some(InstructionInfo::new(
-                opcode,
-                Mnemonic::RLA,
-                None,
-                4,
-            )),
+            0x17 => Some(InstructionInfo::new(opcode, Mnemonic::RLA, None, 4)),
 
             // RRCA
-            0x0F => Some(InstructionInfo::new(
-                opcode,
-                Mnemonic::RRCA,
-                None,
-                4,
-            )),
+            0x0F => Some(InstructionInfo::new(opcode, Mnemonic::RRCA, None, 4)),
 
             // RRA
-            0x1F => Some(InstructionInfo::new(
-                opcode,
-                Mnemonic::RRA,
-                None,
-                4,
-            )),
+            0x1F => Some(InstructionInfo::new(opcode, Mnemonic::RRA, None, 4)),
 
             // JP nn
             0xC3 => Some(InstructionInfo::new(

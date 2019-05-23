@@ -1,12 +1,14 @@
 use crate::bus::Bus;
-use crate::processor::flag_register::{carry_add, half_carry_add, half_carry_add16, Flag, half_carry_sub};
+use crate::processor::flag_register::{
+    carry_add, half_carry_add, half_carry_add16, half_carry_sub, Flag,
+};
 use crate::processor::instruction::Prefix;
 use crate::processor::instruction::Reference;
+use crate::processor::instruction::Reference::Register;
 use crate::processor::instruction::{AddressType, Operand, ValueType};
 use crate::processor::instruction::{InstructionInfo, Mnemonic};
 use crate::processor::registers::RegisterType;
 use crate::util::bits;
-use crate::processor::instruction::Reference::Register;
 
 pub trait LR35902 {
     fn immediate<H: Bus>(&mut self, bus: &H) -> u8;
@@ -173,7 +175,7 @@ pub trait LR35902 {
                 } else {
                     return Err("Requires an argument");
                 }
-            },
+            }
             Mnemonic::RLCA => self.rlca(bus),
             Mnemonic::RLA => self.rla(bus),
             Mnemonic::RRCA => self.rrca(bus),
@@ -406,7 +408,10 @@ pub trait LR35902 {
         self.set_reg(RegisterType::A, result.into());
         self.set_flag(Flag::AddSub, false);
         self.set_flag(Flag::Zero, result == 0);
-        self.set_flag(Flag::HalfCarry, half_carry_add(value, carry) || half_carry_add(a, add_value));
+        self.set_flag(
+            Flag::HalfCarry,
+            half_carry_add(value, carry) || half_carry_add(a, add_value),
+        );
         self.set_flag(Flag::Carry, overflow || result_overflow);
     }
 
@@ -435,7 +440,10 @@ pub trait LR35902 {
 
         self.set_flag(Flag::AddSub, true);
         self.set_flag(Flag::Zero, result == 0);
-        self.set_flag(Flag::HalfCarry, reg_value & 0xF < (value & 0xF).wrapping_add(carry));
+        self.set_flag(
+            Flag::HalfCarry,
+            reg_value & 0xF < (value & 0xF).wrapping_add(carry),
+        );
         self.set_flag(Flag::Carry, overflow || reg_value < sub_value);
     }
 
@@ -535,7 +543,11 @@ pub trait LR35902 {
             u |= 0x60;
             self.set_flag(Flag::Carry, true);
         }
-        a = if flag_n { a.wrapping_sub(u) } else { a.wrapping_add(u) };
+        a = if flag_n {
+            a.wrapping_sub(u)
+        } else {
+            a.wrapping_add(u)
+        };
 
         self.set_reg(RegisterType::A, a as u16);
         self.set_flag(Flag::Zero, a == 0);

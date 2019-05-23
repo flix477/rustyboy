@@ -15,7 +15,9 @@ use crate::debugger::{Debugger, DebuggerState};
 use crate::processor::decoder::Decoder;
 use crate::processor::flag_register::Flag;
 use crate::processor::instruction::Reference::Address;
-use crate::processor::instruction::{AddressType, InstructionInfo, Operand, Prefix, Reference, Mnemonic};
+use crate::processor::instruction::{
+    AddressType, InstructionInfo, Mnemonic, Operand, Prefix, Reference,
+};
 use crate::processor::lr35902::LR35902;
 use crate::processor::register::Register;
 use crate::processor::registers::{RegisterType, Registers};
@@ -175,5 +177,5 @@ impl LR35902 for Processor {
 enum HaltMode {
     Normal,
     Bugged,
-    None
+    None,
 }

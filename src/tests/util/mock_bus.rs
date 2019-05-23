@@ -25,7 +25,9 @@ impl Bus for MockBus {
         self.interrupts_enabled = value;
     }
     fn dma_transfer(&mut self, _: u16, _: u16, _: u16) {}
-    fn master_interrupt_enable(&self) -> bool { true }
+    fn master_interrupt_enable(&self) -> bool {
+        true
+    }
 }
 
 impl Readable for MockBus {

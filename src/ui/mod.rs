@@ -42,16 +42,16 @@ pub fn run(config: Config) {
 
     let mut events_loop = EventsLoop::new();
 
-//    let main_window = MainWindow::new(&events_loop);
-//    let tile_window = TileDataWindow::new(&events_loop);
+    //    let main_window = MainWindow::new(&events_loop);
+    //    let tile_window = TileDataWindow::new(&events_loop);
     let background_window = BackgroundWindow::new(&events_loop);
 
     let mut closed = false;
     while !closed {
         gameboy.run_to_vblank();
 
-//        main_window.update(&gameboy);
-//        tile_window.update(&gameboy);
+        //        main_window.update(&gameboy);
+        //        tile_window.update(&gameboy);
         background_window.update(&gameboy);
 
         events_loop.poll_events(|event| match event {

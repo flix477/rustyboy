@@ -67,7 +67,7 @@ impl Bitflags<Interrupt> for InterruptRegister {
 pub struct InterruptHandler {
     interrupt_request: InterruptRegister,
     interrupt_enable: InterruptRegister,
-    interrupt_master_enable: bool
+    interrupt_master_enable: bool,
 }
 
 impl InterruptHandler {
