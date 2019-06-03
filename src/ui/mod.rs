@@ -7,8 +7,6 @@ use crate::config::Config;
 use crate::gameboy::Gameboy;
 
 use self::background::BackgroundWindow;
-use self::screen::MainWindow;
-use self::tile_data::TileDataWindow;
 
 pub mod background;
 pub mod screen;

@@ -14,9 +14,7 @@ use self::screen::Screen;
 use self::status_register::{StatusMode, StatusRegister};
 use crate::bus::{Readable, Writable};
 use crate::processor::interrupt::{Interrupt, InterruptHandler};
-use crate::video::memory::background_tile_map::BackgroundTileMap;
 use crate::video::palette::Palette;
-use crate::video::tile::Tile;
 
 const CLOCK_FREQUENCY: f64 = 4194304.0; // Hz
 

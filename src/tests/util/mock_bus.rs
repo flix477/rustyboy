@@ -20,7 +20,7 @@ impl Bus for MockBus {
         None
     }
     fn request_interrupt(&mut self, _: Interrupt) {}
-    fn service_interrupt(&mut self, interrupt: Interrupt) {}
+    fn service_interrupt(&mut self, _: Interrupt) {}
     fn toggle_interrupts(&mut self, value: bool) {
         self.interrupts_enabled = value;
     }

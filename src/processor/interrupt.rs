@@ -148,7 +148,7 @@ mod tests {
 
     #[test]
     fn fetch_interrupt_none() {
-        let mut interrupt_handler = InterruptHandler::new();
+        let interrupt_handler = InterruptHandler::new();
         assert!(interrupt_handler.fetch_interrupt().is_none())
     }
 

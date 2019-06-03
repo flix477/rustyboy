@@ -94,6 +94,7 @@ pub enum AddressType {
 pub enum ValueType {
     Register(RegisterType),
     Immediate,
+    SignedImmediate,
     Immediate16,
     Address(AddressType),
     Constant(u16),

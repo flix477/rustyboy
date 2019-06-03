@@ -17,13 +17,7 @@ impl Command for StepOverCommand {
         MATCHING_VALUES
     }
 
-    fn execute(
-        &self,
-        _: &[&str],
-        debugger: &mut DebuggerState,
-        debug_info: &DebugInfo,
-        _: &Bus,
-    ) -> CommandResult {
+    fn execute(&self, _: &[&str], _: &mut DebuggerState, _: &DebugInfo, _: &Bus) -> CommandResult {
         // this is stupid, will refactor later
         //        debugger.breakpoints.insert(debug_info.line + 1);
         CommandResult::Quit

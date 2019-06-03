@@ -54,7 +54,7 @@ fn parse_operand(operand: &Operand) -> String {
             ValueType::Register(register) => style_register(*register),
             ValueType::Address(address) => parse_address(*address),
             ValueType::Constant(constant) => format!("0x{:X}", constant),
-            ValueType::Immediate => IMMEDIATE.to_string(),
+            ValueType::Immediate | ValueType::SignedImmediate => IMMEDIATE.to_string(),
             ValueType::Immediate16 => IMMEDIATE_16.to_string(),
         },
         _ => format!("{:?}", operand),

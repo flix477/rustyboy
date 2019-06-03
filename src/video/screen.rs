@@ -1,7 +1,6 @@
 use crate::util::drawer;
 use crate::util::drawer::Entity;
 use crate::video::color::Color;
-use crate::video::memory::background_tile_map::BackgroundTileMap;
 use crate::video::memory::sprite_attribute_table::OAMEntry;
 use crate::video::tile::Tile;
 use crate::video::Video;
@@ -24,7 +23,7 @@ impl Screen {
 
         // Background
         if video.control.bg_window_enabled() {
-            let background_buf = self.background(video);
+            //            let background_buf = self.background(video);
         }
 
         // Sprites

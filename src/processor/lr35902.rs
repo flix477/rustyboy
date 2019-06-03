@@ -4,7 +4,6 @@ use crate::processor::flag_register::{
 };
 use crate::processor::instruction::Prefix;
 use crate::processor::instruction::Reference;
-use crate::processor::instruction::Reference::Register;
 use crate::processor::instruction::{AddressType, Operand, ValueType};
 use crate::processor::instruction::{InstructionInfo, Mnemonic};
 use crate::processor::registers::RegisterType;
@@ -86,7 +85,11 @@ pub trait LR35902 {
                     {
                         let value = self.operand_value(bus, v);
                         if r.is16bit() {
-                            self.add16(r, value);
+                            if r == RegisterType::SP {
+                                self.add_sp(value as i8);
+                            } else {
+                                self.add16(r, value);
+                            }
                         } else {
                             self.add(r, value as u8);
                         }
@@ -296,7 +299,7 @@ pub trait LR35902 {
         match value {
             ValueType::Constant(value) => value,
             ValueType::Register(reg) => self.reg(reg),
-            ValueType::Immediate => self.immediate(bus) as u16,
+            ValueType::Immediate | ValueType::SignedImmediate => self.immediate(bus) as u16,
             ValueType::Immediate16 => self.immediate16(bus),
             ValueType::Address(address) => {
                 let address = self.operand_address(bus, address);
@@ -397,6 +400,17 @@ pub trait LR35902 {
         self.set_reg(register, result);
         self.set_flag(Flag::AddSub, false);
         self.set_flag(Flag::HalfCarry, half_carry_add16(reg_value, value));
+        self.set_flag(Flag::Carry, carry);
+    }
+
+    fn add_sp(&mut self, value: i8) {
+        let reg_value = self.reg(RegisterType::SP);
+        let (result, carry) = reg_value.overflowing_add(value as u16);
+        self.set_reg(RegisterType::SP, result);
+
+        self.set_flag(Flag::Zero, false);
+        self.set_flag(Flag::AddSub, false);
+        self.set_flag(Flag::HalfCarry, half_carry_add16(reg_value, value as u16));
         self.set_flag(Flag::Carry, carry);
     }
 
@@ -501,8 +515,7 @@ pub trait LR35902 {
 
     fn inc16<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
         let value = self.reference(bus, reference) as u16;
-        let result = value.wrapping_add(1);
-        self.set_reference(bus, reference, result);
+        self.set_reference(bus, reference, value.wrapping_add(1));
     }
 
     fn dec<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
@@ -532,8 +545,6 @@ pub trait LR35902 {
     fn daa(&mut self) {
         let mut a = self.reg(RegisterType::A) as u8;
         let flag_n = self.flag(Flag::AddSub);
-        let flag_c = self.flag(Flag::Carry);
-        let flag_h = self.flag(Flag::HalfCarry);
         let mut u = 0;
 
         if self.flag(Flag::HalfCarry) || (!flag_n && (a & 0xf) > 9) {

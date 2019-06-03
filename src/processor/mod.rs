@@ -14,10 +14,7 @@ use crate::debugger::debug_info::DebugInfo;
 use crate::debugger::{Debugger, DebuggerState};
 use crate::processor::decoder::Decoder;
 use crate::processor::flag_register::Flag;
-use crate::processor::instruction::Reference::Address;
-use crate::processor::instruction::{
-    AddressType, InstructionInfo, Mnemonic, Operand, Prefix, Reference,
-};
+use crate::processor::instruction::{InstructionInfo, Prefix};
 use crate::processor::lr35902::LR35902;
 use crate::processor::register::Register;
 use crate::processor::registers::{RegisterType, Registers};

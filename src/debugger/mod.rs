@@ -10,7 +10,6 @@ use self::commands::step_over::StepOverCommand;
 use self::debug_info::DebugInfo;
 use self::shell::Shell;
 use crate::processor::instruction::Mnemonic;
-use crate::processor::register::Register;
 use crate::processor::registers::RegisterType;
 
 pub mod commands;
