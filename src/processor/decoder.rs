@@ -208,7 +208,15 @@ impl Decoder {
             0x83 => Some(Self::add_an(opcode, Reg::E)),
             0x84 => Some(Self::add_an(opcode, Reg::H)),
             0x85 => Some(Self::add_an(opcode, Reg::L)),
-            0x86 => Some(Self::add_an(opcode, Reg::HL)),
+            0x86 => Some(InstructionInfo::new(
+                opcode,
+                Mnemonic::ADD,
+                Some(vec![
+                    Operand::Reference(Ref::Register(Reg::A)),
+                    Operand::Value(ValueType::Address(Addr::Register(Reg::HL))),
+                ]),
+                8,
+            )),
             0xC6 => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::ADD,
@@ -350,7 +358,7 @@ impl Decoder {
             0x34 => Some(InstructionInfo::new(
                 opcode,
                 Mnemonic::INC,
-                Some(vec![Operand::Reference(Ref::Address(Addr::Immediate))]),
+                Some(vec![Operand::Reference(Ref::Address(Addr::Register(Reg::HL)))]),
                 12,
             )),
 

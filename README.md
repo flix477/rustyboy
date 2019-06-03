@@ -17,7 +17,7 @@ Test ROMs are available [here](http://slack.net/~ant/old/gb-tests/)
 | `08-misc instrs`       | Passing ✅ |
 | `09-op r,r`            | Passing ✅ |
 | `10-bit ops`           | Passing ✅ |
-| `11-op a,(hl)`         | Failing 🚫 |
+| `11-op a,(hl)`         | Passing ✅ |
 
 ### Want to make your own? Have some reads
 - [Official Gameboy Programming Manual](https://ia801906.us.archive.org/19/items/GameBoyProgManVer1.1/GameBoyProgManVer1.1.pdf)

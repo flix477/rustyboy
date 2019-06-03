@@ -19,8 +19,8 @@ use crate::processor::registers::RegisterType;
 use crate::ui::run;
 
 fn main() {
-    //    let cartridge = Cartridge::from_file("test/individual/11-op a,(hl).gb").unwrap();
-    let cartridge = Cartridge::from_file("tetris.gb").unwrap();
+        let cartridge = Cartridge::from_file("test/individual/11-op a,(hl).gb").unwrap();
+//    let cartridge = Cartridge::from_file("tetris.gb").unwrap();
     let config = Config {
         cartridge,
         device_type: DeviceType::GameBoy,

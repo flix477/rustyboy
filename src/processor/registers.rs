@@ -4,9 +4,9 @@ use crate::processor::register::*;
 use crate::processor::stack_pointer::StackPointer;
 use std::fmt::{Debug, Error, Formatter};
 
-pub const DEFAULT_BC: u16 = 0;
-pub const DEFAULT_DE: u16 = 0xFF56;
-pub const DEFAULT_HL: u16 = 0xD;
+pub const DEFAULT_BC: u16 = 0x13;
+pub const DEFAULT_DE: u16 = 0xD8;
+pub const DEFAULT_HL: u16 = 0x14D;
 
 pub struct Registers {
     pub af: FlagRegister,

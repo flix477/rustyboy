@@ -8,7 +8,7 @@ pub struct FlagRegister {
 impl FlagRegister {
     pub fn new() -> FlagRegister {
         FlagRegister {
-            register: DualRegister::from(0x1180),
+            register: DualRegister::from(0x01B0),
         }
     }
 

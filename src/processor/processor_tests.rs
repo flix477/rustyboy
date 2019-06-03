@@ -4,6 +4,7 @@ use crate::processor::lr35902::LR35902;
 use crate::processor::registers::RegisterType as Reg;
 use crate::processor::Processor;
 use crate::tests::util::mock_bus::MockBus;
+use crate::bus::Readable;
 
 fn setup() -> Processor {
     let mut cpu = Processor::new(None);
