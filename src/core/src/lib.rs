@@ -1,10 +1,10 @@
+mod bus;
 pub mod cartridge;
+pub mod config;
 pub mod debugger;
+pub mod gameboy;
 pub mod hardware;
 mod processor;
 mod tests;
 pub mod util;
 pub mod video;
-mod bus;
-pub mod config;
-pub mod gameboy;
