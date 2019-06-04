@@ -6,9 +6,10 @@ use glium::glutin::{
 use glium::texture::RawImage2d;
 use glium::Display;
 
-use crate::config::Config;
-use crate::gameboy::Gameboy;
-use crate::hardware::joypad::{Button, Input, InputType};
+use rustyboy_core::cartridge::Cartridge;
+use rustyboy_core::config::Config;
+use rustyboy_core::gameboy::{Gameboy, DeviceType};
+use rustyboy_core::hardware::joypad::{Button, Input, InputType};
 
 use self::screen::MainWindow;
 

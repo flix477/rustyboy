@@ -3,10 +3,10 @@ use glium::texture::RawImage2d;
 use glium::uniforms::MagnifySamplerFilter;
 use glium::{Display, Surface};
 
-use crate::gameboy::Gameboy;
-use crate::util::drawer;
-use crate::util::drawer::Entity;
-use crate::video::color::Color;
+use rustyboy_core::gameboy::Gameboy;
+use rustyboy_core::util::drawer;
+use rustyboy_core::util::drawer::Entity;
+use rustyboy_core::video::color::Color;
 
 use super::{create_display, Window};
 
