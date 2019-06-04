@@ -1,4 +1,4 @@
-/target
+**/target
 **/*.rs.bk
 .idea/
 .DS_Store
