@@ -14,3 +14,11 @@ pub fn ut8_decode_trim(buffer: Vec<u8>) -> Result<String, FromUtf8Error> {
 pub fn as_millis(duration: Duration) -> f64 {
     duration.as_secs() as f64 + duration.subsec_nanos() as f64 / 1_000_000_000.0
 }
+
+pub fn wrap_value(value: u8, max: u8) -> u8 {
+    if value >= max {
+        value - max
+    } else {
+        value
+    }
+}

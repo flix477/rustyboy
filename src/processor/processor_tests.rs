@@ -255,6 +255,70 @@ mod add {
         assert_eq!(true, cpu.flag(Flag::HalfCarry));
         assert_eq!(true, cpu.flag(Flag::Carry));
     }
+
+    #[test]
+    fn add_sp() {
+        let mut cpu = setup();
+        let mut bus = MockBus::default();
+
+        cpu.ld(&mut bus, Reference::Register(Reg::SP), 0xF);
+        cpu.add_sp(1);
+        assert_eq!(0x10, cpu.reg(Reg::SP));
+
+        // Flags affected
+        assert_eq!(false, cpu.flag(Flag::Zero));
+        assert_eq!(false, cpu.flag(Flag::AddSub));
+        assert_eq!(true, cpu.flag(Flag::HalfCarry));
+        assert_eq!(false, cpu.flag(Flag::Carry));
+    }
+
+    #[test]
+    fn add_sp_carry() {
+        let mut cpu = setup();
+        let mut bus = MockBus::default();
+
+        cpu.ld(&mut bus, Reference::Register(Reg::SP), 0xFF);
+        cpu.add_sp(1);
+        assert_eq!(0x100, cpu.reg(Reg::SP));
+
+        // Flags affected
+        assert_eq!(false, cpu.flag(Flag::Zero));
+        assert_eq!(false, cpu.flag(Flag::AddSub));
+        assert_eq!(true, cpu.flag(Flag::HalfCarry));
+        assert_eq!(true, cpu.flag(Flag::Carry));
+    }
+
+    #[test]
+    fn add_sp_carry_2() {
+        let mut cpu = setup();
+        let mut bus = MockBus::default();
+
+        cpu.ld(&mut bus, Reference::Register(Reg::SP), 0x7FFF);
+        cpu.add_sp(1);
+        assert_eq!(0x8000, cpu.reg(Reg::SP));
+
+        // Flags affected
+        assert_eq!(false, cpu.flag(Flag::Zero));
+        assert_eq!(false, cpu.flag(Flag::AddSub));
+        assert_eq!(true, cpu.flag(Flag::HalfCarry));
+        assert_eq!(true, cpu.flag(Flag::Carry));
+    }
+
+    #[test]
+    fn add_sp_carry_3() {
+        let mut cpu = setup();
+        let mut bus = MockBus::default();
+
+        cpu.ld(&mut bus, Reference::Register(Reg::SP), 0xFFFF);
+        cpu.add_sp(1);
+        assert_eq!(0, cpu.reg(Reg::SP));
+
+        // Flags affected
+        assert_eq!(false, cpu.flag(Flag::Zero));
+        assert_eq!(false, cpu.flag(Flag::AddSub));
+        assert_eq!(true, cpu.flag(Flag::HalfCarry));
+        assert_eq!(true, cpu.flag(Flag::Carry));
+    }
 }
 
 #[cfg(test)]

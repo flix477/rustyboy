@@ -5,7 +5,7 @@ pub struct Entity {
     pub height: usize,
     pub x: usize,
     pub y: usize,
-    pub data: [Color; 64],
+    pub data: Vec<Color>,
 }
 
 pub fn draw_entity(entity: Entity, dimensions: (usize, usize), buf: &mut Vec<Color>) {

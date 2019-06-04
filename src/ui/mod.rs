@@ -1,12 +1,16 @@
 use glium::glutin::dpi::LogicalSize;
-use glium::glutin::{ContextBuilder, Event, EventsLoop, WindowBuilder, WindowEvent};
+use glium::glutin::{
+    ContextBuilder, ElementState, Event, EventsLoop, KeyboardInput, VirtualKeyCode, WindowBuilder,
+    WindowEvent,
+};
 use glium::texture::RawImage2d;
 use glium::Display;
 
 use crate::config::Config;
 use crate::gameboy::Gameboy;
+use crate::hardware::joypad::{Button, Input, InputType};
 
-use self::background::BackgroundWindow;
+use self::screen::MainWindow;
 
 pub mod background;
 pub mod screen;
@@ -40,17 +44,13 @@ pub fn run(config: Config) {
 
     let mut events_loop = EventsLoop::new();
 
-    //    let main_window = MainWindow::new(&events_loop);
-    //    let tile_window = TileDataWindow::new(&events_loop);
-    let background_window = BackgroundWindow::new(&events_loop);
+    let main_window = MainWindow::new(&events_loop);
 
     let mut closed = false;
     while !closed {
         gameboy.run_to_vblank();
 
-        //        main_window.update(&gameboy);
-        //        tile_window.update(&gameboy);
-        background_window.update(&gameboy);
+        main_window.update(&gameboy);
 
         events_loop.poll_events(|event| match event {
             Event::WindowEvent {
@@ -60,7 +60,39 @@ pub fn run(config: Config) {
                 println!("The close button was pressed; stopping");
                 closed = true;
             }
+            Event::WindowEvent {
+                event: WindowEvent::KeyboardInput { input, .. },
+                ..
+            } => {
+                let input = keymap(input);
+                if let Some(input) = input {
+                    gameboy.send_input(input);
+                }
+            }
             _ => {}
         });
     }
+}
+
+pub fn keymap(input: KeyboardInput) -> Option<Input> {
+    let key_code = input.virtual_keycode?;
+    let button = match key_code {
+        VirtualKeyCode::Up => Button::Up,
+        VirtualKeyCode::Down => Button::Down,
+        VirtualKeyCode::Left => Button::Left,
+        VirtualKeyCode::Right => Button::Right,
+        VirtualKeyCode::Return => Button::Start,
+        VirtualKeyCode::Space => Button::Select,
+        VirtualKeyCode::X => Button::B, // TODO: use scancode for those so keymaps dont change the position
+        VirtualKeyCode::Z => Button::A,
+        _ => return None,
+    };
+
+    let input_type = if input.state == ElementState::Pressed {
+        InputType::Down
+    } else {
+        InputType::Up
+    };
+
+    Some(Input { input_type, button })
 }

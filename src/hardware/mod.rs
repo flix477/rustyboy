@@ -6,10 +6,10 @@ use crate::config::Config;
 use crate::processor::interrupt::{Interrupt, InterruptHandler};
 use crate::video::Video;
 
-use self::joypad::Joypad;
+use self::joypad::{Input, Joypad};
 use self::timer::Timer;
 
-mod joypad;
+pub mod joypad;
 mod timer;
 
 pub struct Hardware {
@@ -48,6 +48,10 @@ impl Hardware {
     }
 
     fn audio_unimplemented(&self) {}
+
+    pub fn send_input(&mut self, input: Input) {
+        self.joypad.send_input(input);
+    }
 }
 
 impl Readable for Hardware {
@@ -122,7 +126,7 @@ impl Readable for Hardware {
 
             _ => {
                 // println!("Unrecognised read at 0x{:X}", address);
-                0
+                0xFF
                 // unimplemented!()
             } // empty
         }

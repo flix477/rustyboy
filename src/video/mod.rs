@@ -208,9 +208,9 @@ impl Writable for Video {
     fn write(&mut self, address: u16, value: u8) {
         match address {
             0xFE00...0xFE9F => {
-                if self.mode != StatusMode::LCDTransfer && self.mode != StatusMode::ReadingOAM {
-                    self.vram.write(address, value);
-                }
+                //                if self.mode != StatusMode::LCDTransfer && self.mode != StatusMode::ReadingOAM {
+                self.vram.write(address, value);
+                //                }
             } // oam
             0x9800...0x9FFF | 0x8000...0x97FF => {
                 //                if self.mode != StatusMode::LCDTransfer {

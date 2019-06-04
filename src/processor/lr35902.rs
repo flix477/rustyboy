@@ -405,13 +405,16 @@ pub trait LR35902 {
 
     fn add_sp(&mut self, value: i8) {
         let reg_value = self.reg(RegisterType::SP);
-        let (result, carry) = reg_value.overflowing_add(value as u16);
+        let result = reg_value.wrapping_add(value as u16);
         self.set_reg(RegisterType::SP, result);
 
         self.set_flag(Flag::Zero, false);
         self.set_flag(Flag::AddSub, false);
-        self.set_flag(Flag::HalfCarry, half_carry_add16(reg_value, value as u16));
-        self.set_flag(Flag::Carry, carry);
+        self.set_flag(
+            Flag::HalfCarry,
+            half_carry_add(reg_value as u8, value as u8),
+        );
+        self.set_flag(Flag::Carry, carry_add(reg_value as u8, value as u8));
     }
 
     fn adc(&mut self, value: u8) {

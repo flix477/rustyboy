@@ -17,18 +17,12 @@ use crate::gameboy::DeviceType;
 use crate::ui::run;
 
 fn main() {
-    let cartridge = Cartridge::from_file("test/individual/03-op sp,hl.gb").unwrap();
-    //    let cartridge = Cartridge::from_file("tetris.gb").unwrap();
+    //    let cartridge = Cartridge::from_file("test/cpu_instrs.gb").unwrap();
+    let cartridge = Cartridge::from_file("tetris.gb").unwrap();
     let config = Config {
         cartridge,
         device_type: DeviceType::GameBoy,
-        debugger_config: Some(DebuggerState {
-            forced_break: false,
-            breakpoints: vec![Breakpoint {
-                line: 0xDEF8,
-                conditions: None,
-            }],
-        }),
+        debugger_config: None,
     };
 
     run(config);

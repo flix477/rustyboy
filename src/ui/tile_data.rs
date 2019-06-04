@@ -41,7 +41,7 @@ impl Window for TileDataWindow {
                 height: 8,
                 x: x * 8,
                 y: y * 8,
-                data: tile.colored(),
+                data: tile.colored().to_vec(),
             }
         });
 
