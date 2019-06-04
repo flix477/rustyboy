@@ -39,7 +39,7 @@ pub fn to_raw_image(buf: &[u8], dimensions: (usize, usize)) -> RawImage2d<u8> {
     RawImage2d::from_raw_rgb_reversed(&buf, (16 * 8, 24 * 8))
 }
 
-pub fn run(config: Config) {
+fn run(config: Config) {
     let mut gameboy = Gameboy::new(config).unwrap();
 
     let mut events_loop = EventsLoop::new();
@@ -74,7 +74,7 @@ pub fn run(config: Config) {
     }
 }
 
-pub fn keymap(input: KeyboardInput) -> Option<Input> {
+fn keymap(input: KeyboardInput) -> Option<Input> {
     let key_code = input.virtual_keycode?;
     let button = match key_code {
         VirtualKeyCode::Up => Button::Up,
@@ -95,4 +95,16 @@ pub fn keymap(input: KeyboardInput) -> Option<Input> {
     };
 
     Some(Input { input_type, button })
+}
+
+fn main() {
+    //    let cartridge = Cartridge::from_file("test/cpu_instrs.gb").unwrap();
+    let cartridge = Cartridge::from_file("tetris.gb").unwrap();
+    let config = Config {
+        cartridge,
+        device_type: DeviceType::GameBoy,
+        debugger_config: None,
+    };
+
+    run(config);
 }
