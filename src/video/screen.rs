@@ -1,10 +1,13 @@
 use crate::util::drawer;
 use crate::util::drawer::Entity;
+use crate::util::wrap_value;
 use crate::video::color::Color;
-use crate::video::memory::background_tile_map::BackgroundTileMap;
 use crate::video::memory::sprite_attribute_table::OAMEntry;
 use crate::video::tile::Tile;
 use crate::video::Video;
+
+const BACKGROUND_RELATIVE_SIZE: (u8, u8) = (32, 32);
+const BACKGROUND_SIZE: (usize, usize) = (256, 256);
 
 pub struct Screen {
     pub dimensions: (u8, u8),
@@ -24,7 +27,17 @@ impl Screen {
 
         // Background
         if video.control.bg_window_enabled() {
+            let (scx, scy) = video.scroll;
             let background_buf = self.background(video);
+            for y in 0..self.dimensions.1 {
+                let background_y = wrap_value(scy + y, self.dimensions.1) as usize;
+                for x in 0..self.dimensions.0 {
+                    let background_x = wrap_value(scx + x, self.dimensions.0) as usize;
+                    let idx = y as usize * self.dimensions.0 as usize + x as usize;
+                    let background_idx = background_y * BACKGROUND_SIZE.0 + background_x;
+                    buf[idx as usize] = background_buf[background_idx as usize];
+                }
+            }
         }
 
         // Sprites
@@ -32,7 +45,7 @@ impl Screen {
             oam_entries
                 .iter()
                 .enumerate()
-                .filter(|(_, entry)| entry.attributes != 0)
+                .filter(|(_, entry)| entry.visible())
                 .map(|(id, entry)| Sprite {
                     id: id as u8,
                     tile: tile_data[entry.tile_number as usize],
@@ -62,8 +75,6 @@ impl Screen {
     }
 
     pub fn background(&self, video: &Video) -> Vec<Color> {
-        const RELATIVE_SIZE: (usize, usize) = (32, 32);
-        const SIZE: (usize, usize) = (RELATIVE_SIZE.0 * 8, RELATIVE_SIZE.1 * 8);
         let tile_data = video.vram.tile_data();
 
         let background_tile_map = if video.control.bg_map() == 0 {
@@ -72,19 +83,25 @@ impl Screen {
             &video.vram.background_tile_maps().1
         };
 
-        let mut background_buf = vec![Color::White; SIZE.0 * SIZE.1];
+        let mut background_buf =
+            vec![Color::White; BACKGROUND_SIZE.0 as usize * BACKGROUND_SIZE.1 as usize];
         background_tile_map
             .tiles()
             .iter()
             .map(|tile_index| &tile_data[*tile_index as usize])
             .enumerate()
             .for_each(|(index, tile)| {
-                let relative_y = (index - index % RELATIVE_SIZE.0) / RELATIVE_SIZE.0;
-                let relative_x = index - relative_y * RELATIVE_SIZE.0;
+                let relative_y = (index - index % BACKGROUND_RELATIVE_SIZE.0 as usize)
+                    / BACKGROUND_RELATIVE_SIZE.0 as usize;
+                let relative_x = index - relative_y * BACKGROUND_RELATIVE_SIZE.0 as usize;
                 let (x, y) = (8 * relative_x, 8 * relative_y);
                 let entity = Entity::from_tile(tile, x, y);
 
-                drawer::draw_entity(entity, SIZE, &mut background_buf);
+                drawer::draw_entity(
+                    entity,
+                    (BACKGROUND_SIZE.0 as usize, BACKGROUND_SIZE.1 as usize),
+                    &mut background_buf,
+                );
             });
 
         background_buf
@@ -93,7 +110,11 @@ impl Screen {
 
 impl Entity {
     pub fn from_sprite(sprite: &Sprite) -> Self {
-        Self::from_tile(&sprite.tile, sprite.x() as usize, sprite.y() as usize)
+        Self::from_tile(
+            &sprite.tile,
+            sprite.x() as usize - 8,
+            sprite.y() as usize - 16,
+        )
     }
 
     pub fn from_tile(tile: &Tile, x: usize, y: usize) -> Self {
@@ -102,7 +123,7 @@ impl Entity {
             height: 8,
             x,
             y,
-            data: tile.colored(),
+            data: tile.colored().to_vec(),
         }
     }
 }

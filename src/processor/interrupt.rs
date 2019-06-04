@@ -79,19 +79,12 @@ impl InterruptHandler {
         }
     }
 
-    pub fn fetch_interrupt(&mut self) -> Option<Interrupt> {
-        let mask = if self.interrupt_master_enable {
-            0xFF
-        } else {
-            0
-        };
-        let value = mask & self.interrupt_enable.register() & self.interrupt_request.register();
+    pub fn fetch_interrupt(&self) -> Option<Interrupt> {
+        let value = self.interrupt_enable.register() & self.interrupt_request.register();
 
         for x in 0..=4 {
             let interrupt = Interrupt::from(2u8.pow(x as u32));
             if (value & interrupt as u8) != 0 {
-                self.interrupt_master_enable = false;
-                self.interrupt_request.set_flag(interrupt, false);
                 return Some(interrupt);
             }
         }
@@ -105,6 +98,15 @@ impl InterruptHandler {
 
     pub fn request_interrupt(&mut self, interrupt: Interrupt) {
         self.interrupt_request.set_flag(interrupt, true);
+    }
+
+    pub fn service_interrupt(&mut self, interrupt: Interrupt) {
+        self.toggle_interrupts(false);
+        self.interrupt_request.set_flag(interrupt, false);
+    }
+
+    pub fn master_interrupt_enable(&self) -> bool {
+        self.interrupt_master_enable
     }
 }
 
@@ -133,16 +135,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn fetch_interrupt_ime_false() {
-        let mut interrupt_handler = InterruptHandler::new();
-        interrupt_handler.interrupt_master_enable = false;
-        interrupt_handler
-            .interrupt_request
-            .set_flag(Interrupt::Keypad, true);
-        assert!(interrupt_handler.fetch_interrupt().is_none())
-    }
-
-    #[test]
     fn fetch_interrupt_ie_false() {
         let mut interrupt_handler = InterruptHandler::new();
         interrupt_handler
@@ -156,7 +148,7 @@ mod tests {
 
     #[test]
     fn fetch_interrupt_none() {
-        let mut interrupt_handler = InterruptHandler::new();
+        let interrupt_handler = InterruptHandler::new();
         assert!(interrupt_handler.fetch_interrupt().is_none())
     }
 
@@ -176,31 +168,42 @@ mod tests {
         let mut interrupt_handler = InterruptHandler::new();
         interrupt_handler.toggle_interrupts(true);
         interrupt_handler.interrupt_request.set_register(0xFF);
+
         assert_eq!(
             interrupt_handler.fetch_interrupt().unwrap(),
             Interrupt::VBlank
         );
-        interrupt_handler.interrupt_master_enable = true;
+        interrupt_handler.service_interrupt(Interrupt::VBlank);
+        interrupt_handler.toggle_interrupts(true);
+
         assert_eq!(
             interrupt_handler.fetch_interrupt().unwrap(),
             Interrupt::LCDCStat
         );
-        interrupt_handler.interrupt_master_enable = true;
+        interrupt_handler.service_interrupt(Interrupt::LCDCStat);
+        interrupt_handler.toggle_interrupts(true);
+
         assert_eq!(
             interrupt_handler.fetch_interrupt().unwrap(),
             Interrupt::Timer
         );
-        interrupt_handler.interrupt_master_enable = true;
+        interrupt_handler.service_interrupt(Interrupt::Timer);
+        interrupt_handler.toggle_interrupts(true);
+
         assert_eq!(
             interrupt_handler.fetch_interrupt().unwrap(),
             Interrupt::Serial
         );
-        interrupt_handler.interrupt_master_enable = true;
+        interrupt_handler.service_interrupt(Interrupt::Serial);
+        interrupt_handler.toggle_interrupts(true);
+
         assert_eq!(
             interrupt_handler.fetch_interrupt().unwrap(),
             Interrupt::Keypad
         );
-        interrupt_handler.interrupt_master_enable = true;
+        interrupt_handler.service_interrupt(Interrupt::Keypad);
+        interrupt_handler.toggle_interrupts(true);
+
         assert!(interrupt_handler.fetch_interrupt().is_none());
     }
 }

@@ -4,9 +4,9 @@ use crate::processor::register::*;
 use crate::processor::stack_pointer::StackPointer;
 use std::fmt::{Debug, Error, Formatter};
 
-pub const DEFAULT_BC: u16 = 0;
-pub const DEFAULT_DE: u16 = 0xFF56;
-pub const DEFAULT_HL: u16 = 0xD;
+pub const DEFAULT_BC: u16 = 0x13;
+pub const DEFAULT_DE: u16 = 0xD8;
+pub const DEFAULT_HL: u16 = 0x14D;
 
 pub struct Registers {
     pub af: FlagRegister,
@@ -46,7 +46,7 @@ impl Registers {
 
     pub fn reg(&self, register: RegisterType) -> u16 {
         match register {
-            RegisterType::AF => self.af.register.get(),
+            RegisterType::AF => self.af.register().get(),
             RegisterType::BC => self.bc.get(),
             RegisterType::DE => self.de.get(),
             RegisterType::HL => self.hl.get(),
@@ -72,7 +72,7 @@ impl Registers {
                 self.af.set_flags(value as u8);
             }
             RegisterType::AF => {
-                self.af.register.set(value);
+                self.af.set(value);
             }
             RegisterType::B => {
                 self.bc.high.set(value);

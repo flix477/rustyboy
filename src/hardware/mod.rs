@@ -6,10 +6,10 @@ use crate::config::Config;
 use crate::processor::interrupt::{Interrupt, InterruptHandler};
 use crate::video::Video;
 
-use self::joypad::Joypad;
+use self::joypad::{Input, Joypad};
 use self::timer::Timer;
 
-mod joypad;
+pub mod joypad;
 mod timer;
 
 pub struct Hardware {
@@ -48,6 +48,10 @@ impl Hardware {
     }
 
     fn audio_unimplemented(&self) {}
+
+    pub fn send_input(&mut self, input: Input) {
+        self.joypad.send_input(input);
+    }
 }
 
 impl Readable for Hardware {
@@ -67,7 +71,7 @@ impl Readable for Hardware {
             } // 4kb internal ram
             0xD000...0xDFFF => {
                 // TODO: cgb internal ram bank switching
-                let address = address - 0xD000;
+                let address = address - 0xC000;
                 self.internal_ram[address as usize]
             } // 4kb internal ram bank
             0xE000...0xFDFF => {
@@ -75,7 +79,7 @@ impl Readable for Hardware {
                 self.internal_ram[address as usize]
             } // echo ^^
 
-            0xFF4C...0xFF7F | 0xFEA0...0xFEFF => 0, // empty but unusable for i/o
+            0xFF4C...0xFF7F | 0xFEA0...0xFEFF => 0xFF, // empty but unusable for i/o
 
             0xFF00 => self.joypad.read(address), // joypad info
 
@@ -122,7 +126,7 @@ impl Readable for Hardware {
 
             _ => {
                 // println!("Unrecognised read at 0x{:X}", address);
-                0
+                0xFF
                 // unimplemented!()
             } // empty
         }
@@ -143,7 +147,7 @@ impl Writable for Hardware {
             } // 4kb internal ram
             0xD000...0xDFFF => {
                 // TODO: cgb internal ram bank switching
-                let address = address - 0xD000;
+                let address = address - 0xC000;
                 self.internal_ram[address as usize] = value;
             } // 4kb internal ram bank
             0xE000...0xFDFF => {
@@ -203,12 +207,16 @@ impl Writable for Hardware {
 }
 
 impl Bus for Hardware {
-    fn fetch_interrupt(&mut self) -> Option<Interrupt> {
+    fn fetch_interrupt(&self) -> Option<Interrupt> {
         self.interrupt_handler.fetch_interrupt()
     }
 
     fn request_interrupt(&mut self, interrupt: Interrupt) {
         self.interrupt_handler.request_interrupt(interrupt);
+    }
+
+    fn service_interrupt(&mut self, interrupt: Interrupt) {
+        self.interrupt_handler.service_interrupt(interrupt);
     }
 
     fn toggle_interrupts(&mut self, value: bool) {
@@ -220,5 +228,9 @@ impl Bus for Hardware {
             let value = self.read(from + i);
             self.write(to + i, value);
         }
+    }
+
+    fn master_interrupt_enable(&self) -> bool {
+        self.interrupt_handler.master_interrupt_enable()
     }
 }

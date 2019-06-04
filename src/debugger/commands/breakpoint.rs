@@ -19,7 +19,7 @@ impl BreakpointAction {
             "add" | "a" => {
                 let breakpoint = Breakpoint {
                     line: parse_hex(values.get(1)?)?,
-                    condition: None,
+                    conditions: None,
                 };
                 Some(BreakpointAction::Add(breakpoint))
             }

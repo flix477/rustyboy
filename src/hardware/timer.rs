@@ -95,7 +95,7 @@ impl Counter {
     }
 
     pub fn clock(&mut self) -> ClockResult {
-        self.cycles_left.saturating_sub(1);
+        self.cycles_left = self.cycles_left.saturating_sub(1);
         if self.cycles_left == 0 {
             self.cycles_left = self.cycles_per_tick;
             let (result, overflow) = self.value.overflowing_add(1);

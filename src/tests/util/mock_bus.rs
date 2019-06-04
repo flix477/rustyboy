@@ -16,14 +16,18 @@ impl Default for MockBus {
 }
 
 impl Bus for MockBus {
-    fn fetch_interrupt(&mut self) -> Option<Interrupt> {
+    fn fetch_interrupt(&self) -> Option<Interrupt> {
         None
     }
     fn request_interrupt(&mut self, _: Interrupt) {}
+    fn service_interrupt(&mut self, _: Interrupt) {}
     fn toggle_interrupts(&mut self, value: bool) {
         self.interrupts_enabled = value;
     }
     fn dma_transfer(&mut self, _: u16, _: u16, _: u16) {}
+    fn master_interrupt_enable(&self) -> bool {
+        true
+    }
 }
 
 impl Readable for MockBus {

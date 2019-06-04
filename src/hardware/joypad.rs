@@ -17,6 +17,10 @@ impl Joypad {
     pub fn set_mode(&mut self, mode: Mode) {
         self.mode = mode;
     }
+
+    pub fn send_input(&mut self, input: Input) {
+        self.set_flag(input.button, input.input_type == InputType::Down)
+    }
 }
 
 impl Readable for Joypad {
@@ -52,6 +56,17 @@ impl Bitflags<Button> for Joypad {
     fn set_register(&mut self, value: u8) {
         self.pushed_keys = value;
     }
+}
+
+pub struct Input {
+    pub input_type: InputType,
+    pub button: Button,
+}
+
+#[derive(PartialEq)]
+pub enum InputType {
+    Down,
+    Up,
 }
 
 pub enum Button {

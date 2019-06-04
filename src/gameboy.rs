@@ -1,7 +1,7 @@
 use std::error::Error;
 
 use crate::config::Config;
-use crate::hardware::Hardware;
+use crate::hardware::{joypad::Input, Hardware};
 use crate::processor::Processor;
 
 pub struct Gameboy {
@@ -32,6 +32,10 @@ impl Gameboy {
 
     pub fn hardware(&self) -> &Hardware {
         &self.hardware
+    }
+
+    pub fn send_input(&mut self, input: Input) {
+        self.hardware.send_input(input);
     }
 }
 

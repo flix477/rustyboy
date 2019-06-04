@@ -255,6 +255,70 @@ mod add {
         assert_eq!(true, cpu.flag(Flag::HalfCarry));
         assert_eq!(true, cpu.flag(Flag::Carry));
     }
+
+    #[test]
+    fn add_sp() {
+        let mut cpu = setup();
+        let mut bus = MockBus::default();
+
+        cpu.ld(&mut bus, Reference::Register(Reg::SP), 0xF);
+        cpu.add_sp(1);
+        assert_eq!(0x10, cpu.reg(Reg::SP));
+
+        // Flags affected
+        assert_eq!(false, cpu.flag(Flag::Zero));
+        assert_eq!(false, cpu.flag(Flag::AddSub));
+        assert_eq!(true, cpu.flag(Flag::HalfCarry));
+        assert_eq!(false, cpu.flag(Flag::Carry));
+    }
+
+    #[test]
+    fn add_sp_carry() {
+        let mut cpu = setup();
+        let mut bus = MockBus::default();
+
+        cpu.ld(&mut bus, Reference::Register(Reg::SP), 0xFF);
+        cpu.add_sp(1);
+        assert_eq!(0x100, cpu.reg(Reg::SP));
+
+        // Flags affected
+        assert_eq!(false, cpu.flag(Flag::Zero));
+        assert_eq!(false, cpu.flag(Flag::AddSub));
+        assert_eq!(true, cpu.flag(Flag::HalfCarry));
+        assert_eq!(true, cpu.flag(Flag::Carry));
+    }
+
+    #[test]
+    fn add_sp_carry_2() {
+        let mut cpu = setup();
+        let mut bus = MockBus::default();
+
+        cpu.ld(&mut bus, Reference::Register(Reg::SP), 0x7FFF);
+        cpu.add_sp(1);
+        assert_eq!(0x8000, cpu.reg(Reg::SP));
+
+        // Flags affected
+        assert_eq!(false, cpu.flag(Flag::Zero));
+        assert_eq!(false, cpu.flag(Flag::AddSub));
+        assert_eq!(true, cpu.flag(Flag::HalfCarry));
+        assert_eq!(true, cpu.flag(Flag::Carry));
+    }
+
+    #[test]
+    fn add_sp_carry_3() {
+        let mut cpu = setup();
+        let mut bus = MockBus::default();
+
+        cpu.ld(&mut bus, Reference::Register(Reg::SP), 0xFFFF);
+        cpu.add_sp(1);
+        assert_eq!(0, cpu.reg(Reg::SP));
+
+        // Flags affected
+        assert_eq!(false, cpu.flag(Flag::Zero));
+        assert_eq!(false, cpu.flag(Flag::AddSub));
+        assert_eq!(true, cpu.flag(Flag::HalfCarry));
+        assert_eq!(true, cpu.flag(Flag::Carry));
+    }
 }
 
 #[cfg(test)]
@@ -295,6 +359,23 @@ mod adc {
         assert_eq!(false, cpu.flag(Flag::AddSub));
         assert_eq!(false, cpu.flag(Flag::HalfCarry));
         assert_eq!(false, cpu.flag(Flag::Carry));
+    }
+
+    #[test]
+    fn adc_misc() {
+        let mut cpu = setup();
+        let mut bus = MockBus::default();
+
+        cpu.ld(&mut bus, Reference::Register(Reg::AF), 0xF0);
+        cpu.adc(0xFF);
+
+        assert_eq!(0xB0, cpu.reg(Reg::AF));
+
+        // Flags affected
+        assert_eq!(true, cpu.flag(Flag::Zero));
+        assert_eq!(false, cpu.flag(Flag::AddSub));
+        assert_eq!(true, cpu.flag(Flag::HalfCarry));
+        assert_eq!(true, cpu.flag(Flag::Carry));
     }
 }
 
@@ -403,6 +484,78 @@ mod sbc {
         assert_eq!(true, cpu.flag(Flag::AddSub));
         assert_eq!(false, cpu.flag(Flag::HalfCarry));
         assert_eq!(false, cpu.flag(Flag::Carry));
+    }
+
+    #[test]
+    fn sbc_misc() {
+        let mut cpu = setup();
+        let mut bus = MockBus::default();
+
+        cpu.set_flag(Flag::Carry, true);
+        cpu.ld(&mut bus, Reference::Register(Reg::A), 0);
+        cpu.sbc(0x80);
+
+        assert_eq!(0x7F, cpu.reg(Reg::A));
+
+        // Flags affected
+        assert_eq!(false, cpu.flag(Flag::Zero));
+        assert_eq!(true, cpu.flag(Flag::AddSub));
+        assert_eq!(true, cpu.flag(Flag::HalfCarry));
+        assert_eq!(true, cpu.flag(Flag::Carry));
+    }
+
+    #[test]
+    fn sbc_misc_2() {
+        let mut cpu = setup();
+        let mut bus = MockBus::default();
+
+        cpu.set_flag(Flag::Carry, true);
+        cpu.ld(&mut bus, Reference::Register(Reg::A), 1);
+        cpu.sbc(0x1F);
+
+        assert_eq!(0xE1, cpu.reg(Reg::A));
+
+        // Flags affected
+        assert_eq!(false, cpu.flag(Flag::Zero));
+        assert_eq!(true, cpu.flag(Flag::AddSub));
+        assert_eq!(true, cpu.flag(Flag::HalfCarry));
+        assert_eq!(true, cpu.flag(Flag::Carry));
+    }
+
+    #[test]
+    fn sbc_misc_3() {
+        let mut cpu = setup();
+        let mut bus = MockBus::default();
+
+        cpu.set_flag(Flag::Carry, true);
+        cpu.ld(&mut bus, Reference::Register(Reg::A), 1);
+        cpu.sbc(1);
+
+        assert_eq!(0xFF, cpu.reg(Reg::A));
+
+        // Flags affected
+        assert_eq!(false, cpu.flag(Flag::Zero));
+        assert_eq!(true, cpu.flag(Flag::AddSub));
+        assert_eq!(true, cpu.flag(Flag::HalfCarry));
+        assert_eq!(true, cpu.flag(Flag::Carry));
+    }
+
+    #[test]
+    fn sbc_misc_4() {
+        let mut cpu = setup();
+        let mut bus = MockBus::default();
+
+        cpu.set_flag(Flag::Carry, true);
+        cpu.ld(&mut bus, Reference::Register(Reg::A), 1);
+        cpu.sbc(0xFF);
+
+        assert_eq!(1, cpu.reg(Reg::A));
+
+        // Flags affected
+        assert_eq!(false, cpu.flag(Flag::Zero));
+        assert_eq!(true, cpu.flag(Flag::AddSub));
+        assert_eq!(true, cpu.flag(Flag::HalfCarry));
+        assert_eq!(true, cpu.flag(Flag::Carry));
     }
 }
 
@@ -605,7 +758,18 @@ mod dec {
 
 #[test]
 fn daa() {
-    // TODO
+    let mut cpu = setup();
+
+    cpu.set_reg(Reg::AF, 0x9A00);
+    cpu.daa();
+
+    assert_eq!(0x90, cpu.reg(Reg::AF));
+
+    // Flags affected
+    assert_eq!(true, cpu.flag(Flag::Zero));
+    assert_eq!(false, cpu.flag(Flag::AddSub));
+    assert_eq!(false, cpu.flag(Flag::HalfCarry));
+    assert_eq!(true, cpu.flag(Flag::Carry));
 }
 
 #[test]
@@ -994,6 +1158,23 @@ mod sla {
         assert_eq!(false, cpu.flag(Flag::AddSub));
         assert_eq!(false, cpu.flag(Flag::HalfCarry));
         assert_eq!(false, cpu.flag(Flag::Carry));
+    }
+
+    #[test]
+    fn sla_misc() {
+        let mut cpu = setup();
+        let mut bus = MockBus::default();
+
+        cpu.ld(&mut bus, Reference::Register(Reg::AF), 0);
+        cpu.ld(&mut bus, Reference::Register(Reg::B), 0x80);
+        cpu.sla(&mut bus, Reference::Register(Reg::B));
+        assert_eq!(0, cpu.reg(Reg::B));
+
+        // Flags affected
+        assert_eq!(true, cpu.flag(Flag::Zero));
+        assert_eq!(false, cpu.flag(Flag::AddSub));
+        assert_eq!(false, cpu.flag(Flag::HalfCarry));
+        assert_eq!(true, cpu.flag(Flag::Carry));
     }
 }
 

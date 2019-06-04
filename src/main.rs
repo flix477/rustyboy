@@ -12,13 +12,13 @@ mod video;
 
 use crate::cartridge::Cartridge;
 use crate::config::Config;
-use crate::debugger::{Breakpoint, BreakpointCondition, DebuggerState};
+use crate::debugger::{Breakpoint, DebuggerState};
 use crate::gameboy::DeviceType;
-use crate::processor::registers::RegisterType;
 use crate::ui::run;
 
 fn main() {
-    let cartridge = Cartridge::from_file("test/cpu_instrs.gb").unwrap();
+    //    let cartridge = Cartridge::from_file("test/cpu_instrs.gb").unwrap();
+    let cartridge = Cartridge::from_file("tetris.gb").unwrap();
     let config = Config {
         cartridge,
         device_type: DeviceType::GameBoy,

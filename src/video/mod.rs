@@ -14,9 +14,7 @@ use self::screen::Screen;
 use self::status_register::{StatusMode, StatusRegister};
 use crate::bus::{Readable, Writable};
 use crate::processor::interrupt::{Interrupt, InterruptHandler};
-use crate::video::memory::background_tile_map::BackgroundTileMap;
 use crate::video::palette::Palette;
-use crate::video::tile::Tile;
 
 const CLOCK_FREQUENCY: f64 = 4194304.0; // Hz
 
@@ -50,7 +48,7 @@ impl Video {
 
         Video {
             control: ControlRegister::new(),
-            status: StatusRegister::new(), // TODO: is it tho
+            status: StatusRegister::new(),
             mode: StatusMode::ReadingOAM,
             scroll: (0, 0),
             window: (0, 0),
@@ -210,9 +208,9 @@ impl Writable for Video {
     fn write(&mut self, address: u16, value: u8) {
         match address {
             0xFE00...0xFE9F => {
-                if self.mode != StatusMode::LCDTransfer && self.mode != StatusMode::ReadingOAM {
-                    self.vram.write(address, value);
-                }
+                //                if self.mode != StatusMode::LCDTransfer && self.mode != StatusMode::ReadingOAM {
+                self.vram.write(address, value);
+                //                }
             } // oam
             0x9800...0x9FFF | 0x8000...0x97FF => {
                 //                if self.mode != StatusMode::LCDTransfer {

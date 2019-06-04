@@ -5,7 +5,7 @@ pub mod interrupt;
 pub mod lr35902;
 mod processor_tests;
 mod program_counter;
-mod register;
+pub mod register;
 pub mod registers;
 mod stack_pointer;
 
@@ -14,8 +14,7 @@ use crate::debugger::debug_info::DebugInfo;
 use crate::debugger::{Debugger, DebuggerState};
 use crate::processor::decoder::Decoder;
 use crate::processor::flag_register::Flag;
-use crate::processor::instruction::Reference::Address;
-use crate::processor::instruction::{AddressType, InstructionInfo, Operand, Prefix, Reference};
+use crate::processor::instruction::{InstructionInfo, Prefix};
 use crate::processor::lr35902::LR35902;
 use crate::processor::register::Register;
 use crate::processor::registers::{RegisterType, Registers};
@@ -26,7 +25,7 @@ const CLOCK_FREQUENCY: f64 = 4194304.0; // Hz
 pub struct Processor {
     registers: Registers,
     clock_frequency: f64,
-    stopped: bool,
+    halt_mode: HaltMode,
     pub debugger: Option<Debugger>,
     cycles_left: u8,
     pending_ei: bool,
@@ -37,7 +36,7 @@ impl Processor {
         Processor {
             registers: Registers::new(),
             clock_frequency: CLOCK_FREQUENCY,
-            stopped: false,
+            halt_mode: HaltMode::None,
             debugger: if let Some(state) = debugger_config {
                 Some(Debugger::from_state(state))
             } else {
@@ -51,17 +50,30 @@ impl Processor {
     pub fn step<H: Bus>(&mut self, bus: &mut H) {
         let interrupt = bus.fetch_interrupt();
         if let Some(interrupt) = interrupt {
-            self.stopped = false;
-            let pc = self.registers.program_counter.get();
-            self.push_stack(bus, pc);
-            self.jp(interrupt.address());
-        } else if !self.stopped && self.cycles_left == 0 {
+            self.halt_mode = HaltMode::None;
+            if bus.master_interrupt_enable() {
+                bus.service_interrupt(interrupt);
+                let pc = self.registers.program_counter.get();
+                self.push_stack(bus, pc);
+                self.jp(interrupt.address());
+            }
+        }
+
+        if self.cycles_left == 0 && self.halt_mode != HaltMode::Normal {
             if self.pending_ei {
-                bus.toggle_interrupts(true);
-                self.pending_ei = false;
+                self.immediate_ei(bus);
             }
 
+            let pc = self.registers.program_counter.get();
             self.cycles_left = self.execute_next(bus, Prefix::None);
+
+            // emulate this one weird bug
+            // https://github.com/AntonioND/giibiiadvance/blob/master/docs/TCAGBD.pdf section 4.10
+            if self.halt_mode == HaltMode::Bugged {
+                self.halt_mode = HaltMode::None;
+                self.registers.program_counter.set(pc);
+                self.cycles_left += self.execute_next(bus, Prefix::None);
+            }
         } else if self.cycles_left > 0 {
             self.cycles_left -= 1;
         }
@@ -126,8 +138,6 @@ impl LR35902 for Processor {
         let line = self.registers.program_counter.get();
         let opcode = self.immediate(bus);
         if let Some(instruction) = Decoder::decode_opcode(opcode, prefix) {
-            //            println!("0x2BA is where u should look", line);
-            // à 0x33 register F diffère
             let cycle_count = instruction.cycle_count();
             self.debugger_check(bus, line, &instruction);
             self.execute(bus, instruction)
@@ -138,15 +148,31 @@ impl LR35902 for Processor {
         }
     }
 
-    fn halt(&mut self) {
-        self.stopped = true;
+    fn halt<H: Bus>(&mut self, bus: &H) {
+        if !bus.master_interrupt_enable() && bus.fetch_interrupt().is_some() {
+            self.halt_mode = HaltMode::Bugged;
+        } else {
+            self.halt_mode = HaltMode::Normal;
+        }
     }
 
     fn stop(&mut self) {
-        self.stopped = true;
+        self.halt_mode = HaltMode::Normal;
     }
 
     fn ei(&mut self) {
         self.pending_ei = true;
     }
+
+    fn immediate_ei<H: Bus>(&mut self, bus: &mut H) {
+        bus.toggle_interrupts(true);
+        self.pending_ei = false;
+    }
+}
+
+#[derive(PartialEq)]
+enum HaltMode {
+    Normal,
+    Bugged,
+    None,
 }

@@ -2,13 +2,13 @@ use crate::processor::register::{DualRegister, Register, SingleRegister};
 use crate::util::bitflags::Bitflags;
 
 pub struct FlagRegister {
-    pub register: DualRegister,
+    register: DualRegister,
 }
 
 impl FlagRegister {
     pub fn new() -> FlagRegister {
         FlagRegister {
-            register: DualRegister::from(0x1180),
+            register: DualRegister::from(0x01B0),
         }
     }
 
@@ -25,11 +25,16 @@ impl FlagRegister {
     }
 
     pub fn set_flags(&mut self, value: u8) {
-        self.register.low.set(value as u16);
+        self.register.low.set(value as u16 & 0xF0);
     }
 
     pub fn register(&self) -> &DualRegister {
         &self.register
+    }
+
+    pub fn set(&mut self, value: u16) {
+        self.set_flags(value as u8);
+        self.set_accumulator((value >> 8) as u8);
     }
 }
 
@@ -63,6 +68,10 @@ pub const fn half_carry_add(value1: u8, value2: u8) -> bool {
 
 pub const fn half_carry_add16(value1: u16, value2: u16) -> bool {
     (((value1 & 0xfff) + (value2 & 0xfff)) & 0x1000) == 0x1000
+}
+
+pub const fn half_carry_sub(value1: u8, value2: u8) -> bool {
+    value1 & 0xF < value2 & 0xF
 }
 
 pub fn carry_add(value1: u8, value2: u8) -> bool {
