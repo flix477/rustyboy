@@ -11,7 +11,7 @@ jobs:
           name: Check formatting
           command: |
             rustup component add rustfmt
-            cd src/core
+            cd packages/core
             cargo fmt --all -- --check
             cd ../pc
             cargo fmt --all -- --check
@@ -19,7 +19,7 @@ jobs:
       - run:
           name: Build
           command: |
-            cd src/core
+            cd packages/core
             cargo build
             cd ../pc
             cargo build
@@ -27,7 +27,7 @@ jobs:
       - run:
           name: Check tests
           command: |
-            cd src/core
+            cd packages/core
             cargo test
             cd ../pc
             cargo test
