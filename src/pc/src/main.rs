@@ -3,12 +3,12 @@ use glium::glutin::{
     ContextBuilder, ElementState, Event, EventsLoop, KeyboardInput, VirtualKeyCode, WindowBuilder,
     WindowEvent,
 };
-use glium::texture::RawImage2d;
 use glium::Display;
 
-use crate::config::Config;
-use crate::gameboy::Gameboy;
-use crate::hardware::joypad::{Button, Input, InputType};
+use rustyboy_core::cartridge::Cartridge;
+use rustyboy_core::config::Config;
+use rustyboy_core::gameboy::{DeviceType, Gameboy};
+use rustyboy_core::hardware::joypad::{Button, Input, InputType};
 
 use self::screen::MainWindow;
 
@@ -35,11 +35,7 @@ pub fn create_display(
     Display::new(window, ctx, events_loop).unwrap()
 }
 
-pub fn to_raw_image(buf: &[u8], dimensions: (usize, usize)) -> RawImage2d<u8> {
-    RawImage2d::from_raw_rgb_reversed(&buf, (16 * 8, 24 * 8))
-}
-
-pub fn run(config: Config) {
+fn run(config: Config) {
     let mut gameboy = Gameboy::new(config).unwrap();
 
     let mut events_loop = EventsLoop::new();
@@ -74,7 +70,7 @@ pub fn run(config: Config) {
     }
 }
 
-pub fn keymap(input: KeyboardInput) -> Option<Input> {
+fn keymap(input: KeyboardInput) -> Option<Input> {
     let key_code = input.virtual_keycode?;
     let button = match key_code {
         VirtualKeyCode::Up => Button::Up,
@@ -95,4 +91,17 @@ pub fn keymap(input: KeyboardInput) -> Option<Input> {
     };
 
     Some(Input { input_type, button })
+}
+
+fn main() {
+    //    let cartridge = Cartridge::from_file("test/cpu_instrs.gb").unwrap();
+    let cartridge = Cartridge::from_file("tetris.gb").unwrap();
+    println!("{:?}", cartridge.metadata());
+    let config = Config {
+        cartridge,
+        device_type: DeviceType::GameBoy,
+        debugger_config: None,
+    };
+
+    run(config);
 }

@@ -3,7 +3,7 @@ use glium::texture::RawImage2d;
 use glium::uniforms::MagnifySamplerFilter;
 use glium::{Display, Surface};
 
-use crate::gameboy::Gameboy;
+use rustyboy_core::gameboy::Gameboy;
 
 use super::{create_display, Window};
 
