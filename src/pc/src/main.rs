@@ -8,7 +8,7 @@ use glium::Display;
 
 use rustyboy_core::cartridge::Cartridge;
 use rustyboy_core::config::Config;
-use rustyboy_core::gameboy::{Gameboy, DeviceType};
+use rustyboy_core::gameboy::{DeviceType, Gameboy};
 use rustyboy_core::hardware::joypad::{Button, Input, InputType};
 
 use self::screen::MainWindow;
