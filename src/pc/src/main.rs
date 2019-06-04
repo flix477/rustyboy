@@ -3,7 +3,6 @@ use glium::glutin::{
     ContextBuilder, ElementState, Event, EventsLoop, KeyboardInput, VirtualKeyCode, WindowBuilder,
     WindowEvent,
 };
-use glium::texture::RawImage2d;
 use glium::Display;
 
 use rustyboy_core::cartridge::Cartridge;
@@ -34,10 +33,6 @@ pub fn create_display(
         });
     let ctx = ContextBuilder::new();
     Display::new(window, ctx, events_loop).unwrap()
-}
-
-pub fn to_raw_image(buf: &[u8], dimensions: (usize, usize)) -> RawImage2d<u8> {
-    RawImage2d::from_raw_rgb_reversed(&buf, (16 * 8, 24 * 8))
 }
 
 fn run(config: Config) {
@@ -101,6 +96,7 @@ fn keymap(input: KeyboardInput) -> Option<Input> {
 fn main() {
     //    let cartridge = Cartridge::from_file("test/cpu_instrs.gb").unwrap();
     let cartridge = Cartridge::from_file("tetris.gb").unwrap();
+    println!("{:?}", cartridge.metadata());
     let config = Config {
         cartridge,
         device_type: DeviceType::GameBoy,

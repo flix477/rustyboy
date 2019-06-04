@@ -11,7 +11,6 @@ use rustyboy_core::video::color::Color;
 use super::{create_display, Window};
 
 const TILE_DATA_DIMENSIONS: (usize, usize) = (16, 24);
-const DIMENSIONS: (u8, u8) = (128, 192);
 
 pub struct TileDataWindow {
     pub display: Display,
