@@ -1,4 +1,6 @@
-/target
+**/target
+packages/core/test
+packages/core/Cargo.lock
 **/*.rs.bk
 .idea/
 .DS_Store
