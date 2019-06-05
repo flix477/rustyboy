@@ -19,5 +19,10 @@ CWD=$(pwd)
 while read -r line; do
     cd $line
     eval $COMMAND
+    RETURN_VALUE=$?
+    if ! $RETURN_VALUE then
+        exit $RETURN_VALUE
+    fi
+    eval $COMMAND
     cd $CWD
 done <<< "$CHANGED_PACKAGES"
