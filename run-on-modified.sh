@@ -19,10 +19,10 @@ CWD=$(pwd)
 while read -r line; do
     cd $line
     eval $COMMAND
-    RETURN_VALUE=$?
-    if ! $RETURN_VALUE then
-        exit $RETURN_VALUE
+    EXIT_CODE=$?
+    if [[ $EXIT_CODE -ne 0 ]]; then
+        exit $EXIT_CODE
     fi
-    eval $COMMAND
     cd $CWD
 done <<< "$CHANGED_PACKAGES"
+
