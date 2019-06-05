@@ -11,23 +11,14 @@ jobs:
           name: Check formatting
           command: |
             rustup component add rustfmt
-            cd packages/core
-            cargo fmt --all -- --check
-            cd ../pc
-            cargo fmt --all -- --check
+            ./run-on-modified.sh "cargo fmt --all -- --check"
 
       - run:
           name: Build
           command: |
-            cd packages/core
-            cargo build
-            cd ../pc
-            cargo build
+            ./run-on-modified.sh "cargo build"
 
       - run:
           name: Check tests
           command: |
-            cd packages/core
-            cargo test
-            cd ../pc
-            cargo test
+            ./run-on-modified.sh "cargo test"
