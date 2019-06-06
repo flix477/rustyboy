@@ -6,8 +6,8 @@ use rustyboy_core::config::Config;
 use rustyboy_core::debugger::Debugger;
 use rustyboy_core::gameboy::{DeviceType, Gameboy};
 
-use crate::shell_debugger::{DebuggerState, ShellDebugger};
 use crate::keymap::keymap;
+use crate::shell_debugger::{DebuggerState, ShellDebugger};
 use crate::window::{screen::MainWindow, Window};
 
 pub fn run() {
@@ -24,19 +24,17 @@ pub fn run() {
     let cartridge = Cartridge::from_file(path).unwrap();
 
     let debugger = if matches.is_present("debug") {
-        Some(Box::new(ShellDebugger::from_state(
-            DebuggerState {
-                forced_break: true,
-                breakpoints: vec![],
-            }
-        )) as Box<dyn Debugger>)
+        Some(Box::new(ShellDebugger::from_state(DebuggerState {
+            forced_break: true,
+            breakpoints: vec![],
+        })) as Box<dyn Debugger>)
     } else {
         None
     };
 
     let config = Config {
         device_type: DeviceType::GameBoy,
-        debugger
+        debugger,
     };
     start_emulation(cartridge, config);
 }

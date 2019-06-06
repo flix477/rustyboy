@@ -1,17 +1,12 @@
 use rustyboy_core::bus::Bus;
-use rustyboy_core::debugger::{Debugger, debug_info::DebugInfo};
+use rustyboy_core::debugger::{debug_info::DebugInfo, Debugger};
 
-use self::commands::{
-    Command,
-    CommandResult,
-    breakpoint::BreakpointCommand,
-    continue_cmd::ContinueCommand,
-    quit::QuitCommand,
-    status::StatusCommand,
-    step_into::StepIntoCommand,
-    step_over::StepOverCommand
-};
 use self::breakpoint::Breakpoint;
+use self::commands::{
+    breakpoint::BreakpointCommand, continue_cmd::ContinueCommand, quit::QuitCommand,
+    status::StatusCommand, step_into::StepIntoCommand, step_over::StepOverCommand, Command,
+    CommandResult,
+};
 use self::pretty_print::format_debug_info;
 use self::shell::Shell;
 
@@ -83,13 +78,13 @@ impl Debugger for ShellDebugger {
     fn should_run(&self, debug_info: &DebugInfo) -> bool {
         self.state.forced_break
             || self.state.breakpoints.iter().any(|b| {
-            b.line == debug_info.line
-                && b.conditions.clone().map_or(true, |conditions| {
-                conditions
-                    .iter()
-                    .all(|condition| condition.satisfied(debug_info))
+                b.line == debug_info.line
+                    && b.conditions.clone().map_or(true, |conditions| {
+                        conditions
+                            .iter()
+                            .all(|condition| condition.satisfied(debug_info))
+                    })
             })
-        })
     }
 
     fn run(&mut self, debug_info: DebugInfo, bus: &Bus) {

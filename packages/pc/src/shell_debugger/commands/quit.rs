@@ -1,6 +1,6 @@
+use super::{Command, CommandResult, DebuggerState};
 use rustyboy_core::bus::Bus;
 use rustyboy_core::debugger::debug_info::DebugInfo;
-use super::{Command, CommandResult, DebuggerState};
 
 const MATCHING_VALUES: &'static [&'static str] = &["quit", "q"];
 

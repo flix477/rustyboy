@@ -1,6 +1,6 @@
+use super::DebuggerState;
 use rustyboy_core::bus::Bus;
 use rustyboy_core::debugger::debug_info::DebugInfo;
-use super::DebuggerState;
 
 pub mod breakpoint;
 pub mod continue_cmd;

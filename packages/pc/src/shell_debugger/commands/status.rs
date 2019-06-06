@@ -1,8 +1,8 @@
+use super::{Command, CommandResult, DebuggerState};
 use rustyboy_core::bus::Bus;
 use rustyboy_core::debugger::debug_info::DebugInfo;
 use rustyboy_core::processor::registers::RegisterType;
 use rustyboy_core::util::parse_hex::parse_hex;
-use super::{Command, CommandResult, DebuggerState};
 
 const MATCHING_VALUES: &'static [&'static str] = &["status", "s"];
 

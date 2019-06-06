@@ -1,8 +1,8 @@
 use console::style;
 
 use rustyboy_core::debugger::debug_info::DebugInfo;
-use rustyboy_core::processor::instruction::{AddressType, Reference, ValueType};
 use rustyboy_core::processor::instruction::Operand;
+use rustyboy_core::processor::instruction::{AddressType, Reference, ValueType};
 use rustyboy_core::processor::registers::RegisterType;
 
 const IMMEDIATE: &'static str = "n";
@@ -10,16 +10,17 @@ const IMMEDIATE_16: &'static str = "nn";
 
 pub fn format_debug_info(debug_info: &DebugInfo) -> String {
     let operands = if let Some(operands) = debug_info.instruction.operands() {
-        operands.iter().map(parse_operand).enumerate().fold(
-            String::new(),
-            |acc, (idx, operand)| {
+        operands
+            .iter()
+            .map(parse_operand)
+            .enumerate()
+            .fold(String::new(), |acc, (idx, operand)| {
                 if idx == 0 {
                     operand
                 } else {
                     format!("{}, {}", acc, operand)
                 }
-            },
-        )
+            })
     } else {
         String::new()
     };
