@@ -3,6 +3,7 @@ extern crate clap;
 
 mod app;
 mod keymap;
+mod shell_debugger;
 mod window;
 
 fn main() {

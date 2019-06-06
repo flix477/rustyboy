@@ -7,4 +7,5 @@ edition = "2018"
 [dependencies]
 glium = "*"
 clap = "*"
+console = "0.7.5"
 rustyboy-core = { path = "../core" }

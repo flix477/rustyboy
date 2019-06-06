@@ -3,11 +3,12 @@ use glium::glutin::{Event, EventsLoop, WindowEvent};
 
 use rustyboy_core::cartridge::Cartridge;
 use rustyboy_core::config::Config;
+use rustyboy_core::debugger::Debugger;
 use rustyboy_core::gameboy::{DeviceType, Gameboy};
 
+use crate::shell_debugger::{DebuggerState, ShellDebugger};
 use crate::keymap::keymap;
 use crate::window::{screen::MainWindow, Window};
-use rustyboy_core::debugger::DebuggerState;
 
 pub fn run() {
     let matches = App::new("rustyboy")
@@ -22,25 +23,26 @@ pub fn run() {
     let path = matches.value_of("rom_path").unwrap();
     let cartridge = Cartridge::from_file(path).unwrap();
 
-    let debugger_config = if matches.is_present("debug") {
-        Some(DebuggerState {
-            forced_break: true,
-            breakpoints: vec![],
-        })
+    let debugger = if matches.is_present("debug") {
+        Some(Box::new(ShellDebugger::from_state(
+            DebuggerState {
+                forced_break: true,
+                breakpoints: vec![],
+            }
+        )) as Box<dyn Debugger>)
     } else {
         None
     };
 
     let config = Config {
-        cartridge,
         device_type: DeviceType::GameBoy,
-        debugger_config,
+        debugger
     };
-    start_emulation(config);
+    start_emulation(cartridge, config);
 }
 
-fn start_emulation(config: Config) {
-    let mut gameboy = Gameboy::new(config).unwrap();
+fn start_emulation(cartridge: Cartridge, config: Config) {
+    let mut gameboy = Gameboy::new(cartridge, config).unwrap();
 
     let mut events_loop = EventsLoop::new();
 

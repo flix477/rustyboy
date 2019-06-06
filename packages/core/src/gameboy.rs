@@ -31,6 +31,10 @@ impl Gameboy {
         self.hardware.clock()
     }
 
+    pub fn hardware(&self) -> &Hardware {
+        &self.hardware
+    }
+
     pub fn send_input(&mut self, input: Input) {
         self.hardware.send_input(input);
     }
