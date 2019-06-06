@@ -1,5 +1,6 @@
-use crate::bus::Bus;
-use crate::debugger::{DebugInfo, DebuggerState};
+use super::DebuggerState;
+use rustyboy_core::bus::Bus;
+use rustyboy_core::debugger::debug_info::DebugInfo;
 
 pub mod breakpoint;
 pub mod continue_cmd;

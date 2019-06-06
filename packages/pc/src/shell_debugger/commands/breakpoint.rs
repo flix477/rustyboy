@@ -1,8 +1,8 @@
-use super::Command;
-use crate::bus::Bus;
-use crate::debugger::commands::CommandResult;
-use crate::debugger::{Breakpoint, DebugInfo, DebuggerState};
-use crate::util::parse_hex::parse_hex;
+use super::{Command, CommandResult, DebuggerState};
+use crate::shell_debugger::breakpoint::Breakpoint;
+use rustyboy_core::bus::Bus;
+use rustyboy_core::debugger::debug_info::DebugInfo;
+use rustyboy_core::util::parse_hex::parse_hex;
 
 const MATCHING_VALUES: &'static [&'static str] = &["breakpoint", "b"];
 
