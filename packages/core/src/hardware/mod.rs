@@ -2,7 +2,6 @@ use std::error::Error;
 
 use crate::bus::{Bus, Readable, Writable};
 use crate::cartridge::Cartridge;
-use crate::config::Config;
 use crate::processor::interrupt::{Interrupt, InterruptHandler};
 use crate::video::Video;
 
@@ -23,9 +22,9 @@ pub struct Hardware {
 }
 
 impl Hardware {
-    pub fn new(config: Config) -> Result<Hardware, Box<dyn Error>> {
+    pub fn new(cartridge: Cartridge) -> Result<Hardware, Box<dyn Error>> {
         Ok(Hardware {
-            cartridge: config.cartridge,
+            cartridge,
             interrupt_handler: InterruptHandler::new(),
             joypad: Joypad::new(),
             timer: Timer::new(),

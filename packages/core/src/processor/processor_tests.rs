@@ -807,7 +807,6 @@ fn ccf() {
 #[test]
 fn scf() {
     let mut cpu = setup();
-    let mut bus = MockBus::default();
 
     cpu.scf();
     assert_eq!(true, cpu.flag(Flag::Carry));
@@ -1448,7 +1447,6 @@ mod res {
 #[test]
 fn jp() {
     let mut cpu = setup();
-    let mut bus = MockBus::default();
 
     cpu.jp(0xFE);
     assert_eq!(0xFE, cpu.reg(Reg::PC));

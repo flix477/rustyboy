@@ -16,8 +16,6 @@ use crate::bus::{Readable, Writable};
 use crate::processor::interrupt::{Interrupt, InterruptHandler};
 use crate::video::palette::Palette;
 
-const CLOCK_FREQUENCY: f64 = 4194304.0; // Hz
-
 pub struct Video {
     control: ControlRegister,
     status: StatusRegister,
@@ -150,9 +148,8 @@ impl Video {
             StatusMode::ReadingOAM => 80,
             StatusMode::VBlank => 4560,
             StatusMode::LCDTransfer => {
-                let mut length = 172;
                 // TODO: accurate timing
-                length
+                172
             }
             StatusMode::HBlank => {
                 // TODO: accurate timing
@@ -214,7 +211,6 @@ impl Writable for Video {
             } // oam
             0x9800...0x9FFF | 0x8000...0x97FF => {
                 //                if self.mode != StatusMode::LCDTransfer {
-                let mut address = address;
                 //                    if 0x8000 <= address && 0x97FF >= address {
                 //                        let addressing_mode = self.control.bg_tile_data_addressing();
                 //                        address = addressing_mode.adjust_address(address);
