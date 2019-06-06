@@ -3,6 +3,7 @@ mod flag_register;
 pub mod instruction;
 pub mod interrupt;
 pub mod lr35902;
+#[cfg(test)]
 mod processor_tests;
 mod program_counter;
 pub mod register;
@@ -11,7 +12,7 @@ mod stack_pointer;
 
 use crate::bus::Bus;
 use crate::debugger::debug_info::DebugInfo;
-use crate::debugger::{Debugger, DebuggerState};
+use crate::debugger::Debugger;
 use crate::processor::decoder::Decoder;
 use crate::processor::flag_register::Flag;
 use crate::processor::instruction::{InstructionInfo, Prefix};
@@ -20,28 +21,20 @@ use crate::processor::register::Register;
 use crate::processor::registers::{RegisterType, Registers};
 use crate::util::bitflags::Bitflags;
 
-const CLOCK_FREQUENCY: f64 = 4194304.0; // Hz
-
 pub struct Processor {
     registers: Registers,
-    clock_frequency: f64,
     halt_mode: HaltMode,
-    pub debugger: Option<Debugger>,
+    pub debugger: Option<Box<dyn Debugger>>,
     cycles_left: u8,
     pending_ei: bool,
 }
 
 impl Processor {
-    pub fn new(debugger_config: Option<DebuggerState>) -> Processor {
+    pub fn new(debugger: Option<Box<dyn Debugger>>) -> Processor {
         Processor {
             registers: Registers::new(),
-            clock_frequency: CLOCK_FREQUENCY,
             halt_mode: HaltMode::None,
-            debugger: if let Some(state) = debugger_config {
-                Some(Debugger::from_state(state))
-            } else {
-                None
-            },
+            debugger,
             cycles_left: 0,
             pending_ei: false,
         }
