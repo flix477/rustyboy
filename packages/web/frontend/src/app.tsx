@@ -19,15 +19,35 @@ function useWasm() {
 
 const App: FunctionComponent = () => {
   const wasm = useWasm();
+  const [game, setGame] = useState<Blob>();
   const loading = !Boolean(wasm);
 
+  useEffect(() => {
+    async function load() {
+      if (game && !loading) {
+        try {
+          const arrayBuffer = await new Response(game).arrayBuffer();
+          const uint8View = new Uint8Array(arrayBuffer);
+          wasm.run(uint8View);
+          console.log("do the wasm");
+        } catch (err) {
+          console.error(err);
+        }
+      }
+    }
+
+    load();
+  }, [game, loading, wasm]);
+
   return (
-    <div className="App">
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <button onClick={() => wasm.greet()}>Clickaroo</button>
-      )}
+    <div>
+      {loading && <p>Loading...</p>}
+      <canvas id="canvas" />
+      <input type="file" accept=".gb" onChange={value => {
+        if (value.target.files && value.target.files[0]) {
+          setGame(value.target.files[0])
+        }
+      }} />
     </div>
   );
 }
