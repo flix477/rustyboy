@@ -65,6 +65,7 @@ impl Register for ControlRegister {
     }
 }
 
+#[derive(PartialEq)]
 pub enum TileDataAddressing {
     Mode8000,
     Mode8800,
