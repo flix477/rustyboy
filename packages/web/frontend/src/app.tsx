@@ -26,7 +26,7 @@ const App: FunctionComponent = () => {
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <button onClick={wasm.greet}>Clickaroo</button>
+        <button onClick={() => wasm.greet()}>Clickaroo</button>
       )}
     </div>
   );
