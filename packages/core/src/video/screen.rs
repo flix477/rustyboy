@@ -1,5 +1,5 @@
 use crate::util::drawer;
-use crate::util::drawer::Entity;
+use crate::util::drawer::{Entity, draw_entity_with_transparency};
 use crate::util::wrap_value;
 use crate::video::color::Color;
 use crate::video::memory::background_tile_map::BackgroundTileMap;
@@ -58,7 +58,12 @@ impl Screen {
 
         for sprite in sprites.iter() {
             let entity = Entity::from_sprite(sprite);
-            self.draw_entity(entity, buffer);
+            draw_entity_with_transparency(
+                entity,
+                (self.dimensions.0 as usize, self.dimensions.1 as usize),
+                buffer,
+                true
+            )
         }
     }
 
@@ -114,14 +119,6 @@ impl Screen {
             });
 
         background_buf
-    }
-
-    fn draw_entity(&self, entity: Entity, buf: &mut Vec<Color>) {
-        drawer::draw_entity(
-            entity,
-            (self.dimensions.0 as usize, self.dimensions.1 as usize),
-            buf,
-        );
     }
 }
 
