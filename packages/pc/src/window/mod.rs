@@ -4,6 +4,7 @@ use glium::{
 };
 use rustyboy_core::gameboy::Gameboy;
 
+pub mod background;
 pub mod screen;
 
 pub trait Window {

@@ -8,7 +8,7 @@ use rustyboy_core::gameboy::{DeviceType, Gameboy};
 
 use crate::keymap::keymap;
 use crate::shell_debugger::{DebuggerState, ShellDebugger};
-use crate::window::{screen::MainWindow, Window};
+use crate::window::{background::BackgroundWindow, screen::MainWindow, Window};
 
 pub fn run() {
     let matches = App::new("rustyboy")
@@ -45,12 +45,14 @@ fn start_emulation(cartridge: Cartridge, config: Config) {
     let mut events_loop = EventsLoop::new();
 
     let main_window = MainWindow::new(&events_loop);
+    // let background_window = BackgroundWindow::new(&events_loop);
 
     let mut closed = false;
     while !closed {
         gameboy.run_to_vblank();
 
         main_window.update(&gameboy);
+        // background_window.update(&gameboy);
 
         events_loop.poll_events(|event| match event {
             Event::WindowEvent {

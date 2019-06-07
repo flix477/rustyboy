@@ -66,9 +66,9 @@ impl Screen {
         let (scx, scy) = video.scroll;
         let background_buf = self.background(video);
         for y in 0..self.dimensions.1 {
-            let background_y = wrap_value(scy + y, self.dimensions.1) as usize;
+            let background_y = wrap_value((scy + y) as usize, BACKGROUND_SIZE.1) as usize;
             for x in 0..self.dimensions.0 {
-                let background_x = wrap_value(scx + x, self.dimensions.0) as usize;
+                let background_x = wrap_value((scx + x) as usize, BACKGROUND_SIZE.0) as usize;
                 let idx = y as usize * self.dimensions.0 as usize + x as usize;
                 let background_idx = background_y * BACKGROUND_SIZE.0 + background_x;
                 buffer[idx as usize] = background_buf[background_idx as usize];
@@ -76,7 +76,7 @@ impl Screen {
         }
     }
 
-    fn background(&self, video: &Video) -> Vec<Color> {
+    pub fn background(&self, video: &Video) -> Vec<Color> {
         let background_tile_map = if video.control.bg_map() == 0 {
             &video.vram.background_tile_maps().0
         } else {
