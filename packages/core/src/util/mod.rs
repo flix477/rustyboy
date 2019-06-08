@@ -15,7 +15,7 @@ pub fn as_millis(duration: Duration) -> f64 {
     duration.as_secs() as f64 + duration.subsec_nanos() as f64 / 1_000_000_000.0
 }
 
-pub fn wrap_value(value: u8, max: u8) -> u8 {
+pub fn wrap_value(value: usize, max: usize) -> usize {
     if value >= max {
         value - max
     } else {

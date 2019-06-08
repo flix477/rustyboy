@@ -1,3 +1,5 @@
+use crate::video::control_register::TileDataAddressing;
+
 pub struct BackgroundTileMap {
     tiles: [[u8; 32]; 32],
 }
@@ -9,8 +11,19 @@ impl BackgroundTileMap {
         }
     }
 
-    pub fn tiles(&self) -> Vec<u8> {
-        self.tiles.iter().flat_map(|row| row).cloned().collect()
+    pub fn adjusted_tiles(&self, addressing_mode: TileDataAddressing) -> Vec<u16> {
+        self.tiles
+            .iter()
+            .flat_map(|row| row)
+            .cloned()
+            .map(|tile_index| {
+                if addressing_mode == TileDataAddressing::Mode8800 && tile_index < 128 {
+                    tile_index as u16 + 256
+                } else {
+                    tile_index as u16
+                }
+            })
+            .collect()
     }
 
     fn tile_info_at(&self, address: u16) -> (usize, usize) {

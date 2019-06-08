@@ -161,6 +161,10 @@ impl Video {
     fn check_lyc(&self) -> bool {
         self.status.lyc_interrupt_enabled() && self.ly == self.lyc
     }
+
+    pub fn window_visible(&self) -> bool {
+        self.window.0 >= 7 && self.window.0 < 166
+    }
 }
 
 impl Readable for Video {
