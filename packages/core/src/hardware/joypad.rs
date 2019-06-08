@@ -8,10 +8,7 @@ pub struct Joypad {
 
 impl Joypad {
     pub fn new() -> Joypad {
-        Joypad {
-            mode: Mode::DirectionalKeys,
-            pushed_keys: 0,
-        }
+        Self::default()
     }
 
     pub fn set_mode(&mut self, mode: Mode) {
@@ -20,6 +17,15 @@ impl Joypad {
 
     pub fn send_input(&mut self, input: Input) {
         self.set_flag(input.button, input.input_type == InputType::Down)
+    }
+}
+
+impl Default for Joypad {
+    fn default() -> Joypad {
+        Joypad {
+            mode: Mode::DirectionalKeys,
+            pushed_keys: 0,
+        }
     }
 }
 

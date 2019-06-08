@@ -19,7 +19,7 @@ impl MBC2 {
 
 impl MemoryBankController for MBC2 {
     fn rom_bank(&self) -> u16 {
-        self.rom_bank as u16
+        u16::from(self.rom_bank)
     }
 
     fn ram_bank(&self) -> u8 {
@@ -32,13 +32,13 @@ impl MemoryBankController for MBC2 {
 
     fn write_rom(&mut self, address: usize, value: u8) {
         match address {
-            0...0x1FFF => {
+            0..=0x1FFF => {
                 // toggle ram bank
                 if address & 0x100 == 0 {
                     self.ram_enabled = value == 0x0A;
                 }
             }
-            0x2000...0x3FFF => {
+            0x2000..=0x3FFF => {
                 // change rom bank
                 if address & 0x100 != 0 {
                     self.rom_bank = cmp::max(value & 0xF, 1);
@@ -55,7 +55,7 @@ mod tests {
 
     #[test]
     fn rom_bank_switching() {
-        let mut mbc = MBC2::new(&vec![]);
+        let mut mbc = MBC2::new(&[]);
 
         // shouldn't work
         mbc.write_rom(0x2000, 15);
@@ -68,14 +68,14 @@ mod tests {
 
     #[test]
     fn rom_bank_switching_zero() {
-        let mut mbc = MBC2::new(&vec![]);
+        let mut mbc = MBC2::new(&[]);
         mbc.write_rom(0x2100, 0);
         assert_eq!(mbc.rom_bank(), 1);
     }
 
     #[test]
     fn enable_ram() {
-        let mut mbc = MBC2::new(&vec![]);
+        let mut mbc = MBC2::new(&[]);
 
         // shouldn't work, bad address
         mbc.write_rom(0x0100, 0x0A);

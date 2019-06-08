@@ -1,3 +1,4 @@
+use crate::shell_debugger::pretty_print::format_registers;
 use super::{Command, CommandResult, DebuggerState};
 use rustyboy_core::bus::Bus;
 use rustyboy_core::debugger::debug_info::DebugInfo;
@@ -83,7 +84,7 @@ impl Command for StatusCommand {
                 StatusType::Register(register) => {
                     println!("0x{:X}", debug_info.registers.reg(register))
                 }
-                StatusType::Registers => println!("{:?}", debug_info.registers),
+                StatusType::Registers => println!("{}", format_registers(debug_info.registers)),
             }
         } else {
             println!(

@@ -17,14 +17,14 @@ impl ControlRegister {
     }
 
     // which background map the window uses for rendering
-    pub fn window_bg_map(&self) -> u8 {
-        get_bit(self.register, 6) as u8
-    }
+    // pub fn window_bg_map(&self) -> u8 {
+    //     get_bit(self.register, 6) as u8
+    // }
 
     // whether the window shall be displayed or not
-    pub fn window_enabled(&self) -> bool {
-        get_bit(self.register, 5)
-    }
+    // pub fn window_enabled(&self) -> bool {
+    //     get_bit(self.register, 5)
+    // }
 
     // which addressing mode the background and window use to pick tiles
     pub fn bg_tile_data_addressing(&self) -> TileDataAddressing {
@@ -41,9 +41,9 @@ impl ControlRegister {
     }
 
     // controls the sprite size (false = 1 tile, true = 2 stacked vertically)
-    pub fn obj_big_size(&self) -> bool {
-        get_bit(self.register, 2)
-    }
+    // pub fn obj_big_size(&self) -> bool {
+    //     get_bit(self.register, 2)
+    // }
 
     // whether sprites are displayed or not
     pub fn obj_enabled(&self) -> bool {
@@ -78,8 +78,8 @@ impl TileDataAddressing {
         } else {
             // TODO: could be written single line with math
             match address {
-                0x8000...0x87FF => address + 0x1000,
-                0x9000...0x97FF => address - 0x1000,
+                0x8000..=0x87FF => address + 0x1000,
+                0x9000..=0x97FF => address - 0x1000,
                 _ => address,
             }
         }

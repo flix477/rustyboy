@@ -2,7 +2,6 @@ use crate::processor::flag_register::FlagRegister;
 use crate::processor::program_counter::ProgramCounter;
 use crate::processor::register::*;
 use crate::processor::stack_pointer::StackPointer;
-use std::fmt::{Debug, Error, Formatter};
 
 pub const DEFAULT_BC: u16 = 0x13;
 pub const DEFAULT_DE: u16 = 0xD8;
@@ -17,31 +16,9 @@ pub struct Registers {
     pub program_counter: ProgramCounter,
 }
 
-impl Debug for Registers {
-    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-        write!(
-            f,
-            "AF: 0x{:X}\nBC: 0x{:X}\nDE: 0x{:X}\nHL: 0x{:X}\nSP: 0x{:X}\nPC: 0x{:X}",
-            self.reg(RegisterType::AF),
-            self.reg(RegisterType::BC),
-            self.reg(RegisterType::DE),
-            self.reg(RegisterType::HL),
-            self.reg(RegisterType::SP),
-            self.reg(RegisterType::PC)
-        )
-    }
-}
-
 impl Registers {
     pub fn new() -> Registers {
-        Registers {
-            af: FlagRegister::new(),
-            bc: DualRegister::from(DEFAULT_BC),
-            de: DualRegister::from(DEFAULT_DE),
-            hl: DualRegister::from(DEFAULT_HL),
-            stack_pointer: StackPointer::new(),
-            program_counter: ProgramCounter::new(),
-        }
+        Registers::default()
     }
 
     pub fn reg(&self, register: RegisterType) -> u16 {
@@ -107,6 +84,19 @@ impl Registers {
     }
 }
 
+impl Default for Registers {
+    fn default() -> Registers {
+        Registers {
+            af: FlagRegister::new(),
+            bc: DualRegister::from(DEFAULT_BC),
+            de: DualRegister::from(DEFAULT_DE),
+            hl: DualRegister::from(DEFAULT_HL),
+            stack_pointer: StackPointer::new(),
+            program_counter: ProgramCounter::new(),
+        }
+    }
+}
+
 #[derive(PartialEq, Copy, Clone, Debug)]
 pub enum RegisterType {
     AF,
@@ -147,12 +137,14 @@ impl ToString for RegisterType {
 }
 
 impl RegisterType {
-    pub fn is16bit(&self) -> bool {
-        *self == RegisterType::AF
-            || *self == RegisterType::BC
-            || *self == RegisterType::DE
-            || *self == RegisterType::HL
-            || *self == RegisterType::SP
-            || *self == RegisterType::PC
+    pub fn is16bit(self) -> bool {
+        [
+            RegisterType::AF,
+            RegisterType::BC,
+            RegisterType::HL,
+            RegisterType::SP,
+            RegisterType::PC,
+        ]
+        .contains(&self)
     }
 }

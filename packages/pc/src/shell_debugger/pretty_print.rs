@@ -3,10 +3,22 @@ use console::style;
 use rustyboy_core::debugger::debug_info::DebugInfo;
 use rustyboy_core::processor::instruction::Operand;
 use rustyboy_core::processor::instruction::{AddressType, Reference, ValueType};
-use rustyboy_core::processor::registers::RegisterType;
+use rustyboy_core::processor::registers::{Registers, RegisterType};
 
 const IMMEDIATE: &'static str = "n";
 const IMMEDIATE_16: &'static str = "nn";
+
+pub fn format_registers(registers: &Registers) -> String {
+    format!(
+        "AF: 0x{:X}\nBC: 0x{:X}\nDE: 0x{:X}\nHL: 0x{:X}\nSP: 0x{:X}\nPC: 0x{:X}",
+        registers.reg(RegisterType::AF),
+        registers.reg(RegisterType::BC),
+        registers.reg(RegisterType::DE),
+        registers.reg(RegisterType::HL),
+        registers.reg(RegisterType::SP),
+        registers.reg(RegisterType::PC)
+    )
+}
 
 pub fn format_debug_info(debug_info: &DebugInfo) -> String {
     let operands = if let Some(operands) = debug_info.instruction.operands() {

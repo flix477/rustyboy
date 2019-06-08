@@ -1,5 +1,5 @@
 use crate::util::drawer;
-use crate::util::drawer::{Entity, draw_entity_with_transparency};
+use crate::util::drawer::{draw_entity_with_transparency, Entity};
 use crate::util::wrap_value;
 use crate::video::color::Color;
 use crate::video::memory::background_tile_map::BackgroundTileMap;
@@ -15,22 +15,18 @@ pub struct Screen {
 }
 
 impl Screen {
-    pub fn new() -> Self {
-        Screen {
-            dimensions: (160, 144),
-        }
-    }
-
     pub fn draw(&self, video: &Video) -> Vec<u8> {
         let mut buf = vec![Color::White; self.dimensions.0 as usize * self.dimensions.1 as usize];
 
-        // Background & Window
-        if video.control.bg_window_enabled() {
-            self.draw_background_to_buffer(&mut buf, video);
-        }
+        if video.control.lcd_enabled() {
+            // Background & Window
+            if video.control.bg_window_enabled() {
+                self.draw_background_to_buffer(&mut buf, video);
+            }
 
-        // Sprites
-        self.draw_sprites_to_buffer(&mut buf, video);
+            // Sprites
+            self.draw_sprites_to_buffer(&mut buf, video);
+        }
 
         buf.iter()
             .flat_map(|color| color.to_rgb().to_vec())
@@ -62,7 +58,7 @@ impl Screen {
                 entity,
                 (self.dimensions.0 as usize, self.dimensions.1 as usize),
                 buffer,
-                true
+                true,
             )
         }
     }
@@ -143,6 +139,14 @@ impl Entity {
             x,
             y,
             data: tile.colored().to_vec(),
+        }
+    }
+}
+
+impl Default for Screen {
+    fn default() -> Screen {
+        Screen {
+            dimensions: (160, 144),
         }
     }
 }

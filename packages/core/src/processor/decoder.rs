@@ -35,7 +35,7 @@ impl Decoder {
 
             // LD r1,r2
             // put value r2 in r1
-            0x40..=0x7F => Self::parse_ld_rr(opcode),
+            0x40..=0x75 | 0x77..=0x7F => Self::parse_ld_rr(opcode),
 
             // LD A,n
             // put value n into A
@@ -1340,7 +1340,7 @@ impl Decoder {
             opcode,
             Mnemonic::BIT,
             Some(vec![
-                Operand::Value(ValueType::Constant(bit as u16)),
+                Operand::Value(ValueType::Constant(u16::from(bit))),
                 Operand::Reference(Ref::Register(register)),
             ]),
             8,
@@ -1352,7 +1352,7 @@ impl Decoder {
             opcode,
             Mnemonic::SET,
             Some(vec![
-                Operand::Value(ValueType::Constant(bit as u16)),
+                Operand::Value(ValueType::Constant(u16::from(bit))),
                 Operand::Reference(Ref::Register(register)),
             ]),
             8,

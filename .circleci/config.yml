@@ -14,6 +14,12 @@ jobs:
             ./run-on-modified.sh "cargo fmt --all -- --check"
 
       - run:
+          name: Check formatting
+          command: |
+            rustup component add clippy
+            ./run-on-modified.sh "cargo clippy --all --all-targets -- -Dwarnings -Drust-2018-idioms"
+
+      - run:
           name: Build
           command: |
             ./run-on-modified.sh "cargo build"

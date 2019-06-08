@@ -1,5 +1,5 @@
 use crate::cartridge::cartridge_capability::CartridgeCapability;
-use crate::util::bytes_convert::BytesConvert;
+use crate::util::bytes_convert;
 use crate::util::ut8_decode_trim;
 use std::error::Error;
 use std::ops::RangeInclusive;
@@ -47,7 +47,9 @@ const HEADER_CHECKSUM_OFFSET: usize = 0x014D;
 
 // Offset that determines the checksum of the whole cartridge ROM,
 // obtained by summing the bytes of the cartridge (without checksum)
-const GLOBAL_CHECKSUM_RANGE: RangeInclusive<usize> = (0x014E..=0x014F);
+// const GLOBAL_CHECKSUM_RANGE: RangeInclusive<usize> = (0x014E..=0x014F);
+
+type TitleSection = (String, Option<String>, Option<CGBFlag>);
 
 #[derive(Debug)]
 pub struct CartridgeMetadata {
@@ -87,9 +89,7 @@ impl CartridgeMetadata {
         })
     }
 
-    fn parse_title_section(
-        buffer: &[u8],
-    ) -> Result<(String, Option<String>, Option<CGBFlag>), Box<dyn Error>> {
+    fn parse_title_section(buffer: &[u8]) -> Result<TitleSection, Box<dyn Error>> {
         let mut title_end_offset = CGB_FLAG_OFFSET;
         let cgb_flag = CGBFlag::from(buffer[CGB_FLAG_OFFSET]);
         let manufacturer_code = Self::parse_manufacturer_code(buffer)?;
@@ -126,17 +126,17 @@ impl CartridgeMetadata {
 
     fn parse_rom_size(buffer: &[u8]) -> Result<f64, String> {
         match buffer[ROM_SIZE_OFFSET] {
-            0x00 => Ok(BytesConvert::from_kb(32.0)),
-            0x01 => Ok(BytesConvert::from_kb(64.0)),
-            0x02 => Ok(BytesConvert::from_kb(128.0)),
-            0x03 => Ok(BytesConvert::from_kb(256.0)),
-            0x04 => Ok(BytesConvert::from_kb(512.0)),
-            0x05 => Ok(BytesConvert::from_mb(1.0)),
-            0x06 => Ok(BytesConvert::from_mb(2.0)),
-            0x07 => Ok(BytesConvert::from_mb(4.0)),
-            0x52 => Ok(BytesConvert::from_mb(1.1)),
-            0x53 => Ok(BytesConvert::from_mb(1.2)),
-            0x54 => Ok(BytesConvert::from_mb(1.5)),
+            0x00 => Ok(bytes_convert::from_kb(32.0)),
+            0x01 => Ok(bytes_convert::from_kb(64.0)),
+            0x02 => Ok(bytes_convert::from_kb(128.0)),
+            0x03 => Ok(bytes_convert::from_kb(256.0)),
+            0x04 => Ok(bytes_convert::from_kb(512.0)),
+            0x05 => Ok(bytes_convert::from_mb(1.0)),
+            0x06 => Ok(bytes_convert::from_mb(2.0)),
+            0x07 => Ok(bytes_convert::from_mb(4.0)),
+            0x52 => Ok(bytes_convert::from_mb(1.1)),
+            0x53 => Ok(bytes_convert::from_mb(1.2)),
+            0x54 => Ok(bytes_convert::from_mb(1.5)),
             _ => Err(String::from("invalid ROM size value")),
         }
     }
@@ -144,9 +144,9 @@ impl CartridgeMetadata {
     fn parse_ram_size(buffer: &[u8]) -> Result<f64, String> {
         match buffer[RAM_SIZE_OFFSET] {
             0x00 => Ok(0.0),
-            0x01 => Ok(BytesConvert::from_kb(2.0)),
-            0x02 => Ok(BytesConvert::from_kb(8.0)),
-            0x03 => Ok(BytesConvert::from_kb(32.0)),
+            0x01 => Ok(bytes_convert::from_kb(2.0)),
+            0x02 => Ok(bytes_convert::from_kb(8.0)),
+            0x03 => Ok(bytes_convert::from_kb(32.0)),
             _ => Err(String::from("invalid RAM size value")),
         }
     }

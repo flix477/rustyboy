@@ -7,9 +7,7 @@ pub struct FlagRegister {
 
 impl FlagRegister {
     pub fn new() -> FlagRegister {
-        FlagRegister {
-            register: DualRegister::from(0x01B0),
-        }
+        Self::default()
     }
 
     pub fn accumulator(&self) -> &SingleRegister {
@@ -21,11 +19,11 @@ impl FlagRegister {
     }
 
     pub fn set_accumulator(&mut self, value: u8) {
-        self.register.high.set(value as u16);
+        self.register.high.set(u16::from(value));
     }
 
     pub fn set_flags(&mut self, value: u8) {
-        self.register.low.set(value as u16 & 0xF0);
+        self.register.low.set(u16::from(value) & 0xF0);
     }
 
     pub fn register(&self) -> &DualRegister {
@@ -38,13 +36,21 @@ impl FlagRegister {
     }
 }
 
+impl Default for FlagRegister {
+    fn default() -> FlagRegister {
+        FlagRegister {
+            register: DualRegister::from(0x01B0),
+        }
+    }
+}
+
 impl Bitflags<Flag> for FlagRegister {
     fn register(&self) -> u8 {
         self.register.low.get() as u8
     }
 
     fn set_register(&mut self, value: u8) {
-        self.register.low.set(value as u16);
+        self.register.low.set(u16::from(value));
     }
 }
 

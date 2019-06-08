@@ -7,7 +7,7 @@ pub struct StackPointer {
 
 impl StackPointer {
     pub fn new() -> StackPointer {
-        StackPointer { value: 0xFFFE }
+        Self::default()
     }
 
     pub fn peek<H: Bus>(&self, bus: &H) -> u8 {
@@ -22,11 +22,17 @@ impl StackPointer {
     }
 
     pub fn pop<H: Bus>(&mut self, bus: &H) -> u16 {
-        let low = bus.read(self.value) as u16;
+        let low = u16::from(bus.read(self.value));
         self.increment();
-        let high = bus.read(self.value) as u16;
+        let high = u16::from(bus.read(self.value));
         self.increment();
         low | (high << 8)
+    }
+}
+
+impl Default for StackPointer {
+    fn default() -> StackPointer {
+        StackPointer { value: 0xFFFE }
     }
 }
 

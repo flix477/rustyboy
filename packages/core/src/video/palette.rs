@@ -5,8 +5,8 @@ pub struct Palette {
 }
 
 impl Palette {
-    pub fn new() -> Self {
-        Palette { register: 0 }
+    pub fn from_value(value: u8) -> Palette {
+        Palette { register: value }
     }
 
     pub fn color(&self, idx: u8) -> Color {

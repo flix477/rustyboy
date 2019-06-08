@@ -21,11 +21,9 @@ impl Timer {
     }
 
     pub fn clock(&mut self, interrupt_handler: &mut InterruptHandler) {
-        if self.counter_enabled {
-            if self.counter.clock() == ClockResult::Overflow {
-                self.counter.value = self.modulo;
-                interrupt_handler.request_interrupt(Interrupt::Timer)
-            }
+        if self.counter_enabled && self.counter.clock() == ClockResult::Overflow {
+            self.counter.value = self.modulo;
+            interrupt_handler.request_interrupt(Interrupt::Timer)
         }
 
         self.divider.clock();

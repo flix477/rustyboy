@@ -47,7 +47,7 @@ pub trait MemoryBankController {
 
     fn write_rom(&mut self, _address: usize, _value: u8) {}
 
-    fn read_ram(&self, address: usize, buffer: &Vec<u8>) -> u8 {
+    fn read_ram(&self, address: usize, buffer: &[u8]) -> u8 {
         let address = self.relative_ram_address(address);
         buffer[address]
     }
@@ -100,7 +100,7 @@ mod tests {
     #[test]
     fn rom_bank_defaults() {
         for variant in MBC_VARIANTS.iter() {
-            if let Some(mbc) = MBCFactory::from_variant(variant, &vec![]) {
+            if let Some(mbc) = MBCFactory::from_variant(variant, &[]) {
                 assert_eq!(mbc.relative_rom_address(0x4000), 0x4000);
             }
         }
