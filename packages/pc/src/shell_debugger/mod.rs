@@ -15,7 +15,7 @@ mod commands;
 mod pretty_print;
 mod shell;
 
-const HEADER: &'static str = "-- Rustyboy Debugger --";
+const HEADER: &str = "-- Rustyboy Debugger --";
 
 #[derive(Clone)]
 pub struct DebuggerState {
@@ -67,7 +67,12 @@ impl ShellDebugger {
         )
     }
 
-    fn parse(&mut self, input: &str, debug_info: &DebugInfo, bus: &Bus) -> Option<CommandResult> {
+    fn parse(
+        &mut self,
+        input: &str,
+        debug_info: &DebugInfo<'_>,
+        bus: &dyn Bus,
+    ) -> Option<CommandResult> {
         let separated: Vec<&str> = input.split(' ').map(|x| x.trim()).collect();
         let command = matching_command(&self.commands, separated[0].to_string())?;
         Some(command.execute(&separated, &mut self.state, debug_info, bus))
@@ -75,7 +80,7 @@ impl ShellDebugger {
 }
 
 impl Debugger for ShellDebugger {
-    fn should_run(&self, debug_info: &DebugInfo) -> bool {
+    fn should_run(&self, debug_info: &DebugInfo<'_>) -> bool {
         self.state.forced_break
             || self.state.breakpoints.iter().any(|b| {
                 b.line == debug_info.line
@@ -87,7 +92,7 @@ impl Debugger for ShellDebugger {
             })
     }
 
-    fn run(&mut self, debug_info: DebugInfo, bus: &Bus) {
+    fn run(&mut self, debug_info: DebugInfo<'_>, bus: &dyn Bus) {
         if self.state.forced_break {
             self.state.forced_break = false;
         } else {
@@ -113,8 +118,9 @@ impl Debugger for ShellDebugger {
     }
 }
 
-fn matching_command(commands: &[Box<dyn Command>], value: String) -> Option<&Box<dyn Command>> {
+fn matching_command(commands: &[Box<dyn Command>], value: String) -> Option<&dyn Command> {
     commands
         .iter()
         .find(|cmd| cmd.matching_value().contains(&value.as_str()))
+        .map(|cmd| cmd.as_ref())
 }

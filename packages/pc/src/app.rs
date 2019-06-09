@@ -8,7 +8,7 @@ use rustyboy_core::gameboy::{DeviceType, Gameboy};
 
 use crate::keymap::keymap;
 use crate::shell_debugger::{DebuggerState, ShellDebugger};
-use crate::window::{background::BackgroundWindow, screen::MainWindow, Window};
+use crate::window::{screen::MainWindow, Window};
 use rustyboy_core::cartridge::cartridge_metadata::CartridgeMetadata;
 use std::process::exit;
 

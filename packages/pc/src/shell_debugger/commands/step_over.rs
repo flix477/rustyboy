@@ -2,7 +2,7 @@ use super::{Command, CommandResult, DebuggerState};
 use rustyboy_core::bus::Bus;
 use rustyboy_core::debugger::debug_info::DebugInfo;
 
-const MATCHING_VALUES: &'static [&'static str] = &["stepover", "so"];
+const MATCHING_VALUES: &[&str] = &["stepover", "so"];
 
 pub struct StepOverCommand {}
 
@@ -17,9 +17,15 @@ impl Command for StepOverCommand {
         MATCHING_VALUES
     }
 
-    fn execute(&self, _: &[&str], _: &mut DebuggerState, _: &DebugInfo, _: &Bus) -> CommandResult {
+    fn execute(
+        &self,
+        _: &[&str],
+        _: &mut DebuggerState,
+        _: &DebugInfo<'_>,
+        _: &dyn Bus,
+    ) -> CommandResult {
         // this is stupid, will refactor later
-        //        debugger.breakpoints.insert(debug_info.line + 1);
+        // debugger.breakpoints.insert(debug_info.line + 1);
         CommandResult::Quit
     }
 }

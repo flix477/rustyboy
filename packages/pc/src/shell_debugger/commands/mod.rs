@@ -20,8 +20,8 @@ pub trait Command {
         &self,
         input: &[&str],
         debugger: &mut DebuggerState,
-        debug_info: &DebugInfo,
-        bus: &Bus,
+        debug_info: &DebugInfo<'_>,
+        bus: &dyn Bus,
     ) -> CommandResult;
 
     fn help(&self) -> String {

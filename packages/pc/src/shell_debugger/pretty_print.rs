@@ -3,10 +3,10 @@ use console::style;
 use rustyboy_core::debugger::debug_info::DebugInfo;
 use rustyboy_core::processor::instruction::Operand;
 use rustyboy_core::processor::instruction::{AddressType, Reference, ValueType};
-use rustyboy_core::processor::registers::{Registers, RegisterType};
+use rustyboy_core::processor::registers::{RegisterType, Registers};
 
-const IMMEDIATE: &'static str = "n";
-const IMMEDIATE_16: &'static str = "nn";
+const IMMEDIATE: &str = "n";
+const IMMEDIATE_16: &str = "nn";
 
 pub fn format_registers(registers: &Registers) -> String {
     format!(
@@ -20,19 +20,18 @@ pub fn format_registers(registers: &Registers) -> String {
     )
 }
 
-pub fn format_debug_info(debug_info: &DebugInfo) -> String {
+pub fn format_debug_info(debug_info: &DebugInfo<'_>) -> String {
     let operands = if let Some(operands) = debug_info.instruction.operands() {
-        operands
-            .iter()
-            .map(parse_operand)
-            .enumerate()
-            .fold(String::new(), |acc, (idx, operand)| {
+        operands.iter().map(|x| parse_operand(*x)).enumerate().fold(
+            String::new(),
+            |acc, (idx, operand)| {
                 if idx == 0 {
                     operand
                 } else {
                     format!("{}, {}", acc, operand)
                 }
-            })
+            },
+        )
     } else {
         String::new()
     };
@@ -48,15 +47,15 @@ pub fn format_debug_info(debug_info: &DebugInfo) -> String {
     )
 }
 
-fn parse_operand(operand: &Operand) -> String {
+fn parse_operand(operand: Operand) -> String {
     match operand {
         Operand::Reference(reference) => match reference {
-            Reference::Register(register) => style_register(*register),
-            Reference::Address(address) => parse_address(*address),
+            Reference::Register(register) => style_register(register),
+            Reference::Address(address) => parse_address(address),
         },
         Operand::Value(value) => match value {
-            ValueType::Register(register) => style_register(*register),
-            ValueType::Address(address) => parse_address(*address),
+            ValueType::Register(register) => style_register(register),
+            ValueType::Address(address) => parse_address(address),
             ValueType::Constant(constant) => format!("0x{:X}", constant),
             ValueType::Immediate | ValueType::SignedImmediate => IMMEDIATE.to_string(),
             ValueType::Immediate16 => IMMEDIATE_16.to_string(),

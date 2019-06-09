@@ -56,8 +56,9 @@ impl Shell {
                     input.pop();
                 }
             }
-            term.clear_line();
-            term.write(("> ".to_owned() + &input).as_bytes());
+            term.clear_line().unwrap();
+            term.write_all(("> ".to_owned() + &input).as_bytes())
+                .unwrap();
         }
 
         input

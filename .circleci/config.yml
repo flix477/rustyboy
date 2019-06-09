@@ -14,7 +14,7 @@ jobs:
             ./run-on-modified.sh "cargo fmt --all -- --check"
 
       - run:
-          name: Check formatting
+          name: Check lint
           command: |
             rustup component add clippy
             ./run-on-modified.sh "cargo clippy --all --all-targets -- -Dwarnings -Drust-2018-idioms"
