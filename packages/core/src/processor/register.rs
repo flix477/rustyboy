@@ -5,13 +5,14 @@ pub trait Register {
     fn decrement(&mut self);
 }
 
+#[derive(Default)]
 pub struct SingleRegister {
     value: u8,
 }
 
 impl SingleRegister {
     pub fn new() -> SingleRegister {
-        SingleRegister { value: 0 }
+        SingleRegister::default()
     }
 
     pub fn get_bit(&self, idx: u8) -> bool {
@@ -23,14 +24,14 @@ impl SingleRegister {
         if value {
             self.value |= padded_value;
         } else {
-            self.value &= !2u8.pow(idx as u32);
+            self.value &= !2u8.pow(u32::from(idx));
         }
     }
 }
 
 impl Register for SingleRegister {
     fn get(&self) -> u16 {
-        self.value as u16
+        u16::from(self.value)
     }
 
     fn set(&mut self, value: u16) {
@@ -46,6 +47,7 @@ impl Register for SingleRegister {
     }
 }
 
+#[derive(Default)]
 pub struct DualRegister {
     pub high: SingleRegister,
     pub low: SingleRegister,
@@ -53,10 +55,7 @@ pub struct DualRegister {
 
 impl DualRegister {
     pub fn new() -> DualRegister {
-        DualRegister {
-            high: SingleRegister::new(),
-            low: SingleRegister::new(),
-        }
+        DualRegister::default()
     }
 
     pub fn from(value: u16) -> DualRegister {
@@ -98,36 +97,36 @@ mod tests {
     fn get_high() {
         // lol
         let mut register = DualRegister::new();
-        register.set(0b1010101001010101);
-        assert_eq!(register.high.get(), 0b10101010);
+        register.set(0b1010_1010_0101_0101);
+        assert_eq!(register.high.get(), 0b1010_1010);
     }
 
     #[test]
     fn get_low() {
         let mut register = DualRegister::new();
-        register.set(0b1010101001010101);
-        assert_eq!(register.low.get(), 0b01010101);
+        register.set(0b1010_1010_0101_0101);
+        assert_eq!(register.low.get(), 0b0101_0101);
     }
 
     #[test]
     fn set_high() {
         let mut register = DualRegister::new();
-        register.high.set(0b01010101);
-        assert_eq!(register.high.get(), 0b01010101);
+        register.high.set(0b0101_0101);
+        assert_eq!(register.high.get(), 0b0101_0101);
     }
 
     #[test]
     fn set_low() {
         let mut register = DualRegister::new();
-        register.low.set(0b01010101);
-        assert_eq!(register.low.get(), 0b01010101);
+        register.low.set(0b0101_0101);
+        assert_eq!(register.low.get(), 0b0101_0101);
     }
 
     #[test]
     fn set() {
         let mut register = SingleRegister::new();
-        register.set(0b10101010);
+        register.set(0b1010_1010);
         register.set_bit(1, false);
-        assert_eq!(register.get(), 0b10101000);
+        assert_eq!(register.get(), 0b1010_1000);
     }
 }

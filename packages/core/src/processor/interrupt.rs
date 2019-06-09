@@ -11,7 +11,7 @@ pub enum Interrupt {
 }
 
 impl Interrupt {
-    pub fn address(&self) -> u16 {
+    pub fn address(self) -> u16 {
         match self {
             Interrupt::VBlank => 0x0040,
             Interrupt::LCDCStat => 0x0048,
@@ -41,13 +41,14 @@ impl From<u8> for Interrupt {
     }
 }
 
+#[derive(Default)]
 pub struct InterruptRegister {
     register: u8,
 }
 
 impl InterruptRegister {
     pub fn new() -> InterruptRegister {
-        InterruptRegister { register: 0 }
+        InterruptRegister::default()
     }
 
     pub fn from_value(value: u8) -> InterruptRegister {
@@ -72,11 +73,7 @@ pub struct InterruptHandler {
 
 impl InterruptHandler {
     pub fn new() -> InterruptHandler {
-        InterruptHandler {
-            interrupt_request: InterruptRegister::new(),
-            interrupt_enable: InterruptRegister::from_value(0xFF),
-            interrupt_master_enable: false,
-        }
+        InterruptHandler::default()
     }
 
     pub fn fetch_interrupt(&self) -> Option<Interrupt> {
@@ -107,6 +104,16 @@ impl InterruptHandler {
 
     pub fn master_interrupt_enable(&self) -> bool {
         self.interrupt_master_enable
+    }
+}
+
+impl Default for InterruptHandler {
+    fn default() -> InterruptHandler {
+        InterruptHandler {
+            interrupt_request: InterruptRegister::new(),
+            interrupt_enable: InterruptRegister::from_value(0xFF),
+            interrupt_master_enable: false,
+        }
     }
 }
 

@@ -12,7 +12,12 @@ pub fn draw_entity(entity: Entity, dimensions: (usize, usize), buf: &mut Vec<Col
     draw_entity_with_transparency(entity, dimensions, buf, false);
 }
 
-pub fn draw_entity_with_transparency(entity: Entity, dimensions: (usize, usize), buf: &mut Vec<Color>, transparency: bool) {
+pub fn draw_entity_with_transparency(
+    entity: Entity,
+    dimensions: (usize, usize),
+    buf: &mut Vec<Color>,
+    transparency: bool,
+) {
     for entity_y in 0..entity.height {
         let y = entity_y + entity.y;
         if y >= dimensions.1 {

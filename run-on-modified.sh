@@ -3,7 +3,7 @@ PACKAGES_ROOT=packages/
 COMMIT="refs/remotes/origin/master"
 COMMAND=$1
 
-CHANGED_PACKAGES=$(git diff --dirstat=files,0 $COMMIT | sed -r "s/[0-9.[:space:]]+% //g" | sed -r "/(.+\/){3,}/d" | grep $PACKAGES_ROOT)
+CHANGED_PACKAGES=$(git diff --dirstat=files,0 $COMMIT | sed -r "s/[0-9.[:space:]]+% //g" | sed -r "s/(packages\/[[:alnum:]_-]+\/).*/\1/g" | uniq | grep $PACKAGES_ROOT)
 
 if [[ $CHANGED_PACKAGES =~ "core" ]]; then
     CHANGED_PACKAGES=$(ls -1a -d $PACKAGES_ROOT/*/)

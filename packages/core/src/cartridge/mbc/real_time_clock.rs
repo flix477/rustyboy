@@ -16,7 +16,7 @@ impl RealTimeClock {
     }
 
     pub fn active_value(&self) -> u8 {
-        match self.active_register {
+        match self.active_register() {
             RTCRegister::Seconds => self.latched_state.seconds,
             RTCRegister::Minutes => self.latched_state.minutes,
             RTCRegister::Hours => self.latched_state.hours,

@@ -49,18 +49,24 @@ impl VideoMemory {
         let initial_value = self.tile_data[tile_idx as usize].line(line_idx);
         let mask = 0xFF * 0x100u16.pow(byte_idx.into());
         let value =
-            (initial_value & mask) | (value as u16).wrapping_shl((8 * (1 - byte_idx)).into());
+            (initial_value & mask) | u16::from(value).wrapping_shl((8 * (1 - byte_idx)).into());
         self.tile_data[tile_idx as usize].set_line(line_idx, value);
+    }
+}
+
+impl Default for VideoMemory {
+    fn default() -> VideoMemory {
+        Self::new()
     }
 }
 
 impl Readable for VideoMemory {
     fn read(&self, address: u16) -> u8 {
         match address {
-            0x8000...0x97FF => self.tile_line_at(address),
-            0x9800...0x9BFF => self.background_tile_maps.0.tile_idx_at(address - 0x9800),
-            0x9C00...0x9FFF => self.background_tile_maps.1.tile_idx_at(address - 0x9C00),
-            0xFE00...0xFE9F => self.oam.read(address),
+            0x8000..=0x97FF => self.tile_line_at(address),
+            0x9800..=0x9BFF => self.background_tile_maps.0.tile_idx_at(address - 0x9800),
+            0x9C00..=0x9FFF => self.background_tile_maps.1.tile_idx_at(address - 0x9C00),
+            0xFE00..=0xFE9F => self.oam.read(address),
             _ => unimplemented!(),
         }
     }
@@ -69,16 +75,16 @@ impl Readable for VideoMemory {
 impl Writable for VideoMemory {
     fn write(&mut self, address: u16, value: u8) {
         match address {
-            0x8000...0x97FF => self.set_tile_line_at(address, value),
-            0x9800...0x9BFF => self
+            0x8000..=0x97FF => self.set_tile_line_at(address, value),
+            0x9800..=0x9BFF => self
                 .background_tile_maps
                 .0
                 .set_tile_idx_at(address - 0x9800, value),
-            0x9C00...0x9FFF => self
+            0x9C00..=0x9FFF => self
                 .background_tile_maps
                 .1
                 .set_tile_idx_at(address - 0x9C00, value),
-            0xFE00...0xFE9F => self.oam.write(address, value),
+            0xFE00..=0xFE9F => self.oam.write(address, value),
             _ => unimplemented!(),
         }
     }
