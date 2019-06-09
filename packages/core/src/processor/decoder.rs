@@ -1085,7 +1085,7 @@ impl Decoder {
                     Operand::Reference(Ref::Address(Addr::Register(Reg::HL))),
                 ]),
                 16,
-            ))
+            )),
         }
     }
 
