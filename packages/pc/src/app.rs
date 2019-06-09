@@ -24,7 +24,7 @@ pub fn run() {
         .get_matches();
 
     let path = matches.value_of("rom_path").unwrap();
-    let cartridge = Cdartridge::from_file(path).unwrap();
+    let cartridge = Cartridge::from_file(path).unwrap();
 
     if matches.is_present("info") {
         print_cartridge_info(cartridge.metadata());
