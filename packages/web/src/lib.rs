@@ -1,17 +1,27 @@
-use std::f64;
 use wasm_bindgen::prelude::*;
-use wasm_bindgen::JsCast;
-use wasm_bindgen::Clamped;
+use wasm_bindgen::{Clamped, JsCast};
+use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, ImageData};
 
 use rustyboy_core::cartridge::Cartridge;
 use rustyboy_core::config::Config;
 use rustyboy_core::gameboy::{DeviceType, Gameboy};
+use rustyboy_core::video::color::ColorFormat;
+use rustyboy_core::video::screen::{Screen, SCREEN_SIZE};
 
-fn context() -> (web_sys::HtmlCanvasElement, web_sys::CanvasRenderingContext2d) {
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
+
+    #[wasm_bindgen(js_namespace = console, js_name = log)]
+    fn log_u32(a: u32);
+}
+
+fn context() -> (HtmlCanvasElement, CanvasRenderingContext2d) {
     let document = web_sys::window().unwrap().document().unwrap();
     let canvas = document.get_element_by_id("canvas").unwrap();
-    let canvas: web_sys::HtmlCanvasElement = canvas
-        .dyn_into::<web_sys::HtmlCanvasElement>()
+    let canvas: HtmlCanvasElement = canvas
+        .dyn_into::<HtmlCanvasElement>()
         .map_err(|_| ())
         .unwrap();
 
@@ -19,43 +29,22 @@ fn context() -> (web_sys::HtmlCanvasElement, web_sys::CanvasRenderingContext2d) 
         .get_context("2d")
         .unwrap()
         .unwrap()
-        .dyn_into::<web_sys::CanvasRenderingContext2d>()
+        .dyn_into::<CanvasRenderingContext2d>()
         .unwrap();
 
     (canvas, context)
 }
 
-fn draw(buffer: Vec<u8>) {
-    let (canvas, context) = context();
-    let buffer = Clamped(buffer);
+fn draw(buffer: &mut Vec<u8>) -> Result<(), JsValue> {
+    let (_, context) = context();
+    let image_data = ImageData::new_with_u8_clamped_array_and_sh(
+        Clamped(buffer.as_mut_slice()),
+        SCREEN_SIZE.0 as u32,
+        SCREEN_SIZE.1 as u32,
+    )?;
 
-    // clear the canvas
-    context.clearRect(0, 0, canvas.width(), canvas.height());
-
-    context.begin_path();
-
-    // Draw the outer circle.
-    context
-        .arc(75.0, 75.0, 50.0, 0.0, f64::consts::PI * 2.0)
-        .unwrap();
-
-    // Draw the mouth.
-    context.move_to(110.0, 75.0);
-    context.arc(75.0, 75.0, 35.0, 0.0, f64::consts::PI).unwrap();
-
-    // Draw the left eye.
-    context.move_to(65.0, 65.0);
-    context
-        .arc(60.0, 65.0, 5.0, 0.0, f64::consts::PI * 2.0)
-        .unwrap();
-
-    // Draw the right eye.
-    context.move_to(95.0, 65.0);
-    context
-        .arc(90.0, 65.0, 5.0, 0.0, f64::consts::PI * 2.0)
-        .unwrap();
-
-    context.stroke();
+    context.put_image_data(&image_data, 0.0, 0.0)?;
+    Ok(())
 }
 
 #[wasm_bindgen]
@@ -67,29 +56,30 @@ pub fn setup(buffer: Vec<u8>) -> GameboyJs {
     };
 
     GameboyJs {
-        gameboy: Gameboy::new(cartridge, config).unwrap()
+        gameboy: Gameboy::new(cartridge, config).unwrap(),
     }
 }
 
 #[wasm_bindgen(js_name = Gameboy)]
 pub struct GameboyJs {
     #[wasm_bindgen(skip)]
-    pub gameboy: Gameboy
+    pub gameboy: Gameboy,
 }
 
 #[wasm_bindgen(js_class = Gameboy)]
 impl GameboyJs {
-    pub fn run_to_vblank(&mut self) {
+    pub fn run_to_vblank(&mut self) -> Result<(), JsValue> {
         self.gameboy.run_to_vblank();
-        draw(self.screen());
+        let mut buffer = self.screen();
+        draw(&mut buffer)
     }
 
     pub fn send_input(&mut self) {
-//        self.gameboy.send_input(in)
+        // self.gameboy.send_input(in)
     }
 
     fn screen(&self) -> Vec<u8> {
         let video = self.gameboy.hardware().video();
-        video.screen().draw(video)
+        Screen::draw_with_options(video, ColorFormat::RGBA)
     }
 }
