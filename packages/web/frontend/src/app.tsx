@@ -1,4 +1,5 @@
 import React, {FunctionComponent, useState, useEffect} from 'react';
+import {Gameboy} from 'rustyboy-web';
 
 function useWasm() {
   const [wasm, setWasm] = useState();
@@ -17,10 +18,15 @@ function useWasm() {
   return wasm;
 }
 
+function update(gameboy: Gameboy) {
+  gameboy.run_to_vblank();
+  requestAnimationFrame(() => update(gameboy));
+}
+
 const App: FunctionComponent = () => {
-  const wasm = useWasm();
+  const rustyboy = useWasm();
   const [game, setGame] = useState<Blob>();
-  const loading = !Boolean(wasm);
+  const loading = !Boolean(rustyboy);
 
   useEffect(() => {
     async function load() {
@@ -28,8 +34,8 @@ const App: FunctionComponent = () => {
         try {
           const arrayBuffer = await new Response(game).arrayBuffer();
           const uint8View = new Uint8Array(arrayBuffer);
-          wasm.run(uint8View);
-          console.log("do the wasm");
+          const gameboy = rustyboy.setup(uint8View);
+          update(gameboy);
         } catch (err) {
           console.error(err);
         }
@@ -37,7 +43,7 @@ const App: FunctionComponent = () => {
     }
 
     load();
-  }, [game, loading, wasm]);
+  }, [game, loading, rustyboy]);
 
   return (
     <div>

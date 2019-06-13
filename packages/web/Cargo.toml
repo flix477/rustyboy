@@ -15,6 +15,7 @@ rustyboy-core = { path = "../core" }
 [dependencies.web-sys]
 version = "0.3.22"
 features = [
+  'ImageData',
   'CanvasRenderingContext2d',
   'Document',
   'Element',

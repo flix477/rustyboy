@@ -1,12 +1,13 @@
 use std::f64;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
+use wasm_bindgen::Clamped;
 
 use rustyboy_core::cartridge::Cartridge;
 use rustyboy_core::config::Config;
 use rustyboy_core::gameboy::{DeviceType, Gameboy};
 
-fn context() -> web_sys::CanvasRenderingContext2d {
+fn context() -> (web_sys::HtmlCanvasElement, web_sys::CanvasRenderingContext2d) {
     let document = web_sys::window().unwrap().document().unwrap();
     let canvas = document.get_element_by_id("canvas").unwrap();
     let canvas: web_sys::HtmlCanvasElement = canvas
@@ -14,16 +15,22 @@ fn context() -> web_sys::CanvasRenderingContext2d {
         .map_err(|_| ())
         .unwrap();
 
-    canvas
+    let context = canvas
         .get_context("2d")
         .unwrap()
         .unwrap()
         .dyn_into::<web_sys::CanvasRenderingContext2d>()
-        .unwrap()
+        .unwrap();
+
+    (canvas, context)
 }
 
-fn happy() {
-    let context = context();
+fn draw(buffer: Vec<u8>) {
+    let (canvas, context) = context();
+    let buffer = Clamped(buffer);
+
+    // clear the canvas
+    context.clearRect(0, 0, canvas.width(), canvas.height());
 
     context.begin_path();
 
@@ -52,16 +59,37 @@ fn happy() {
 }
 
 #[wasm_bindgen]
-pub fn run(buffer: Vec<u8>) {
+pub fn setup(buffer: Vec<u8>) -> GameboyJs {
     let cartridge = Cartridge::from_buffer(buffer).unwrap();
     let config = Config {
         device_type: DeviceType::GameBoy,
         debugger: None,
     };
-    start_emulation(cartridge, config);
+
+    GameboyJs {
+        gameboy: Gameboy::new(cartridge, config).unwrap()
+    }
 }
 
-fn start_emulation(cartridge: Cartridge, config: Config) {
-    let mut gameboy = Gameboy::new(cartridge, config).unwrap();
-    happy();
+#[wasm_bindgen(js_name = Gameboy)]
+pub struct GameboyJs {
+    #[wasm_bindgen(skip)]
+    pub gameboy: Gameboy
+}
+
+#[wasm_bindgen(js_class = Gameboy)]
+impl GameboyJs {
+    pub fn run_to_vblank(&mut self) {
+        self.gameboy.run_to_vblank();
+        draw(self.screen());
+    }
+
+    pub fn send_input(&mut self) {
+//        self.gameboy.send_input(in)
+    }
+
+    fn screen(&self) -> Vec<u8> {
+        let video = self.gameboy.hardware().video();
+        video.screen().draw(video)
+    }
 }
