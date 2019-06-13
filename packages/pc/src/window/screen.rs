@@ -27,7 +27,7 @@ impl Window for MainWindow {
         let buf = Screen::draw(gameboy.hardware().video());
         let img = RawImage2d::from_raw_rgb_reversed(
             &buf,
-            (u32::from(SCREEN_SIZE.0), u32::from(SCREEN_SIZE.1)),
+            (SCREEN_SIZE.0 as u32, SCREEN_SIZE.1 as u32),
         );
         glium::Texture2d::new(&self.display, img)
             .unwrap()
