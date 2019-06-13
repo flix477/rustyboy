@@ -121,7 +121,7 @@ fn ldhl() {
     // SP = 0
     cpu.ld(&mut bus, Reference::Register(Reg::SP), 0);
 
-    cpu.ldhl(&mut bus);
+    cpu.ldhl(&bus);
 
     assert_eq!(65535, cpu.reg(Reg::HL));
 

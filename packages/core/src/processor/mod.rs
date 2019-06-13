@@ -92,7 +92,7 @@ impl LR35902 for Processor {
     }
 
     fn immediate16<H: Bus>(&mut self, bus: &H) -> u16 {
-        (self.immediate(bus) as u16) | ((self.immediate(bus) as u16) << 8)
+        u16::from(self.immediate(bus)) | (u16::from(self.immediate(bus)) << 8)
     }
 
     fn reg(&self, register: RegisterType) -> u16 {

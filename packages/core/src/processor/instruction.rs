@@ -72,7 +72,7 @@ pub enum Reference {
 }
 
 impl Reference {
-    pub fn is16bit(&self) -> bool {
+    pub fn is16bit(self) -> bool {
         if let Reference::Register(register) = self {
             register.is16bit()
         } else {

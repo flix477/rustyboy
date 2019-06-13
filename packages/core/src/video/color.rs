@@ -7,14 +7,14 @@ pub enum Color {
 }
 
 impl Color {
-    pub fn format(&self, format: ColorFormat) -> Vec<u8> {
+    pub fn format(self, format: ColorFormat) -> Vec<u8> {
         match format {
             ColorFormat::RGB => self.to_rgb().to_vec(),
             ColorFormat::RGBA => self.to_rgba().to_vec()
         }
     }
 
-    pub fn to_rgb(&self) -> [u8; 3] {
+    pub fn to_rgb(self) -> [u8; 3] {
         match self {
             Color::White => [255, 255, 255],
             Color::LightGray => [170, 170, 170],
@@ -23,7 +23,7 @@ impl Color {
         }
     }
 
-    pub fn to_rgba(&self) -> [u8; 4] {
+    pub fn to_rgba(self) -> [u8; 4] {
         match self {
             Color::White => [255, 255, 255, 255],
             Color::LightGray => [170, 170, 170, 255],

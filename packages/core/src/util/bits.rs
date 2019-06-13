@@ -7,6 +7,6 @@ pub fn set_bit(value: u8, idx: u8, new_value: bool) -> u8 {
     if new_value {
         value | padded_value
     } else {
-        value & !2u8.pow(idx as u32)
+        value & !2u8.pow(u32::from(idx))
     }
 }

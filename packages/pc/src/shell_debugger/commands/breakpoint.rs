@@ -1,10 +1,11 @@
 use super::{Command, CommandResult, DebuggerState};
-use crate::shell_debugger::breakpoint::Breakpoint;
+use crate::shell_debugger::breakpoint::{Breakpoint, BreakpointCondition};
+use crate::util::parse_register;
 use rustyboy_core::bus::Bus;
 use rustyboy_core::debugger::debug_info::DebugInfo;
 use rustyboy_core::util::parse_hex::parse_hex;
 
-const MATCHING_VALUES: &'static [&'static str] = &["breakpoint", "b"];
+const MATCHING_VALUES: &[&str] = &["breakpoint", "b"];
 
 pub enum BreakpointAction {
     Add(Breakpoint),
@@ -17,10 +18,7 @@ impl BreakpointAction {
         let action = *values.get(0)?;
         match action {
             "add" | "a" => {
-                let breakpoint = Breakpoint {
-                    line: parse_hex(values.get(1)?)?,
-                    conditions: None,
-                };
+                let breakpoint = parse_breakpoint(&values[1..values.len()])?;
                 Some(BreakpointAction::Add(breakpoint))
             }
             "remove" | "r" => {
@@ -30,6 +28,42 @@ impl BreakpointAction {
             "list" | "l" => Some(BreakpointAction::List),
             _ => None,
         }
+    }
+}
+
+fn parse_breakpoint(values: &[&str]) -> Option<Breakpoint> {
+    let line = parse_hex(values.get(0)?)?;
+    let conditions = if *values.get(1)? == "if" {
+        if values.len() < 3 {
+            return None;
+        }
+
+        let rest = (&values[2..values.len()]).join(" ").to_lowercase();
+
+        let conditions: Vec<Option<BreakpointCondition>> =
+            rest.split(" and ").map(|x| parse_condition(x)).collect();
+
+        if conditions.iter().any(|x| x.is_none()) {
+            return None;
+        } else {
+            Some(conditions.iter().map(|x| x.unwrap()).collect())
+        }
+    } else {
+        None
+    };
+
+    Some(Breakpoint { line, conditions })
+}
+
+fn parse_condition(value: &str) -> Option<BreakpointCondition> {
+    let parts: Vec<&str> = value.split('=').collect();
+    let object = parts.get(0)?;
+    let value = parse_hex(parts.get(1)?)?;
+
+    if let Some(register) = parse_register(object) {
+        Some(BreakpointCondition::RegisterEquals(register, value))
+    } else {
+        None
     }
 }
 
@@ -50,8 +84,8 @@ impl Command for BreakpointCommand {
         &self,
         input: &[&str],
         debugger: &mut DebuggerState,
-        _: &DebugInfo,
-        _: &Bus,
+        _: &DebugInfo<'_>,
+        _: &dyn Bus,
     ) -> CommandResult {
         if let Some(action) = BreakpointAction::parse(&input[1..]) {
             match action {

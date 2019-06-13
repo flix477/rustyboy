@@ -19,17 +19,23 @@ impl Tile {
     }
 
     pub fn colored(&self) -> [Color; 64] {
+        self.colored_with_options(false, false)
+    }
+
+    pub fn colored_with_options(&self, x_flipped: bool, y_flipped: bool) -> [Color; 64] {
         let mut colors: [Color; 64] = [Color::Black; 64];
         for row in 0..8 {
             for col in 0..8 {
-                colors[row * 8 + col] = self.color_at(col as u8, row as u8);
+                let x = if x_flipped { 7 - col } else { col };
+                let y = if y_flipped { 7 - row } else { row };
+                colors[row * 8 + col] = self.color_at(x as u8, y as u8);
             }
         }
         colors
     }
 
     pub fn get(&self, x: u8, y: u8) -> u8 {
-        ((self.data[y as usize] as u8).wrapping_shr(2 * x as u32)) & 0b11
+        ((self.data[y as usize] as u8).wrapping_shr(2 * u32::from(x))) & 0b11
     }
 
     pub fn color_at(&self, x: u8, y: u8) -> Color {
@@ -44,7 +50,7 @@ impl Tile {
         let mut colors: [u8; 8] = [0; 8];
         for col in 0..8 {
             colors[(y * 8 + col) as usize] =
-                ((self.data[y as usize] as u8).wrapping_shr(2 * col as u32)) & 0b11;
+                ((self.data[y as usize] as u8).wrapping_shr(2 * u32::from(col))) & 0b11;
         }
         colors
     }

@@ -7,7 +7,7 @@ pub struct ProgramCounter {
 
 impl ProgramCounter {
     pub fn new() -> ProgramCounter {
-        ProgramCounter { value: 0x100 }
+        Self::default()
     }
 
     pub fn fetch<H: Bus>(&mut self, bus: &H) -> u8 {
@@ -21,7 +21,13 @@ impl ProgramCounter {
     }
 
     pub fn peek16<H: Bus>(&self, bus: &H) -> u16 {
-        ((bus.read(self.value + 1) as u16) << 8) | (bus.read(self.value) as u16)
+        (u16::from(bus.read(self.value + 1)) << 8) | u16::from(bus.read(self.value))
+    }
+}
+
+impl Default for ProgramCounter {
+    fn default() -> ProgramCounter {
+        ProgramCounter { value: 0x100 }
     }
 }
 

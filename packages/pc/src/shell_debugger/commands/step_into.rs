@@ -2,7 +2,7 @@ use super::{Command, CommandResult, DebuggerState};
 use rustyboy_core::bus::Bus;
 use rustyboy_core::debugger::debug_info::DebugInfo;
 
-const MATCHING_VALUES: &'static [&'static str] = &["stepinto", "si"];
+const MATCHING_VALUES: &[&str] = &["stepinto", "si"];
 
 pub struct StepIntoCommand {}
 
@@ -21,8 +21,8 @@ impl Command for StepIntoCommand {
         &self,
         _: &[&str],
         debugger: &mut DebuggerState,
-        _: &DebugInfo,
-        _: &Bus,
+        _: &DebugInfo<'_>,
+        _: &dyn Bus,
     ) -> CommandResult {
         debugger.forced_break = true;
         CommandResult::Quit

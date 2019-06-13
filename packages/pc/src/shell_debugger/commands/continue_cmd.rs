@@ -2,7 +2,7 @@ use super::{Command, CommandResult, DebuggerState};
 use rustyboy_core::bus::Bus;
 use rustyboy_core::debugger::debug_info::DebugInfo;
 
-const MATCHING_VALUES: &'static [&'static str] = &["continue", "c"];
+const MATCHING_VALUES: &[&str] = &["continue", "c"];
 
 pub struct ContinueCommand {}
 
@@ -17,7 +17,13 @@ impl Command for ContinueCommand {
         MATCHING_VALUES
     }
 
-    fn execute(&self, _: &[&str], _: &mut DebuggerState, _: &DebugInfo, _: &Bus) -> CommandResult {
+    fn execute(
+        &self,
+        _: &[&str],
+        _: &mut DebuggerState,
+        _: &DebugInfo<'_>,
+        _: &dyn Bus,
+    ) -> CommandResult {
         CommandResult::Quit
     }
 }

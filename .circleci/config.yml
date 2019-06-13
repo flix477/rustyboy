@@ -8,15 +8,21 @@ jobs:
       - checkout
 
       - run:
+          name: Build
+          command: |
+            ./run-on-modified.sh "cargo build"
+
+      - run:
           name: Check formatting
           command: |
             rustup component add rustfmt
             ./run-on-modified.sh "cargo fmt --all -- --check"
 
       - run:
-          name: Build
+          name: Check lint
           command: |
-            ./run-on-modified.sh "cargo build"
+            rustup component add clippy
+            ./run-on-modified.sh "cargo clippy --all --all-targets -- -Dwarnings -Drust-2018-idioms"
 
       - run:
           name: Check tests

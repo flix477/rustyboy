@@ -33,29 +33,7 @@ pub struct Video {
 
 impl Video {
     pub fn new() -> Video {
-        let mut bg_palette = Palette::new();
-        bg_palette.set(0xFC);
-
-        let mut obj_palette0 = Palette::new();
-        obj_palette0.set(0xFF);
-
-        let mut obj_palette1 = Palette::new();
-        obj_palette1.set(0xFF);
-
-        Video {
-            control: ControlRegister::new(),
-            status: StatusRegister::new(),
-            mode: StatusMode::ReadingOAM,
-            scroll: (0, 0),
-            window: (0, 0),
-            ly: 144,
-            lyc: 0,
-            bg_palette,
-            obj_palette0,
-            obj_palette1,
-            vram: VideoMemory::new(),
-            cycles_left: 0,
-        }
+        Self::default()
     }
 
     pub fn memory(&self) -> &VideoMemory {
@@ -155,19 +133,42 @@ impl Video {
     fn check_lyc(&self) -> bool {
         self.status.lyc_interrupt_enabled() && self.ly == self.lyc
     }
+
+    pub fn window_visible(&self) -> bool {
+        self.window.0 >= 7 && self.window.0 < 166
+    }
+}
+
+impl Default for Video {
+    fn default() -> Video {
+        Video {
+            control: ControlRegister::new(),
+            status: StatusRegister::default(),
+            mode: StatusMode::ReadingOAM,
+            scroll: (0, 0),
+            window: (0, 0),
+            ly: 144,
+            lyc: 0,
+            bg_palette: Palette::from_value(0xFC),
+            obj_palette0: Palette::from_value(0xFF),
+            obj_palette1: Palette::from_value(0xFF),
+            vram: VideoMemory::new(),
+            cycles_left: 0,
+        }
+    }
 }
 
 impl Readable for Video {
     fn read(&self, address: u16) -> u8 {
         match address {
-            0xFE00...0xFE9F => {
+            0xFE00..=0xFE9F => {
                 if self.mode != StatusMode::LCDTransfer && self.mode != StatusMode::ReadingOAM {
                     self.vram.read(address)
                 } else {
                     0xFF
                 }
             } // oam
-            0x9800...0x9FFF | 0x8000...0x97FF => {
+            0x9800..=0x9FFF | 0x8000..=0x97FF => {
                 if self.mode != StatusMode::LCDTransfer {
                     let mut address = address;
                     if 0x8000 <= address && 0x97FF >= address {
@@ -198,12 +199,12 @@ impl Readable for Video {
 impl Writable for Video {
     fn write(&mut self, address: u16, value: u8) {
         match address {
-            0xFE00...0xFE9F => {
+            0xFE00..=0xFE9F => {
                 //                if self.mode != StatusMode::LCDTransfer && self.mode != StatusMode::ReadingOAM {
                 self.vram.write(address, value);
                 //                }
             } // oam
-            0x9800...0x9FFF | 0x8000...0x97FF => {
+            0x9800..=0x9FFF | 0x8000..=0x97FF => {
                 //                if self.mode != StatusMode::LCDTransfer {
                 //                    if 0x8000 <= address && 0x97FF >= address {
                 //                        let addressing_mode = self.control.bg_tile_data_addressing();

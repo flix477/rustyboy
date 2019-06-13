@@ -299,11 +299,11 @@ pub trait LR35902 {
         match value {
             ValueType::Constant(value) => value,
             ValueType::Register(reg) => self.reg(reg),
-            ValueType::Immediate | ValueType::SignedImmediate => self.immediate(bus) as u16,
+            ValueType::Immediate | ValueType::SignedImmediate => u16::from(self.immediate(bus)),
             ValueType::Immediate16 => self.immediate16(bus),
             ValueType::Address(address) => {
                 let address = self.operand_address(bus, address);
-                self.address(bus, address) as u16
+                u16::from(self.address(bus, address))
             }
         }
     }
@@ -313,7 +313,7 @@ pub trait LR35902 {
             AddressType::Register(reg) => self.reg(reg),
             AddressType::IncRegister(reg) => self.reg(reg).wrapping_add(0xFF00),
             AddressType::Immediate => self.immediate16(bus),
-            AddressType::IncImmediate => (self.immediate(bus) as u16).wrapping_add(0xFF00),
+            AddressType::IncImmediate => u16::from(self.immediate(bus)).wrapping_add(0xFF00),
         }
     }
 
@@ -327,7 +327,7 @@ pub trait LR35902 {
             Reference::Register(register) => self.reg(register),
             Reference::Address(address) => {
                 let address = self.operand_address(bus, address);
-                bus.read(address) as u16
+                u16::from(bus.read(address))
             }
         }
     }
@@ -445,7 +445,7 @@ pub trait LR35902 {
 
     fn sub(&mut self, value: u8) {
         let result = self.base_sub(value);
-        self.set_reg(RegisterType::A, result as u16);
+        self.set_reg(RegisterType::A, u16::from(result));
     }
 
     fn sbc(&mut self, value: u8) {
@@ -453,7 +453,7 @@ pub trait LR35902 {
         let reg_value = self.reg(RegisterType::A) as u8;
         let (sub_value, overflow) = value.overflowing_add(carry);
         let result = reg_value.wrapping_sub(sub_value);
-        self.set_reg(RegisterType::A, result as u16);
+        self.set_reg(RegisterType::A, u16::from(result));
 
         self.set_flag(Flag::AddSub, true);
         self.set_flag(Flag::Zero, result == 0);
@@ -467,7 +467,7 @@ pub trait LR35902 {
     fn and(&mut self, value: u8) {
         let a = self.reg(RegisterType::A) as u8;
         let result = a & value;
-        self.set_reg(RegisterType::A, result as u16);
+        self.set_reg(RegisterType::A, u16::from(result));
         self.set_flag(Flag::Zero, result == 0);
         self.set_flag(Flag::AddSub, false);
         self.set_flag(Flag::HalfCarry, true);
@@ -476,7 +476,7 @@ pub trait LR35902 {
 
     fn or(&mut self, value: u8) {
         let a = self.reg(RegisterType::A) as u8;
-        let result = (a | value) as u16;
+        let result = u16::from(a | value);
         self.set_reg(RegisterType::A, result);
         self.set_flag(Flag::Zero, result == 0);
         self.set_flag(Flag::AddSub, false);
@@ -486,7 +486,7 @@ pub trait LR35902 {
 
     fn xor(&mut self, value: u8) {
         let a = self.reg(RegisterType::A) as u8;
-        let result = (a ^ value) as u16;
+        let result = u16::from(a ^ value);
         self.set_reg(RegisterType::A, result);
         self.set_flag(Flag::Zero, result == 0);
         self.set_flag(Flag::AddSub, false);
@@ -509,7 +509,7 @@ pub trait LR35902 {
     fn inc8<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
         let value = self.reference(bus, reference) as u8;
         let result = value.wrapping_add(1);
-        self.set_reference(bus, reference, result as u16);
+        self.set_reference(bus, reference, u16::from(result));
 
         self.set_flag(Flag::Zero, result == 0);
         self.set_flag(Flag::AddSub, false);
@@ -532,7 +532,7 @@ pub trait LR35902 {
     fn dec8<H: Bus>(&mut self, bus: &mut H, reference: Reference) {
         let value = self.reference(bus, reference) as u8;
         let result = value.wrapping_sub(1);
-        self.set_reference(bus, reference, result as u16);
+        self.set_reference(bus, reference, u16::from(result));
 
         self.set_flag(Flag::AddSub, true);
         self.set_flag(Flag::Zero, result == 0);
@@ -548,11 +548,11 @@ pub trait LR35902 {
     fn daa(&mut self) {
         let mut a = self.reg(RegisterType::A) as u8;
         let flag_n = self.flag(Flag::AddSub);
-        let mut u = 0;
-
-        if self.flag(Flag::HalfCarry) || (!flag_n && (a & 0xf) > 9) {
-            u = 6;
-        }
+        let mut u = if self.flag(Flag::HalfCarry) || (!flag_n && (a & 0xf) > 9) {
+            6
+        } else {
+            0
+        };
         if self.flag(Flag::Carry) || (!flag_n && a > 0x99) {
             u |= 0x60;
             self.set_flag(Flag::Carry, true);
@@ -563,7 +563,7 @@ pub trait LR35902 {
             a.wrapping_add(u)
         };
 
-        self.set_reg(RegisterType::A, a as u16);
+        self.set_reg(RegisterType::A, u16::from(a));
         self.set_flag(Flag::Zero, a == 0);
         self.set_flag(Flag::HalfCarry, false);
     }
@@ -604,7 +604,7 @@ pub trait LR35902 {
         self.set_flag(Flag::Carry, bits::get_bit(value, 7));
 
         let result = value.rotate_left(1);
-        self.set_reference(bus, reference, result as u16);
+        self.set_reference(bus, reference, u16::from(result));
 
         self.set_flag(Flag::AddSub, false);
         self.set_flag(Flag::HalfCarry, false);
@@ -628,7 +628,7 @@ pub trait LR35902 {
         self.set_flag(Flag::Carry, bits::get_bit(value as u8, 7));
 
         let value = (value << 1) | old_flag;
-        self.set_reference(bus, reference, value as u16);
+        self.set_reference(bus, reference, u16::from(value));
 
         self.set_flag(Flag::AddSub, false);
         self.set_flag(Flag::HalfCarry, false);
@@ -651,7 +651,7 @@ pub trait LR35902 {
         self.set_flag(Flag::Carry, bits::get_bit(value, 0));
 
         let result = value.rotate_right(1);
-        self.set_reference(bus, reference, result as u16);
+        self.set_reference(bus, reference, u16::from(result));
 
         self.set_flag(Flag::AddSub, false);
         self.set_flag(Flag::HalfCarry, false);
@@ -675,7 +675,7 @@ pub trait LR35902 {
         self.set_flag(Flag::Carry, bits::get_bit(value as u8, 0));
 
         let value = (value >> 1) | (old_flag << 7);
-        self.set_reference(bus, reference, value as u16);
+        self.set_reference(bus, reference, u16::from(value));
 
         self.set_flag(Flag::AddSub, false);
         self.set_flag(Flag::HalfCarry, false);
@@ -697,7 +697,7 @@ pub trait LR35902 {
         let value = self.reference(bus, reference) as u8;
 
         let value = value.rotate_left(4);
-        self.set_reference(bus, reference, value as u16);
+        self.set_reference(bus, reference, u16::from(value));
 
         self.set_flag(Flag::Zero, value == 0);
         self.set_flag(Flag::AddSub, false);
@@ -710,7 +710,7 @@ pub trait LR35902 {
         self.set_flag(Flag::Carry, bits::get_bit(value, 7));
 
         let value = value << 1;
-        self.set_reference(bus, reference, value as u16);
+        self.set_reference(bus, reference, u16::from(value));
 
         self.set_flag(Flag::Zero, value == 0);
         self.set_flag(Flag::AddSub, false);
@@ -751,12 +751,12 @@ pub trait LR35902 {
 
     fn set<H: Bus>(&mut self, bus: &mut H, bit: u8, reference: Reference) {
         let value = self.reference(bus, reference) as u8;
-        self.set_reference(bus, reference, bits::set_bit(value, bit, true) as u16);
+        self.set_reference(bus, reference, u16::from(bits::set_bit(value, bit, true)));
     }
 
     fn res<H: Bus>(&mut self, bus: &mut H, bit: u8, reference: Reference) {
         let value = self.reference(bus, reference) as u8;
-        self.set_reference(bus, reference, bits::set_bit(value, bit, false) as u16);
+        self.set_reference(bus, reference, u16::from(bits::set_bit(value, bit, false)));
     }
 
     fn jp(&mut self, address: u16) {
@@ -764,8 +764,8 @@ pub trait LR35902 {
     }
 
     fn jr(&mut self, inc: i8) {
-        let pc = self.reg(RegisterType::PC) as i32;
-        let result = pc + inc as i32;
+        let pc = i32::from(self.reg(RegisterType::PC));
+        let result = pc + i32::from(inc);
         self.set_reg(RegisterType::PC, result as u16);
     }
 

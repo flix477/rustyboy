@@ -1,5 +1,4 @@
 use rustyboy_core::debugger::debug_info::DebugInfo;
-use rustyboy_core::processor::instruction::Mnemonic;
 use rustyboy_core::processor::registers::RegisterType;
 
 #[derive(Clone)]
@@ -11,17 +10,13 @@ pub struct Breakpoint {
 #[derive(Copy, Clone)]
 pub enum BreakpointCondition {
     RegisterEquals(RegisterType, u16),
-    MnemonicEquals(Mnemonic),
 }
 
 impl BreakpointCondition {
-    pub fn satisfied(&self, debug_info: &DebugInfo) -> bool {
+    pub fn satisfied(self, debug_info: &DebugInfo<'_>) -> bool {
         match self {
             BreakpointCondition::RegisterEquals(register, value) => {
-                debug_info.registers.reg(*register) == *value
-            }
-            BreakpointCondition::MnemonicEquals(mnemonic) => {
-                debug_info.instruction.mnemonic() == mnemonic
+                debug_info.registers.reg(register) == value
             }
         }
     }
