@@ -10,7 +10,7 @@ impl Color {
     pub fn format(self, format: ColorFormat) -> Vec<u8> {
         match format {
             ColorFormat::RGB => self.to_rgb().to_vec(),
-            ColorFormat::RGBA => self.to_rgba().to_vec()
+            ColorFormat::RGBA => self.to_rgba().to_vec(),
         }
     }
 
@@ -48,5 +48,5 @@ impl From<u8> for Color {
 #[derive(PartialEq, Copy, Clone)]
 pub enum ColorFormat {
     RGB,
-    RGBA
+    RGBA,
 }

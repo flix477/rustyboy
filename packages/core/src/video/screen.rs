@@ -57,12 +57,7 @@ impl Screen {
 
         for sprite in sprites.iter() {
             let entity = Entity::from_sprite(sprite);
-            draw_entity_with_transparency(
-                entity,
-                SCREEN_SIZE,
-                buffer,
-                true,
-            )
+            draw_entity_with_transparency(entity, SCREEN_SIZE, buffer, true)
         }
     }
 
@@ -90,10 +85,7 @@ impl Screen {
         Self::background_tile_map(video, background_tile_map)
     }
 
-    fn background_tile_map(
-        video: &Video,
-        background_tile_map: &BackgroundTileMap,
-    ) -> Vec<Color> {
+    fn background_tile_map(video: &Video, background_tile_map: &BackgroundTileMap) -> Vec<Color> {
         let tile_data = video.vram.tile_data();
         let mut background_buf =
             vec![Color::White; BACKGROUND_SIZE.0 as usize * BACKGROUND_SIZE.1 as usize];
