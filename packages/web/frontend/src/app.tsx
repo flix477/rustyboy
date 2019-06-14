@@ -1,5 +1,6 @@
 import React, {FunctionComponent, useState, useEffect} from 'react';
-import {Gameboy} from 'rustyboy-web';
+import {Gameboy as GameboyType} from 'rustyboy-web';
+import {imports} from './imports';
 
 function useWasm() {
   const [wasm, setWasm] = useState();
@@ -7,8 +8,7 @@ function useWasm() {
   useEffect(() => {
     async function loadWasm() {
       try {
-        const rustyboy = await import('rustyboy-web');
-        setWasm(rustyboy);
+        setWasm(await imports());
       } catch (err) {}
     }
 
@@ -18,15 +18,13 @@ function useWasm() {
   return wasm;
 }
 
-function update(gameboy: Gameboy) {
-  gameboy.run_to_vblank();
-  requestAnimationFrame(() => update(gameboy));
-}
-
 const App: FunctionComponent = () => {
-  const rustyboy = useWasm();
+  const imports = useWasm();
+  const rustyboy = imports && imports.rustyboy;
+  const Gameboy = imports && imports.Gameboy && imports.Gameboy.default;
   const [game, setGame] = useState<Blob>();
-  const loading = !Boolean(rustyboy);
+  const [gameboy, setGameboy] = useState<GameboyType>();
+  const loading = !Boolean(imports);
 
   useEffect(() => {
     async function load() {
@@ -34,8 +32,8 @@ const App: FunctionComponent = () => {
         try {
           const arrayBuffer = await new Response(game).arrayBuffer();
           const uint8View = new Uint8Array(arrayBuffer);
-          const gameboy = rustyboy.setup(uint8View);
-          update(gameboy);
+          console.log(rustyboy);
+          setGameboy(rustyboy.setup(uint8View));
         } catch (err) {
           console.error(err);
         }
@@ -48,7 +46,7 @@ const App: FunctionComponent = () => {
   return (
     <div>
       {loading && <p>Loading...</p>}
-      <canvas id="canvas" />
+      {gameboy && Gameboy && <Gameboy gameboy={gameboy} />}
       <input type="file" accept=".gb" onChange={value => {
         if (value.target.files && value.target.files[0]) {
           setGame(value.target.files[0])
