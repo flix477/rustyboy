@@ -32,7 +32,6 @@ const App: FunctionComponent = () => {
         try {
           const arrayBuffer = await new Response(game).arrayBuffer();
           const uint8View = new Uint8Array(arrayBuffer);
-          console.log(rustyboy);
           setGameboy(rustyboy.setup(uint8View));
         } catch (err) {
           console.error(err);

@@ -17,10 +17,8 @@ function onInput(gameboy: GameboyType): EventListener {
 function eventToInput(event: KeyboardEvent): Input | null {
   const button = eventToInputButton(event);
   const type = eventToInputType(event);
-  if (!button || !type) return null;
-  console.log(button, type);
-  // @ts-ignore
-  return new Input("start", "down");
+  if (button === null || type === null) return null;
+  return new Input(type, button);
 }
 
 function eventToInputButton(event: KeyboardEvent): InputButton | null {
