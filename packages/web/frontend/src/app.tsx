@@ -43,14 +43,16 @@ const App: FunctionComponent = () => {
   }, [game, loading, rustyboy]);
 
   return (
-    <div>
-      {loading && <p>Loading...</p>}
-      {gameboy && Gameboy && <Gameboy gameboy={gameboy} />}
-      <input type="file" accept=".gb" onChange={value => {
-        if (value.target.files && value.target.files[0]) {
-          setGame(value.target.files[0])
-        }
-      }} />
+    <div className="container">
+      <div className="content">
+        {loading && <p>Loading...</p>}
+        {gameboy && Gameboy && <Gameboy gameboy={gameboy} />}
+        <input type="file" accept=".gb" onChange={value => {
+          if (value.target.files && value.target.files[0]) {
+            setGame(value.target.files[0])
+          }
+        }} />
+      </div>
     </div>
   );
 }

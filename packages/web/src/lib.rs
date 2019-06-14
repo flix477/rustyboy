@@ -1,6 +1,4 @@
 use wasm_bindgen::prelude::*;
-use wasm_bindgen::{Clamped, JsCast};
-use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, ImageData};
 
 use rustyboy_core::cartridge::Cartridge;
 use rustyboy_core::config::Config;
@@ -11,36 +9,6 @@ use rustyboy_core::video::screen::{Screen, SCREEN_SIZE};
 use self::input::InputJs;
 
 pub mod input;
-
-fn context() -> (HtmlCanvasElement, CanvasRenderingContext2d) {
-    let document = web_sys::window().unwrap().document().unwrap();
-    let canvas = document.get_element_by_id("canvas").unwrap();
-    let canvas: HtmlCanvasElement = canvas
-        .dyn_into::<HtmlCanvasElement>()
-        .map_err(|_| ())
-        .unwrap();
-
-    let context = canvas
-        .get_context("2d")
-        .unwrap()
-        .unwrap()
-        .dyn_into::<CanvasRenderingContext2d>()
-        .unwrap();
-
-    (canvas, context)
-}
-
-fn draw(buffer: &mut Vec<u8>) -> Result<(), JsValue> {
-    let (_, context) = context();
-    let image_data = ImageData::new_with_u8_clamped_array_and_sh(
-        Clamped(buffer.as_mut_slice()),
-        SCREEN_SIZE.0 as u32,
-        SCREEN_SIZE.1 as u32,
-    )?;
-
-    context.put_image_data(&image_data, 0.0, 0.0)?;
-    Ok(())
-}
 
 #[wasm_bindgen]
 pub fn setup(buffer: Vec<u8>) -> GameboyJs {
@@ -64,10 +32,9 @@ pub struct GameboyJs {
 #[wasm_bindgen(js_class = Gameboy)]
 impl GameboyJs {
     #[wasm_bindgen(js_name = runToVBlank)]
-    pub fn run_to_vblank(&mut self) -> Result<(), JsValue> {
+    pub fn run_to_vblank(&mut self) -> Vec<u8> {
         self.gameboy.run_to_vblank();
-        let mut buffer = self.screen();
-        draw(&mut buffer)
+        self.screen()
     }
 
     #[wasm_bindgen(js_name = sendInput)]
@@ -79,4 +46,14 @@ impl GameboyJs {
         let video = self.gameboy.hardware().video();
         Screen::draw_with_options(video, ColorFormat::RGBA)
     }
+}
+
+#[wasm_bindgen(js_name = getScreenWidth)]
+pub fn screen_width() -> usize {
+    SCREEN_SIZE.0
+}
+
+#[wasm_bindgen(js_name = getScreenHeight)]
+pub fn screen_height() -> usize {
+    SCREEN_SIZE.1
 }
