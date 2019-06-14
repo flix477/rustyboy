@@ -1,21 +1,9 @@
-import React, {FunctionComponent, useEffect, useCallback, useRef, RefObject} from 'react';
-import {Gameboy as GameboyType, InputButton, InputTypeJs, Input, getScreenWidth, getScreenHeight} from 'rustyboy-web';
+import React, {FunctionComponent, useEffect, useCallback} from 'react';
+import {Gameboy as GameboyType, InputButton, InputTypeJs, Input} from 'rustyboy-web';
 
-async function update(gameboy: GameboyType, canvasRef: RefObject<HTMLCanvasElement>) {
-  if (!canvasRef.current) return;
-  const canvas = canvasRef.current;
-  const context = canvas.getContext('2d');
-  if (!context) return;
-  context.imageSmoothingEnabled = false;
-
-  const buffer = gameboy.runToVBlank();
-  const array = new Uint8ClampedArray(buffer);
-  const imageData = new ImageData(array, getScreenWidth(), getScreenHeight());
-  const imageBitmap = await window.createImageBitmap(imageData);
-
-  context.drawImage(imageBitmap, 0, 0, canvas.width, canvas.height);
-  
-  requestAnimationFrame(() => update(gameboy, canvasRef));
+async function update(gameboy: GameboyType) {
+  gameboy.runToVBlank();
+  requestAnimationFrame(() => update(gameboy));
 }
 
 function onInput(gameboy: GameboyType): EventListener {
@@ -60,11 +48,10 @@ interface Props {
 }
 
 const Gameboy: FunctionComponent<Props> = ({gameboy}) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const inputCallback = useCallback(onInput(gameboy), [gameboy]);
 
   useEffect(() => {
-    update(gameboy, canvasRef);
+    update(gameboy);
     window.addEventListener("keydown", inputCallback);
     window.addEventListener("keyup", inputCallback);
 
@@ -72,11 +59,11 @@ const Gameboy: FunctionComponent<Props> = ({gameboy}) => {
       window.removeEventListener("keydown", inputCallback);
       window.removeEventListener("keyup", inputCallback);
     };
-  }, [gameboy, inputCallback, canvasRef]);
+  }, [gameboy, inputCallback]);
 
   return (
     <div>
-      <canvas width="320" height="288" ref={canvasRef} id="canvas" />
+      <canvas width="320" height="288" id="canvas" />
     </div>
   );
 }
