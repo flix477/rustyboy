@@ -63,12 +63,14 @@ pub struct GameboyJs {
 
 #[wasm_bindgen(js_class = Gameboy)]
 impl GameboyJs {
+    #[wasm_bindgen(js_name = runToVBlank)]
     pub fn run_to_vblank(&mut self) -> Result<(), JsValue> {
         self.gameboy.run_to_vblank();
         let mut buffer = self.screen();
         draw(&mut buffer)
     }
 
+    #[wasm_bindgen(js_name = sendInput)]
     pub fn send_input(&mut self, input: InputJs) {
         self.gameboy.send_input(input.into());
     }

@@ -2,7 +2,7 @@ import React, {FunctionComponent, useEffect, useCallback} from 'react';
 import {Gameboy as GameboyType, InputButton, InputTypeJs, Input} from 'rustyboy-web';
 
 function update(gameboy: GameboyType) {
-  gameboy.run_to_vblank();
+  gameboy.runToVBlank();
   requestAnimationFrame(() => update(gameboy));
 }
 
@@ -10,7 +10,7 @@ function onInput(gameboy: GameboyType): EventListener {
   return event => {
     const input = eventToInput(event as KeyboardEvent);
     if (!input) return;
-    gameboy.send_input(input);
+    gameboy.sendInput(input);
   }
 }
 
