@@ -138,13 +138,11 @@ impl ToString for RegisterType {
 
 impl RegisterType {
     pub fn is16bit(self) -> bool {
-        [
-            RegisterType::AF,
-            RegisterType::BC,
-            RegisterType::HL,
-            RegisterType::SP,
-            RegisterType::PC,
-        ]
-        .contains(&self)
+        self == RegisterType::AF
+            || self == RegisterType::BC
+            || self == RegisterType::DE
+            || self == RegisterType::HL
+            || self == RegisterType::SP
+            || self == RegisterType::PC
     }
 }
