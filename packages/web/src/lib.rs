@@ -2,7 +2,7 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen::{Clamped, JsCast};
 use js_sys::Promise;
 use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, ImageBitmap, ImageData};
-use wasm_bindgen_futures::JsFuture;
+use wasm_bindgen_futures::{JsFuture, spawn_local};
 use futures::Future;
 
 use rustyboy_core::cartridge::Cartridge;
@@ -33,7 +33,7 @@ fn context() -> (HtmlCanvasElement, CanvasRenderingContext2d) {
     (canvas, context)
 }
 
-fn draw(buffer: &mut Vec<u8>) -> Result<(), JsValue> {
+fn draw(buffer: &mut Vec<u8>) -> Result<Promise, JsValue> {
     let (canvas, context) = context();
 
     let window = web_sys::window().unwrap();
@@ -42,20 +42,13 @@ fn draw(buffer: &mut Vec<u8>) -> Result<(), JsValue> {
         SCREEN_SIZE.0 as u32,
         SCREEN_SIZE.1 as u32,
     )?;
-    let promise = window.create_image_bitmap_with_image_data(&image_data)?;
-    let result = JsFuture::from(promise)
-        .wait()?
-        .dyn_into::<ImageBitmap>()?;
-//    context.draw_image_with_image_bitmap_and_dw_and_dh(
-//        &result,
-//        0.0,
-//        0.0,
-//        canvas.width().into(),
-//        canvas.height().into()
-//    )?;
+    let test = Closure::wrap(Box::new(move |image_bitmap| {
+//        context.draw_image
+    }) as Box<dyn FnMut()>);
+    let promise = window.create_image_bitmap_with_image_data(&image_data)?
+        .then(test.as_ref().unchecked_ref());
 
-//    context.put_image_data(&image_data, 0.0, 0.0)?;
-    Ok(())
+    Ok(promise)
 }
 
 #[wasm_bindgen]
@@ -80,7 +73,7 @@ pub struct GameboyJs {
 #[wasm_bindgen(js_class = Gameboy)]
 impl GameboyJs {
     #[wasm_bindgen(js_name = runToVBlank)]
-    pub fn run_to_vblank(&mut self) -> Result<(), JsValue> {
+    pub fn run_to_vblank(&mut self) -> Result<Promise, JsValue> {
         self.gameboy.run_to_vblank();
         let mut buffer = self.screen();
         draw(&mut buffer)
