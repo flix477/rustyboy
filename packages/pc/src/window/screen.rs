@@ -4,6 +4,7 @@ use glium::uniforms::MagnifySamplerFilter;
 use glium::{Display, Surface};
 
 use rustyboy_core::gameboy::Gameboy;
+use rustyboy_core::video::screen::{Screen, SCREEN_SIZE};
 
 use super::{create_display, Window};
 
@@ -23,15 +24,9 @@ impl Window for MainWindow {
     fn update(&self, gameboy: &Gameboy) {
         let mut target = self.display.draw();
         target.clear_color(0.0, 0.0, 1.0, 1.0);
-        let screen = gameboy.hardware().video().screen();
-        let buf = screen.draw(gameboy.hardware().video());
-        let img = RawImage2d::from_raw_rgb_reversed(
-            &buf,
-            (
-                u32::from(screen.dimensions.0),
-                u32::from(screen.dimensions.1),
-            ),
-        );
+        let buf = Screen::draw(gameboy.hardware().video());
+        let img =
+            RawImage2d::from_raw_rgb_reversed(&buf, (SCREEN_SIZE.0 as u32, SCREEN_SIZE.1 as u32));
         glium::Texture2d::new(&self.display, img)
             .unwrap()
             .as_surface()

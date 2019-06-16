@@ -1,0 +1,27 @@
+[package]
+name = "rustyboy-web"
+version = "0.1.0"
+authors = ["Félix Léveillé <flxleveille@gmail.com>"]
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wasm-bindgen = "0.2.45"
+js-sys = "0.3.22"
+rustyboy-core = { path = "../core" }
+
+[dependencies.web-sys]
+version = "0.3.22"
+features = [
+  'Document',
+  'Element',
+  'HtmlCanvasElement',
+  'WebGlBuffer',
+  'WebGlRenderingContext',
+  'WebGlProgram',
+  'WebGlShader',
+  'WebGlTexture',
+  'Window',
+]

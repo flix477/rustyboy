@@ -3,14 +3,13 @@ mod control_register;
 mod memory;
 mod palette;
 mod register;
-mod screen;
+pub mod screen;
 pub mod status_register;
 pub mod tile;
 
 use self::control_register::ControlRegister;
 use self::memory::VideoMemory;
 use self::register::Register;
-use self::screen::Screen;
 use self::status_register::{StatusMode, StatusRegister};
 use crate::bus::{Readable, Writable};
 use crate::processor::interrupt::{Interrupt, InterruptHandler};
@@ -29,19 +28,19 @@ pub struct Video {
     obj_palette1: Palette,
     // TODO: CGB color palettes
     vram: VideoMemory,
-    screen: Screen,
     cycles_left: u16,
 }
 
 impl Video {
+    pub fn new() -> Video {
+        Self::default()
+    }
+
     pub fn memory(&self) -> &VideoMemory {
         &self.vram
     }
     pub fn mode(&self) -> StatusMode {
         self.mode
-    }
-    pub fn screen(&self) -> &Screen {
-        &self.screen
     }
     pub fn obj_palette0(&self) -> &Palette {
         &self.obj_palette0
@@ -154,7 +153,6 @@ impl Default for Video {
             obj_palette0: Palette::from_value(0xFF),
             obj_palette1: Palette::from_value(0xFF),
             vram: VideoMemory::new(),
-            screen: Screen::default(),
             cycles_left: 0,
         }
     }
