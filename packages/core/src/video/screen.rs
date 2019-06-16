@@ -1,5 +1,5 @@
 use crate::util::drawer;
-use crate::util::drawer::{draw_entity_with_options, Entity, DrawnColor};
+use crate::util::drawer::{draw_entity_with_options, DrawnColor, Entity};
 use crate::util::wrap_value;
 use crate::video::color::ColorFormat;
 use crate::video::memory::background_tile_map::BackgroundTileMap;
@@ -39,16 +39,23 @@ impl Screen {
     fn draw_sprites_to_buffer(buffer: &mut Vec<DrawnColor>, video: &Video) {
         let oam_entries = video.vram.oam().entries();
         let tile_data = video.vram.tile_data();
+        let tall_sprites = video.control.obj_big_size();
 
         let sprites: Vec<Sprite> = if video.control.obj_enabled() {
             oam_entries
                 .iter()
                 .enumerate()
                 .filter(|(_, entry)| entry.visible())
-                .map(|(id, entry)| Sprite {
-                    id: id as u8,
-                    tile: tile_data[entry.tile_number as usize],
-                    attributes: *entry,
+                .map(|(id, entry)| {
+                    let mut tiles = vec![tile_data[entry.tile_number as usize]];
+                    if tall_sprites {
+                        tiles.push(tile_data[entry.tile_number as usize + 1])
+                    }
+                    Sprite {
+                        id: id as u8,
+                        tiles,
+                        attributes: *entry,
+                    }
                 })
                 .collect()
         } else {
@@ -93,7 +100,10 @@ impl Screen {
         Self::background_tile_map(video, background_tile_map)
     }
 
-    fn background_tile_map(video: &Video, background_tile_map: &BackgroundTileMap) -> Vec<DrawnColor> {
+    fn background_tile_map(
+        video: &Video,
+        background_tile_map: &BackgroundTileMap,
+    ) -> Vec<DrawnColor> {
         let tile_data = video.vram.tile_data();
         let mut background_buf =
             vec![DrawnColor::default(); BACKGROUND_SIZE.0 as usize * BACKGROUND_SIZE.1 as usize];
@@ -113,7 +123,7 @@ impl Screen {
                     entity,
                     (BACKGROUND_SIZE.0 as usize, BACKGROUND_SIZE.1 as usize),
                     &mut background_buf,
-                    &video.bg_palette
+                    &video.bg_palette,
                 );
             });
 
@@ -125,13 +135,17 @@ impl Entity {
     pub fn from_sprite(sprite: &Sprite) -> Self {
         Entity {
             width: 8,
-            height: 8,
+            height: sprite.tiles.len() * 8,
             x: sprite.x() as usize - 8,
             y: sprite.y() as usize - 16,
             data: sprite
-                .tile
-                .colored_with_options(sprite.x_flipped(), sprite.y_flipped())
-                .to_vec(),
+                .tiles
+                .iter()
+                .flat_map(|tile| {
+                    tile.colored_with_options(sprite.x_flipped(), sprite.y_flipped())
+                        .to_vec()
+                })
+                .collect(),
         }
     }
 
@@ -149,7 +163,7 @@ impl Entity {
 #[derive(Debug)]
 pub struct Sprite {
     pub id: u8,
-    pub tile: Tile,
+    pub tiles: Vec<Tile>,
     pub attributes: OAMEntry,
 }
 

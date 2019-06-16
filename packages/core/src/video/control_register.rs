@@ -40,9 +40,9 @@ impl ControlRegister {
     }
 
     // controls the sprite size (false = 1 tile, true = 2 stacked vertically)
-    // pub fn obj_big_size(&self) -> bool {
-    //     get_bit(self.register, 2)
-    // }
+    pub fn obj_big_size(&self) -> bool {
+        get_bit(self.register, 2)
+    }
 
     // whether sprites are displayed or not
     pub fn obj_enabled(&self) -> bool {

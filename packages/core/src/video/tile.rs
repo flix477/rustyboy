@@ -59,7 +59,9 @@ fn colored() {
 
     let tile_data = [0, 6168, 14392, 6168, 6168, 6168, 15420, 0];
     let tile = Tile::new(tile_data);
-    let colored = tile.colored().iter()
+    let colored = tile
+        .colored()
+        .iter()
         .map(|color_value| Color::from(*color_value))
         .collect::<Vec<Color>>();
 
