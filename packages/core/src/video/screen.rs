@@ -1,5 +1,5 @@
 use crate::util::drawer;
-use crate::util::drawer::{draw_entity_with_transparency, Entity};
+use crate::util::drawer::{draw_entity_with_options, Entity};
 use crate::util::wrap_value;
 use crate::video::color::{Color, ColorFormat};
 use crate::video::memory::background_tile_map::BackgroundTileMap;
@@ -57,7 +57,13 @@ impl Screen {
 
         for sprite in sprites.iter() {
             let entity = Entity::from_sprite(sprite);
-            draw_entity_with_transparency(entity, SCREEN_SIZE, buffer, true)
+            draw_entity_with_options(
+                entity,
+                SCREEN_SIZE,
+                buffer,
+                true,
+                sprite.attributes.behind_bg(),
+            )
         }
     }
 

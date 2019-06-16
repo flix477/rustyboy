@@ -96,8 +96,8 @@ impl OAMEntry {
         self.attributes & 0b11
     }
 
-    pub fn priority(self) -> u8 {
-        (self.attributes & 0b1000_0000) >> 7
+    pub fn behind_bg(self) -> bool {
+        get_bit(self.attributes, 7)
     }
 
     pub fn visible(self) -> bool {
