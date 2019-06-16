@@ -1,7 +1,7 @@
 use crate::util::drawer;
-use crate::util::drawer::{draw_entity_with_options, Entity};
+use crate::util::drawer::{draw_entity_with_options, Entity, DrawnColor};
 use crate::util::wrap_value;
-use crate::video::color::{Color, ColorFormat};
+use crate::video::color::ColorFormat;
 use crate::video::memory::background_tile_map::BackgroundTileMap;
 use crate::video::memory::sprite_attribute_table::OAMEntry;
 use crate::video::tile::Tile;
@@ -19,7 +19,7 @@ impl Screen {
     }
 
     pub fn draw_with_options(video: &Video, format: ColorFormat) -> Vec<u8> {
-        let mut buf = vec![Color::White; SCREEN_SIZE.0 * SCREEN_SIZE.1];
+        let mut buf = vec![DrawnColor::default(); SCREEN_SIZE.0 * SCREEN_SIZE.1];
 
         if video.control.lcd_enabled() {
             // Background & Window
@@ -32,11 +32,11 @@ impl Screen {
         }
 
         buf.iter()
-            .flat_map(|color| color.format(format).to_vec())
+            .flat_map(|color| color.color.format(format).to_vec())
             .collect::<Vec<u8>>()
     }
 
-    fn draw_sprites_to_buffer(buffer: &mut Vec<Color>, video: &Video) {
+    fn draw_sprites_to_buffer(buffer: &mut Vec<DrawnColor>, video: &Video) {
         let oam_entries = video.vram.oam().entries();
         let tile_data = video.vram.tile_data();
 
@@ -57,17 +57,19 @@ impl Screen {
 
         for sprite in sprites.iter() {
             let entity = Entity::from_sprite(sprite);
+            let palette = video.obj_palette(sprite.attributes.obj_palette_number());
             draw_entity_with_options(
                 entity,
                 SCREEN_SIZE,
                 buffer,
+                palette,
                 true,
                 sprite.attributes.behind_bg(),
             )
         }
     }
 
-    fn draw_background_to_buffer(buffer: &mut Vec<Color>, video: &Video) {
+    fn draw_background_to_buffer(buffer: &mut Vec<DrawnColor>, video: &Video) {
         let (scx, scy) = video.scroll;
         let background_buf = Self::background(video);
         for y in 0..SCREEN_SIZE.1 {
@@ -81,7 +83,7 @@ impl Screen {
         }
     }
 
-    pub fn background(video: &Video) -> Vec<Color> {
+    pub fn background(video: &Video) -> Vec<DrawnColor> {
         let background_tile_map = if video.control.bg_map() == 0 {
             &video.vram.background_tile_maps().0
         } else {
@@ -91,10 +93,10 @@ impl Screen {
         Self::background_tile_map(video, background_tile_map)
     }
 
-    fn background_tile_map(video: &Video, background_tile_map: &BackgroundTileMap) -> Vec<Color> {
+    fn background_tile_map(video: &Video, background_tile_map: &BackgroundTileMap) -> Vec<DrawnColor> {
         let tile_data = video.vram.tile_data();
         let mut background_buf =
-            vec![Color::White; BACKGROUND_SIZE.0 as usize * BACKGROUND_SIZE.1 as usize];
+            vec![DrawnColor::default(); BACKGROUND_SIZE.0 as usize * BACKGROUND_SIZE.1 as usize];
         background_tile_map
             .adjusted_tiles(video.control.bg_tile_data_addressing())
             .iter()
@@ -111,6 +113,7 @@ impl Screen {
                     entity,
                     (BACKGROUND_SIZE.0 as usize, BACKGROUND_SIZE.1 as usize),
                     &mut background_buf,
+                    &video.bg_palette
                 );
             });
 

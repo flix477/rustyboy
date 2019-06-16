@@ -1,5 +1,4 @@
 use crate::util::bits::get_bit;
-use crate::video::register::Register;
 
 pub struct ControlRegister {
     register: u8,
@@ -54,13 +53,12 @@ impl ControlRegister {
     pub fn bg_window_enabled(&self) -> bool {
         get_bit(self.register, 0)
     }
-}
 
-impl Register for ControlRegister {
-    fn get(&self) -> u8 {
+    pub fn get(&self) -> u8 {
         self.register
     }
-    fn set(&mut self, value: u8) {
+
+    pub fn set(&mut self, value: u8) {
         self.register = value;
     }
 }

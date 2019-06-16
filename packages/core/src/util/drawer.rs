@@ -1,21 +1,29 @@
 use crate::video::color::Color;
+use crate::video::palette::Palette;
 
 pub struct Entity {
     pub width: usize,
     pub height: usize,
     pub x: usize,
     pub y: usize,
-    pub data: Vec<Color>,
+    pub data: Vec<u8>,
 }
 
-pub fn draw_entity(entity: Entity, dimensions: (usize, usize), buf: &mut Vec<Color>) {
-    draw_entity_with_options(entity, dimensions, buf, false, false);
+#[derive(Default, Copy, Clone)]
+pub struct DrawnColor {
+    pub color: Color,
+    pub color_value: u8
+}
+
+pub fn draw_entity(entity: Entity, dimensions: (usize, usize), buf: &mut Vec<DrawnColor>, palette: &Palette) {
+    draw_entity_with_options(entity, dimensions, buf, palette, false, false);
 }
 
 pub fn draw_entity_with_options(
     entity: Entity,
     dimensions: (usize, usize),
-    buf: &mut Vec<Color>,
+    buf: &mut Vec<DrawnColor>,
+    palette: &Palette,
     transparency: bool,
     prefer_existing: bool,
 ) {
@@ -29,12 +37,15 @@ pub fn draw_entity_with_options(
         for x in 0..entity.width {
             let buf_idx = base_idx + entity.x + x;
             let entity_idx = entity_base_idx + x;
-            let current_color = buf[buf_idx];
-            let color = entity.data[entity_idx];
-            if (!transparency || color != Color::White)
-                && (!prefer_existing || current_color == Color::White)
+            let buffer_color = buf[buf_idx].color_value;
+            let entity_color = entity.data[entity_idx];
+            if (!transparency || entity_color != 0)
+                && (!prefer_existing || buffer_color == 0)
             {
-                buf[buf_idx] = entity.data[entity_idx];
+                buf[buf_idx] = DrawnColor{
+                    color_value: entity_color,
+                    color: palette.color(entity_color)
+                }
             }
         }
     }
