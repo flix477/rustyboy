@@ -9,7 +9,7 @@ use crate::video::Video;
 
 pub const SCREEN_SIZE: (usize, usize) = (160, 144);
 const BACKGROUND_RELATIVE_SIZE: (u8, u8) = (32, 32);
-const BACKGROUND_SIZE: (usize, usize) = (256, 256);
+pub const BACKGROUND_SIZE: (usize, usize) = (256, 256);
 
 pub struct Screen {}
 

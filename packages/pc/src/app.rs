@@ -1,16 +1,14 @@
 use clap::App;
-use glium::glutin::{Event, EventsLoop, WindowEvent};
 
 use rustyboy_core::cartridge::Cartridge;
 use rustyboy_core::config::Config;
 use rustyboy_core::debugger::Debugger;
 use rustyboy_core::gameboy::{DeviceType, Gameboy};
-
-use crate::keymap::keymap;
-use crate::shell_debugger::{DebuggerState, ShellDebugger};
-use crate::window::{screen::MainWindow, Window};
-use rustyboy_core::cartridge::cartridge_metadata::CartridgeMetadata;
 use std::process::exit;
+
+use crate::shell_debugger::{DebuggerState, ShellDebugger};
+use crate::window::{background::BackgroundWindow, screen::MainWindow, Window};
+use rustyboy_core::cartridge::cartridge_metadata::CartridgeMetadata;
 
 pub fn run() {
     let matches = App::new("rustyboy")
@@ -19,7 +17,8 @@ pub fn run() {
         .args_from_usage(
             "<rom_path> 'ROM path'
             -d, --debug 'Enable debugger'
-            -i, --info 'Print cartridge metadata'",
+            -i, --info 'Print cartridge metadata'
+            -b, --background 'Display background contents'",
         )
         .get_matches();
 
@@ -44,7 +43,7 @@ pub fn run() {
         device_type: DeviceType::GameBoy,
         debugger,
     };
-    start_emulation(cartridge, config);
+    start_emulation(cartridge, config, matches.is_present("background"));
 }
 
 fn print_cartridge_info(metadata: &CartridgeMetadata) {
@@ -64,38 +63,25 @@ fn print_cartridge_info(metadata: &CartridgeMetadata) {
     println!("RAM size: {:?}", metadata.ram_size);
 }
 
-fn start_emulation(cartridge: Cartridge, config: Config) {
+fn start_emulation(cartridge: Cartridge, config: Config, show_background: bool) {
     let mut gameboy = Gameboy::new(cartridge, config).unwrap();
 
-    let mut events_loop = EventsLoop::new();
+    let mut windows = create_windows(show_background);
 
-    let main_window = MainWindow::new(&events_loop);
-    // let background_window = BackgroundWindow::new(&events_loop);
-
-    let mut closed = false;
-    while !closed {
+    loop {
         gameboy.run_to_vblank();
 
-        main_window.update(&gameboy);
-        // background_window.update(&gameboy);
-
-        events_loop.poll_events(|event| match event {
-            Event::WindowEvent {
-                event: WindowEvent::CloseRequested,
-                ..
-            } => {
-                closed = true;
-            }
-            Event::WindowEvent {
-                event: WindowEvent::KeyboardInput { input, .. },
-                ..
-            } => {
-                let input = keymap(input);
-                if let Some(input) = input {
-                    gameboy.send_input(input);
-                }
-            }
-            _ => {}
-        });
+        for window in &mut windows {
+            window.update(&mut gameboy);
+        }
     }
+}
+
+fn create_windows(show_background: bool) -> Vec<Box<dyn Window>> {
+    let main_window = MainWindow::new();
+    let mut windows: Vec<Box<Window>> = vec![Box::new(main_window)];
+    if show_background {
+        windows.push(Box::new(BackgroundWindow::new()));
+    }
+    windows
 }

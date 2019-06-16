@@ -7,6 +7,7 @@ use rustyboy_core::util::parse_hex::parse_hex;
 
 const MATCHING_VALUES: &[&str] = &["breakpoint", "b"];
 
+#[derive(Clone, PartialEq, Debug)]
 pub enum BreakpointAction {
     Add(Breakpoint),
     Remove(u16),
@@ -33,7 +34,7 @@ impl BreakpointAction {
 
 fn parse_breakpoint(values: &[&str]) -> Option<Breakpoint> {
     let line = parse_hex(values.get(0)?)?;
-    let conditions = if *values.get(1)? == "if" {
+    let conditions = if values.len() > 1 && *values.get(1)? == "if" {
         if values.len() < 3 {
             return None;
         }
@@ -122,5 +123,39 @@ fn list_breakpoints(debugger: &DebuggerState) -> String {
                     format!("{}, 0x{:X}", acc, breakpoint.line)
                 }
             })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::shell_debugger::breakpoint::{Breakpoint, BreakpointCondition};
+    use crate::shell_debugger::commands::breakpoint::BreakpointAction;
+    use rustyboy_core::processor::registers::RegisterType;
+
+    #[test]
+    fn parses_breakpoint_correctly() {
+        let input = ["b", "a", "0x1e7e"];
+        assert_eq!(
+            BreakpointAction::Add(Breakpoint {
+                line: 0x1E7E,
+                conditions: None
+            }),
+            BreakpointAction::parse(&input[1..]).unwrap()
+        );
+    }
+
+    #[test]
+    fn parses_breakpoint_with_condition_correctly() {
+        let input = ["b", "a", "0x1e7e", "if", "hl=0x1e7e"];
+        assert_eq!(
+            BreakpointAction::Add(Breakpoint {
+                line: 0x1E7E,
+                conditions: Some(vec![BreakpointCondition::RegisterEquals(
+                    RegisterType::HL,
+                    0x1E7E
+                )])
+            }),
+            BreakpointAction::parse(&input[1..]).unwrap()
+        );
     }
 }

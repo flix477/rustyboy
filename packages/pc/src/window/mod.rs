@@ -4,16 +4,17 @@ use glium::{
 };
 use rustyboy_core::gameboy::Gameboy;
 
+pub mod background;
 pub mod screen;
 
 pub trait Window {
-    fn update(&self, gameboy: &Gameboy);
+    fn update(&mut self, gameboy: &mut Gameboy);
 }
 
 pub fn create_display(
     title: &str,
-    events_loop: &EventsLoop,
     dimensions: (usize, usize),
+    events_loop: &EventsLoop,
 ) -> Display {
     let window = WindowBuilder::new()
         .with_title(title)
@@ -22,5 +23,5 @@ pub fn create_display(
             height: dimensions.1 as f64,
         });
     let ctx = ContextBuilder::new();
-    Display::new(window, ctx, events_loop).unwrap()
+    Display::new(window, ctx, &events_loop).unwrap()
 }
