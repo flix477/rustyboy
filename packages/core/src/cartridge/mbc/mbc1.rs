@@ -11,7 +11,6 @@ pub struct MBC1 {
 
 impl MBC1 {
     pub fn new(_capabilities: &[CartridgeCapability]) -> MBC1 {
-        // let has_ram = capabilities.contains(&CartridgeCapability::RAM);
         MBC1 {
             mode: MBC1Mode::MaxROM,
             rom_bank: 1,
@@ -30,6 +29,13 @@ impl MBC1 {
 
     pub fn set_ram_enabled(&mut self, enabled: bool) {
         self.ram_enabled = enabled;
+    }
+
+    fn set_rom_bank(&mut self, value: u8) {
+        let value = if value == 0x60 || value == 0x40 || value == 0x20 || value == 0 {
+            value + 1
+        } else { value };
+        self.rom_bank = value;
     }
 }
 
@@ -54,16 +60,17 @@ impl MemoryBankController for MBC1 {
             }
             0x2000..=0x3FFF => {
                 // change rom bank
-                self.rom_bank = cmp::max(value & 0b1_1111, 1) | (self.rom_bank & 0b110_0000);
+                self.set_rom_bank(cmp::max(value & 0b1_1111, 1) | (self.rom_bank & 0b110_0000));
             }
             0x4000..=0x5FFF => {
+                let value = value & 0b11;
                 // change ram bank/rom bank set
                 if let MBC1Mode::MaxRAM = self.mode() {
                     if self.ram_enabled {
-                        self.ram_bank = value & 0b11;
+                        self.ram_bank = value;
                     }
                 } else {
-                    self.rom_bank = (self.rom_bank & 0b1_1111) | (value << 5);
+                    self.set_rom_bank((self.rom_bank & 0b1_1111) | (value << 5));
                 }
             }
             0x6000..=0x7FFF => {

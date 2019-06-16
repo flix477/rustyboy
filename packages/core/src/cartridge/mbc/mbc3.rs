@@ -58,7 +58,7 @@ impl MemoryBankController for MBC3 {
         match address {
             0..=0x1FFF => {
                 // toggle ram bank
-                self.set_ram_enabled(value == 0x0A);
+                self.set_ram_enabled(value == 0xA);
             }
             0x2000..=0x3FFF => {
                 // change rom bank
@@ -70,7 +70,7 @@ impl MemoryBankController for MBC3 {
                     0..=0x7 => {
                         // ram bank
                         self.mode = MBC3Mode::RAM;
-                        self.ram_bank = value;
+                        self.ram_bank = value & 3;
                     }
                     0x8..=0xC => {
                         // rtc register

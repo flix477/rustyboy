@@ -37,11 +37,7 @@ pub trait MemoryBankController {
     fn ram_enabled(&self) -> bool;
 
     fn relative_rom_address(&self, address: usize) -> usize {
-        let current_bank = if self.rom_bank() > 0 {
-            (self.rom_bank() - 1) as usize
-        } else {
-            0
-        }; // TODO: ew
+        let current_bank = self.rom_bank().saturating_sub(1) as usize;
         address + current_bank * 0x4000
     }
 
@@ -53,13 +49,13 @@ pub trait MemoryBankController {
     }
 
     fn write_ram(&mut self, address: usize, value: u8, buffer: &mut Vec<u8>) {
+        let address = self.relative_ram_address(address);
         buffer[address] = value;
     }
 
     fn relative_ram_address(&self, address: usize) -> usize {
-        let address = address - 0xA000;
         let current_bank = self.ram_bank() as usize;
-        address as usize + current_bank * 0xFF
+        address + current_bank * 0x2000
     }
 }
 

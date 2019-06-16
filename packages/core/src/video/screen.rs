@@ -136,8 +136,8 @@ impl Entity {
         Entity {
             width: 8,
             height: sprite.tiles.len() * 8,
-            x: sprite.x() as usize - 8,
-            y: sprite.y() as usize - 16,
+            x: (sprite.x() as usize).saturating_sub(8),
+            y: (sprite.y() as usize).saturating_sub(16),
             data: sprite
                 .tiles
                 .iter()
