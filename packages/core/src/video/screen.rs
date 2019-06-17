@@ -1,5 +1,5 @@
 use crate::util::drawer;
-use crate::util::drawer::{draw_entity_with_options, DrawnColor, Entity};
+use crate::util::drawer::{DrawnColor, Entity, draw_entity_sprite};
 use crate::util::wrap_value;
 use crate::video::color::ColorFormat;
 use crate::video::memory::background_tile_map::BackgroundTileMap;
@@ -67,12 +67,11 @@ impl Screen {
         for sprite in sprites.iter() {
             let entity = Entity::from_sprite(sprite);
             let palette = video.obj_palette(sprite.attributes.obj_palette_number());
-            draw_entity_with_options(
+            draw_entity_sprite(
                 entity,
                 SCREEN_SIZE,
                 buffer,
                 palette,
-                true,
                 sprite.attributes.behind_bg(),
             )
         }
@@ -170,8 +169,8 @@ impl Entity {
         Entity {
             width: 8,
             height: sprite.tiles.len() * 8,
-            x: (sprite.x() as usize).saturating_sub(8),
-            y: (sprite.y() as usize).saturating_sub(16),
+            x: sprite.x() as usize,
+            y: sprite.y() as usize,
             data: sprite
                 .tiles
                 .iter()
