@@ -46,6 +46,9 @@ impl Video {
     pub fn obj_palette1(&self) -> &Palette {
         &self.obj_palette1
     }
+    pub fn bg_palette(&self) -> &Palette {
+        &self.bg_palette
+    }
 
     pub fn obj_palette(&self, number: u8) -> &Palette {
         if number == 0 {

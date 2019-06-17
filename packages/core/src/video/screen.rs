@@ -44,15 +44,13 @@ impl Screen {
         let sprites: Vec<Sprite> = if video.control.obj_enabled() {
             oam_entries
                 .iter()
-                .enumerate()
-                .filter(|(_, entry)| entry.visible())
-                .map(|(id, entry)| {
+                .filter(|entry| entry.visible())
+                .map(|entry| {
                     let mut tiles = vec![tile_data[entry.tile_number as usize]];
                     if tall_sprites {
                         tiles.push(tile_data[entry.tile_number as usize + 1])
                     }
                     Sprite {
-                        id: id as u8,
                         tiles,
                         attributes: *entry,
                     }
@@ -162,7 +160,6 @@ impl Entity {
 
 #[derive(Debug)]
 pub struct Sprite {
-    pub id: u8,
     pub tiles: Vec<Tile>,
     pub attributes: OAMEntry,
 }

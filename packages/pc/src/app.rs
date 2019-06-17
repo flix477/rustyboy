@@ -7,6 +7,8 @@ use rustyboy_core::gameboy::{DeviceType, Gameboy};
 use std::process::exit;
 
 use crate::shell_debugger::{DebuggerState, ShellDebugger};
+use crate::window::sprite_data::SpriteDataWindow;
+use crate::window::tile_data::TileDataWindow;
 use crate::window::{background::BackgroundWindow, screen::MainWindow, Window};
 use rustyboy_core::cartridge::cartridge_metadata::CartridgeMetadata;
 
@@ -18,7 +20,9 @@ pub fn run() {
             "<rom_path> 'ROM path'
             -d, --debug 'Enable debugger'
             -i, --info 'Print cartridge metadata'
-            -b, --background 'Display background contents'",
+            -b, --background 'Display background contents'
+            -t --tiles 'Display tile data'
+            -s --sprites 'Display sprite data'",
         )
         .get_matches();
 
@@ -43,7 +47,14 @@ pub fn run() {
         device_type: DeviceType::GameBoy,
         debugger,
     };
-    start_emulation(cartridge, config, matches.is_present("background"));
+
+    let options = RunOptions {
+        show_background: matches.is_present("background"),
+        show_tile_data: matches.is_present("tiles"),
+        show_sprite_data: matches.is_present("sprites"),
+    };
+
+    start_emulation(cartridge, config, options);
 }
 
 fn print_cartridge_info(metadata: &CartridgeMetadata) {
@@ -63,10 +74,16 @@ fn print_cartridge_info(metadata: &CartridgeMetadata) {
     println!("RAM size: {:?}", metadata.ram_size);
 }
 
-fn start_emulation(cartridge: Cartridge, config: Config, show_background: bool) {
+struct RunOptions {
+    pub show_background: bool,
+    pub show_tile_data: bool,
+    pub show_sprite_data: bool,
+}
+
+fn start_emulation(cartridge: Cartridge, config: Config, options: RunOptions) {
     let mut gameboy = Gameboy::new(cartridge, config).unwrap();
 
-    let mut windows = create_windows(show_background);
+    let mut windows = create_windows(options);
 
     loop {
         gameboy.run_to_vblank();
@@ -77,11 +94,21 @@ fn start_emulation(cartridge: Cartridge, config: Config, show_background: bool) 
     }
 }
 
-fn create_windows(show_background: bool) -> Vec<Box<dyn Window>> {
+fn create_windows(options: RunOptions) -> Vec<Box<dyn Window>> {
     let main_window = MainWindow::new();
     let mut windows: Vec<Box<Window>> = vec![Box::new(main_window)];
-    if show_background {
+
+    if options.show_background {
         windows.push(Box::new(BackgroundWindow::new()));
     }
+
+    if options.show_tile_data {
+        windows.push(Box::new(TileDataWindow::new()));
+    }
+
+    if options.show_sprite_data {
+        windows.push(Box::new(SpriteDataWindow::new()));
+    }
+
     windows
 }
