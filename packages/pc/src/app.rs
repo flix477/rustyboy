@@ -1,16 +1,16 @@
 use clap::App;
-use glium::glutin::{Event, EventsLoop, WindowEvent};
 
 use rustyboy_core::cartridge::Cartridge;
 use rustyboy_core::config::Config;
 use rustyboy_core::debugger::Debugger;
 use rustyboy_core::gameboy::{DeviceType, Gameboy};
-
-use crate::keymap::keymap;
-use crate::shell_debugger::{DebuggerState, ShellDebugger};
-use crate::window::{screen::MainWindow, Window};
-use rustyboy_core::cartridge::cartridge_metadata::CartridgeMetadata;
 use std::process::exit;
+
+use crate::shell_debugger::{DebuggerState, ShellDebugger};
+use crate::window::sprite_data::SpriteDataWindow;
+use crate::window::tile_data::TileDataWindow;
+use crate::window::{background::BackgroundWindow, screen::MainWindow, Window};
+use rustyboy_core::cartridge::cartridge_metadata::CartridgeMetadata;
 
 pub fn run() {
     let matches = App::new("rustyboy")
@@ -19,7 +19,10 @@ pub fn run() {
         .args_from_usage(
             "<rom_path> 'ROM path'
             -d, --debug 'Enable debugger'
-            -i, --info 'Print cartridge metadata'",
+            -i, --info 'Print cartridge metadata'
+            -b, --background 'Display background contents'
+            -t --tiles 'Display tile data'
+            -s --sprites 'Display sprite data'",
         )
         .get_matches();
 
@@ -44,7 +47,14 @@ pub fn run() {
         device_type: DeviceType::GameBoy,
         debugger,
     };
-    start_emulation(cartridge, config);
+
+    let options = RunOptions {
+        show_background: matches.is_present("background"),
+        show_tile_data: matches.is_present("tiles"),
+        show_sprite_data: matches.is_present("sprites"),
+    };
+
+    start_emulation(cartridge, config, options);
 }
 
 fn print_cartridge_info(metadata: &CartridgeMetadata) {
@@ -64,38 +74,41 @@ fn print_cartridge_info(metadata: &CartridgeMetadata) {
     println!("RAM size: {:?}", metadata.ram_size);
 }
 
-fn start_emulation(cartridge: Cartridge, config: Config) {
+struct RunOptions {
+    pub show_background: bool,
+    pub show_tile_data: bool,
+    pub show_sprite_data: bool,
+}
+
+fn start_emulation(cartridge: Cartridge, config: Config, options: RunOptions) {
     let mut gameboy = Gameboy::new(cartridge, config).unwrap();
 
-    let mut events_loop = EventsLoop::new();
+    let mut windows = create_windows(options);
 
-    let main_window = MainWindow::new(&events_loop);
-    // let background_window = BackgroundWindow::new(&events_loop);
-
-    let mut closed = false;
-    while !closed {
+    loop {
         gameboy.run_to_vblank();
 
-        main_window.update(&gameboy);
-        // background_window.update(&gameboy);
-
-        events_loop.poll_events(|event| match event {
-            Event::WindowEvent {
-                event: WindowEvent::CloseRequested,
-                ..
-            } => {
-                closed = true;
-            }
-            Event::WindowEvent {
-                event: WindowEvent::KeyboardInput { input, .. },
-                ..
-            } => {
-                let input = keymap(input);
-                if let Some(input) = input {
-                    gameboy.send_input(input);
-                }
-            }
-            _ => {}
-        });
+        for window in &mut windows {
+            window.update(&mut gameboy);
+        }
     }
+}
+
+fn create_windows(options: RunOptions) -> Vec<Box<dyn Window>> {
+    let main_window = MainWindow::new();
+    let mut windows: Vec<Box<dyn Window>> = vec![Box::new(main_window)];
+
+    if options.show_background {
+        windows.push(Box::new(BackgroundWindow::new()));
+    }
+
+    if options.show_tile_data {
+        windows.push(Box::new(TileDataWindow::new()));
+    }
+
+    if options.show_sprite_data {
+        windows.push(Box::new(SpriteDataWindow::new()));
+    }
+
+    windows
 }

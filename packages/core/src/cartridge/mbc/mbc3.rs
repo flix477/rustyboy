@@ -58,7 +58,7 @@ impl MemoryBankController for MBC3 {
         match address {
             0..=0x1FFF => {
                 // toggle ram bank
-                self.set_ram_enabled(value == 0x0A);
+                self.set_ram_enabled(value == 0xA);
             }
             0x2000..=0x3FFF => {
                 // change rom bank
@@ -69,8 +69,10 @@ impl MemoryBankController for MBC3 {
                 match value {
                     0..=0x7 => {
                         // ram bank
-                        self.mode = MBC3Mode::RAM;
-                        self.ram_bank = value;
+                        if self.ram_enabled() {
+                            self.mode = MBC3Mode::RAM;
+                            self.ram_bank = value & 3;
+                        }
                     }
                     0x8..=0xC => {
                         // rtc register
@@ -137,6 +139,7 @@ mod tests {
         mbc.write_rom(0x4000, 8);
         assert_eq!(mbc.mode(), &MBC3Mode::RTC);
 
+        mbc.set_ram_enabled(true);
         mbc.write_rom(0x4000, 7);
         assert_eq!(mbc.mode(), &MBC3Mode::RAM);
     }
@@ -151,15 +154,15 @@ mod tests {
     #[test]
     fn ram_bank_default() {
         let mbc = MBC3::new(&[]);
-        assert_eq!(mbc.relative_ram_address(0xA000), 0);
+        assert_eq!(mbc.relative_ram_address(0xA000), 0xA000);
     }
 
     #[test]
     fn ram_bank_switching() {
         let mut mbc = MBC3::new(&[]);
         mbc.set_ram_enabled(true);
-        mbc.write_rom(0x4000, 7);
-        assert_eq!(mbc.ram_bank(), 7);
+        mbc.write_rom(0x4000, 3);
+        assert_eq!(mbc.ram_bank(), 3);
     }
 
     #[test]

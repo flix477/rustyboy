@@ -49,8 +49,7 @@ impl Readable for Cartridge {
             0xA000..=0xBFFF => {
                 if let Some(mbc) = &self.mbc {
                     if mbc.ram_enabled() {
-                        let address = address as usize + self.metadata.rom_size;
-                        return mbc.read_ram(address, &self.buffer);
+                        return mbc.read_ram(address as usize, &self.buffer);
                     }
                 }
                 0 // TODO: should do something else maybe?

@@ -1,15 +1,13 @@
 pub mod color;
 mod control_register;
 mod memory;
-mod palette;
-mod register;
+pub mod palette;
 pub mod screen;
 pub mod status_register;
 pub mod tile;
 
 use self::control_register::ControlRegister;
 use self::memory::VideoMemory;
-use self::register::Register;
 use self::status_register::{StatusMode, StatusRegister};
 use crate::bus::{Readable, Writable};
 use crate::processor::interrupt::{Interrupt, InterruptHandler};
@@ -47,6 +45,17 @@ impl Video {
     }
     pub fn obj_palette1(&self) -> &Palette {
         &self.obj_palette1
+    }
+    pub fn bg_palette(&self) -> &Palette {
+        &self.bg_palette
+    }
+
+    pub fn obj_palette(&self, number: u8) -> &Palette {
+        if number == 0 {
+            &self.obj_palette0
+        } else {
+            &self.obj_palette1
+        }
     }
 
     pub fn clock(&mut self, interrupt_handler: &mut InterruptHandler) -> bool {

@@ -1,27 +1,33 @@
-use glium::glutin::EventsLoop;
+use glium::glutin::{Event, EventsLoop, WindowEvent};
 use glium::texture::RawImage2d;
 use glium::uniforms::MagnifySamplerFilter;
 use glium::{Display, Surface};
+use std::process::exit;
 
 use rustyboy_core::gameboy::Gameboy;
 use rustyboy_core::video::screen::{Screen, SCREEN_SIZE};
 
 use super::{create_display, Window};
+use crate::keymap::keymap;
 
 pub struct MainWindow {
-    pub display: Display,
+    display: Display,
+    events_loop: EventsLoop,
 }
 
 impl MainWindow {
-    pub fn new(events_loop: &EventsLoop) -> MainWindow {
+    pub fn new() -> MainWindow {
+        let events_loop = EventsLoop::new();
+
         MainWindow {
-            display: create_display("Rustyboy", &events_loop, (160, 144)),
+            display: create_display("Rustyboy", SCREEN_SIZE, &events_loop),
+            events_loop,
         }
     }
 }
 
 impl Window for MainWindow {
-    fn update(&self, gameboy: &Gameboy) {
+    fn update(&mut self, gameboy: &mut Gameboy) {
         let mut target = self.display.draw();
         target.clear_color(0.0, 0.0, 1.0, 1.0);
         let buf = Screen::draw(gameboy.hardware().video());
@@ -33,5 +39,24 @@ impl Window for MainWindow {
             .fill(&target, MagnifySamplerFilter::Nearest);
 
         target.finish().unwrap();
+
+        self.events_loop.poll_events(|event| match event {
+            Event::WindowEvent {
+                event: WindowEvent::CloseRequested,
+                ..
+            } => {
+                exit(0);
+            }
+            Event::WindowEvent {
+                event: WindowEvent::KeyboardInput { input, .. },
+                ..
+            } => {
+                let input = keymap(input);
+                if let Some(input) = input {
+                    gameboy.send_input(input);
+                }
+            }
+            _ => {}
+        })
     }
 }

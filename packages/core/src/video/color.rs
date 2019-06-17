@@ -33,6 +33,12 @@ impl Color {
     }
 }
 
+impl Default for Color {
+    fn default() -> Self {
+        Color::White
+    }
+}
+
 impl From<u8> for Color {
     fn from(value: u8) -> Self {
         match value {
