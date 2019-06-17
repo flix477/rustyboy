@@ -73,14 +73,14 @@ impl Window for SpriteDataWindow {
 
         target.finish().unwrap();
 
-        self.events_loop.poll_events(|event| match event {
-            Event::WindowEvent {
+        self.events_loop.poll_events(|event| {
+            if let Event::WindowEvent {
                 event: WindowEvent::CloseRequested,
                 ..
-            } => {
+            } = event
+            {
                 exit(0);
             }
-            _ => {}
-        })
+        });
     }
 }
