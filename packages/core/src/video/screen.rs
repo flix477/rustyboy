@@ -1,5 +1,5 @@
 use crate::util::drawer;
-use crate::util::drawer::{DrawnColor, Entity, draw_entity_sprite};
+use crate::util::drawer::{draw_entity_sprite, DrawnColor, Entity};
 use crate::util::wrap_value;
 use crate::video::color::ColorFormat;
 use crate::video::memory::background_tile_map::BackgroundTileMap;

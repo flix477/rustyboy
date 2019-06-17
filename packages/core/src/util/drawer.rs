@@ -31,7 +31,15 @@ pub fn draw_entity_sprite(
     palette: &Palette,
     prefer_existing: bool,
 ) {
-    draw_entity_with_options(entity, dimensions, buf, palette, true, prefer_existing, (8, 16));
+    draw_entity_with_options(
+        entity,
+        dimensions,
+        buf,
+        palette,
+        true,
+        prefer_existing,
+        (8, 16),
+    );
 }
 
 pub fn draw_entity_with_options(
@@ -41,18 +49,22 @@ pub fn draw_entity_with_options(
     palette: &Palette,
     transparency: bool,
     prefer_existing: bool,
-    origin: (usize, usize)
+    origin: (usize, usize),
 ) {
     let absolute_entity_y = entity.y.saturating_sub(origin.1); // 0
     let absolute_entity_x = entity.x.saturating_sub(origin.0);
 
     let starting_y = if entity.y < origin.1 {
         origin.1 - entity.y
-    } else { 0 }; // 4
+    } else {
+        0
+    }; // 4
 
     let starting_x = if entity.x < origin.0 {
         origin.0 - entity.x
-    } else { 0 };
+    } else {
+        0
+    };
 
     for entity_y in starting_y..entity.height {
         let buffer_y = entity_y + absolute_entity_y - starting_y; // 0 + 0 -
