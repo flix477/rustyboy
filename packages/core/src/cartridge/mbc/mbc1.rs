@@ -34,7 +34,9 @@ impl MBC1 {
     fn set_rom_bank(&mut self, value: u8) {
         let value = if value == 0x60 || value == 0x40 || value == 0x20 || value == 0 {
             value + 1
-        } else { value };
+        } else {
+            value
+        };
         self.rom_bank = value;
     }
 }

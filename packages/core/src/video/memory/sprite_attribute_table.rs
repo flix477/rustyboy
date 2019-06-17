@@ -101,7 +101,7 @@ impl OAMEntry {
     }
 
     pub fn visible(self) -> bool {
-            self.position.0 != 0
+        self.position.0 != 0
             && self.position.0 < 168
             && self.position.1 != 0
             && self.position.1 < 160
