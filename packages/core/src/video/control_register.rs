@@ -16,14 +16,14 @@ impl ControlRegister {
     }
 
     // which background map the window uses for rendering
-    // pub fn window_bg_map(&self) -> u8 {
-    //     get_bit(self.register, 6) as u8
-    // }
+    pub fn window_bg_map(&self) -> u8 {
+        get_bit(self.register, 6) as u8
+    }
 
     // whether the window shall be displayed or not
-    // pub fn window_enabled(&self) -> bool {
-    //     get_bit(self.register, 5)
-    // }
+    pub fn window_enabled(&self) -> bool {
+        get_bit(self.register, 5)
+    }
 
     // which addressing mode the background and window use to pick tiles
     pub fn bg_tile_data_addressing(&self) -> TileDataAddressing {
@@ -63,14 +63,14 @@ impl ControlRegister {
     }
 }
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Debug, Copy, Clone)]
 pub enum TileDataAddressing {
     Mode8000,
     Mode8800,
 }
 
 impl TileDataAddressing {
-    pub fn adjust_address(&self, address: u16) -> u16 {
+    pub fn adjust_address(self, address: u16) -> u16 {
         if let TileDataAddressing::Mode8000 = self {
             address
         } else {

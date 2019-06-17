@@ -25,6 +25,10 @@ impl Screen {
             // Background & Window
             if video.control.bg_window_enabled() {
                 Self::draw_background_to_buffer(&mut buf, video);
+
+                if video.control.window_enabled() {
+                    Self::draw_window_to_buffer(&mut buf, video);
+                }
             }
 
             // Sprites
@@ -126,6 +130,38 @@ impl Screen {
             });
 
         background_buf
+    }
+
+    fn draw_window_to_buffer(buffer: &mut Vec<DrawnColor>, video: &Video) {
+        let (window_x, window_y) = video.window;
+        let window_buf = Self::window(video);
+        let window_x = window_x.saturating_sub(7);
+        for y in 0..BACKGROUND_SIZE.1 {
+            let absolute_y = y + window_y as usize;
+            if absolute_y >= SCREEN_SIZE.1 {
+                break;
+            }
+            for x in 0..BACKGROUND_SIZE.0 {
+                let absolute_x = x + window_x as usize;
+                if absolute_x >= SCREEN_SIZE.0 {
+                    break;
+                }
+
+                let window_idx = y * BACKGROUND_SIZE.0 + x;
+                let buffer_idx = absolute_y * SCREEN_SIZE.0 + absolute_x;
+                buffer[buffer_idx] = window_buf[window_idx];
+            }
+        }
+    }
+
+    fn window(video: &Video) -> Vec<DrawnColor> {
+        let window_tile_map = if video.control.window_bg_map() == 0 {
+            &video.vram.background_tile_maps().0
+        } else {
+            &video.vram.background_tile_maps().1
+        };
+
+        Self::background_tile_map(video, window_tile_map)
     }
 }
 
