@@ -43,19 +43,19 @@ pub fn draw_entity_with_options(
     prefer_existing: bool,
     origin: (usize, usize)
 ) {
-    let absolute_entity_y = entity.y.saturating_sub(origin.1);
+    let absolute_entity_y = entity.y.saturating_sub(origin.1); // 0
     let absolute_entity_x = entity.x.saturating_sub(origin.0);
 
     let starting_y = if entity.y < origin.1 {
         origin.1 - entity.y
-    } else { 0 };
+    } else { 0 }; // 4
 
     let starting_x = if entity.x < origin.0 {
         origin.0 - entity.x
     } else { 0 };
 
-    for entity_y in 0..entity.height {
-        let buffer_y = entity_y + absolute_entity_y - starting_y;
+    for entity_y in starting_y..entity.height {
+        let buffer_y = entity_y + absolute_entity_y - starting_y; // 0 + 0 -
         if buffer_y >= dimensions.1 {
             break;
         }
@@ -63,7 +63,7 @@ pub fn draw_entity_with_options(
         let base_buffer_idx = buffer_y * dimensions.0;
         let entity_base_idx = entity_y * entity.width;
 
-        for entity_x in 0..entity.width {
+        for entity_x in starting_x..entity.width {
             let buffer_x = absolute_entity_x + entity_x - starting_x;
             if buffer_x >= dimensions.0 {
                 break;
