@@ -106,7 +106,7 @@ pub fn apply_option_buffer(
         if let Some(drawn_color) = option {
             let buffer_color = buffer[index].color_value;
             if (!transparency || drawn_color.color_value != 0) && (!prefer_existing || buffer_color == 0) {
-                buffer[index] = drawn_color;
+                buffer[index] = *drawn_color;
             }
         }
     }

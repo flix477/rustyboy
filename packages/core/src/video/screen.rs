@@ -127,45 +127,63 @@ impl Screen {
         let oam_entries = video.vram.oam().entries();
         let tile_data = video.vram.tile_data();
         let tall_sprites = video.control.obj_big_size();
+        let sprite_height = if tall_sprites { 16 } else { 8 };
         let origin = (8, 16);
 
-        struct AdjustedSprite {
-            pub start_x: usize,
-            pub start_y: usize,
-            pub end_x: usize,
-            pub end_y: usize
+        struct AdjustedPosition {
+            absolute: (u8, u8),
+            inner_start: (u8, u8)
         }
 
-        let sprites: Vec<Sprite> =
-            oam_entries
-                .iter()
-                .filter(|entry| {
-                    let y = entry.position.1.saturating_sub();
-                    entry.visible() && y >= ly
-                })
-                .map(|entry| {
-                    let mut tiles = vec![tile_data[entry.tile_number as usize]];
-                    if tall_sprites {
-                        tiles.push(tile_data[entry.tile_number as usize + 1])
-                    }
-                    Sprite {
-                        tiles,
-                        attributes: *entry,
-                    }
-                })
-                .collect();
+        let sprites: Vec<(AdjustedPosition, Vec<u8>)> = oam_entries.iter()
+            .map(|entry| {
+                let (x, y) = entry.position;
 
-        for sprite in sprites.iter() {
-            let entity = Entity::from_sprite(sprite);
-            let palette = video.obj_palette(sprite.attributes.obj_palette_number());
-            draw_entity_sprite(
-                entity,
-                SCREEN_SIZE,
-                buffer,
-                palette,
-                sprite.attributes.behind_bg(),
-            )
-        }
+                let start_x = if x < origin.0 { origin.0 - x } else { 0 };
+                let start_y = if y < origin.1 { origin.1 - y } else { 0 };
+
+                let position = AdjustedPosition {
+                    absolute: (x.saturating_sub(origin.0), y.saturating_sub(origin.1)),
+                    inner_start: (start_x, start_y)
+                };
+
+                (position, entry)
+            })
+            .filter(|(position, entry)| {
+                // filter out sprites that are not displayed at ly
+                let abs_y1 = position.absolute.1;
+                let abs_y2 = abs_y1 + (sprite_height - position.inner_start.1);
+
+                entry.visible() && ly >= abs_y1 && ly <= abs_y2
+            })
+            .map(|(position, entry)| {
+                // get the line buffer in the sprite
+                let sprite_y = ly - position.absolute.1 + position.inner_start.1;
+                let tile_index = (sprite_y - sprite_y % 8) / 8 + entry.tile_number;
+                let tile = tile_data[tile_index as usize];
+                let tile_y = sprite_y - tile_index * 8;
+
+                let line = tile.colored_line(
+                    tile_y,
+                    entry.x_flipped(),
+                    entry.y_flipped()
+                )[position.inner_start.0 as usize..].to_vec();
+
+                (position, line)
+            })
+            .collect();
+
+//        for sprite in sprites.iter() {
+//            let entity = Entity::from_sprite(sprite);
+//            let palette = video.obj_palette(sprite.attributes.obj_palette_number());
+//            draw_entity_sprite(
+//                entity,
+//                SCREEN_SIZE,
+//                buffer,
+//                palette,
+//                sprite.attributes.behind_bg(),
+//            )
+//        }
 
         vec![]
     }
