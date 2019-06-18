@@ -95,3 +95,19 @@ pub fn draw_entity_with_options(
         }
     }
 }
+
+pub fn apply_option_buffer(
+    buffer: &mut Vec<DrawnColor>,
+    option_buffer: Vec<Option<DrawnColor>>,
+    transparency: bool,
+    prefer_existing: bool
+) {
+    for (index, option) in option_buffer.iter().enumerate() {
+        if let Some(drawn_color) = option {
+            let buffer_color = buffer[index].color_value;
+            if (!transparency || drawn_color.color_value != 0) && (!prefer_existing || buffer_color == 0) {
+                buffer[index] = drawn_color;
+            }
+        }
+    }
+}

@@ -43,11 +43,12 @@ impl Tile {
         (((lsb >> x) & 1) << 1) | ((msb >> x) & 1)
     }
 
-    pub fn formatted_line(&self, y: u8) -> [u8; 8] {
+    pub fn colored_line(&self, y: u8, x_flipped: bool, y_flipped: bool) -> [u8; 8] {
         let mut colors: [u8; 8] = [0; 8];
         for col in 0..8 {
-            colors[(y * 8 + col) as usize] =
-                ((self.data[y as usize] as u8).wrapping_shr(2 * u32::from(col))) & 0b11;
+            let x = if x_flipped { 7 - col } else { col };
+            let y = if y_flipped { 7 - y } else { y };
+            colors[col] = self.color_value_at(x as u8, y as u8);
         }
         colors
     }

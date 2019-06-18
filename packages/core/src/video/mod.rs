@@ -170,25 +170,8 @@ impl Default for Video {
 impl Readable for Video {
     fn read(&self, address: u16) -> u8 {
         match address {
-            0xFE00..=0xFE9F => {
-                if self.mode != StatusMode::LCDTransfer && self.mode != StatusMode::ReadingOAM {
-                    self.vram.read(address)
-                } else {
-                    0xFF
-                }
-            } // oam
-            0x9800..=0x9FFF | 0x8000..=0x97FF => {
-                if self.mode != StatusMode::LCDTransfer {
-                    let mut address = address;
-                    if 0x8000 <= address && 0x97FF >= address {
-                        let addressing_mode = self.control.bg_tile_data_addressing();
-                        address = addressing_mode.adjust_address(address);
-                    }
-                    self.vram.read(address)
-                } else {
-                    0xFF
-                }
-            } // video ram
+            0xFE00..=0xFE9F => self.vram.read(address), // oam
+            0x9800..=0x9FFF | 0x8000..=0x97FF => self.vram.read(address), // video ram
             0xFF40 => self.control.get(),          // lcdc control
             0xFF41 => self.status.generate(&self), // lcdc status
             0xFF42 => self.scroll.1,               // lcdc scroll y

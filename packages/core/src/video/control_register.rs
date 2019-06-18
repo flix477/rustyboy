@@ -70,16 +70,11 @@ pub enum TileDataAddressing {
 }
 
 impl TileDataAddressing {
-    pub fn adjust_address(self, address: u16) -> u16 {
-        if let TileDataAddressing::Mode8000 = self {
-            address
+    pub fn adjust_index(self, tile_index: u16) -> u16 {
+        if self == TileDataAddressing::Mode8800 && tile_index < 128 {
+            tile_index + 256
         } else {
-            // TODO: could be written single line with math
-            match address {
-                0x8000..=0x87FF => address + 0x1000,
-                0x9000..=0x97FF => address - 0x1000,
-                _ => address,
-            }
+            tile_index
         }
     }
 }
