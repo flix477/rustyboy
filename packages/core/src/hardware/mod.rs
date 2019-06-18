@@ -7,6 +7,7 @@ use crate::video::Video;
 
 use self::joypad::{Input, Joypad};
 use self::timer::Timer;
+use crate::video::status_register::StatusMode;
 
 pub mod joypad;
 mod timer;
@@ -34,7 +35,7 @@ impl Hardware {
         })
     }
 
-    pub fn clock(&mut self) -> bool {
+    pub fn clock(&mut self) -> Option<StatusMode> {
         self.timer.clock(&mut self.interrupt_handler);
         self.video.clock(&mut self.interrupt_handler)
     }

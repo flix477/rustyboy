@@ -12,6 +12,7 @@ use self::status_register::{StatusMode, StatusRegister};
 use crate::bus::{Readable, Writable};
 use crate::processor::interrupt::{Interrupt, InterruptHandler};
 use crate::video::palette::Palette;
+use crate::video::screen::{Screen, VideoInformation};
 
 pub struct Video {
     control: ControlRegister,
@@ -27,6 +28,7 @@ pub struct Video {
     // TODO: CGB color palettes
     vram: VideoMemory,
     cycles_left: u16,
+    screen: Screen
 }
 
 impl Video {
@@ -49,6 +51,9 @@ impl Video {
     pub fn bg_palette(&self) -> &Palette {
         &self.bg_palette
     }
+    pub fn screen(&self) -> &Screen {
+        &self.screen
+    }
 
     pub fn obj_palette(&self, number: u8) -> &Palette {
         if number == 0 {
@@ -58,22 +63,36 @@ impl Video {
         }
     }
 
-    pub fn clock(&mut self, interrupt_handler: &mut InterruptHandler) -> bool {
+    pub fn clock(&mut self, interrupt_handler: &mut InterruptHandler) -> Option<StatusMode> {
         if self.mode == StatusMode::VBlank {
             self.set_ly(143 + (10 - self.cycles_left / 456) as u8, interrupt_handler)
         }
 
         self.cycles_left = self.cycles_left.saturating_sub(1);
         if self.cycles_left == 0 {
-            let vblank = self.step(interrupt_handler);
+            self.step(interrupt_handler);
             self.cycles_left = self.mode_cycle_length();
-            vblank
+
+            if self.mode == StatusMode::HBlank {
+                let video = VideoInformation {
+                    scroll: self.scroll,
+                    window: self.window,
+                    vram: &self.vram,
+                    control: &self.control,
+                    bg_palette: &self.bg_palette,
+                    obj_palette0: &self.obj_palette0,
+                    obj_palette1: &self.obj_palette1
+                };
+                self.screen.draw_line_to_buffer(video, self.ly);
+            }
+
+            Some(self.mode)
         } else {
-            false
+            None
         }
     }
 
-    fn step(&mut self, interrupt_handler: &mut InterruptHandler) -> bool {
+    fn step(&mut self, interrupt_handler: &mut InterruptHandler) {
         if self.mode == StatusMode::ReadingOAM {
             self.mode = StatusMode::LCDTransfer;
         } else if self.mode == StatusMode::LCDTransfer {
@@ -89,10 +108,7 @@ impl Video {
             self.set_ly(0, interrupt_handler);
             interrupt_handler.request_interrupt(Interrupt::VBlank);
             self.set_mode(StatusMode::ReadingOAM, interrupt_handler);
-            return true;
         }
-
-        false
     }
 
     fn set_mode(&mut self, mode: StatusMode, interrupt_handler: &mut InterruptHandler) {
@@ -162,6 +178,7 @@ impl Default for Video {
             obj_palette0: Palette::from_value(0xFF),
             obj_palette1: Palette::from_value(0xFF),
             vram: VideoMemory::new(),
+            screen: Screen::default(),
             cycles_left: 0,
         }
     }
