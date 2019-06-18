@@ -73,7 +73,7 @@ impl Video {
             self.step(interrupt_handler);
             self.cycles_left = self.mode_cycle_length();
 
-            if self.mode == StatusMode::HBlank {
+            if self.mode == StatusMode::HBlank && self.ly < 144 {
                 let video = VideoInformation {
                     scroll: self.scroll,
                     window: self.window,

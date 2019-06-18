@@ -14,11 +14,6 @@ pub const SCREEN_SIZE: (usize, usize) = (160, 144);
 const BACKGROUND_RELATIVE_SIZE: (u8, u8) = (32, 32);
 pub const BACKGROUND_SIZE: (usize, usize) = (256, 256);
 
-#[derive(Default)]
-pub struct Screen {
-    buffer: Vec<DrawnColor>
-}
-
 pub struct VideoInformation<'a> {
     pub scroll: (u8, u8),
     pub window: (u8, u8),
@@ -37,6 +32,10 @@ impl<'a> VideoInformation<'a> {
             &self.obj_palette1
         }
     }
+}
+
+pub struct Screen {
+    buffer: Vec<DrawnColor>
 }
 
 impl Screen {
@@ -183,19 +182,21 @@ impl Screen {
 
                 (position, entry)
             })
+            .filter(|(position, entry)| entry.visible())
             .filter(|(position, entry)| {
                 // filter out sprites that are not displayed at ly
                 let abs_y1 = position.absolute.1;
                 let abs_y2 = abs_y1 + (sprite_height - position.inner_start.1);
 
-                entry.visible() && ly >= abs_y1 && ly <= abs_y2
+                ly >= abs_y1 && ly <= abs_y2
             })
             .map(|(position, entry)| {
                 // get the line buffer in the sprite
                 let sprite_y = ly - position.absolute.1 + position.inner_start.1;
-                let tile_index = (sprite_y - sprite_y % 8) / 8 + entry.tile_number;
+                let tile_relative_index = (sprite_y - sprite_y % 8) / 8;
+                let tile_index = tile_relative_index + entry.tile_number;
                 let tile = tile_data[tile_index as usize];
-                let tile_y = sprite_y - tile_index * 8;
+                let tile_y = sprite_y - tile_relative_index * 8;
                 let palette = video.obj_palette(entry.obj_palette_number());
 
                 let line: Vec<DrawnColor> = tile.colored_line(
@@ -268,6 +269,14 @@ impl Screen {
         };
 
         Self::background_tile_map(video, window_tile_map)
+    }
+}
+
+impl Default for Screen {
+    fn default() -> Self {
+        Self {
+            buffer: vec![DrawnColor::default(); SCREEN_SIZE.0 * SCREEN_SIZE.1]
+        }
     }
 }
 

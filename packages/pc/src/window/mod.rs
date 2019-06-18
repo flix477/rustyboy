@@ -4,10 +4,10 @@ use glium::{
 };
 use rustyboy_core::gameboy::Gameboy;
 
-pub mod background;
+//pub mod background;
 pub mod screen;
-pub mod sprite_data;
-pub mod tile_data;
+//pub mod sprite_data;
+//pub mod tile_data;
 
 pub trait Window {
     fn update(&mut self, gameboy: &mut Gameboy);
