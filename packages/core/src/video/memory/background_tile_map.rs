@@ -17,11 +17,7 @@ impl BackgroundTileMap {
             .cloned()
             .map(|tile_index| {
                 let tile_index = u16::from(tile_index);
-                if addressing_mode == TileDataAddressing::Mode8800 && tile_index < 128 {
-                    tile_index + 256
-                } else {
-                    tile_index
-                }
+                addressing_mode.adjust_index(tile_index)
             })
             .collect()
     }
@@ -40,5 +36,9 @@ impl BackgroundTileMap {
     pub fn set_tile_idx_at(&mut self, address: u16, value: u8) {
         let (row, column) = self.tile_info_at(address);
         self.tiles[row][column] = value;
+    }
+
+    pub fn tiles(&self) -> &[[u8; 32]; 32] {
+        &self.tiles
     }
 }

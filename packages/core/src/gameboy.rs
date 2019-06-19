@@ -4,6 +4,7 @@ use crate::cartridge::Cartridge;
 use crate::config::Config;
 use crate::hardware::{joypad::Input, Hardware};
 use crate::processor::Processor;
+use crate::video::status_register::StatusMode;
 
 pub struct Gameboy {
     processor: Processor,
@@ -20,13 +21,13 @@ impl Gameboy {
 
     pub fn run_to_vblank(&mut self) {
         loop {
-            if self.step() {
+            if let Some(StatusMode::VBlank) = self.step() {
                 break;
             }
         }
     }
 
-    fn step(&mut self) -> bool {
+    fn step(&mut self) -> Option<StatusMode> {
         self.processor.step(&mut self.hardware);
         self.hardware.clock()
     }

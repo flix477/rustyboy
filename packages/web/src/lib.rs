@@ -3,10 +3,10 @@ use wasm_bindgen::prelude::*;
 use rustyboy_core::cartridge::Cartridge;
 use rustyboy_core::config::Config;
 use rustyboy_core::gameboy::{DeviceType, Gameboy};
-use rustyboy_core::video::screen::Screen;
 
 use crate::input::InputJs;
 use crate::rendering::Renderer;
+use rustyboy_core::video::color::ColorFormat;
 
 pub mod input;
 pub mod rendering;
@@ -46,8 +46,8 @@ impl GameboyJs {
     }
 
     fn screen(&self) -> Vec<u8> {
-        let video = self.gameboy.hardware().video();
-        Screen::draw(video)
+        let screen = self.gameboy.hardware().video().screen();
+        screen.buffer(ColorFormat::RGB)
     }
 
     fn draw(&mut self) -> Result<(), JsValue> {

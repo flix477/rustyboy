@@ -10,7 +10,8 @@ pub struct StatusRegister {
 impl StatusRegister {
     pub fn generate(&self, video: &Video) -> u8 {
         let mode = video.mode as u8;
-        let coincidence_flag = (video.ly == video.lyc) as u8;
+        let coincidence_flag =
+            (video.position_registers.ly() == video.position_registers.lyc()) as u8;
         (self.register & 0b1111_1000) | (coincidence_flag << 2) | mode
     }
 

@@ -100,10 +100,11 @@ impl OAMEntry {
         get_bit(self.attributes, 7)
     }
 
-    pub fn visible(self) -> bool {
+    pub fn visible(self, tall_sprite: bool) -> bool {
         self.position.0 != 0
             && self.position.0 < 168
             && self.position.1 != 0
             && self.position.1 < 160
+            && (self.position.1 > 8 || tall_sprite)
     }
 }

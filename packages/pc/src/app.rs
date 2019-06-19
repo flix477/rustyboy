@@ -7,9 +7,9 @@ use rustyboy_core::gameboy::{DeviceType, Gameboy};
 use std::process::exit;
 
 use crate::shell_debugger::{DebuggerState, ShellDebugger};
-use crate::window::sprite_data::SpriteDataWindow;
-use crate::window::tile_data::TileDataWindow;
-use crate::window::{background::BackgroundWindow, screen::MainWindow, Window};
+//use crate::window::sprite_data::SpriteDataWindow;
+//use crate::window::tile_data::TileDataWindow;
+use crate::window::{screen::MainWindow, Window};
 use rustyboy_core::cartridge::cartridge_metadata::CartridgeMetadata;
 
 pub fn run() {
@@ -94,21 +94,21 @@ fn start_emulation(cartridge: Cartridge, config: Config, options: RunOptions) {
     }
 }
 
-fn create_windows(options: RunOptions) -> Vec<Box<dyn Window>> {
+fn create_windows(_options: RunOptions) -> Vec<Box<dyn Window>> {
     let main_window = MainWindow::new();
-    let mut windows: Vec<Box<dyn Window>> = vec![Box::new(main_window)];
+    let windows: Vec<Box<dyn Window>> = vec![Box::new(main_window)];
 
-    if options.show_background {
-        windows.push(Box::new(BackgroundWindow::new()));
-    }
-
-    if options.show_tile_data {
-        windows.push(Box::new(TileDataWindow::new()));
-    }
-
-    if options.show_sprite_data {
-        windows.push(Box::new(SpriteDataWindow::new()));
-    }
+    //    if options.show_background {
+    //        windows.push(Box::new(BackgroundWindow::new()));
+    //    }
+    //
+    //    if options.show_tile_data {
+    //        windows.push(Box::new(TileDataWindow::new()));
+    //    }
+    //
+    //    if options.show_sprite_data {
+    //        windows.push(Box::new(SpriteDataWindow::new()));
+    //    }
 
     windows
 }
