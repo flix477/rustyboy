@@ -8,7 +8,7 @@ pub struct ControlRegister {
 
 impl ControlRegister {
     pub fn new() -> Self {
-        ControlRegister { register: 0x91 }
+        Self::default()
     }
 
     pub fn lcd_enabled(&self) -> bool {
@@ -60,6 +60,12 @@ impl ControlRegister {
 
     pub fn set(&mut self, value: u8) {
         self.register = value;
+    }
+}
+
+impl Default for ControlRegister {
+    fn default() -> Self {
+        ControlRegister { register: 0x91 }
     }
 }
 

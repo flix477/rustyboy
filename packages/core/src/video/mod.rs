@@ -9,8 +9,8 @@ pub mod tile;
 
 use self::control_register::ControlRegister;
 use self::memory::VideoMemory;
-use self::status_register::{StatusMode, StatusRegister};
 use self::position_registers::PositionRegisters;
+use self::status_register::{StatusMode, StatusRegister};
 use crate::bus::{Readable, Writable};
 use crate::processor::interrupt::{Interrupt, InterruptHandler};
 use crate::video::palette::Palette;
@@ -27,7 +27,7 @@ pub struct Video {
     // TODO: CGB color palettes
     vram: VideoMemory,
     cycles_left: u16,
-    screen: Screen
+    screen: Screen,
 }
 
 impl Video {
@@ -80,9 +80,10 @@ impl Video {
                     control: &self.control,
                     bg_palette: &self.bg_palette,
                     obj_palette0: &self.obj_palette0,
-                    obj_palette1: &self.obj_palette1
+                    obj_palette1: &self.obj_palette1,
                 };
-                self.screen.draw_line_to_buffer(video, self.position_registers.ly());
+                self.screen
+                    .draw_line_to_buffer(video, self.position_registers.ly());
             }
 
             self.position_registers.on_mode_change(self.mode);
@@ -157,8 +158,8 @@ impl Video {
     }
 
     fn check_lyc(&self) -> bool {
-        self.status.lyc_interrupt_enabled() &&
-            self.position_registers.ly() == self.position_registers.lyc()
+        self.status.lyc_interrupt_enabled()
+            && self.position_registers.ly() == self.position_registers.lyc()
     }
 }
 
@@ -184,15 +185,15 @@ impl Readable for Video {
         match address {
             0xFE00..=0xFE9F => self.vram.read(address), // oam
             0x9800..=0x9FFF | 0x8000..=0x97FF => self.vram.read(address), // video ram
-            0xFF40 => self.control.get(),          // lcdc control
-            0xFF41 => self.status.generate(&self), // lcdc status
+            0xFF40 => self.control.get(),               // lcdc control
+            0xFF41 => self.status.generate(&self),      // lcdc status
             0xFF42 => self.position_registers.scroll().1, // lcdc scroll y
             0xFF43 => self.position_registers.scroll().0, // lcdc scroll x
-            0xFF44 => self.position_registers.ly(), // lcdc LY
-            0xFF45 => self.position_registers.lyc(), // lcdc LYC
-            0xFF47 => self.bg_palette.get(),       // background & window palette
-            0xFF48 => self.obj_palette0.get(),     // object palette 0
-            0xFF49 => self.obj_palette1.get(),     // object palette 1
+            0xFF44 => self.position_registers.ly(),     // lcdc LY
+            0xFF45 => self.position_registers.lyc(),    // lcdc LYC
+            0xFF47 => self.bg_palette.get(),            // background & window palette
+            0xFF48 => self.obj_palette0.get(),          // object palette 0
+            0xFF49 => self.obj_palette1.get(),          // object palette 1
             0xFF4A => self.position_registers.window().1, // window y position
             0xFF4B => self.position_registers.window().0, // window x position
             _ => unimplemented!(),
@@ -205,15 +206,15 @@ impl Writable for Video {
         match address {
             0xFE00..=0xFE9F => self.vram.write(address, value), // oam
             0x9800..=0x9FFF | 0x8000..=0x97FF => self.vram.write(address, value), // video ram
-            0xFF40 => self.control.set(value), // lcdc control
-            0xFF41 => self.status.set(value), // lcdc status
+            0xFF40 => self.control.set(value),                  // lcdc control
+            0xFF41 => self.status.set(value),                   // lcdc status
             0xFF42 => self.position_registers.set_scroll_y(value, self.mode), // lcdc scroll y
             0xFF43 => self.position_registers.set_scroll_x(value, self.mode), // lcdc scroll x
             0xFF44 => self.position_registers.reset_ly(self.mode), // reset lcdc LY
             0xFF45 => self.position_registers.set_lyc(value, self.mode), // lcdc LYC
-            0xFF47 => self.bg_palette.set(value), // background & window palette
-            0xFF48 => self.obj_palette0.set(value), // object palette 0
-            0xFF49 => self.obj_palette1.set(value), // object palette 1
+            0xFF47 => self.bg_palette.set(value),               // background & window palette
+            0xFF48 => self.obj_palette0.set(value),             // object palette 0
+            0xFF49 => self.obj_palette1.set(value),             // object palette 1
             0xFF4A => self.position_registers.set_window_y(value, self.mode), // window y position
             0xFF4B => self.position_registers.set_window_x(value, self.mode), // window x position
             _ => unimplemented!(),

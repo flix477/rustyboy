@@ -1,13 +1,13 @@
 use crate::video::status_register::StatusMode;
 
 pub struct PositionRegisters {
-    state: DelayedState<PositionRegistersState>
+    state: DelayedState<PositionRegistersState>,
 }
 
 impl Default for PositionRegisters {
     fn default() -> Self {
         Self {
-            state: DelayedState::new(PositionRegistersState::default())
+            state: DelayedState::new(PositionRegistersState::default()),
         }
     }
 }
@@ -72,10 +72,7 @@ impl PositionRegisters {
 
     pub fn reset_ly(&mut self, mode: StatusMode) {
         let state = self.state.next_state();
-        let new_state = PositionRegistersState {
-            ly: 0,
-            ..*state
-        };
+        let new_state = PositionRegistersState { ly: 0, ..*state };
         self.state.set_state(new_state, Self::delayed(mode));
     }
 
@@ -113,14 +110,14 @@ struct PositionRegistersState {
 
 struct DelayedState<T: Copy + Clone> {
     state: T,
-    next_state: T
+    next_state: T,
 }
 
 impl<T: Copy + Clone> DelayedState<T> {
     pub fn new(state: T) -> DelayedState<T> {
         DelayedState {
             state,
-            next_state: state
+            next_state: state,
         }
     }
 

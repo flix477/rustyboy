@@ -5,7 +5,7 @@ use glium::{Display, Surface};
 use std::process::exit;
 
 use rustyboy_core::gameboy::Gameboy;
-use rustyboy_core::video::screen::{Screen, SCREEN_SIZE};
+use rustyboy_core::video::screen::SCREEN_SIZE;
 
 use super::{create_display, Window};
 use crate::keymap::keymap;
