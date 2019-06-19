@@ -94,9 +94,9 @@ fn start_emulation(cartridge: Cartridge, config: Config, options: RunOptions) {
     }
 }
 
-fn create_windows(options: RunOptions) -> Vec<Box<dyn Window>> {
+fn create_windows(_options: RunOptions) -> Vec<Box<dyn Window>> {
     let main_window = MainWindow::new();
-    let mut windows: Vec<Box<dyn Window>> = vec![Box::new(main_window)];
+    let windows: Vec<Box<dyn Window>> = vec![Box::new(main_window)];
 
     //    if options.show_background {
     //        windows.push(Box::new(BackgroundWindow::new()));
