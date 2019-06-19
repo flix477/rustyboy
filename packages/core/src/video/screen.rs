@@ -1,17 +1,13 @@
-use crate::util::drawer;
-use crate::util::drawer::{apply_option_buffer, DrawnColor, Entity};
+use crate::util::drawer::{apply_option_buffer, DrawnColor};
 use crate::util::wrap_value;
 use crate::video::color::ColorFormat;
-use crate::video::memory::background_tile_map::BackgroundTileMap;
 use crate::video::memory::sprite_attribute_table::OAMEntry;
 use crate::video::tile::Tile;
-use crate::video::Video;
 use crate::video::palette::Palette;
 use crate::video::memory::VideoMemory;
 use crate::video::control_register::ControlRegister;
 
 pub const SCREEN_SIZE: (usize, usize) = (160, 144);
-const BACKGROUND_RELATIVE_SIZE: (u8, u8) = (32, 32);
 pub const BACKGROUND_SIZE: (usize, usize) = (256, 256);
 
 pub struct VideoInformation<'a> {
@@ -63,14 +59,14 @@ impl Screen {
 
                 if video.control.window_enabled() {
                     let window = Self::draw_window_line(&video, ly);
-                    apply_option_buffer(&mut line_buffer, window, false, false);
+                    apply_option_buffer(&mut line_buffer, window, false);
                 }
             }
 
             if video.control.obj_enabled() {
                 // Sprites
                 let sprites = Self::draw_sprites_line(&video, ly);
-                apply_option_buffer(&mut line_buffer, sprites, true, true);
+                apply_option_buffer(&mut line_buffer, sprites, true);
             }
         }
 
@@ -101,7 +97,8 @@ impl Screen {
             .map(|color| {
                 DrawnColor {
                     color: palette.color(color),
-                    color_value: color
+                    color_value: color,
+                    low_priority: false
                 }
             })
             .collect();
@@ -141,7 +138,8 @@ impl Screen {
             .map(|color| {
                 DrawnColor {
                     color: palette.color(color),
-                    color_value: color
+                    color_value: color,
+                    low_priority: false
                 }
             })
             .collect();
@@ -168,27 +166,32 @@ impl Screen {
         }
 
         let sprites: Vec<(AdjustedPosition, Vec<DrawnColor>)> = oam_entries.iter()
+            .filter(|entry| entry.visible(tall_sprites))
             .map(|entry| {
                 let (x, y) = entry.position;
 
                 let start_x = if x < origin.0 { origin.0 - x } else { 0 };
                 let start_y = if y < origin.1 { origin.1 - y } else { 0 };
+                let absolute = (x.saturating_sub(origin.0), y.saturating_sub(origin.1));
+
+                let inner_end_x = if 8 - start_x + absolute.0 >= SCREEN_SIZE.0 as u8 {
+                    8 - (8 - start_x + absolute.0 - SCREEN_SIZE.0 as u8)
+                } else { 8 };
 
                 let position = AdjustedPosition {
-                    absolute: (x.saturating_sub(origin.0), y.saturating_sub(origin.1)),
+                    absolute,
                     inner_start: (start_x, start_y),
-                    inner_end_x: std::cmp::min(start_x + 8, SCREEN_SIZE.0 as u8 - 1)
+                    inner_end_x
                 };
 
                 (position, entry)
             })
-            .filter(|(position, entry)| entry.visible())
-            .filter(|(position, entry)| {
+            .filter(|(position, _)| {
                 // filter out sprites that are not displayed at ly
                 let abs_y1 = position.absolute.1;
-                let abs_y2 = abs_y1 + (sprite_height - position.inner_start.1);
+                let abs_y2 = abs_y1 + sprite_height - position.inner_start.1;
 
-                ly >= abs_y1 && ly <= abs_y2
+                ly >= abs_y1 && ly < abs_y2
             })
             .map(|(position, entry)| {
                 // get the line buffer in the sprite
@@ -204,7 +207,11 @@ impl Screen {
                     entry.x_flipped(),
                     entry.y_flipped()
                 )[position.inner_start.0 as usize..position.inner_end_x as usize].iter()
-                    .map(|color| DrawnColor { color: palette.color(*color), color_value: *color })
+                    .map(|color| DrawnColor {
+                        color: palette.color(*color),
+                        color_value: *color,
+                        low_priority: entry.behind_bg()
+                    })
                     .collect();
 
                 (position, line)
@@ -220,91 +227,12 @@ impl Screen {
 
         buffer
     }
-
-    pub fn background(video: &Video) -> Vec<DrawnColor> {
-        let background_tile_map = if video.control.bg_map() == 0 {
-            &video.vram.background_tile_maps().0
-        } else {
-            &video.vram.background_tile_maps().1
-        };
-
-        Self::background_tile_map(video, background_tile_map)
-    }
-
-    fn background_tile_map(
-        video: &Video,
-        background_tile_map: &BackgroundTileMap,
-    ) -> Vec<DrawnColor> {
-        let tile_data = video.vram.tile_data();
-        let mut background_buf =
-            vec![DrawnColor::default(); BACKGROUND_SIZE.0 as usize * BACKGROUND_SIZE.1 as usize];
-        background_tile_map
-            .adjusted_tiles(video.control.bg_tile_data_addressing())
-            .iter()
-            .map(|tile_index| &tile_data[*tile_index as usize])
-            .enumerate()
-            .for_each(|(index, tile)| {
-                let relative_y = (index - index % BACKGROUND_RELATIVE_SIZE.0 as usize)
-                    / BACKGROUND_RELATIVE_SIZE.0 as usize;
-                let relative_x = index - relative_y * BACKGROUND_RELATIVE_SIZE.0 as usize;
-                let (x, y) = (8 * relative_x, 8 * relative_y);
-                let entity = Entity::from_tile(tile, x, y);
-
-                drawer::draw_entity(
-                    entity,
-                    (BACKGROUND_SIZE.0 as usize, BACKGROUND_SIZE.1 as usize),
-                    &mut background_buf,
-                    &video.bg_palette,
-                );
-            });
-
-        background_buf
-    }
-
-    fn window(video: &Video) -> Vec<DrawnColor> {
-        let window_tile_map = if video.control.window_bg_map() == 0 {
-            &video.vram.background_tile_maps().0
-        } else {
-            &video.vram.background_tile_maps().1
-        };
-
-        Self::background_tile_map(video, window_tile_map)
-    }
 }
 
 impl Default for Screen {
     fn default() -> Self {
         Self {
             buffer: vec![DrawnColor::default(); SCREEN_SIZE.0 * SCREEN_SIZE.1]
-        }
-    }
-}
-
-impl Entity {
-    pub fn from_sprite(sprite: &Sprite) -> Self {
-        Entity {
-            width: 8,
-            height: sprite.tiles.len() * 8,
-            x: sprite.x() as usize,
-            y: sprite.y() as usize,
-            data: sprite
-                .tiles
-                .iter()
-                .flat_map(|tile| {
-                    tile.colored_with_options(sprite.x_flipped(), sprite.y_flipped())
-                        .to_vec()
-                })
-                .collect(),
-        }
-    }
-
-    pub fn from_tile(tile: &Tile, x: usize, y: usize) -> Self {
-        Entity {
-            width: 8,
-            height: 8,
-            x,
-            y,
-            data: tile.colored().to_vec(),
         }
     }
 }

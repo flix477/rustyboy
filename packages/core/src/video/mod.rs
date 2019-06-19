@@ -2,6 +2,7 @@ pub mod color;
 mod control_register;
 mod memory;
 pub mod palette;
+mod position_registers;
 pub mod screen;
 pub mod status_register;
 pub mod tile;
@@ -9,6 +10,7 @@ pub mod tile;
 use self::control_register::ControlRegister;
 use self::memory::VideoMemory;
 use self::status_register::{StatusMode, StatusRegister};
+use self::position_registers::PositionRegisters;
 use crate::bus::{Readable, Writable};
 use crate::processor::interrupt::{Interrupt, InterruptHandler};
 use crate::video::palette::Palette;
@@ -18,10 +20,7 @@ pub struct Video {
     control: ControlRegister,
     status: StatusRegister,
     mode: StatusMode,
-    scroll: (u8, u8),
-    window: (u8, u8),
-    ly: u8,
-    lyc: u8,
+    position_registers: PositionRegisters,
     bg_palette: Palette,
     obj_palette0: Palette,
     obj_palette1: Palette,
@@ -73,18 +72,20 @@ impl Video {
             self.step(interrupt_handler);
             self.cycles_left = self.mode_cycle_length();
 
-            if self.mode == StatusMode::HBlank && self.ly < 144 {
+            if self.mode == StatusMode::HBlank {
                 let video = VideoInformation {
-                    scroll: self.scroll,
-                    window: self.window,
+                    scroll: self.position_registers.scroll(),
+                    window: self.position_registers.window(),
                     vram: &self.vram,
                     control: &self.control,
                     bg_palette: &self.bg_palette,
                     obj_palette0: &self.obj_palette0,
                     obj_palette1: &self.obj_palette1
                 };
-                self.screen.draw_line_to_buffer(video, self.ly);
+                self.screen.draw_line_to_buffer(video, self.position_registers.ly());
             }
+
+            self.position_registers.on_mode_change(self.mode);
 
             Some(self.mode)
         } else {
@@ -96,17 +97,17 @@ impl Video {
         if self.mode == StatusMode::ReadingOAM {
             self.mode = StatusMode::LCDTransfer;
         } else if self.mode == StatusMode::LCDTransfer {
-            self.set_ly(self.ly + 1, interrupt_handler);
             self.set_mode(StatusMode::HBlank, interrupt_handler)
         } else if self.mode == StatusMode::HBlank {
-            if self.ly < 143 {
+            self.set_ly(self.position_registers.ly() + 1, interrupt_handler);
+            if self.position_registers.ly() < 144 {
                 self.set_mode(StatusMode::ReadingOAM, interrupt_handler);
             } else {
                 self.set_mode(StatusMode::VBlank, interrupt_handler);
+                interrupt_handler.request_interrupt(Interrupt::VBlank);
             }
         } else {
             self.set_ly(0, interrupt_handler);
-            interrupt_handler.request_interrupt(Interrupt::VBlank);
             self.set_mode(StatusMode::ReadingOAM, interrupt_handler);
         }
     }
@@ -134,7 +135,7 @@ impl Video {
     }
 
     fn set_ly(&mut self, value: u8, interrupt_handler: &mut InterruptHandler) {
-        self.ly = value;
+        self.position_registers.set_ly(value, self.mode);
         if self.check_lyc() {
             interrupt_handler.request_interrupt(Interrupt::LCDCStat)
         }
@@ -156,11 +157,8 @@ impl Video {
     }
 
     fn check_lyc(&self) -> bool {
-        self.status.lyc_interrupt_enabled() && self.ly == self.lyc
-    }
-
-    pub fn window_visible(&self) -> bool {
-        self.window.0 >= 7 && self.window.0 < 166
+        self.status.lyc_interrupt_enabled() &&
+            self.position_registers.ly() == self.position_registers.lyc()
     }
 }
 
@@ -170,10 +168,7 @@ impl Default for Video {
             control: ControlRegister::new(),
             status: StatusRegister::default(),
             mode: StatusMode::ReadingOAM,
-            scroll: (0, 0),
-            window: (0, 0),
-            ly: 144,
-            lyc: 0,
+            position_registers: PositionRegisters::default(),
             bg_palette: Palette::from_value(0xFC),
             obj_palette0: Palette::from_value(0xFF),
             obj_palette1: Palette::from_value(0xFF),
@@ -191,15 +186,15 @@ impl Readable for Video {
             0x9800..=0x9FFF | 0x8000..=0x97FF => self.vram.read(address), // video ram
             0xFF40 => self.control.get(),          // lcdc control
             0xFF41 => self.status.generate(&self), // lcdc status
-            0xFF42 => self.scroll.1,               // lcdc scroll y
-            0xFF43 => self.scroll.0,               // lcdc scroll x
-            0xFF44 => self.ly,                     // lcdc LY
-            0xFF45 => self.lyc,                    // lcdc LYC
+            0xFF42 => self.position_registers.scroll().1, // lcdc scroll y
+            0xFF43 => self.position_registers.scroll().0, // lcdc scroll x
+            0xFF44 => self.position_registers.ly(), // lcdc LY
+            0xFF45 => self.position_registers.lyc(), // lcdc LYC
             0xFF47 => self.bg_palette.get(),       // background & window palette
             0xFF48 => self.obj_palette0.get(),     // object palette 0
             0xFF49 => self.obj_palette1.get(),     // object palette 1
-            0xFF4A => self.window.1,               // window y position
-            0xFF4B => self.window.0,               // window x position
+            0xFF4A => self.position_registers.window().1, // window y position
+            0xFF4B => self.position_registers.window().0, // window x position
             _ => unimplemented!(),
         }
     }
@@ -208,31 +203,19 @@ impl Readable for Video {
 impl Writable for Video {
     fn write(&mut self, address: u16, value: u8) {
         match address {
-            0xFE00..=0xFE9F => {
-                //                if self.mode != StatusMode::LCDTransfer && self.mode != StatusMode::ReadingOAM {
-                self.vram.write(address, value);
-                //                }
-            } // oam
-            0x9800..=0x9FFF | 0x8000..=0x97FF => {
-                //                if self.mode != StatusMode::LCDTransfer {
-                //                    if 0x8000 <= address && 0x97FF >= address {
-                //                        let addressing_mode = self.control.bg_tile_data_addressing();
-                //                        address = addressing_mode.adjust_address(address);
-                //                    }
-                self.vram.write(address, value);
-                //                }
-            } // video ram
-            0xFF40 => self.control.set(value),      // lcdc control
-            0xFF41 => self.status.set(value),       // lcdc status
-            0xFF42 => self.scroll.1 = value,        // lcdc scroll y
-            0xFF43 => self.scroll.0 = value,        // lcdc scroll x
-            0xFF44 => self.ly = 0,                  // reset lcdc LY
-            0xFF45 => self.lyc = value,             // lcdc LYC
-            0xFF47 => self.bg_palette.set(value),   // background & window palette
+            0xFE00..=0xFE9F => self.vram.write(address, value), // oam
+            0x9800..=0x9FFF | 0x8000..=0x97FF => self.vram.write(address, value), // video ram
+            0xFF40 => self.control.set(value), // lcdc control
+            0xFF41 => self.status.set(value), // lcdc status
+            0xFF42 => self.position_registers.set_scroll_y(value, self.mode), // lcdc scroll y
+            0xFF43 => self.position_registers.set_scroll_x(value, self.mode), // lcdc scroll x
+            0xFF44 => self.position_registers.reset_ly(self.mode), // reset lcdc LY
+            0xFF45 => self.position_registers.set_lyc(value, self.mode), // lcdc LYC
+            0xFF47 => self.bg_palette.set(value), // background & window palette
             0xFF48 => self.obj_palette0.set(value), // object palette 0
             0xFF49 => self.obj_palette1.set(value), // object palette 1
-            0xFF4A => self.window.1 = value,        // window y position
-            0xFF4B => self.window.0 = value,        // window x position
+            0xFF4A => self.position_registers.set_window_y(value, self.mode), // window y position
+            0xFF4B => self.position_registers.set_window_x(value, self.mode), // window x position
             _ => unimplemented!(),
         }
     }
