@@ -7,6 +7,8 @@ use rustyboy_core::video::color::ColorFormat;
 use rustyboy_core::video::screen::SCREEN_SIZE;
 use std::slice;
 
+pub const BUFFER_SIZE: usize = 23040;
+
 pub struct Gameboy {
     gameboy: RustGameboy,
 }

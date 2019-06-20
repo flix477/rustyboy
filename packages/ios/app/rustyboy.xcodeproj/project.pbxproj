@@ -7,17 +7,37 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8FC23C8122BBDC7C00B9E1E2 /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FC23C8022BBDC7C00B9E1E2 /* libresolv.tbd */; };
+		8FC23C8522BBDCDB00B9E1E2 /* librustyboy.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FC23C8422BBDCDB00B9E1E2 /* librustyboy.a */; };
+		8FC23C8722BBDCFA00B9E1E2 /* Gameboy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC23C8622BBDCFA00B9E1E2 /* Gameboy.swift */; };
+		8FC23C8A22BC089200B9E1E2 /* Cabin-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8FC23C8922BC089200B9E1E2 /* Cabin-SemiBoldItalic.ttf */; };
+		8FC23C9322BC0BFD00B9E1E2 /* Cabin-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8FC23C8D22BC0BFD00B9E1E2 /* Cabin-SemiBold.ttf */; };
+		8FC23C9522BC0BFD00B9E1E2 /* Cabin-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8FC23C8F22BC0BFD00B9E1E2 /* Cabin-Regular.ttf */; };
+		8FC23C9622BC0BFD00B9E1E2 /* Cabin-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8FC23C9022BC0BFD00B9E1E2 /* Cabin-Medium.ttf */; };
+		8FC23C9B22BC17C100B9E1E2 /* HomeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC23C9A22BC17C100B9E1E2 /* HomeController.swift */; };
 		8FC3289922BB3727008E1EDC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC3289822BB3727008E1EDC /* AppDelegate.swift */; };
-		8FC3289B22BB3727008E1EDC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC3289A22BB3727008E1EDC /* ViewController.swift */; };
+		8FC3289B22BB3727008E1EDC /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC3289A22BB3727008E1EDC /* HomeViewController.swift */; };
 		8FC328A022BB3728008E1EDC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8FC3289F22BB3728008E1EDC /* Assets.xcassets */; };
+		8FF283BC22BC2BD1009177F6 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FF283BB22BC2BD1009177F6 /* GameViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8FC23C7E22BBDA6900B9E1E2 /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
+		8FC23C8022BBDC7C00B9E1E2 /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
+		8FC23C8422BBDCDB00B9E1E2 /* librustyboy.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librustyboy.a; path = ../target/universal/release/librustyboy.a; sourceTree = "<group>"; };
+		8FC23C8622BBDCFA00B9E1E2 /* Gameboy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gameboy.swift; sourceTree = "<group>"; };
+		8FC23C8922BC089200B9E1E2 /* Cabin-SemiBoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Cabin-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
+		8FC23C8D22BC0BFD00B9E1E2 /* Cabin-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Cabin-SemiBold.ttf"; sourceTree = "<group>"; };
+		8FC23C8F22BC0BFD00B9E1E2 /* Cabin-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Cabin-Regular.ttf"; sourceTree = "<group>"; };
+		8FC23C9022BC0BFD00B9E1E2 /* Cabin-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Cabin-Medium.ttf"; sourceTree = "<group>"; };
+		8FC23C9A22BC17C100B9E1E2 /* HomeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeController.swift; sourceTree = "<group>"; };
 		8FC3289522BB3727008E1EDC /* rustyboy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = rustyboy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FC3289822BB3727008E1EDC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		8FC3289A22BB3727008E1EDC /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		8FC3289A22BB3727008E1EDC /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		8FC3289F22BB3728008E1EDC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8FC328A422BB3728008E1EDC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8FF283B922BC2A58009177F6 /* rustyboy.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = rustyboy.entitlements; sourceTree = "<group>"; };
+		8FF283BB22BC2BD1009177F6 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -25,17 +45,49 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8FC23C8522BBDCDB00B9E1E2 /* librustyboy.a in Frameworks */,
+				8FC23C8122BBDC7C00B9E1E2 /* libresolv.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8FC23C7F22BBDC7C00B9E1E2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				8FC23C8422BBDCDB00B9E1E2 /* librustyboy.a */,
+				8FC23C8022BBDC7C00B9E1E2 /* libresolv.tbd */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		8FC23C8822BC087500B9E1E2 /* fonts */ = {
+			isa = PBXGroup;
+			children = (
+				8FC23C9022BC0BFD00B9E1E2 /* Cabin-Medium.ttf */,
+				8FC23C8F22BC0BFD00B9E1E2 /* Cabin-Regular.ttf */,
+				8FC23C8D22BC0BFD00B9E1E2 /* Cabin-SemiBold.ttf */,
+				8FC23C8922BC089200B9E1E2 /* Cabin-SemiBoldItalic.ttf */,
+			);
+			path = fonts;
+			sourceTree = "<group>";
+		};
+		8FC23C9922BC179600B9E1E2 /* home */ = {
+			isa = PBXGroup;
+			children = (
+				8FC3289A22BB3727008E1EDC /* HomeViewController.swift */,
+				8FC23C9A22BC17C100B9E1E2 /* HomeController.swift */,
+			);
+			path = home;
+			sourceTree = "<group>";
+		};
 		8FC3288C22BB3727008E1EDC = {
 			isa = PBXGroup;
 			children = (
 				8FC3289722BB3727008E1EDC /* rustyboy */,
 				8FC3289622BB3727008E1EDC /* Products */,
+				8FC23C7F22BBDC7C00B9E1E2 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -50,12 +102,25 @@
 		8FC3289722BB3727008E1EDC /* rustyboy */ = {
 			isa = PBXGroup;
 			children = (
+				8FF283BA22BC2BBA009177F6 /* game */,
+				8FF283B922BC2A58009177F6 /* rustyboy.entitlements */,
+				8FC23C9922BC179600B9E1E2 /* home */,
+				8FC23C8822BC087500B9E1E2 /* fonts */,
 				8FC3289822BB3727008E1EDC /* AppDelegate.swift */,
-				8FC3289A22BB3727008E1EDC /* ViewController.swift */,
 				8FC3289F22BB3728008E1EDC /* Assets.xcassets */,
 				8FC328A422BB3728008E1EDC /* Info.plist */,
+				8FC23C7E22BBDA6900B9E1E2 /* BridgingHeader.h */,
+				8FC23C8622BBDCFA00B9E1E2 /* Gameboy.swift */,
 			);
 			path = rustyboy;
+			sourceTree = "<group>";
+		};
+		8FF283BA22BC2BBA009177F6 /* game */ = {
+			isa = PBXGroup;
+			children = (
+				8FF283BB22BC2BD1009177F6 /* GameViewController.swift */,
+			);
+			path = game;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -90,6 +155,11 @@
 				TargetAttributes = {
 					8FC3289422BB3727008E1EDC = {
 						CreatedOnToolsVersion = 10.2.1;
+						SystemCapabilities = {
+							com.apple.iCloud = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -117,6 +187,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				8FC328A022BB3728008E1EDC /* Assets.xcassets in Resources */,
+				8FC23C9522BC0BFD00B9E1E2 /* Cabin-Regular.ttf in Resources */,
+				8FC23C9322BC0BFD00B9E1E2 /* Cabin-SemiBold.ttf in Resources */,
+				8FC23C8A22BC089200B9E1E2 /* Cabin-SemiBoldItalic.ttf in Resources */,
+				8FC23C9622BC0BFD00B9E1E2 /* Cabin-Medium.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -127,7 +201,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8FC3289B22BB3727008E1EDC /* ViewController.swift in Sources */,
+				8FF283BC22BC2BD1009177F6 /* GameViewController.swift in Sources */,
+				8FC3289B22BB3727008E1EDC /* HomeViewController.swift in Sources */,
+				8FC23C9B22BC17C100B9E1E2 /* HomeController.swift in Sources */,
+				8FC23C8722BBDCFA00B9E1E2 /* Gameboy.swift in Sources */,
 				8FC3289922BB3727008E1EDC /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -255,15 +332,20 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = rustyboy/rustyboy.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = F98PYWXPW2;
+				ENABLE_BITCODE = NO;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../target/headers/";
 				INFOPLIST_FILE = rustyboy/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/../target/universal/release/";
 				PRODUCT_BUNDLE_IDENTIFIER = com.fleveille.rustyboy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(PROJECT_DIR)/rustyboy/BridgingHeader.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -273,15 +355,20 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = rustyboy/rustyboy.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = F98PYWXPW2;
+				ENABLE_BITCODE = NO;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../target/headers/";
 				INFOPLIST_FILE = rustyboy/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/../target/universal/release/";
 				PRODUCT_BUNDLE_IDENTIFIER = com.fleveille.rustyboy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(PROJECT_DIR)/rustyboy/BridgingHeader.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

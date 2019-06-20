@@ -8,5 +8,5 @@ edition = "2018"
 rustyboy-core = { path = "../core" }
 
 [lib]
-name = "greetings"
+name = "rustyboy"
 crate-type = ["staticlib", "cdylib"]
