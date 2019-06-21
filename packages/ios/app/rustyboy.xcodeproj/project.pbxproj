@@ -42,6 +42,7 @@
 		8FF283BB22BC2BD1009177F6 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		8FF283BD22BC5C84009177F6 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		8FF283C222BC8767009177F6 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		8FF283C522BC9BCB009177F6 /* ShaderDefinitions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderDefinitions.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +126,7 @@
 				8FF283BB22BC2BD1009177F6 /* GameViewController.swift */,
 				8FF283BD22BC5C84009177F6 /* Renderer.swift */,
 				8FF283C222BC8767009177F6 /* Shaders.metal */,
+				8FF283C522BC9BCB009177F6 /* ShaderDefinitions.h */,
 			);
 			path = game;
 			sourceTree = "<group>";
@@ -344,7 +346,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = F98PYWXPW2;
 				ENABLE_BITCODE = NO;
-				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../target/headers/";
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/../target/headers/",
+					"$(PROJECT_DIR)/rustyboy/game/",
+				);
 				INFOPLIST_FILE = rustyboy/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -367,7 +372,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = F98PYWXPW2;
 				ENABLE_BITCODE = NO;
-				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../target/headers/";
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/../target/headers/",
+					"$(PROJECT_DIR)/rustyboy/game/",
+				);
 				INFOPLIST_FILE = rustyboy/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
