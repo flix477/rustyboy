@@ -1,13 +1,14 @@
 use std::os::raw::{c_uchar, c_ulong};
+use std::slice;
 
 use rustyboy_core::cartridge::Cartridge;
 use rustyboy_core::config::Config;
 use rustyboy_core::gameboy::{DeviceType, Gameboy as RustGameboy};
 use rustyboy_core::video::color::ColorFormat;
-use rustyboy_core::video::screen::SCREEN_SIZE;
-use std::slice;
 
-pub const BUFFER_SIZE: usize = 23040;
+pub const SCREEN_WIDTH: usize = 160;
+pub const SCREEN_HEIGHT: usize = 144;
+pub const SCREEN_BUFFER_SIZE: usize = 69_120;
 
 pub struct Gameboy {
     gameboy: RustGameboy,
@@ -37,18 +38,19 @@ pub extern "C" fn gameboy_run_to_vblank(gameboy: *mut Gameboy) -> *mut c_uchar {
         Box::from_raw(gameboy)
     };
     gameboy.gameboy.run_to_vblank();
-    let buffer = gameboy
+    let mut buffer: Box<[u8]> = gameboy
         .gameboy
         .hardware()
         .video()
         .screen()
-        .buffer(ColorFormat::RGB)
-        .into_boxed_slice()
-        .as_mut_ptr();
-    Box::into_raw(gameboy);
-    std::mem::forget(buffer);
+        .buffer(ColorFormat::RGBA)
+        .into_boxed_slice();
 
-    buffer
+    let pointer: *mut c_uchar = buffer.as_mut_ptr();
+    std::mem::forget(buffer);
+    Box::into_raw(gameboy);
+
+    pointer
 }
 
 #[no_mangle]
@@ -67,7 +69,6 @@ pub extern "C" fn buffer_free(buffer: *mut c_uchar) {
         if buffer.is_null() {
             return;
         }
-        let s = slice::from_raw_parts_mut(buffer, SCREEN_SIZE.0 * SCREEN_SIZE.1);
-        s.as_mut_ptr();
+        Box::from_raw(slice::from_raw_parts_mut(buffer, SCREEN_BUFFER_SIZE));
     }
 }
