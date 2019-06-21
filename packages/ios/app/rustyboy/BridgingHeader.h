@@ -10,5 +10,11 @@
 #define BridgingHeader_h
 
 #import "rustyboy.h"
+#include <simd/simd.h>
+
+struct Vertex {
+    vector_float4 color;
+    vector_float2 pos;
+};
 
 #endif /* BridgingHeader_h */

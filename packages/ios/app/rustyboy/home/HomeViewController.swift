@@ -89,7 +89,9 @@ class HomeViewController: UIViewController, UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         switch self.homeController.onFileSelection(path: urls[0]) {
             case .success(let gameboy):
-                print(gameboy)
+                let gameViewController = GameViewController()
+                gameViewController.gameboy = gameboy
+                self.present(gameViewController, animated: true)
             case .failure(let error):
                 self.displayError(error)
         }

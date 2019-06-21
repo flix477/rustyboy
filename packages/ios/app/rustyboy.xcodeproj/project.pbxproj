@@ -19,6 +19,8 @@
 		8FC3289B22BB3727008E1EDC /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC3289A22BB3727008E1EDC /* HomeViewController.swift */; };
 		8FC328A022BB3728008E1EDC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8FC3289F22BB3728008E1EDC /* Assets.xcassets */; };
 		8FF283BC22BC2BD1009177F6 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FF283BB22BC2BD1009177F6 /* GameViewController.swift */; };
+		8FF283BE22BC5C84009177F6 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FF283BD22BC5C84009177F6 /* Renderer.swift */; };
+		8FF283C322BC8767009177F6 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8FF283C222BC8767009177F6 /* Shaders.metal */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +40,8 @@
 		8FC328A422BB3728008E1EDC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8FF283B922BC2A58009177F6 /* rustyboy.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = rustyboy.entitlements; sourceTree = "<group>"; };
 		8FF283BB22BC2BD1009177F6 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
+		8FF283BD22BC5C84009177F6 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
+		8FF283C222BC8767009177F6 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,6 +123,8 @@
 			isa = PBXGroup;
 			children = (
 				8FF283BB22BC2BD1009177F6 /* GameViewController.swift */,
+				8FF283BD22BC5C84009177F6 /* Renderer.swift */,
+				8FF283C222BC8767009177F6 /* Shaders.metal */,
 			);
 			path = game;
 			sourceTree = "<group>";
@@ -202,9 +208,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				8FF283BC22BC2BD1009177F6 /* GameViewController.swift in Sources */,
+				8FF283C322BC8767009177F6 /* Shaders.metal in Sources */,
 				8FC3289B22BB3727008E1EDC /* HomeViewController.swift in Sources */,
 				8FC23C9B22BC17C100B9E1E2 /* HomeController.swift in Sources */,
 				8FC23C8722BBDCFA00B9E1E2 /* Gameboy.swift in Sources */,
+				8FF283BE22BC5C84009177F6 /* Renderer.swift in Sources */,
 				8FC3289922BB3727008E1EDC /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
