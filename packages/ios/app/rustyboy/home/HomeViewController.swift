@@ -67,6 +67,10 @@ class HomeViewController: UIViewController, UIDocumentPickerDelegate {
         return stack
     }()
 
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .default
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.white

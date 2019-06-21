@@ -20,9 +20,10 @@ class Renderer: NSObject, MTKViewDelegate {
         }
 
         let vertices = [
-            Vertex(color: [1, 0, 0, 1], pos: [-1, -1]),
-            Vertex(color: [0, 1, 0, 1], pos: [0, 1]),
-            Vertex(color: [0, 0, 0, 1], pos: [1, -1])
+            Vertex(color: [1, 0, 0, 1], pos: [-1, 1]),
+            Vertex(color: [0, 1, 0, 1], pos: [1, 1]),
+            Vertex(color: [0, 0, 1, 1], pos: [-1, -1]),
+            Vertex(color: [1, 1, 0, 1], pos: [1, -1])
         ]
 
         self.vertexBuffer = self.device.makeBuffer(
@@ -42,12 +43,12 @@ class Renderer: NSObject, MTKViewDelegate {
         guard let commandBuffer = self.commandQueue.makeCommandBuffer() else { return }
 
         guard let renderPassDescriptor = view.currentRenderPassDescriptor else { return }
-        renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(1, 0, 0, 1)
+        renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 1)
 
         guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
         renderEncoder.setRenderPipelineState(self.pipelineState)
         renderEncoder.setVertexBuffer(self.vertexBuffer, offset: 0, index: 0)
-        renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3)
+        renderEncoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         renderEncoder.endEncoding()
 
         commandBuffer.present(view.currentDrawable!)
