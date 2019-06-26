@@ -62,7 +62,9 @@ class Renderer: NSObject, MTKViewDelegate {
         guard let renderPassDescriptor = view.currentRenderPassDescriptor else { return }
         renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 1)
 
-        guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
+        guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(
+            descriptor: renderPassDescriptor
+        ) else { return }
         renderEncoder.setRenderPipelineState(self.pipelineState)
         renderEncoder.setVertexBuffer(self.vertexBuffer, offset: 0, index: 0)
         renderEncoder.setFragmentTexture(self.texture, index: 0)

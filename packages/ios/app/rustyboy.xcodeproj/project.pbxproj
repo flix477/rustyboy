@@ -8,9 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		6781C00E5F851B0D675C5DA2 /* Pods_rustyboy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 059802735743B0EE959F4EA4 /* Pods_rustyboy.framework */; };
-		8F75AE5A22BD70B80085E2FA /* CartridgeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F75AE5922BD70B80085E2FA /* CartridgeViewModel.swift */; };
-		8F75AE5E22BD77BE0085E2FA /* CartridgeCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F75AE5D22BD77BE0085E2FA /* CartridgeCollection.swift */; };
-		8F75AE6022BD787B0085E2FA /* CartridgeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F75AE5F22BD787B0085E2FA /* CartridgeCollectionViewCell.swift */; };
 		8FB2623822BD9EFC00FFFCCB /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB2623722BD9EFC00FFFCCB /* Theme.swift */; };
 		8FB2623A22C168FE00FFFCCB /* DirectionalPadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB2623922C168FE00FFFCCB /* DirectionalPadView.swift */; };
 		8FB2623D22C1823D00FFFCCB /* ControllerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB2623C22C1823D00FFFCCB /* ControllerView.swift */; };
@@ -35,9 +32,6 @@
 /* Begin PBXFileReference section */
 		059802735743B0EE959F4EA4 /* Pods_rustyboy.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_rustyboy.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DAEDABD16D6BA5512CB24FD /* Pods-rustyboy.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-rustyboy.debug.xcconfig"; path = "Pods/Target Support Files/Pods-rustyboy/Pods-rustyboy.debug.xcconfig"; sourceTree = "<group>"; };
-		8F75AE5922BD70B80085E2FA /* CartridgeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartridgeViewModel.swift; sourceTree = "<group>"; };
-		8F75AE5D22BD77BE0085E2FA /* CartridgeCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartridgeCollection.swift; sourceTree = "<group>"; };
-		8F75AE5F22BD787B0085E2FA /* CartridgeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartridgeCollectionViewCell.swift; sourceTree = "<group>"; };
 		8FB2623722BD9EFC00FFFCCB /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		8FB2623922C168FE00FFFCCB /* DirectionalPadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionalPadView.swift; sourceTree = "<group>"; };
 		8FB2623C22C1823D00FFFCCB /* ControllerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerView.swift; sourceTree = "<group>"; };
@@ -125,9 +119,6 @@
 			children = (
 				8FC3289A22BB3727008E1EDC /* HomeViewController.swift */,
 				8FC23C9A22BC17C100B9E1E2 /* HomeController.swift */,
-				8F75AE5922BD70B80085E2FA /* CartridgeViewModel.swift */,
-				8F75AE5D22BD77BE0085E2FA /* CartridgeCollection.swift */,
-				8F75AE5F22BD787B0085E2FA /* CartridgeCollectionViewCell.swift */,
 			);
 			path = home;
 			sourceTree = "<group>";
@@ -190,6 +181,7 @@
 				8FC3289122BB3727008E1EDC /* Sources */,
 				8FC3289222BB3727008E1EDC /* Frameworks */,
 				8FC3289322BB3727008E1EDC /* Resources */,
+				8FFA0B7822C3EE4F00CE7C37 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -276,6 +268,23 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		8FFA0B7822C3EE4F00CE7C37 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/SwiftLint/swiftlint\" --strict\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -283,7 +292,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8F75AE6022BD787B0085E2FA /* CartridgeCollectionViewCell.swift in Sources */,
 				8FF283BC22BC2BD1009177F6 /* GameViewController.swift in Sources */,
 				8FB2623A22C168FE00FFFCCB /* DirectionalPadView.swift in Sources */,
 				8FF283C322BC8767009177F6 /* Shaders.metal in Sources */,
@@ -294,10 +302,8 @@
 				8FC23C8722BBDCFA00B9E1E2 /* Gameboy.swift in Sources */,
 				8FB2623F22C1875F00FFFCCB /* ABButtonsView.swift in Sources */,
 				8FF283BE22BC5C84009177F6 /* Renderer.swift in Sources */,
-				8F75AE5E22BD77BE0085E2FA /* CartridgeCollection.swift in Sources */,
 				8FB2624122C1CB1400FFFCCB /* StartSelectButtonsView.swift in Sources */,
 				8FC3289922BB3727008E1EDC /* AppDelegate.swift in Sources */,
-				8F75AE5A22BD70B80085E2FA /* CartridgeViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

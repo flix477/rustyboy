@@ -9,7 +9,7 @@ class StartSelectButtonsView: UIView {
         return true
     }
 
-    var onButtonEvent: ((ButtonType, ButtonEventType) -> ())?
+    var onButtonEvent: ((ButtonType, ButtonEventType) -> Void)?
 
     lazy var startButton: UIButton = {
         let button = StartSelectButtonsView.createButton()
@@ -58,13 +58,21 @@ class StartSelectButtonsView: UIView {
 
         self.selectImageView.trailingAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
         self.selectImageView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
-        self.selectImageView.heightAnchor.constraint(equalToConstant: StartSelectButtonsView.buttonImageSize.1).isActive = true
-        self.selectImageView.widthAnchor.constraint(equalToConstant: StartSelectButtonsView.buttonImageSize.0).isActive = true
+        self.selectImageView.heightAnchor.constraint(
+            equalToConstant: StartSelectButtonsView.buttonImageSize.1
+        ).isActive = true
+        self.selectImageView.widthAnchor.constraint(
+            equalToConstant: StartSelectButtonsView.buttonImageSize.0
+        ).isActive = true
 
         self.startImageView.leadingAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
         self.startImageView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
-        self.startImageView.heightAnchor.constraint(equalToConstant: StartSelectButtonsView.buttonImageSize.1).isActive = true
-        self.startImageView.widthAnchor.constraint(equalToConstant: StartSelectButtonsView.buttonImageSize.0).isActive = true
+        self.startImageView.heightAnchor.constraint(
+            equalToConstant: StartSelectButtonsView.buttonImageSize.1
+        ).isActive = true
+        self.startImageView.widthAnchor.constraint(
+            equalToConstant: StartSelectButtonsView.buttonImageSize.0
+        ).isActive = true
 
         self.selectButton.trailingAnchor.constraint(equalTo: self.centerXAnchor, constant: CGFloat(-2)).isActive = true
         self.selectButton.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
@@ -105,4 +113,3 @@ class StartSelectButtonsView: UIView {
         return button
     }
 }
-

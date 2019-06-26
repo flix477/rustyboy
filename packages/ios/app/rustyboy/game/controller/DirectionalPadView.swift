@@ -15,30 +15,30 @@ class DirectionalPadView: UIView {
         return true
     }
 
-    var onButtonEvent: ((ButtonType, ButtonEventType) -> ())?
+    var onButtonEvent: ((ButtonType, ButtonEventType) -> Void)?
 
-    lazy var down: UIButton = {
+    lazy var downButton: UIButton = {
         let button = DirectionalPadView.createButton()
         button.addTarget(self, action: #selector(self.downButtonDown), for: .touchDown)
         button.addTarget(self, action: #selector(self.downButtonUp), for: .touchUpInside)
         return button
     }()
 
-    lazy var up: UIButton = {
+    lazy var upButton: UIButton = {
         let button = DirectionalPadView.createButton()
         button.addTarget(self, action: #selector(self.upButtonDown), for: .touchDown)
         button.addTarget(self, action: #selector(self.upButtonUp), for: .touchUpInside)
         return button
     }()
 
-    lazy var left: UIButton = {
+    lazy var leftButton: UIButton = {
         let button = DirectionalPadView.createButton()
         button.addTarget(self, action: #selector(self.leftButtonDown), for: .touchDown)
         button.addTarget(self, action: #selector(self.leftButtonUp), for: .touchUpInside)
         return button
     }()
 
-    lazy var right: UIButton = {
+    lazy var rightButton: UIButton = {
         let button = DirectionalPadView.createButton()
         button.addTarget(self, action: #selector(self.rightButtonDown), for: .touchDown)
         button.addTarget(self, action: #selector(self.rightButtonUp), for: .touchUpInside)
@@ -62,24 +62,24 @@ class DirectionalPadView: UIView {
         self.addGestureRecognizer(self.panGestureRecognizer)
 
         self.addSubview(self.imageView)
-        self.addSubview(self.down)
-        self.addSubview(self.up)
-        self.addSubview(self.left)
-        self.addSubview(self.right)
+        self.addSubview(self.downButton)
+        self.addSubview(self.upButton)
+        self.addSubview(self.leftButton)
+        self.addSubview(self.rightButton)
 
         self.translatesAutoresizingMaskIntoConstraints = false
 
-        self.down.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
-        self.down.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
+        self.downButton.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+        self.downButton.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
 
-        self.up.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
-        self.up.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
+        self.upButton.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+        self.upButton.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
 
-        self.left.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
-        self.left.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
+        self.leftButton.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
+        self.leftButton.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
 
-        self.right.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
-        self.right.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
+        self.rightButton.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
+        self.rightButton.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
 
         self.imageView.leadingAnchor.constraint(
             equalTo: self.leadingAnchor,
@@ -152,7 +152,7 @@ class DirectionalPadView: UIView {
     }
 
     func buttons() -> [UIButton] {
-        return [self.down, self.up, self.right, self.left]
+        return [self.downButton, self.upButton, self.rightButton, self.leftButton]
     }
 
     @objc func onPan() {
@@ -160,7 +160,6 @@ class DirectionalPadView: UIView {
         let state = self.panGestureRecognizer.state
         guard let button = self.hitTest(point, with: nil) as? UIButton else {
             if let pressed = self.pressed {
-                print(state.toString())
                 self.onButtonEvent?(pressed, .up)
                 self.pressed = nil
             }
@@ -189,35 +188,16 @@ class DirectionalPadView: UIView {
 
     func buttonType(_ button: UIButton) -> ButtonType? {
         switch button {
-        case self.down:
+        case self.downButton:
             return .down
-        case self.up:
+        case self.upButton:
             return .up
-        case self.left:
+        case self.leftButton:
             return .left
-        case self.right:
+        case self.rightButton:
             return .right
         default:
             return nil
-        }
-    }
-}
-
-extension UIGestureRecognizer.State {
-    func toString() -> String {
-        switch self {
-        case .began:
-            return "began"
-        case .cancelled:
-            return "cancelled"
-        case .changed:
-            return "changed"
-        case .ended:
-            return "ended"
-        case .failed:
-            return "failed"
-        case .possible:
-            return "possible"
         }
     }
 }

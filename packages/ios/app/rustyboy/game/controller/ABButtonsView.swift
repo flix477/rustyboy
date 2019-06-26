@@ -14,7 +14,7 @@ class ABButtonsView: UIView {
         return true
     }
 
-    var onButtonEvent: ((ButtonType, ButtonEventType) -> ())?
+    var onButtonEvent: ((ButtonType, ButtonEventType) -> Void)?
 
     lazy var aButton: UIButton = {
         let button = ABButtonsView.createButton()
@@ -103,7 +103,6 @@ class ABButtonsView: UIView {
         let state = self.panGestureRecognizer.state
         guard let button = self.hitTest(point, with: nil) as? UIButton else {
             if let pressed = self.pressed {
-                print(state.toString())
                 self.onButtonEvent?(pressed, .up)
                 self.pressed = nil
             }
@@ -149,4 +148,3 @@ class ABButtonsView: UIView {
         return button
     }
 }
-

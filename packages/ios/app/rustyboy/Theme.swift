@@ -11,6 +11,6 @@ class Theme {
         semiBold: "Cabin-SemiBold",
         semiBoldItalic: "Cabin-SemiBoldItalic"
     )
-    
+
     static let tintColor = UIColor.init(red: 169, green: 60, blue: 111)
 }

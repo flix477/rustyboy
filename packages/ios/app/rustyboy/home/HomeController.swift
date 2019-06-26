@@ -6,7 +6,7 @@ enum GameLoadError: Error {
 }
 
 class HomeController {
-    func onFileSelection(path: URL, _ completion: @escaping (Result<Gameboy, GameLoadError>) -> ()) {
+    func onFileSelection(path: URL, _ completion: @escaping (Result<Gameboy, GameLoadError>) -> Void) {
         DispatchQueue.asyncResult(execute: { () -> Result<NSData, GameLoadError> in
             guard let data = NSData(contentsOf: path) else {
                 return .failure(GameLoadError.errorOpeningFile)
@@ -28,22 +28,6 @@ class HomeController {
         })
     }
 
-    // TODO
-    func localGames() -> [CartridgeViewModel] {
-        let documents = self.getDocumentsPath()
-        let files = try! FileManager.default.contentsOfDirectory(
-            at: documents,
-            includingPropertiesForKeys: [.contentModificationDateKey, .nameKey]
-        )
-        .filter({$0.pathExtension == "gb"})
-
-        return files.map({ file in
-            let attributes = try! FileManager.default.attributesOfItem(atPath: file.absoluteString)
-            let modificationDate = attributes[.modificationDate] as! Date
-            return CartridgeViewModel(name: file.lastPathComponent, lastPlayed: modificationDate, url: file)
-        })
-    }
-
     func getDocumentsPath() -> URL {
         return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
@@ -59,7 +43,7 @@ class HomeController {
 }
 
 extension DispatchQueue {
-    class func asyncResult<T>(execute: @escaping () -> T, completion: @escaping (T) -> ()) {
+    class func asyncResult<T>(execute: @escaping () -> T, completion: @escaping (T) -> Void) {
         DispatchQueue.global().async {
             let result = execute()
             DispatchQueue.main.async {

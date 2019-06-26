@@ -7,7 +7,7 @@ class ControllerView: UIView {
     static let startSelectSize = (CGFloat(180), CGFloat(56))
     static let margin = CGFloat(8)
     static let spacing = CGFloat(38)
-    var onButtonEvent: ((ButtonType, ButtonEventType) -> ())?
+    var onButtonEvent: ((ButtonType, ButtonEventType) -> Void)?
 
     lazy var directionalPad: DirectionalPadView = {
         let directionalPad = DirectionalPadView()

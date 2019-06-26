@@ -17,7 +17,6 @@ class HomeViewController: UIViewController, UIDocumentPickerDelegate {
         return .default
     }
 
-    // TODO: find out why it's clipped
     lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: Theme.fontFamily.semiBoldItalic, size: 56 )!
@@ -101,12 +100,12 @@ class HomeViewController: UIViewController, UIDocumentPickerDelegate {
         self.homeController.onFileSelection(path: urls[0]) { result in
             self.loading = false
             switch result {
-                case .success(let gameboy):
-                    let gameViewController = GameViewController()
-                    gameViewController.gameboy = gameboy
-                    self.present(gameViewController, animated: true)
-                case .failure(let error):
-                    self.displayError(error)
+            case .success(let gameboy):
+                let gameViewController = GameViewController()
+                gameViewController.gameboy = gameboy
+                self.present(gameViewController, animated: true)
+            case .failure(let error):
+                self.displayError(error)
             }
         }
     }
