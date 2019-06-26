@@ -6,6 +6,8 @@ use rustyboy_core::config::Config;
 use rustyboy_core::gameboy::{DeviceType, Gameboy as RustGameboy};
 use rustyboy_core::video::color::ColorFormat;
 
+pub mod input;
+
 pub const SCREEN_WIDTH: usize = 160;
 pub const SCREEN_HEIGHT: usize = 144;
 pub const SCREEN_BUFFER_SIZE: usize = 69_120;

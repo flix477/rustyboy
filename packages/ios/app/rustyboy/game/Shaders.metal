@@ -19,7 +19,7 @@ vertex VertexOut vertexShader(const device Vertex *vertexArray [[buffer(0)]], un
 }
 
 fragment float4 fragmentShader(VertexOut in [[stage_in]], texture2d<half> texture [[texture(0)]]) {
-    constexpr sampler textureSampler (mag_filter::linear, min_filter::linear);
+    constexpr sampler textureSampler (mag_filter::nearest, min_filter::nearest);
     const half4 color = texture.sample(textureSampler, in.textureCoordinate);
     return float4(color);
 }

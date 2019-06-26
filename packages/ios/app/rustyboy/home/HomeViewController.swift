@@ -1,12 +1,26 @@
 import UIKit
 
 class HomeViewController: UIViewController, UIDocumentPickerDelegate {
-    var homeController = HomeController()
+    let homeController = HomeController()
+
+    private var _loading = false
+    var loading: Bool {
+        get { return self._loading }
+        set {
+            self._loading = newValue
+            self.loadFileButton.isEnabled = !newValue
+            self.optionsButton.isEnabled = !newValue
+        }
+    }
+
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .default
+    }
 
     // TODO: find out why it's clipped
     lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "Cabin-SemiBoldItalic", size: 56 )!
+        label.font = UIFont(name: Theme.fontFamily.semiBoldItalic, size: 56 )!
         let attributedTitle = NSAttributedString(
             string: "GAME BOY",
             attributes: [
@@ -22,11 +36,11 @@ class HomeViewController: UIViewController, UIDocumentPickerDelegate {
 
     lazy var loadFileButton: UIButton = {
         let button = UIButton(type: .custom)
-        button.backgroundColor = UIColor.init(red: 169, green: 60, blue: 111)
+        button.backgroundColor = Theme.tintColor
         button.setTitleColor(UIColor.white, for: .normal)
         button.setTitleColor(UIColor.lightGray, for: .highlighted)
         button.setTitle("Load game", for: .normal)
-        button.titleLabel?.font = UIFont(name: "Cabin-SemiBold", size: 24)
+        button.titleLabel?.font = UIFont(name: Theme.fontFamily.semiBold, size: 24)
         button.contentEdgeInsets = UIEdgeInsets(top: 24, left: 64, bottom: 24, right: 64)
         button.layer.cornerRadius = 5
         button.addTarget(self, action: #selector(self.loadFileButtonPressed), for: .touchUpInside)
@@ -39,7 +53,7 @@ class HomeViewController: UIViewController, UIDocumentPickerDelegate {
         button.setTitleColor(UIColor.init(red: 45, green: 45, blue: 45), for: .normal)
         button.setTitleColor(UIColor.lightGray, for: .highlighted)
         button.setTitle("Options", for: .normal)
-        button.titleLabel?.font = UIFont(name: "Cabin-SemiBold", size: 18)
+        button.titleLabel?.font = UIFont(name: Theme.fontFamily.semiBold, size: 18)
         button.contentEdgeInsets = UIEdgeInsets(top: 16, left: 64, bottom: 16, right: 64)
 
         return button
@@ -67,18 +81,10 @@ class HomeViewController: UIViewController, UIDocumentPickerDelegate {
         return stack
     }()
 
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .default
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.white
         self.view.addSubview(self.containerStackView)
-        self.setupStackView()
-    }
-
-    func setupStackView() {
         self.containerStackView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
         self.containerStackView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor).isActive = true
     }
@@ -91,33 +97,24 @@ class HomeViewController: UIViewController, UIDocumentPickerDelegate {
     }
 
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        switch self.homeController.onFileSelection(path: urls[0]) {
-            case .success(let gameboy):
-                let gameViewController = GameViewController()
-                gameViewController.gameboy = gameboy
-                self.present(gameViewController, animated: true)
-            case .failure(let error):
-                self.displayError(error)
+        self.loading = true
+        self.homeController.onFileSelection(path: urls[0]) { result in
+            self.loading = false
+            switch result {
+                case .success(let gameboy):
+                    let gameViewController = GameViewController()
+                    gameViewController.gameboy = gameboy
+                    self.present(gameViewController, animated: true)
+                case .failure(let error):
+                    self.displayError(error)
+            }
         }
     }
 
     func displayError(_ error: GameLoadError) {
-        var errorString = ""
-        switch error {
-        case .errorOpeningFile:
-            errorString = "An error occured while opening this file"
-        case .notAGameboyROM:
-            errorString = "This file does not appear to be a valid GameBoy ROM"
-        }
-
+        let errorString = self.homeController.errorToString(error)
         let alert = UIAlertController.init(title: "Error loading game", message: errorString, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         self.present(alert, animated: true)
-    }
-}
-
-extension UIColor {
-    convenience init(red: CGFloat, green: CGFloat, blue: CGFloat) {
-        self.init(red: red / 255, green: green / 255, blue: blue / 255, alpha: 1.0)
     }
 }

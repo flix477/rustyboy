@@ -4,23 +4,13 @@ import MetalKit
 class Renderer: NSObject, MTKViewDelegate {
     let device: MTLDevice
     let mtkView: MTKView
-    let commandQueue: MTLCommandQueue
     let pipelineState: MTLRenderPipelineState
-    let vertexBuffer: MTLBuffer
-    let texture: MTLTexture
-    var onDraw: (() -> UnsafeMutablePointer<UInt8>)?
 
-    init?(mtkView: MTKView) {
-        self.mtkView = mtkView
-        self.device = mtkView.device!
-        self.commandQueue = self.device.makeCommandQueue()!
-        do {
-            self.pipelineState = try Renderer.buildRenderPipelineWith(device: self.device, metalKitView: self.mtkView)
-        } catch {
-            print("Unable to compile render pipeline state: \(error)")
-            return nil
-        }
+    lazy var commandQueue: MTLCommandQueue = {
+        return self.device.makeCommandQueue()!
+    }()
 
+    lazy var vertexBuffer: MTLBuffer = {
         let vertices = [
             Vertex(textureCoordinate: [0, 0], position: [-1, 1]),
             Vertex(textureCoordinate: [1, 0], position: [1, 1]),
@@ -28,18 +18,32 @@ class Renderer: NSObject, MTKViewDelegate {
             Vertex(textureCoordinate: [1, 1], position: [1, -1])
         ]
 
-        self.vertexBuffer = self.device.makeBuffer(
+        return self.device.makeBuffer(
             bytes: vertices,
             length: vertices.count * MemoryLayout<Vertex>.stride,
             options: []
         )!
+    }()
 
+    lazy var texture: MTLTexture = {
         let textureDescriptor = MTLTextureDescriptor()
         textureDescriptor.pixelFormat = self.mtkView.colorPixelFormat
-        // todo: put those in rustyboy header
-        textureDescriptor.width = 160
-        textureDescriptor.height = 144
-        self.texture = self.device.makeTexture(descriptor: textureDescriptor)!
+        textureDescriptor.width = Int(SCREEN_WIDTH)
+        textureDescriptor.height = Int(SCREEN_HEIGHT)
+        return self.device.makeTexture(descriptor: textureDescriptor)!
+    }()
+
+    var onDraw: (() -> UnsafeMutablePointer<UInt8>)?
+
+    init?(mtkView: MTKView) {
+        self.mtkView = mtkView
+        self.device = mtkView.device!
+        do {
+            self.pipelineState = try Renderer.buildRenderPipelineWith(device: self.device, metalKitView: self.mtkView)
+        } catch {
+            print("Unable to compile render pipeline state: \(error)")
+            return nil
+        }
 
         super.init()
     }
@@ -79,14 +83,12 @@ class Renderer: NSObject, MTKViewDelegate {
     }
 
     func updateTextureWith(bufferPointer: UnsafeMutablePointer<UInt8>) {
-        let size = (160, 144)
-
         let region = MTLRegion(
             origin: MTLOrigin(x: 0, y: 0, z: 0),
-            size: MTLSize(width: size.0, height: size.1, depth: 1)
+            size: MTLSize(width: Int(SCREEN_WIDTH), height: Int(SCREEN_HEIGHT), depth: 1)
         )
 
-        let bytesPerRow = 4 * size.0
+        let bytesPerRow = 4 * Int(SCREEN_WIDTH)
 
         self.texture.replace(
             region: region,

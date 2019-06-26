@@ -16,6 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         window = UIWindow(frame: UIScreen.main.bounds)
+        window!.tintColor = Theme.tintColor
         let homeViewController = HomeViewController()
         window!.rootViewController = homeViewController
         window!.makeKeyAndVisible()
@@ -47,3 +48,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 }
 
+extension UIColor {
+    convenience init(red: CGFloat, green: CGFloat, blue: CGFloat) {
+        self.init(red: red / 255, green: green / 255, blue: blue / 255, alpha: 1.0)
+    }
+}
