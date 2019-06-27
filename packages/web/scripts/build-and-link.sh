@@ -9,7 +9,13 @@ if [ ! -w pkg ]; then
 fi
 
 cd pkg
-npm link
+
+if [! -w /usr/local/lib/node_modules ]; then
+    sudo npm link
+else
+    npm link
+fi
+
 cd ../frontend
 npm link rustyboy-web
 cd ..
