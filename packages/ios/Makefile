@@ -1,16 +1,7 @@
-.PHONY: build test lint build-lib build-app test-lib lint-lib format-lib clippy-lib lint-app
+.PHONY: build test lint test-lib lint-lib format-lib clippy-lib lint-app
 
-build-lib:
-	cargo install cargo-lipo; \
-	cargo lipo --release; \
-	mkdir target/headers; \
-	cbindgen src/lib.rs -l c > target/headers/rustyboy.h
-
-build-app: build-lib
-	cd app; \
-	xcodebuild clean build -workspace rustyboy.xcworkspace -scheme rustyboy -destination "platform=iOS Simulator,name=iPhone Xs,OS=12.2" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=NO -quiet
-
-build: build-app
+build:
+	./scripts/build.sh
 
 test-lib:
 	cargo test
