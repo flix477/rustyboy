@@ -81,7 +81,7 @@ struct RunOptions {
 }
 
 fn start_emulation(cartridge: Cartridge, config: Config, options: RunOptions) {
-    let mut gameboy = Gameboy::new(cartridge, config).unwrap();
+    let mut gameboy = Gameboy::new(cartridge, config);
 
     let mut windows = create_windows(options);
 
@@ -97,18 +97,6 @@ fn start_emulation(cartridge: Cartridge, config: Config, options: RunOptions) {
 fn create_windows(_options: RunOptions) -> Vec<Box<dyn Window>> {
     let main_window = MainWindow::new();
     let windows: Vec<Box<dyn Window>> = vec![Box::new(main_window)];
-
-    //    if options.show_background {
-    //        windows.push(Box::new(BackgroundWindow::new()));
-    //    }
-    //
-    //    if options.show_tile_data {
-    //        windows.push(Box::new(TileDataWindow::new()));
-    //    }
-    //
-    //    if options.show_sprite_data {
-    //        windows.push(Box::new(SpriteDataWindow::new()));
-    //    }
 
     windows
 }

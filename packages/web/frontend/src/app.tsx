@@ -9,7 +9,9 @@ function useWasm() {
     async function loadWasm() {
       try {
         setWasm(await imports());
-      } catch (err) {}
+      } catch (err) {
+        alert('Error loading WebAssembly module: ' + err);
+      }
     }
 
     loadWasm();
@@ -24,7 +26,7 @@ const App: FunctionComponent = () => {
   const Gameboy = imports && imports.Gameboy && imports.Gameboy.default;
   const [game, setGame] = useState<Blob>();
   const [gameboy, setGameboy] = useState<GameboyType>();
-  const loading = !Boolean(imports);
+  const loading = !imports;
 
   useEffect(() => {
     async function load() {
@@ -34,7 +36,7 @@ const App: FunctionComponent = () => {
           const uint8View = new Uint8Array(arrayBuffer);
           setGameboy(rustyboy.setup(uint8View));
         } catch (err) {
-          console.error(err);
+          alert('Error loading Rustyboy: ' + err);
         }
       }
     }
@@ -49,12 +51,12 @@ const App: FunctionComponent = () => {
         {gameboy && Gameboy && <Gameboy gameboy={gameboy} />}
         <input type="file" accept=".gb" onChange={value => {
           if (value.target.files && value.target.files[0]) {
-            setGame(value.target.files[0])
+            setGame(value.target.files[0]);
           }
         }} />
       </div>
     </div>
   );
-}
+};
 
 export default App;

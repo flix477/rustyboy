@@ -17,9 +17,9 @@ pub struct Gameboy {
 }
 
 #[no_mangle]
-pub extern "C" fn create_gameboy(buffer: *const c_uchar, length: c_ulong) -> *mut Gameboy {
+pub unsafe extern "C" fn create_gameboy(buffer: *const c_uchar, length: c_ulong) -> *mut Gameboy {
     assert!(!buffer.is_null(), "Cartridge buffer is null");
-    let buffer: &[c_uchar] = unsafe { slice::from_raw_parts(buffer, length as usize) };
+    let buffer: &[c_uchar] = slice::from_raw_parts(buffer, length as usize);
 
     let cartridge = Cartridge::from_buffer(buffer.to_vec()).unwrap();
     let config = Config {
@@ -34,8 +34,8 @@ pub extern "C" fn create_gameboy(buffer: *const c_uchar, length: c_ulong) -> *mu
 }
 
 #[no_mangle]
-pub extern "C" fn gameboy_run_to_vblank(gameboy: *mut Gameboy) -> *mut c_uchar {
-    let mut gameboy = unsafe {
+pub unsafe extern "C" fn gameboy_run_to_vblank(gameboy: *mut Gameboy) -> *mut c_uchar {
+    let mut gameboy = {
         assert!(!gameboy.is_null(), "Gameboy is null");
         Box::from_raw(gameboy)
     };
@@ -56,21 +56,17 @@ pub extern "C" fn gameboy_run_to_vblank(gameboy: *mut Gameboy) -> *mut c_uchar {
 }
 
 #[no_mangle]
-pub extern "C" fn gameboy_free(gameboy: *mut Gameboy) {
-    unsafe {
-        if gameboy.is_null() {
-            return;
-        }
-        Box::from_raw(gameboy);
+pub unsafe extern "C" fn gameboy_free(gameboy: *mut Gameboy) {
+    if gameboy.is_null() {
+        return;
     }
+    Box::from_raw(gameboy);
 }
 
 #[no_mangle]
-pub extern "C" fn buffer_free(buffer: *mut c_uchar) {
-    unsafe {
-        if buffer.is_null() {
-            return;
-        }
-        Box::from_raw(slice::from_raw_parts_mut(buffer, SCREEN_BUFFER_SIZE));
+pub unsafe extern "C" fn buffer_free(buffer: *mut c_uchar) {
+    if buffer.is_null() {
+        return;
     }
+    Box::from_raw(slice::from_raw_parts_mut(buffer, SCREEN_BUFFER_SIZE));
 }

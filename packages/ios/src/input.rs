@@ -1,5 +1,5 @@
-use rustyboy_core::hardware::joypad::{Button, InputType as RustInputType, Input};
 use crate::Gameboy;
+use rustyboy_core::hardware::joypad::{Button, Input, InputType as RustInputType};
 
 #[repr(C)]
 #[derive(Copy, Clone, PartialEq, Debug)]
@@ -46,16 +46,18 @@ impl Into<RustInputType> for InputType {
 }
 
 #[no_mangle]
-pub extern "C" fn gameboy_send_input(gameboy: *mut Gameboy, button: InputButton, input_type: InputType) {
-    let mut gameboy = unsafe {
+pub unsafe extern "C" fn gameboy_send_input(
+    gameboy: *mut Gameboy,
+    button: InputButton,
+    input_type: InputType,
+) {
+    let mut gameboy = {
         assert!(!gameboy.is_null(), "Gameboy is null");
         Box::from_raw(gameboy)
     };
-    gameboy.gameboy.send_input(
-        Input {
-            button: button.into(),
-            input_type: input_type.into()
-        }
-    );
+    gameboy.gameboy.send_input(Input {
+        button: button.into(),
+        input_type: input_type.into(),
+    });
     Box::into_raw(gameboy);
 }

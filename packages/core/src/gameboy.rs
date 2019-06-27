@@ -1,4 +1,3 @@
-
 use crate::cartridge::Cartridge;
 use crate::config::Config;
 use crate::hardware::{joypad::Input, Hardware};
