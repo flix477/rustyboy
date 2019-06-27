@@ -1,15 +1,9 @@
 .PHONY: build test lint build-lib link-lib build-app test-lib lint-lib format-lib clippy-lib lint-app
 
 build-lib:
-	wasm-pack build
+	./scripts/build-and-link.sh
 
-link-lib: build-lib
-	cd pkg; \
-	npm link; \
-	cd ../frontend; \
-	npm link rustyboy-web
-
-build-app: link-lib
+build-app: build-lib
 	cd frontend; npm run build
 
 build: build-app
