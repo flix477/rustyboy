@@ -1,10 +1,15 @@
-.PHONY: build test lint build-lib link-lib build-app test-lib lint-lib format-lib clippy-lib lint-app
+.PHONY: build test lint build-lib link-lib build-app test-lib lint-lib format-lib clippy-lib lint-app install-dependencies
+
+install-dependencies:
+	cd frontend; \
+	npm i
 
 build-lib:
 	./scripts/build-and-link.sh
 
-build-app: build-lib
-	cd frontend; npm run build
+build-app: install-dependencies build-lib
+	cd frontend; \
+	npm run build
 
 build: build-app
 
@@ -23,7 +28,7 @@ clippy-lib:
 
 lint-lib: format-lib clippy-lib
 
-lint-app:
+lint-app: install-dependencies
 	cd frontend; \
  	npx eslint --ext .tsx --ext .ts src/ --max-warnings=0
 
