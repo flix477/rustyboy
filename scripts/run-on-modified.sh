@@ -17,12 +17,12 @@ fi
 CWD=$(pwd)
 
 while read -r line; do
-    cd $line
-    eval $COMMAND
+    cd "$line"
+    eval "$COMMAND"
     EXIT_CODE=$?
     if [[ $EXIT_CODE -ne 0 ]]; then
         exit $EXIT_CODE
     fi
-    cd $CWD
+    cd "$CWD"
 done <<< "$CHANGED_PACKAGES"
 

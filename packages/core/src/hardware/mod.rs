@@ -1,5 +1,3 @@
-use std::error::Error;
-
 use crate::bus::{Bus, Readable, Writable};
 use crate::cartridge::Cartridge;
 use crate::processor::interrupt::{Interrupt, InterruptHandler};
@@ -23,8 +21,8 @@ pub struct Hardware {
 }
 
 impl Hardware {
-    pub fn new(cartridge: Cartridge) -> Result<Hardware, Box<dyn Error>> {
-        Ok(Hardware {
+    pub fn new(cartridge: Cartridge) -> Hardware {
+        Hardware {
             cartridge,
             interrupt_handler: InterruptHandler::new(),
             joypad: Joypad::new(),
@@ -32,7 +30,7 @@ impl Hardware {
             video: Video::default(),
             internal_ram: [0; 8192],
             high_ram: [0; 127],
-        })
+        }
     }
 
     pub fn clock(&mut self) -> Option<StatusMode> {

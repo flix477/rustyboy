@@ -1,5 +1,3 @@
-use std::error::Error;
-
 use crate::cartridge::Cartridge;
 use crate::config::Config;
 use crate::hardware::{joypad::Input, Hardware};
@@ -12,11 +10,11 @@ pub struct Gameboy {
 }
 
 impl Gameboy {
-    pub fn new(cartridge: Cartridge, config: Config) -> Result<Gameboy, Box<dyn Error>> {
-        Ok(Gameboy {
+    pub fn new(cartridge: Cartridge, config: Config) -> Gameboy {
+        Gameboy {
             processor: Processor::new(config.debugger),
-            hardware: Hardware::new(cartridge)?,
-        })
+            hardware: Hardware::new(cartridge),
+        }
     }
 
     pub fn run_to_vblank(&mut self) {

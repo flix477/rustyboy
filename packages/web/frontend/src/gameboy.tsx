@@ -6,11 +6,25 @@ async function update(gameboy: GameboyType) {
   requestAnimationFrame(() => update(gameboy));
 }
 
-function onInput(gameboy: GameboyType): EventListener {
-  return event => {
-    const input = eventToInput(event as KeyboardEvent);
-    if (!input) return;
-    gameboy.sendInput(input);
+function eventToInputButton(event: KeyboardEvent): InputButton | null {
+  switch (event.key) {
+  case 'z': return InputButton.A;
+  case 'x': return InputButton.B;
+  case 'Enter': return InputButton.Start;
+  case ' ': return InputButton.Select;
+  case 'ArrowLeft': return InputButton.Left;
+  case 'ArrowRight': return InputButton.Right;
+  case 'ArrowUp': return InputButton.Up;
+  case 'ArrowDown': return InputButton.Down;
+  default: return null;
+  }
+}
+
+function eventToInputType(event: KeyboardEvent): InputTypeJs | null {
+  switch (event.type) {
+  case 'keydown': return InputTypeJs.Down;
+  case 'keyup': return InputTypeJs.Up;
+  default: return null;
   }
 }
 
@@ -21,30 +35,16 @@ function eventToInput(event: KeyboardEvent): Input | null {
   return new Input(type, button);
 }
 
-function eventToInputButton(event: KeyboardEvent): InputButton | null {
-  switch (event.key) {
-    case "z": return InputButton.A;
-    case "x": return InputButton.B;
-    case "Enter": return InputButton.Start;
-    case " ": return InputButton.Select;
-    case "ArrowLeft": return InputButton.Left;
-    case "ArrowRight": return InputButton.Right;
-    case "ArrowUp": return InputButton.Up;
-    case "ArrowDown": return InputButton.Down;
-    default: return null;
-  }
-}
-
-function eventToInputType(event: KeyboardEvent): InputTypeJs | null {
-  switch (event.type) {
-    case "keydown": return InputTypeJs.Down;
-    case "keyup": return InputTypeJs.Up;
-    default: return null;
-  }
+function onInput(gameboy: GameboyType): EventListener {
+  return event => {
+    const input = eventToInput(event as KeyboardEvent);
+    if (!input) return;
+    gameboy.sendInput(input);
+  };
 }
 
 interface Props {
-  gameboy: GameboyType
+  gameboy: GameboyType;
 }
 
 const Gameboy: FunctionComponent<Props> = ({gameboy}) => {
@@ -52,12 +52,12 @@ const Gameboy: FunctionComponent<Props> = ({gameboy}) => {
 
   useEffect(() => {
     update(gameboy);
-    window.addEventListener("keydown", inputCallback);
-    window.addEventListener("keyup", inputCallback);
+    window.addEventListener('keydown', inputCallback);
+    window.addEventListener('keyup', inputCallback);
 
     return () => {
-      window.removeEventListener("keydown", inputCallback);
-      window.removeEventListener("keyup", inputCallback);
+      window.removeEventListener('keydown', inputCallback);
+      window.removeEventListener('keyup', inputCallback);
     };
   }, [gameboy, inputCallback]);
 
@@ -66,6 +66,6 @@ const Gameboy: FunctionComponent<Props> = ({gameboy}) => {
       <canvas width="320" height="288" id="canvas" />
     </div>
   );
-}
+};
 
 export default Gameboy;

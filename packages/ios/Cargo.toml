@@ -1,0 +1,12 @@
+[package]
+name = "rustyboy-ios"
+version = "0.1.0"
+authors = ["Félix Léveillé <flxleveille@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+rustyboy-core = { path = "../core" }
+
+[lib]
+name = "rustyboy"
+crate-type = ["staticlib", "cdylib"]
