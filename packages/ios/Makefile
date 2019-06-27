@@ -23,8 +23,6 @@ lint-lib: format-lib clippy-lib
 
 lint-app: install-pods
 	cd app; \
-	ls Pods; \
-	ls Pods/Swiftlint; \
-	./Pods/Swiftlint/swiftlint --strict
+	./Pods/SwiftLint/swiftlint --strict
 
 lint: lint-lib lint-app
