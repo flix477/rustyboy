@@ -10,7 +10,7 @@ fi
 
 cd pkg
 
-if [! -w /usr/local/lib/node_modules ]; then
+if [ ! -w /usr/local/lib/node_modules ]; then
     sudo npm link
 else
     npm link
