@@ -15,7 +15,7 @@ jobs:
       - run:
           name: Check lint
           command: |
-            make lint -s
+            make lint
 
       - run:
           name: Check tests
