@@ -1,7 +1,7 @@
 #!/bin/bash
-
 if [[ "$OSTYPE" != "darwin"* ]]; then
-    exit 0
+    cargo check
+    exit $?
 fi
 
 if ! cargo --list | grep -q lipo; then

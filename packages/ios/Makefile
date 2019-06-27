@@ -1,9 +1,12 @@
-.PHONY: build test lint test-lib lint-lib format-lib clippy-lib lint-app install-pods
+.PHONY: build test lint test-lib lint-lib format-lib clippy-lib lint-app install-pods build-lib
 
 install-pods:
 	./scripts/install-pods.sh
 
-build: install-pods
+build-lib:
+	cargo build
+
+build: build-lib install-pods
 	./scripts/build.sh
 
 test-lib:
@@ -22,7 +25,6 @@ clippy-lib:
 lint-lib: format-lib clippy-lib
 
 lint-app: install-pods
-	cd app; \
-	./Pods/SwiftLint/swiftlint --strict
+	./scripts/lint.sh
 
 lint: lint-lib lint-app
