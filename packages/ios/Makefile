@@ -1,6 +1,7 @@
 .PHONY: build test lint build-lib build-app test-lib lint-lib format-lib clippy-lib lint-app
 
 build-lib:
+	cargo install cargo-lipo; \
 	cargo lipo --release; \
 	mkdir target/headers; \
 	cbindgen src/lib.rs -l c > target/headers/rustyboy.h
