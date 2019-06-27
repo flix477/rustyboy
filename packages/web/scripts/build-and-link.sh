@@ -5,7 +5,7 @@ fi
 wasm-pack build
 
 if [ ! -w pkg ]; then
-    chown -R $USER:$USER pkg
+    chown -R "$USER":"$USER" pkg
 fi
 
 cd pkg
@@ -18,4 +18,3 @@ fi
 
 cd ../frontend
 npm link rustyboy-web
-cd ..

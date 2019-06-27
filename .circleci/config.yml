@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/rust:latest-node
+      - image: flix477/rustyboy:latest
 
     steps:
       - checkout
