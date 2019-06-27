@@ -21,7 +21,7 @@ class HomeViewController: UIViewController, UIDocumentPickerDelegate {
         let label = UILabel()
         label.font = UIFont(name: Theme.fontFamily.semiBoldItalic, size: 56 )!
         let attributedTitle = NSAttributedString(
-            string: "GAME BOY",
+            string: "RUSTY BOY",
             attributes: [
                 NSAttributedString.Key.kern: -3,
                 NSAttributedString.Key.foregroundColor: UIColor.init(red: 77, green: 78, blue: 141)
