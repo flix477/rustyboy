@@ -9,7 +9,7 @@ class StartSelectButtonsView: UIView {
         return true
     }
 
-    var onButtonEvent: ((ButtonType, ButtonEventType) -> Void)?
+    var onButtonEvent: ((GameboyButtonType, ButtonEventType) -> Void)?
 
     lazy var startButton: UIButton = {
         let button = StartSelectButtonsView.createButton()

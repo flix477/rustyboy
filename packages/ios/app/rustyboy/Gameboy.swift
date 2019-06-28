@@ -20,7 +20,7 @@ class Gameboy {
         return self.bufferPointer!
     }
 
-    func sendInput(buttonType: ButtonType, eventType: ButtonEventType) {
+    func sendInput(buttonType: GameboyButtonType, eventType: ButtonEventType) {
         gameboy_send_input(self.gameboyPointer, buttonType.toCore(), eventType.toCore())
     }
 
@@ -52,7 +52,7 @@ enum ButtonEventType {
     }
 }
 
-enum ButtonType {
+enum GameboyButtonType {
     case up
     case down
     case left

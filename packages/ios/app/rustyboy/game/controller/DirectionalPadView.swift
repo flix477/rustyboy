@@ -4,7 +4,7 @@ import UIKit
 class DirectionalPadView: UIView {
     static let margin = CGFloat(8)
     static let buttonSize = CGFloat(56)
-    var pressed: ButtonType?
+    var pressed: GameboyButtonType?
 
     lazy var panGestureRecognizer: UIPanGestureRecognizer = {
         let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(self.onPan))
@@ -15,7 +15,7 @@ class DirectionalPadView: UIView {
         return true
     }
 
-    var onButtonEvent: ((ButtonType, ButtonEventType) -> Void)?
+    var onButtonEvent: ((GameboyButtonType, ButtonEventType) -> Void)?
 
     lazy var downButton: UIButton = {
         let button = DirectionalPadView.createButton()
@@ -186,7 +186,7 @@ class DirectionalPadView: UIView {
         }
     }
 
-    func buttonType(_ button: UIButton) -> ButtonType? {
+    func buttonType(_ button: UIButton) -> GameboyButtonType? {
         switch button {
         case self.downButton:
             return .down

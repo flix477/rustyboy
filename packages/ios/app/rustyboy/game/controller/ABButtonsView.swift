@@ -2,8 +2,10 @@ import Foundation
 import UIKit
 
 class ABButtonsView: UIView {
-    static let buttonSize = CGFloat(84)
-    var pressed: ButtonType?
+    static let buttonSize = CGFloat(70)
+    static let aButtonOffset = (CGFloat(-10), CGFloat(6))
+    static let bButtonOffset = (CGFloat(10), CGFloat(-31))
+    var pressed: GameboyButtonType?
 
     lazy var panGestureRecognizer: UIPanGestureRecognizer = {
         let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(self.onPan))
@@ -14,23 +16,17 @@ class ABButtonsView: UIView {
         return true
     }
 
-    var onButtonEvent: ((ButtonType, ButtonEventType) -> Void)?
+    var onButtonEvent: ((GameboyButtonType, ButtonEventType) -> Void)?
 
     lazy var aButton: UIButton = {
-        let button = ABButtonsView.createButton()
-        button.addTarget(self, action: #selector(self.aButtonDown), for: .touchDown)
-        button.addTarget(self, action: #selector(self.aButtonUp), for: .touchUpInside)
-        button.addTarget(self, action: #selector(self.aButtonDown), for: .touchDragEnter)
-        button.addTarget(self, action: #selector(self.aButtonUp), for: .touchDragExit)
+        let button = ABButtonsView.createButton(type: .a)
+        button.onButtonEvent = self.onABButtonEvent
         return button
     }()
 
     lazy var bButton: UIButton = {
-        let button = ABButtonsView.createButton()
-        button.addTarget(self, action: #selector(self.bButtonDown), for: .touchDown)
-        button.addTarget(self, action: #selector(self.bButtonUp), for: .touchUpInside)
-        button.addTarget(self, action: #selector(self.bButtonDown), for: .touchDragEnter)
-        button.addTarget(self, action: #selector(self.bButtonUp), for: .touchDragExit)
+        let button = ABButtonsView.createButton(type: .b)
+        button.onButtonEvent = self.onABButtonEvent
         return button
     }()
 
@@ -54,11 +50,23 @@ class ABButtonsView: UIView {
 
         self.translatesAutoresizingMaskIntoConstraints = false
 
-        self.aButton.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
-        self.aButton.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
+        self.aButton.trailingAnchor.constraint(
+            equalTo: self.trailingAnchor,
+            constant: ABButtonsView.aButtonOffset.0
+        ).isActive = true
+        self.aButton.topAnchor.constraint(
+            equalTo: self.topAnchor,
+            constant: ABButtonsView.aButtonOffset.1
+        ).isActive = true
 
-        self.bButton.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
-        self.bButton.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: CGFloat(-24)).isActive = true
+        self.bButton.leadingAnchor.constraint(
+            equalTo: self.leadingAnchor,
+            constant: ABButtonsView.bButtonOffset.0
+        ).isActive = true
+        self.bButton.bottomAnchor.constraint(
+            equalTo: self.bottomAnchor,
+            constant: ABButtonsView.bButtonOffset.1
+        ).isActive = true
 
         self.imageView.leadingAnchor.constraint(
             equalTo: self.leadingAnchor
@@ -78,24 +86,14 @@ class ABButtonsView: UIView {
         self.init(frame: CGRect())
     }
 
-    @objc func aButtonDown(sender: UIButton, event: UIControl.Event) {
-        self.pressed = .a
-        self.onButtonEvent?(.a, .down)
-    }
+    func onABButtonEvent(buttonType: GameboyButtonType, eventType: ButtonEventType) {
+        if eventType == .up {
+            self.pressed = nil
+        } else {
+            self.pressed = buttonType
+        }
 
-    @objc func aButtonUp(sender: UIButton, event: UIControl.Event) {
-        self.pressed = nil
-        self.onButtonEvent?(.a, .up)
-    }
-
-    @objc func bButtonDown(sender: UIButton, event: UIControl.Event) {
-        self.pressed = .b
-        self.onButtonEvent?(.b, .down)
-    }
-
-    @objc func bButtonUp(sender: UIButton, event: UIControl.Event) {
-        self.pressed = nil
-        self.onButtonEvent?(.b, .up)
+        self.onButtonEvent?(buttonType, eventType)
     }
 
     @objc func onPan() {
@@ -129,7 +127,7 @@ class ABButtonsView: UIView {
         }
     }
 
-    func buttonType(_ button: UIButton) -> ButtonType? {
+    func buttonType(_ button: UIButton) -> GameboyButtonType? {
         switch button {
         case self.aButton:
             return .a
@@ -140,11 +138,56 @@ class ABButtonsView: UIView {
         }
     }
 
-    class func createButton() -> UIButton {
-        let button = UIButton()
+    class func createButton(type: GameboyButtonType) -> ABButton {
+        let button = ABButton(type: type)
         button.widthAnchor.constraint(equalToConstant: ABButtonsView.buttonSize).isActive = true
         button.heightAnchor.constraint(equalToConstant: ABButtonsView.buttonSize).isActive = true
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
+    }
+}
+
+class ABButton: UIButton {
+    let gameboyButtonType: GameboyButtonType
+
+    let image = UIImage(named: "abbuttons-button")!
+    let pressedImage = UIImage(named: "abbuttons-button-pressed")!
+
+    var onButtonEvent: ((GameboyButtonType, ButtonEventType) -> Void)?
+    var padding = (CGFloat(16), CGFloat(16))
+
+    init(type: GameboyButtonType) {
+        self.gameboyButtonType = type
+        super.init(frame: CGRect.zero)
+
+        self.setImage(self.image, for: .normal)
+        self.setImage(self.pressedImage, for: .highlighted)
+
+        self.addTarget(self, action: #selector(self.buttonDown), for: .touchDown)
+        self.addTarget(self, action: #selector(self.buttonUp), for: .touchUpInside)
+        self.addTarget(self, action: #selector(self.buttonDown), for: .touchDragEnter)
+        self.addTarget(self, action: #selector(self.buttonUp), for: .touchDragExit)
+    }
+
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        let newArea = CGRect(
+            x: self.bounds.origin.x - self.padding.0,
+            y: self.bounds.origin.y - self.padding.1,
+            width: self.bounds.size.width + self.padding.0 * 2,
+            height: self.bounds.size.height + self.padding.1 * 2
+        )
+        return newArea.contains(point)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        return nil
+    }
+
+    @objc func buttonDown(sender: UIButton, event: UIControl.Event) {
+        self.onButtonEvent?(self.gameboyButtonType, .down)
+    }
+
+    @objc func buttonUp(sender: UIButton, event: UIControl.Event) {
+        self.onButtonEvent?(self.gameboyButtonType, .up)
     }
 }
