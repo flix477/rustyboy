@@ -5,7 +5,6 @@ use glium::{Display, Surface};
 use std::process::exit;
 
 use rustyboy_core::gameboy::Gameboy;
-use rustyboy_core::video::debugging::tile_buffer;
 use rustyboy_core::video::screen::BACKGROUND_SIZE;
 
 use super::{create_display, Window};
@@ -38,18 +37,20 @@ impl Window for TileDataWindow {
 
         let tile_data = gameboy.hardware().video().memory().tile_data();
 
-        let buffer: Vec<u8> = (0..GRID_DIMENSIONS.1 * TILE_SIZE).flat_map(|y| {
-            (0..GRID_DIMENSIONS.0).flat_map(|grid_x| {
-                vec![]
-//                let grid_y = (y - y % TILE_SIZE) / TILE_SIZE;
-//                let tile_y = y % TILE_SIZE;
-//                let base_tile_index = grid_y * GRID_DIMENSIONS.0;
-//                let tile = tile_data[base_tile_index + grid_x];
-//                tile.colored_line(tile_y as u8, false, false).to_vec()
-            })
-            .collect()
-        })
-        .collect();
+        let mut buffer: Vec<u8> = vec![];
+        for y in 0..GRID_DIMENSIONS.1 * TILE_SIZE {
+            let grid_y = (y - y % TILE_SIZE) / TILE_SIZE;
+            let tile_y = y % TILE_SIZE;
+            let base_tile_index = grid_y * GRID_DIMENSIONS.0;
+            for grid_x in 0..GRID_DIMENSIONS.0 {
+                let tile = tile_data[base_tile_index + grid_x];
+                let line = tile.colored_line(tile_y as u8, false, false);
+                let line: Vec<u8> = line.iter()
+                    .flat_map(|color| Color::from(*color).format(ColorFormat::RGB))
+                    .collect();
+                buffer.extend(line)
+            }
+        }
 
         let img = RawImage2d::from_raw_rgb_reversed(
             &buffer,

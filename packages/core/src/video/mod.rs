@@ -162,7 +162,7 @@ impl Video {
             && self.position_registers.ly() == self.position_registers.lyc()
     }
 
-    pub fn video_information(&self) -> VideoInformation {
+    pub fn video_information(&self) -> VideoInformation<'_> {
         VideoInformation {
             scroll: self.position_registers.scroll(),
             window: self.position_registers.window(),
