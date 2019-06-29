@@ -11,7 +11,7 @@ pub fn apply_option_buffer(
     buffer: &mut Vec<DrawnColor>,
     option_buffer: Vec<Option<DrawnColor>>,
     transparency: bool,
-    prefer_existing: bool
+    prefer_existing: bool,
 ) {
     for (index, option) in option_buffer.iter().enumerate() {
         if let Some(drawn_color) = option {

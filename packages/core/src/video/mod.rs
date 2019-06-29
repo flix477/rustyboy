@@ -83,7 +83,8 @@ impl Video {
                     obj_palette0: &self.obj_palette0,
                     obj_palette1: &self.obj_palette1,
                 };
-                self.screen.draw_line_to_buffer(video, self.position_registers.ly());
+                self.screen
+                    .draw_line_to_buffer(video, self.position_registers.ly());
             }
 
             self.position_registers.on_mode_change(self.mode);
