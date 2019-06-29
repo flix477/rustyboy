@@ -1,11 +1,10 @@
 use super::MemoryBankController;
 use crate::cartridge::cartridge_capability::CartridgeCapability;
-use std::cmp;
 
 pub struct MBC1 {
     mode: MBC1Mode,
     ram_enabled: bool,
-    register: u8
+    register: u8,
 }
 
 impl MBC1 {
@@ -51,7 +50,11 @@ impl MBC1 {
     }
 
     fn rom_bank_mask(&self) -> u8 {
-        if self.mode == MBC1Mode::MaxRAM { 0b1_1111 } else { 0xFF }
+        if self.mode == MBC1Mode::MaxRAM {
+            0b1_1111
+        } else {
+            0xFF
+        }
     }
 }
 
@@ -62,7 +65,9 @@ impl MemoryBankController for MBC1 {
     }
 
     fn ram_bank(&self) -> u8 {
-        if self.mode == MBC1Mode::MaxROM { 0 } else {
+        if self.mode == MBC1Mode::MaxROM {
+            0
+        } else {
             self.register >> 5
         }
     }
