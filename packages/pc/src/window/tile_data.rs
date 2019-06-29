@@ -9,7 +9,7 @@ use rustyboy_core::video::screen::BACKGROUND_SIZE;
 
 use super::{create_display, Window};
 use crate::keymap::keymap;
-use rustyboy_core::video::color::{ColorFormat, Color};
+use rustyboy_core::video::color::{Color, ColorFormat};
 
 const TILE_SIZE: usize = 8;
 const GRID_DIMENSIONS: (usize, usize) = (12, 32);
@@ -45,7 +45,8 @@ impl Window for TileDataWindow {
             for grid_x in 0..GRID_DIMENSIONS.0 {
                 let tile = tile_data[base_tile_index + grid_x];
                 let line = tile.colored_line(tile_y as u8, false, false);
-                let line: Vec<u8> = line.iter()
+                let line: Vec<u8> = line
+                    .iter()
                     .flat_map(|color| Color::from(*color).format(ColorFormat::RGB))
                     .collect();
                 buffer.extend(line)
@@ -54,7 +55,10 @@ impl Window for TileDataWindow {
 
         let img = RawImage2d::from_raw_rgb_reversed(
             &buffer,
-            ((GRID_DIMENSIONS.0 * TILE_SIZE) as u32, (GRID_DIMENSIONS.1 * TILE_SIZE) as u32),
+            (
+                (GRID_DIMENSIONS.0 * TILE_SIZE) as u32,
+                (GRID_DIMENSIONS.1 * TILE_SIZE) as u32,
+            ),
         );
         glium::Texture2d::new(&self.display, img)
             .unwrap()
