@@ -1,6 +1,7 @@
+use super::register::Register;
 use crate::bus::Bus;
-use crate::processor::register::Register;
 
+#[derive(Copy, Clone)]
 pub struct ProgramCounter {
     value: u16,
 }
@@ -16,11 +17,11 @@ impl ProgramCounter {
         value
     }
 
-    pub fn peek<H: Bus>(&self, bus: &H) -> u8 {
+    pub fn peek<H: Bus>(self, bus: &H) -> u8 {
         bus.read(self.value)
     }
 
-    pub fn peek16<H: Bus>(&self, bus: &H) -> u16 {
+    pub fn peek16<H: Bus>(self, bus: &H) -> u16 {
         (u16::from(bus.read(self.value + 1)) << 8) | u16::from(bus.read(self.value))
     }
 }

@@ -1,43 +1,42 @@
 mod decoder;
-mod flag_register;
 pub mod instruction;
 pub mod interrupt;
 pub mod lr35902;
 #[cfg(test)]
 mod processor_tests;
-mod program_counter;
-pub mod register;
 pub mod registers;
-mod stack_pointer;
 
+use self::decoder::Decoder;
+use self::instruction::{InstructionInfo, Mnemonic, Prefix};
+use self::lr35902::LR35902;
+use self::registers::flag_register::Flag;
+use self::registers::register::Register;
+use self::registers::{RegisterType, Registers};
 use crate::bus::Bus;
-use crate::debugger::debug_info::DebugInfo;
-use crate::debugger::Debugger;
-use crate::processor::decoder::Decoder;
-use crate::processor::flag_register::Flag;
-use crate::processor::instruction::{InstructionInfo, Prefix};
-use crate::processor::lr35902::LR35902;
-use crate::processor::register::Register;
-use crate::processor::registers::{RegisterType, Registers};
+use crate::debugger::debug_info::ProcessorDebugInfo;
 use crate::util::bitflags::Bitflags;
 
 pub struct Processor {
     registers: Registers,
     halt_mode: HaltMode,
-    pub debugger: Option<Box<dyn Debugger>>,
     cycles_left: u8,
     pending_ei: bool,
 }
 
-impl Processor {
-    pub fn new(debugger: Option<Box<dyn Debugger>>) -> Processor {
-        Processor {
+impl Default for Processor {
+    fn default() -> Self {
+        Self {
             registers: Registers::new(),
             halt_mode: HaltMode::None,
-            debugger,
             cycles_left: 0,
             pending_ei: false,
         }
+    }
+}
+
+impl Processor {
+    pub fn new() -> Processor {
+        Self::default()
     }
 
     pub fn step<H: Bus>(&mut self, bus: &mut H) {
@@ -72,16 +71,10 @@ impl Processor {
         }
     }
 
-    fn debugger_check<H: Bus>(&mut self, bus: &H, line: u16, instruction: &InstructionInfo) {
-        if let Some(ref mut debugger) = self.debugger {
-            let debug_info = DebugInfo {
-                registers: &self.registers,
-                line,
-                instruction: &instruction,
-            };
-            if debugger.should_run(&debug_info) {
-                debugger.run(debug_info, bus);
-            }
+    pub fn debug_info(&self) -> ProcessorDebugInfo {
+        ProcessorDebugInfo {
+            registers: self.registers,
+            instruction: InstructionInfo::new(0, Mnemonic::RES, None, 0),
         }
     }
 }
@@ -128,11 +121,9 @@ impl LR35902 for Processor {
     }
 
     fn execute_next<H: Bus>(&mut self, bus: &mut H, prefix: Prefix) -> u8 {
-        let line = self.registers.program_counter.get();
         let opcode = self.immediate(bus);
         if let Some(instruction) = Decoder::decode_opcode(opcode, prefix) {
             let cycle_count = instruction.cycle_count();
-            self.debugger_check(bus, line, &instruction);
             self.execute(bus, instruction)
                 .expect("Error with instruction");
             cycle_count

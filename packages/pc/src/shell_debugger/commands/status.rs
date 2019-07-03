@@ -1,7 +1,6 @@
-use super::{Command, CommandResult, DebuggerState};
+use super::{Command, CommandResult, Debugger};
 use crate::shell_debugger::pretty_print::format_registers;
 use crate::util::parse_register;
-use rustyboy_core::bus::Bus;
 use rustyboy_core::debugger::debug_info::DebugInfo;
 use rustyboy_core::processor::registers::RegisterType;
 use rustyboy_core::util::parse_hex::parse_hex;
@@ -48,24 +47,22 @@ impl Command for StatusCommand {
         MATCHING_VALUES
     }
 
-    fn execute(
-        &self,
-        input: &[&str],
-        _: &mut DebuggerState,
-        debug_info: &DebugInfo<'_>,
-        bus: &dyn Bus,
-    ) -> CommandResult {
+    fn execute(&self, input: &[&str], _: &mut Debugger, debug_info: &DebugInfo) -> CommandResult {
         if let Some(status_type) = StatusType::parse(&input[1..]) {
             match status_type {
-                StatusType::Address(address) => println!("0x{:X}", bus.read(address)),
+                StatusType::Address(address) => {
+                    println!("0x{:X}", debug_info.bus[address as usize])
+                }
                 StatusType::Immediate => {
-                    let pc = debug_info.registers.reg(RegisterType::PC);
-                    println!("0x{:X}", bus.read(pc));
+                    let pc = debug_info.cpu_debug_info.registers.reg(RegisterType::PC);
+                    println!("0x{:X}", debug_info.bus[pc as usize]);
                 }
                 StatusType::Register(register) => {
-                    println!("0x{:X}", debug_info.registers.reg(register))
+                    println!("0x{:X}", debug_info.cpu_debug_info.registers.reg(register))
                 }
-                StatusType::Registers => println!("{}", format_registers(debug_info.registers)),
+                StatusType::Registers => {
+                    println!("{}", format_registers(&debug_info.cpu_debug_info.registers))
+                }
             }
         } else {
             println!(

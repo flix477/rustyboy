@@ -1,4 +1,4 @@
-use crate::processor::flag_register::Flag;
+use crate::processor::registers::flag_register::Flag;
 use crate::processor::registers::RegisterType;
 
 #[derive(Copy, Clone)]

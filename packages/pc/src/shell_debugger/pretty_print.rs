@@ -3,7 +3,7 @@ use console::style;
 use rustyboy_core::debugger::debug_info::DebugInfo;
 use rustyboy_core::processor::instruction::Operand;
 use rustyboy_core::processor::instruction::{AddressType, Reference, ValueType};
-use rustyboy_core::processor::registers::{RegisterType, Registers};
+use rustyboy_core::processor::registers::{register::Register, RegisterType, Registers};
 
 const IMMEDIATE: &str = "n";
 const IMMEDIATE_16: &str = "nn";
@@ -20,8 +20,8 @@ pub fn format_registers(registers: &Registers) -> String {
     )
 }
 
-pub fn format_debug_info(debug_info: &DebugInfo<'_>) -> String {
-    let operands = if let Some(operands) = debug_info.instruction.operands() {
+pub fn format_debug_info(debug_info: &DebugInfo) -> String {
+    let operands = if let Some(operands) = debug_info.cpu_debug_info.instruction.operands() {
         operands.iter().map(|x| parse_operand(*x)).enumerate().fold(
             String::new(),
             |acc, (idx, operand)| {
@@ -36,8 +36,11 @@ pub fn format_debug_info(debug_info: &DebugInfo<'_>) -> String {
         String::new()
     };
 
-    let line = format!("0x{:X}", debug_info.line);
-    let mnemonic = format!("{:?}", debug_info.instruction.mnemonic());
+    let line = format!(
+        "0x{:X}",
+        debug_info.cpu_debug_info.registers.program_counter.get()
+    );
+    let mnemonic = format!("{:?}", debug_info.cpu_debug_info.instruction.mnemonic());
 
     format!(
         "{}: {} {}",

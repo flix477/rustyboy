@@ -3,12 +3,10 @@ use clap::App;
 use rustyboy_core::cartridge::Cartridge;
 use rustyboy_core::config::Config;
 use rustyboy_core::debugger::Debugger;
-use rustyboy_core::gameboy::{DeviceType, Gameboy};
+use rustyboy_core::gameboy::{DeviceType, Gameboy, GameboyEvent};
 use std::process::exit;
 
-use crate::shell_debugger::{DebuggerState, ShellDebugger};
-//use crate::window::sprite_data::SpriteDataWindow;
-//use crate::window::tile_data::TileDataWindow;
+use crate::shell_debugger::ShellDebugger;
 use crate::window::background::BackgroundWindow;
 use crate::window::tile_data::TileDataWindow;
 use crate::window::{screen::MainWindow, Window};
@@ -37,10 +35,10 @@ pub fn run() {
     }
 
     let debugger = if matches.is_present("debug") {
-        Some(Box::new(ShellDebugger::from_state(DebuggerState {
+        Some(Debugger {
             forced_break: true,
             breakpoints: vec![],
-        })) as Box<dyn Debugger>)
+        })
     } else {
         None
     };
@@ -83,12 +81,16 @@ struct RunOptions {
 }
 
 fn start_emulation(cartridge: Cartridge, config: Config, options: RunOptions) {
-    let mut gameboy = Gameboy::new(cartridge, config);
+    let mut gameboy = Gameboy::new(cartridge, &config);
 
     let mut windows = create_windows(options);
+    let mut debugger = config.debugger;
+    let mut shell_debugger = ShellDebugger::default();
 
     loop {
-        gameboy.run_to_vblank();
+        if let GameboyEvent::Debugger(debug_info) = gameboy.run_to_event(debugger.as_ref()) {
+            shell_debugger.run(debugger.as_mut().unwrap(), debug_info)
+        }
 
         for window in &mut windows {
             window.update(&mut gameboy);

@@ -1,11 +1,11 @@
 use crate::bus::Bus;
-use crate::processor::flag_register::{
-    carry_add, half_carry_add, half_carry_add16, half_carry_sub, Flag,
-};
 use crate::processor::instruction::Prefix;
 use crate::processor::instruction::Reference;
 use crate::processor::instruction::{AddressType, Operand, ValueType};
 use crate::processor::instruction::{InstructionInfo, Mnemonic};
+use crate::processor::registers::flag_register::{
+    carry_add, half_carry_add, half_carry_add16, half_carry_sub, Flag,
+};
 use crate::processor::registers::RegisterType;
 use crate::util::bits;
 

@@ -1,7 +1,7 @@
-use crate::processor::flag_register::Flag;
 use crate::processor::instruction::AddressType as Addr;
 use crate::processor::instruction::Reference as Ref;
 use crate::processor::instruction::*;
+use crate::processor::registers::flag_register::Flag;
 use crate::processor::registers::RegisterType as Reg;
 
 pub struct Decoder;

@@ -1,6 +1,6 @@
-use super::{Command, CommandResult, DebuggerState};
-use rustyboy_core::bus::Bus;
+use super::{Command, CommandResult, Debugger};
 use rustyboy_core::debugger::debug_info::DebugInfo;
+use rustyboy_core::debugger::DebuggerAction;
 
 const MATCHING_VALUES: &[&str] = &["continue", "c"];
 
@@ -17,13 +17,7 @@ impl Command for ContinueCommand {
         MATCHING_VALUES
     }
 
-    fn execute(
-        &self,
-        _: &[&str],
-        _: &mut DebuggerState,
-        _: &DebugInfo<'_>,
-        _: &dyn Bus,
-    ) -> CommandResult {
-        CommandResult::Quit
+    fn execute(&self, _: &[&str], debugger: &mut Debugger, _: &DebugInfo) -> CommandResult {
+        CommandResult::from(debugger.run_action(DebuggerAction::Continue))
     }
 }

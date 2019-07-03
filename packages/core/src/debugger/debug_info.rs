@@ -1,8 +1,12 @@
 use crate::processor::instruction::InstructionInfo;
 use crate::processor::registers::Registers;
 
-pub struct DebugInfo<'a> {
-    pub registers: &'a Registers,
-    pub line: u16,
-    pub instruction: &'a InstructionInfo,
+pub struct ProcessorDebugInfo {
+    pub registers: Registers,
+    pub instruction: InstructionInfo,
+}
+
+pub struct DebugInfo {
+    pub cpu_debug_info: ProcessorDebugInfo,
+    pub bus: Vec<u8>,
 }
