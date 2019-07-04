@@ -1,11 +1,10 @@
 use super::{Command, CommandResult, Debugger};
 use crate::util::parse_register;
-use rustyboy_core::bus::Bus;
-use rustyboy_core::debugger::debug_info::DebugInfo;
-use rustyboy_core::util::parse_hex::parse_hex;
-use rustyboy_core::debugger::commands::breakpoint::BreakpointAction;
 use rustyboy_core::debugger::breakpoint::{Breakpoint, BreakpointCondition};
+use rustyboy_core::debugger::commands::breakpoint::BreakpointAction;
+use rustyboy_core::debugger::debug_info::DebugInfo;
 use rustyboy_core::debugger::DebuggerAction;
+use rustyboy_core::util::parse_hex::parse_hex;
 
 const MATCHING_VALUES: &[&str] = &["breakpoint", "b"];
 
@@ -21,11 +20,15 @@ impl BreakpointCommandAction {
         match action {
             "add" | "a" => {
                 let breakpoint = parse_breakpoint(&values[1..values.len()])?;
-                Some(BreakpointCommandAction::BreakpointAction(BreakpointAction::Add(breakpoint)))
+                Some(BreakpointCommandAction::BreakpointAction(
+                    BreakpointAction::Add(breakpoint),
+                ))
             }
             "remove" | "r" => {
-                let line = parse_hex(values.get(1)?)? as usize;
-                Some(BreakpointCommandAction::BreakpointAction(BreakpointAction::Remove(line)))
+                let index: usize = values.get(1)?.parse().ok()?;
+                Some(BreakpointCommandAction::BreakpointAction(
+                    BreakpointAction::Remove(index),
+                ))
             }
             "list" | "l" => Some(BreakpointCommandAction::List),
             _ => None,
@@ -34,16 +37,9 @@ impl BreakpointCommandAction {
 }
 
 fn parse_breakpoint(values: &[&str]) -> Option<Breakpoint> {
-    let line = parse_hex(values.get(0)?)?;
-    let conditions = if values.len() > 1 && *values.get(1)? == "if" {
-        if values.len() < 3 {
-            return None;
-        }
-
-        let rest = (&values[2..values.len()]).join(" ").to_lowercase();
-
+    let conditions = if values.is_empty() {
         let conditions: Vec<Option<BreakpointCondition>> =
-            rest.split(" and ").map(|x| parse_condition(x)).collect();
+            values.iter().map(|x| parse_condition(x)).collect();
 
         if conditions.iter().any(|x| x.is_none()) {
             return None;
@@ -82,17 +78,12 @@ impl Command for BreakpointCommand {
         MATCHING_VALUES
     }
 
-    fn execute(
-        &self,
-        input: &[&str],
-        debugger: &mut Debugger,
-        _: &DebugInfo,
-    ) -> CommandResult {
+    fn execute(&self, input: &[&str], debugger: &mut Debugger, _: &DebugInfo) -> CommandResult {
         if let Some(action) = BreakpointCommandAction::parse(&input[1..]) {
             match action {
                 BreakpointCommandAction::BreakpointAction(action) => {
                     debugger.run_action(DebuggerAction::Breakpoint(action));
-                },
+                }
                 BreakpointCommandAction::List => println!("{}", list_breakpoints(debugger)),
             }
         } else {
@@ -112,11 +103,9 @@ fn list_breakpoints(debugger: &Debugger) -> String {
             .enumerate()
             .fold(String::new(), |acc, (idx, breakpoint)| {
                 if idx == 0 {
-//                    format!("0x{:X}", breakpoint.line)
-                    "".to_string()
+                    format!("{:?}", breakpoint)
                 } else {
-//                    format!("{}, 0x{:X}", acc, breakpoint.line)
-                    "".to_string()
+                    format!("{}, {:?}", acc, breakpoint)
                 }
             })
     }
@@ -124,17 +113,17 @@ fn list_breakpoints(debugger: &Debugger) -> String {
 
 #[cfg(test)]
 mod tests {
+    use crate::shell_debugger::commands::breakpoint::BreakpointCommandAction;
     use rustyboy_core::debugger::breakpoint::{Breakpoint, BreakpointCondition};
     use rustyboy_core::debugger::commands::breakpoint::BreakpointAction;
     use rustyboy_core::processor::registers::RegisterType;
-    use crate::shell_debugger::commands::breakpoint::BreakpointCommandAction;
 
     #[test]
     fn parses_breakpoint_correctly() {
         let input = ["b", "a", "0x1e7e"];
         assert_eq!(
             BreakpointCommandAction::BreakpointAction(BreakpointAction::Add(Breakpoint {
-//                line: 0x1E7E,
+                //                line: 0x1E7E,
                 conditions: vec![]
             })),
             BreakpointCommandAction::parse(&input[1..]).unwrap()
@@ -146,7 +135,7 @@ mod tests {
         let input = ["b", "a", "0x1e7e", "if", "hl=0x1e7e"];
         assert_eq!(
             BreakpointCommandAction::BreakpointAction(BreakpointAction::Add(Breakpoint {
-//                line: 0x1E7E,
+                //                line: 0x1E7E,
                 conditions: vec![BreakpointCondition::RegisterEquals(
                     RegisterType::HL,
                     0x1E7E

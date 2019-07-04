@@ -2,12 +2,12 @@ use rustyboy_core::debugger::{debug_info::DebugInfo, Debugger};
 
 use self::pretty_print::format_debug_info;
 use self::shell::Shell;
+use crate::shell_debugger::commands::breakpoint::BreakpointCommand;
 use crate::shell_debugger::commands::continue_cmd::ContinueCommand;
 use crate::shell_debugger::commands::quit::QuitCommand;
 use crate::shell_debugger::commands::status::StatusCommand;
 use crate::shell_debugger::commands::step_into::StepIntoCommand;
 use crate::shell_debugger::commands::{Command, CommandResult};
-use crate::shell_debugger::commands::breakpoint::BreakpointCommand;
 
 mod commands;
 mod pretty_print;

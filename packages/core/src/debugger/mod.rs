@@ -23,15 +23,19 @@ impl Default for Debugger {
 
 impl Debugger {
     pub fn should_run(&self, debug_info: &ProcessorDebugInfo) -> bool {
-        self.breakpoints.iter().any(|breakpoint| {
-            breakpoint
-                .conditions
-                .iter()
-                .all(|condition| condition.satisfied(debug_info))
-        })
+        self.forced_break
+            || self.breakpoints.iter().any(|breakpoint| {
+                breakpoint
+                    .conditions
+                    .iter()
+                    .all(|condition| condition.satisfied(debug_info))
+            })
     }
 
     pub fn run_action(&mut self, action: DebuggerAction) -> DebuggerActionResult {
+        if self.forced_break {
+            self.forced_break = false;
+        };
         match action {
             DebuggerAction::Breakpoint(action) => commands::breakpoint::run(action, self),
             DebuggerAction::Continue => DebuggerActionResult::Resume,
