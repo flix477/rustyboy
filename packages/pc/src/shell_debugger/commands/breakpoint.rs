@@ -124,7 +124,10 @@ mod tests {
         assert_eq!(
             BreakpointCommandAction::parse(&input[1..]).unwrap(),
             BreakpointCommandAction::BreakpointAction(BreakpointAction::Add(Breakpoint {
-                conditions: vec![BreakpointCondition::RegisterEquals(RegisterType::PC, 0x1E7E)]
+                conditions: vec![BreakpointCondition::RegisterEquals(
+                    RegisterType::PC,
+                    0x1E7E
+                )]
             })),
         );
     }
