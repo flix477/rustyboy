@@ -4,9 +4,11 @@ use crate::processor::instruction::*;
 use crate::processor::registers::flag_register::Flag;
 use crate::processor::registers::RegisterType as Reg;
 
+/// This struct is used to decode GameBoy opcodes
 pub struct Decoder;
 
 impl Decoder {
+    /// Decodes a GameBoy opcode and returns information about the corresponding instruction
     pub fn decode_opcode(opcode: u8, prefix: Prefix) -> Option<InstructionInfo> {
         if let Prefix::CB = prefix {
             return Self::decode_cb_opcode(opcode);
@@ -527,6 +529,8 @@ impl Decoder {
         }
     }
 
+    /// Decodes a GameBoy opcode with a CB prefix
+    /// and returns information about the corresponding instruction
     fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         match opcode {
             // RLC n

@@ -19,10 +19,13 @@ use crate::processor::operand_parser::OperandParser;
 use crate::processor::registers::program_counter::ProgramCounter;
 use crate::util::bitflags::Bitflags;
 
+/// This struct contains the logic for the GameBoy's processor
 pub struct Processor {
     registers: Registers,
     halt_mode: HaltMode,
+    /// Cycles left from the last instruction
     cycles_left: u8,
+    /// Whether or not an EI instruction was last executed
     pending_ei: bool,
 }
 
@@ -42,7 +45,9 @@ impl Processor {
         Self::default()
     }
 
+    /// This method performs a single CPU step and returns the result
     pub fn step<H: Bus>(&mut self, bus: &mut H) -> ProcessorStepResult {
+        // check for interrupts
         let interrupt = bus.fetch_interrupt();
         if let Some(interrupt) = interrupt {
             self.halt_mode = HaltMode::None;
@@ -62,8 +67,7 @@ impl Processor {
             let pc = self.registers.program_counter.get();
             self.cycles_left = self.execute_next(bus, Prefix::None);
 
-            // emulate this one weird bug
-            // https://github.com/AntonioND/giibiiadvance/blob/master/docs/TCAGBD.pdf section 4.10
+            // if in bugged HALT mode, execute the last instruction another time
             if self.halt_mode == HaltMode::Bugged {
                 self.halt_mode = HaltMode::None;
                 self.registers.program_counter.set(pc);
@@ -72,13 +76,14 @@ impl Processor {
         } else {
             self.cycles_left -= 1;
             if self.cycles_left == 0 {
-                return ProcessorStepResult::NewInstruction;
+                return ProcessorStepResult::InstructionCompleted;
             }
         }
 
-        ProcessorStepResult::CycleCompensation
+        ProcessorStepResult::InstructionInProgress
     }
 
+    /// Returns debugging information about the processor
     pub fn debug_info(&self) -> ProcessorDebugInfo {
         ProcessorDebugInfo {
             registers: self.registers,
@@ -155,15 +160,27 @@ impl LR35902 for Processor {
     }
 }
 
+/// Represents the different modes the HALT instruction puts the CPU through.
+/// The HALT instruction is used to stop CPU execution until an interrupt comes in,
+/// but when used while the IME register is off and the IF register has pending interrupts,
+/// it bugs and repeats the instruction following it twice.
+///
+/// https://github.com/AntonioND/giibiiadvance/blob/master/docs/TCAGBD.pdf section 4.10
 #[derive(PartialEq)]
 enum HaltMode {
+    /// Normal HALT mode, CPU execution is stopped
     Normal,
+    /// Bugged HALT mode, CPU execution continues and next instruction is executed twice
     Bugged,
+    /// No HALT mode, CPu execution continues
     None,
 }
 
+/// Represents the result of a single CPU step
 #[derive(PartialEq)]
 pub enum ProcessorStepResult {
-    CycleCompensation,
-    NewInstruction,
+    /// Means we only decremented the cycles left from the last instruction
+    InstructionInProgress,
+    /// Means we have completely finished the last instruction
+    InstructionCompleted,
 }
