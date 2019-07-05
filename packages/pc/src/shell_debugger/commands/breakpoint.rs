@@ -37,7 +37,7 @@ impl BreakpointCommandAction {
 }
 
 fn parse_breakpoint(values: &[&str]) -> Option<Breakpoint> {
-    let conditions = if values.is_empty() {
+    let conditions = if !values.is_empty() {
         let conditions: Vec<Option<BreakpointCondition>> =
             values.iter().map(|x| parse_condition(x)).collect();
 
@@ -120,20 +120,20 @@ mod tests {
 
     #[test]
     fn parses_breakpoint_correctly() {
-        let input = ["b", "a", "0x1e7e"];
+        let input = ["b", "a", "pc=0x1e7e"];
         assert_eq!(
+            BreakpointCommandAction::parse(&input[1..]).unwrap(),
             BreakpointCommandAction::BreakpointAction(BreakpointAction::Add(Breakpoint {
-                //                line: 0x1E7E,
-                conditions: vec![]
+                conditions: vec![BreakpointCondition::RegisterEquals(RegisterType::PC, 0x1E7E)]
             })),
-            BreakpointCommandAction::parse(&input[1..]).unwrap()
         );
     }
 
     #[test]
     fn parses_breakpoint_with_condition_correctly() {
-        let input = ["b", "a", "0x1e7e", "if", "hl=0x1e7e"];
+        let input = ["b", "a", "hl=0x1e7e"];
         assert_eq!(
+            BreakpointCommandAction::parse(&input[1..]).unwrap(),
             BreakpointCommandAction::BreakpointAction(BreakpointAction::Add(Breakpoint {
                 //                line: 0x1E7E,
                 conditions: vec![BreakpointCondition::RegisterEquals(
@@ -141,7 +141,6 @@ mod tests {
                     0x1E7E
                 )]
             })),
-            BreakpointCommandAction::parse(&input[1..]).unwrap()
         );
     }
 }
