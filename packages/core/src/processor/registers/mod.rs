@@ -98,7 +98,7 @@ impl Default for Registers {
             de: DualRegister::from(DEFAULT_DE),
             hl: DualRegister::from(DEFAULT_HL),
             stack_pointer: StackPointer::new(),
-            program_counter: ProgramCounter::new(),
+            program_counter: ProgramCounter::default(),
         }
     }
 }

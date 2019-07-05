@@ -460,10 +460,10 @@ impl Decoder {
             )),
 
             // JP cc,nn
-            0xC2 => Some(Self::jp(opcode, (Flag::Zero, false))),
-            0xCA => Some(Self::jp(opcode, (Flag::Zero, true))),
-            0xD2 => Some(Self::jp(opcode, (Flag::Carry, false))),
-            0xDA => Some(Self::jp(opcode, (Flag::Carry, true))),
+            0xC2 => Some(Self::jp(opcode, Condition(Flag::Zero, false))),
+            0xCA => Some(Self::jp(opcode, Condition(Flag::Zero, true))),
+            0xD2 => Some(Self::jp(opcode, Condition(Flag::Carry, false))),
+            0xDA => Some(Self::jp(opcode, Condition(Flag::Carry, true))),
 
             // JP (HL)
             0xE9 => Some(InstructionInfo::new(
@@ -482,10 +482,10 @@ impl Decoder {
             )),
 
             // JR cc,nn
-            0x20 => Some(Self::jr(opcode, (Flag::Zero, false))),
-            0x28 => Some(Self::jr(opcode, (Flag::Zero, true))),
-            0x30 => Some(Self::jr(opcode, (Flag::Carry, false))),
-            0x38 => Some(Self::jr(opcode, (Flag::Carry, true))),
+            0x20 => Some(Self::jr(opcode, Condition(Flag::Zero, false))),
+            0x28 => Some(Self::jr(opcode, Condition(Flag::Zero, true))),
+            0x30 => Some(Self::jr(opcode, Condition(Flag::Carry, false))),
+            0x38 => Some(Self::jr(opcode, Condition(Flag::Carry, true))),
 
             // CALL nn
             0xCD => Some(InstructionInfo::new(
@@ -496,10 +496,10 @@ impl Decoder {
             )),
 
             // CALL cc,nn
-            0xC4 => Some(Self::call(opcode, (Flag::Zero, false))),
-            0xCC => Some(Self::call(opcode, (Flag::Zero, true))),
-            0xD4 => Some(Self::call(opcode, (Flag::Carry, false))),
-            0xDC => Some(Self::call(opcode, (Flag::Carry, true))),
+            0xC4 => Some(Self::call(opcode, Condition(Flag::Zero, false))),
+            0xCC => Some(Self::call(opcode, Condition(Flag::Zero, true))),
+            0xD4 => Some(Self::call(opcode, Condition(Flag::Carry, false))),
+            0xDC => Some(Self::call(opcode, Condition(Flag::Carry, true))),
 
             // RST n
             0xC7 => Some(Self::rst(opcode, 0x00)),
@@ -515,10 +515,10 @@ impl Decoder {
             0xC9 => Some(InstructionInfo::new(opcode, Mnemonic::RET, None, 8)),
 
             // RET cc
-            0xC0 => Some(Self::ret(opcode, (Flag::Zero, false))),
-            0xC8 => Some(Self::ret(opcode, (Flag::Zero, true))),
-            0xD0 => Some(Self::ret(opcode, (Flag::Carry, false))),
-            0xD8 => Some(Self::ret(opcode, (Flag::Carry, true))),
+            0xC0 => Some(Self::ret(opcode, Condition(Flag::Zero, false))),
+            0xC8 => Some(Self::ret(opcode, Condition(Flag::Zero, true))),
+            0xD0 => Some(Self::ret(opcode, Condition(Flag::Carry, false))),
+            0xD8 => Some(Self::ret(opcode, Condition(Flag::Carry, true))),
 
             // RETI
             0xD9 => Some(InstructionInfo::new(opcode, Mnemonic::RETI, None, 8)),
@@ -1379,7 +1379,7 @@ impl Decoder {
         )
     }
 
-    fn jp(opcode: u8, condition: (Flag, bool)) -> InstructionInfo {
+    fn jp(opcode: u8, condition: Condition) -> InstructionInfo {
         InstructionInfo::new(
             opcode,
             Mnemonic::JP,
@@ -1391,7 +1391,7 @@ impl Decoder {
         )
     }
 
-    fn jr(opcode: u8, condition: (Flag, bool)) -> InstructionInfo {
+    fn jr(opcode: u8, condition: Condition) -> InstructionInfo {
         InstructionInfo::new(
             opcode,
             Mnemonic::JR,
@@ -1403,7 +1403,7 @@ impl Decoder {
         )
     }
 
-    fn call(opcode: u8, condition: (Flag, bool)) -> InstructionInfo {
+    fn call(opcode: u8, condition: Condition) -> InstructionInfo {
         InstructionInfo::new(
             opcode,
             Mnemonic::CALL,
@@ -1424,7 +1424,7 @@ impl Decoder {
         )
     }
 
-    fn ret(opcode: u8, condition: (Flag, bool)) -> InstructionInfo {
+    fn ret(opcode: u8, condition: Condition) -> InstructionInfo {
         InstructionInfo::new(
             opcode,
             Mnemonic::RET,

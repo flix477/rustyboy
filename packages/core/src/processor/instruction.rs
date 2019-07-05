@@ -59,10 +59,13 @@ pub enum Mnemonic {
 }
 
 #[derive(Copy, Clone, Debug)]
+pub struct Condition(pub Flag, pub bool);
+
+#[derive(Copy, Clone, Debug)]
 pub enum Operand {
     Reference(Reference),
     Value(ValueType),
-    Condition((Flag, bool)),
+    Condition(Condition),
 }
 
 #[derive(Copy, Clone, Debug)]
@@ -127,6 +130,7 @@ impl InstructionInfo {
         &self.mnemonic
     }
 
+    // TODO: why is this not just a Vec
     pub fn operands(&self) -> &Option<Vec<Operand>> {
         &self.operands
     }

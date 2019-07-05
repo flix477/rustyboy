@@ -1,9 +1,8 @@
 use console::style;
 
-use rustyboy_core::debugger::debug_info::DebugInfo;
-use rustyboy_core::processor::instruction::Operand;
+use rustyboy_core::debugger::debug_info::{DebugInfo, ParsedOperand};
 use rustyboy_core::processor::instruction::{AddressType, Reference, ValueType};
-use rustyboy_core::processor::registers::{register::Register, RegisterType, Registers};
+use rustyboy_core::processor::registers::{RegisterType, Registers};
 
 const IMMEDIATE: &str = "n";
 const IMMEDIATE_16: &str = "nn";
@@ -21,47 +20,54 @@ pub fn format_registers(registers: &Registers) -> String {
 }
 
 pub fn format_debug_info(debug_info: &DebugInfo) -> String {
-    let operands = if let Some(operands) = debug_info.cpu_debug_info.instruction.operands() {
-        operands.iter().map(|x| parse_operand(*x)).enumerate().fold(
-            String::new(),
-            |acc, (idx, operand)| {
-                if idx == 0 {
-                    operand
-                } else {
-                    format!("{}, {}", acc, operand)
-                }
-            },
+    let line = debug_info.current_line();
+    let instruction = debug_info.parse_instruction(line);
+
+    let line = format!("0x{:X}", line);
+
+    if let Some(instruction) = instruction {
+        let operands = if !instruction.parsed_operands.is_empty() {
+            instruction
+                .parsed_operands
+                .iter()
+                .map(|x| parse_operand(*x))
+                .enumerate()
+                .fold(String::new(), |acc, (index, x)| {
+                    if index == 0 {
+                        x
+                    } else {
+                        format!("{}, {}", acc, x)
+                    }
+                })
+        } else {
+            String::new()
+        };
+
+        let mnemonic = format!("{:?}", instruction.instruction.mnemonic());
+
+        format!(
+            "{}: {} {}",
+            style(line).bold(),
+            style(mnemonic).blue(),
+            operands
         )
     } else {
-        String::new()
-    };
-
-    let line = format!(
-        "0x{:X}",
-        debug_info.cpu_debug_info.registers.program_counter.get()
-    );
-    let mnemonic = format!("{:?}", debug_info.cpu_debug_info.instruction.mnemonic());
-
-    format!(
-        "{}: {} {}",
-        style(line).bold(),
-        style(mnemonic).blue(),
-        operands
-    )
+        format!("{}: No instruction", style(line).bold())
+    }
 }
 
-fn parse_operand(operand: Operand) -> String {
+fn parse_operand(operand: ParsedOperand) -> String {
     match operand {
-        Operand::Reference(reference) => match reference {
+        ParsedOperand::Reference(reference) => match reference {
             Reference::Register(register) => style_register(register),
             Reference::Address(address) => parse_address(address),
         },
-        Operand::Value(value) => match value {
+        ParsedOperand::Value((value, parsed_value)) => match value {
             ValueType::Register(register) => style_register(register),
             ValueType::Address(address) => parse_address(address),
             ValueType::Constant(constant) => format!("0x{:X}", constant),
-            ValueType::Immediate | ValueType::SignedImmediate => IMMEDIATE.to_string(),
-            ValueType::Immediate16 => IMMEDIATE_16.to_string(),
+            ValueType::Immediate | ValueType::SignedImmediate => format!("0x{:X}", parsed_value),
+            ValueType::Immediate16 => format!("0x{:X}", parsed_value),
         },
         _ => format!("{:?}", operand),
     }

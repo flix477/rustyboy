@@ -4,7 +4,7 @@ use crate::config::Config;
 use crate::debugger::debug_info::DebugInfo;
 use crate::debugger::Debugger;
 use crate::hardware::{joypad::Input, Hardware};
-use crate::processor::Processor;
+use crate::processor::{Processor, ProcessorStepResult};
 use crate::video::status_register::StatusMode;
 
 pub struct Gameboy {
@@ -30,9 +30,12 @@ impl Gameboy {
 
     pub fn run_to_event(&mut self, debugger: Option<&Debugger>) -> GameboyEvent {
         loop {
-            if let Some(StatusMode::VBlank) = self.step() {
+            let GameboyStepResult(cpu_step_result, status_mode) = self.step();
+            if let Some(StatusMode::VBlank) = status_mode {
                 return GameboyEvent::VBlank;
-            } else if let Some(debugger) = debugger {
+            } else if let (Some(debugger), ProcessorStepResult::NewInstruction) =
+                (debugger, cpu_step_result)
+            {
                 let cpu_debug_info = self.processor.debug_info();
                 if debugger.should_run(&cpu_debug_info) {
                     let debug_info = DebugInfo {
@@ -45,9 +48,11 @@ impl Gameboy {
         }
     }
 
-    fn step(&mut self) -> Option<StatusMode> {
-        self.processor.step(&mut self.hardware);
-        self.hardware.clock()
+    fn step(&mut self) -> GameboyStepResult {
+        GameboyStepResult(
+            self.processor.step(&mut self.hardware),
+            self.hardware.clock(),
+        )
     }
 
     pub fn hardware(&self) -> &Hardware {
@@ -68,3 +73,5 @@ pub enum GameboyEvent {
     VBlank,
     Debugger(DebugInfo),
 }
+
+pub struct GameboyStepResult(ProcessorStepResult, Option<StatusMode>);

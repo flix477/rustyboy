@@ -1,19 +1,22 @@
-mod decoder;
+pub mod decoder;
 pub mod instruction;
 pub mod interrupt;
 pub mod lr35902;
+pub mod operand_parser;
 #[cfg(test)]
 mod processor_tests;
 pub mod registers;
 
 use self::decoder::Decoder;
-use self::instruction::{InstructionInfo, Mnemonic, Prefix};
+use self::instruction::Prefix;
 use self::lr35902::LR35902;
 use self::registers::flag_register::Flag;
 use self::registers::register::Register;
 use self::registers::{RegisterType, Registers};
 use crate::bus::Bus;
 use crate::debugger::debug_info::ProcessorDebugInfo;
+use crate::processor::operand_parser::OperandParser;
+use crate::processor::registers::program_counter::ProgramCounter;
 use crate::util::bitflags::Bitflags;
 
 pub struct Processor {
@@ -39,7 +42,7 @@ impl Processor {
         Self::default()
     }
 
-    pub fn step<H: Bus>(&mut self, bus: &mut H) {
+    pub fn step<H: Bus>(&mut self, bus: &mut H) -> ProcessorStepResult {
         let interrupt = bus.fetch_interrupt();
         if let Some(interrupt) = interrupt {
             self.halt_mode = HaltMode::None;
@@ -66,46 +69,44 @@ impl Processor {
                 self.registers.program_counter.set(pc);
                 self.cycles_left += self.execute_next(bus, Prefix::None);
             }
-        } else if self.cycles_left > 0 {
+        } else {
             self.cycles_left -= 1;
+            if self.cycles_left == 0 {
+                return ProcessorStepResult::NewInstruction;
+            }
         }
+
+        ProcessorStepResult::CycleCompensation
     }
 
     pub fn debug_info(&self) -> ProcessorDebugInfo {
         ProcessorDebugInfo {
             registers: self.registers,
-            instruction: InstructionInfo::new(0, Mnemonic::RES, None, 0),
         }
     }
 }
 
-impl LR35902 for Processor {
-    fn immediate<H: Bus>(&mut self, bus: &H) -> u8 {
-        self.registers.program_counter.fetch(bus)
-    }
-
-    fn immediate16<H: Bus>(&mut self, bus: &H) -> u16 {
-        u16::from(self.immediate(bus)) | (u16::from(self.immediate(bus)) << 8)
+impl OperandParser for Processor {
+    fn mut_program_counter(&mut self) -> &mut ProgramCounter {
+        &mut self.registers.program_counter
     }
 
     fn reg(&self, register: RegisterType) -> u16 {
         self.registers.reg(register)
     }
 
+    fn flag(&self, flag: Flag) -> bool {
+        self.registers.af.flag(flag)
+    }
+}
+
+impl LR35902 for Processor {
     fn set_reg(&mut self, register: RegisterType, value: u16) {
         self.registers.set_reg(register, value);
     }
 
-    fn address<H: Bus>(&self, bus: &H, address: u16) -> u8 {
-        bus.read(address)
-    }
-
     fn set_address<H: Bus>(&self, bus: &mut H, address: u16, value: u8) {
         bus.write(address, value);
-    }
-
-    fn flag(&self, flag: Flag) -> bool {
-        self.registers.af.flag(flag)
     }
 
     fn set_flag(&mut self, flag: Flag, value: bool) {
@@ -159,4 +160,10 @@ enum HaltMode {
     Normal,
     Bugged,
     None,
+}
+
+#[derive(PartialEq)]
+pub enum ProcessorStepResult {
+    CycleCompensation,
+    NewInstruction,
 }
