@@ -32,7 +32,9 @@ impl DebugInfo {
                 instructions.push(instruction);
             }
 
-            if parser.program_counter.get() == address { break; }
+            if parser.program_counter.get() == address {
+                break;
+            }
         }
 
         instructions
