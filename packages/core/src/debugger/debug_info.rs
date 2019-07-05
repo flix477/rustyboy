@@ -24,13 +24,18 @@ impl DebugInfo {
         self.cpu_debug_info.registers.program_counter.get()
     }
 
-    pub fn instruction_at(&self, address: u16, prefix: Prefix) -> Option<InstructionInfo> {
-        Decoder::decode_opcode(self.bus[address as usize], prefix)
-    }
-
-    pub fn parse_all(&self, address: u16) -> Option<DebugInstructionInfo> {
+    pub fn parse_all(&self, address: u16) -> Vec<DebugInstructionInfo> {
         let mut parser = DebugOperandParser::new(address, &self);
-        self.parse_instruction_with_parser(&mut parser)
+        let mut instructions = vec![];
+        loop {
+            if let Some(instruction) = self.parse_instruction_with_parser(&mut parser) {
+                instructions.push(instruction);
+            }
+
+            if parser.program_counter.get() == address { break; }
+        }
+
+        instructions
     }
 
     pub fn parse_instruction(&self, address: u16) -> Option<DebugInstructionInfo> {
