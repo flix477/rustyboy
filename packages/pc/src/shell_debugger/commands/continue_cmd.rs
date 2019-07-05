@@ -17,7 +17,12 @@ impl Command for ContinueCommand {
         MATCHING_VALUES
     }
 
-    fn execute(&self, _: &[&str], debugger: &mut Debugger, _: &DebugInfo) -> CommandResult {
-        CommandResult::from(debugger.run_action(DebuggerAction::Continue))
+    fn execute(
+        &self,
+        _: &[&str],
+        debugger: &mut Debugger,
+        debug_info: &DebugInfo,
+    ) -> CommandResult {
+        CommandResult::from(debugger.run_action(DebuggerAction::Continue, debug_info))
     }
 }

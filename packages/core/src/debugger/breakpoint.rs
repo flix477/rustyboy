@@ -4,6 +4,15 @@ use crate::processor::registers::RegisterType;
 #[derive(Clone, Debug, PartialEq)]
 pub struct Breakpoint {
     pub conditions: Vec<BreakpointCondition>,
+    pub one_time: bool,
+}
+
+impl Breakpoint {
+    pub fn satisfied(&self, debug_info: &ProcessorDebugInfo) -> bool {
+        self.conditions
+            .iter()
+            .all(|condition| condition.satisfied(debug_info))
+    }
 }
 
 #[derive(Copy, Debug, Clone, PartialEq)]
