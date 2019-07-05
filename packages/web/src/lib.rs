@@ -20,7 +20,7 @@ pub fn setup(buffer: Vec<u8>) -> GameboyJs {
     };
 
     GameboyJs {
-        gameboy: Gameboy::new(cartridge, config),
+        gameboy: Gameboy::new(cartridge, &config),
         renderer: None,
     }
 }
