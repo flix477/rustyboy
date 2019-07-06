@@ -53,7 +53,7 @@ impl Debugger {
         self.breakpoints = self
             .breakpoints
             .iter()
-            .filter(|breakpoint| !breakpoint.satisfied(debug_info))
+            .filter(|breakpoint| !breakpoint.one_time || !breakpoint.satisfied(debug_info))
             .cloned()
             .collect()
     }
@@ -69,4 +69,56 @@ pub enum DebuggerAction {
 pub enum DebuggerActionResult {
     Resume,
     None,
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::debugger::breakpoint::Breakpoint;
+    use crate::debugger::commands::breakpoint::BreakpointAction;
+    use crate::debugger::{Debugger, DebuggerAction};
+    use crate::processor::registers::Registers;
+    use crate::tests::util::mock_debug_info;
+
+    #[test]
+    fn adds_breakpoint() {
+        let debug_info = mock_debug_info(Registers::default(), vec![]);
+        let mut debugger = Debugger::default();
+
+        let breakpoint = Breakpoint {
+            conditions: vec![],
+            one_time: false,
+        };
+
+        debugger.run_action(
+            DebuggerAction::Breakpoint(BreakpointAction::Add(breakpoint)),
+            &debug_info,
+        );
+
+        assert_eq!(debugger.breakpoints.len(), 1);
+    }
+
+    #[test]
+    fn removes_breakpoint() {
+        let debug_info = mock_debug_info(Registers::default(), vec![]);
+        let mut debugger = Debugger {
+            breakpoints: vec![
+                Breakpoint {
+                    conditions: vec![],
+                    one_time: false,
+                },
+                Breakpoint {
+                    conditions: vec![],
+                    one_time: false,
+                },
+            ],
+            forced_break: false,
+        };
+
+        debugger.run_action(
+            DebuggerAction::Breakpoint(BreakpointAction::Remove(0)),
+            &debug_info,
+        );
+
+        assert_eq!(debugger.breakpoints.len(), 1);
+    }
 }
