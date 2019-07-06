@@ -1,6 +1,7 @@
+use super::register::Register;
 use crate::bus::Bus;
-use crate::processor::register::Register;
 
+#[derive(Copy, Clone)]
 pub struct StackPointer {
     value: u16,
 }
@@ -10,7 +11,7 @@ impl StackPointer {
         Self::default()
     }
 
-    pub fn peek<H: Bus>(&self, bus: &H) -> u8 {
+    pub fn peek<H: Bus>(self, bus: &H) -> u8 {
         bus.read(self.value)
     }
 

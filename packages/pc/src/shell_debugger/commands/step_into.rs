@@ -1,6 +1,6 @@
-use super::{Command, CommandResult, DebuggerState};
-use rustyboy_core::bus::Bus;
+use super::{Command, CommandResult, Debugger};
 use rustyboy_core::debugger::debug_info::DebugInfo;
+use rustyboy_core::debugger::DebuggerAction;
 
 const MATCHING_VALUES: &[&str] = &["stepinto", "si"];
 
@@ -20,11 +20,9 @@ impl Command for StepIntoCommand {
     fn execute(
         &self,
         _: &[&str],
-        debugger: &mut DebuggerState,
-        _: &DebugInfo<'_>,
-        _: &dyn Bus,
+        debugger: &mut Debugger,
+        debug_info: &DebugInfo,
     ) -> CommandResult {
-        debugger.forced_break = true;
-        CommandResult::Quit
+        CommandResult::from(debugger.run_action(DebuggerAction::StepInto, debug_info))
     }
 }

@@ -1,6 +1,7 @@
-use crate::processor::register::{DualRegister, Register, SingleRegister};
+use super::register::{DualRegister, Register, SingleRegister};
 use crate::util::bitflags::Bitflags;
 
+#[derive(Copy, Clone)]
 pub struct FlagRegister {
     register: DualRegister,
 }

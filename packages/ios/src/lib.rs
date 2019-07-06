@@ -27,7 +27,7 @@ pub unsafe extern "C" fn create_gameboy(buffer: *const c_uchar, length: c_ulong)
         device_type: DeviceType::GameBoy,
     };
 
-    let gameboy = RustGameboy::new(cartridge, config);
+    let gameboy = RustGameboy::new(cartridge, &config);
     let ffi_gameboy = Gameboy { gameboy };
 
     Box::into_raw(Box::new(ffi_gameboy))

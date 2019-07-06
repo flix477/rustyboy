@@ -3,5 +3,5 @@ use crate::gameboy::DeviceType;
 
 pub struct Config {
     pub device_type: DeviceType,
-    pub debugger: Option<Box<dyn Debugger>>,
+    pub debugger: Option<Debugger>,
 }

@@ -1,6 +1,15 @@
 use crate::bus::{Readable, Writable};
 use crate::util::bitflags::Bitflags;
 
+/// Represents a hardware interrupt.
+///
+/// Interrupts are events that occur during the execution of the GameBoy
+/// and are requested by one its components, like the keypad when a button is pressed
+/// or the PPU when it gets to a VBlank.
+///
+/// When an interrupt request is made by a component, the processor can service it
+/// on its next execution step by jumping to the address that corresponds to the interrupt,
+/// where code to handle it resides.
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Interrupt {
     VBlank = 1,
@@ -11,6 +20,8 @@ pub enum Interrupt {
 }
 
 impl Interrupt {
+    /// Returns the address that corresponds to the interrupt.
+    /// The processor will jump to this location when servicing the interrupt.
     pub fn address(self) -> u16 {
         match self {
             Interrupt::VBlank => 0x0040,
@@ -65,6 +76,15 @@ impl Bitflags<Interrupt> for InterruptRegister {
     }
 }
 
+/// This struct contains the interrupt request register (IF), the interrupt enable register (IE)
+/// and the interrupt master enable register (IME).
+///
+/// The IF register contains information about interrupt requests.
+/// Every time an interrupt request comes through, the corresponding bit is set in this register.
+///
+/// The IE register is used to enable or disable the servicing of specific interrupts.
+///
+/// The IME register is used to completely disable or enable all interrupts at once.
 pub struct InterruptHandler {
     interrupt_request: InterruptRegister,
     interrupt_enable: InterruptRegister,
@@ -76,6 +96,10 @@ impl InterruptHandler {
         InterruptHandler::default()
     }
 
+    /// Returns the next interrupt to service if there is one.
+    ///
+    /// If multiple interrupts were requested, they are serviced in the order
+    /// that they appear in the `Interrupt` enum.
     pub fn fetch_interrupt(&self) -> Option<Interrupt> {
         let value = self.interrupt_enable.register() & self.interrupt_request.register();
 
@@ -89,14 +113,18 @@ impl InterruptHandler {
         None
     }
 
+    /// Toggles on or off the interrupt master enable register
     pub fn toggle_interrupts(&mut self, value: bool) {
         self.interrupt_master_enable = value;
     }
 
+    /// Requests an interrupt
     pub fn request_interrupt(&mut self, interrupt: Interrupt) {
         self.interrupt_request.set_flag(interrupt, true);
     }
 
+    /// Toggles IME off and unsets this interrupt in the IF register,
+    /// used before the CPU actually services the interrupt
     pub fn service_interrupt(&mut self, interrupt: Interrupt) {
         self.toggle_interrupts(false);
         self.interrupt_request.set_flag(interrupt, false);

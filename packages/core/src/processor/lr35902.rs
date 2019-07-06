@@ -1,22 +1,17 @@
 use crate::bus::Bus;
-use crate::processor::flag_register::{
+use crate::processor::instruction::{
+    InstructionInfo, Mnemonic, Operand, Prefix, Reference, ValueType,
+};
+use crate::processor::operand_parser::OperandParser;
+use crate::processor::registers::flag_register::{
     carry_add, half_carry_add, half_carry_add16, half_carry_sub, Flag,
 };
-use crate::processor::instruction::Prefix;
-use crate::processor::instruction::Reference;
-use crate::processor::instruction::{AddressType, Operand, ValueType};
-use crate::processor::instruction::{InstructionInfo, Mnemonic};
 use crate::processor::registers::RegisterType;
 use crate::util::bits;
 
-pub trait LR35902 {
-    fn immediate<H: Bus>(&mut self, bus: &H) -> u8;
-    fn immediate16<H: Bus>(&mut self, bus: &H) -> u16;
-    fn reg(&self, register: RegisterType) -> u16;
+pub trait LR35902: OperandParser {
     fn set_reg(&mut self, register: RegisterType, value: u16);
-    fn address<H: Bus>(&self, bus: &H, address: u16) -> u8;
     fn set_address<H: Bus>(&self, bus: &mut H, address: u16, value: u8);
-    fn flag(&self, flag: Flag) -> bool;
     fn set_flag(&mut self, flag: Flag, value: bool);
     fn push_stack<H: Bus>(&mut self, bus: &mut H, value: u16);
     fn pop_stack<H: Bus>(&mut self, bus: &mut H) -> u16;
@@ -293,33 +288,6 @@ pub trait LR35902 {
             Mnemonic::CB => self.cb(bus),
         };
         Ok(())
-    }
-
-    fn operand_value<H: Bus>(&mut self, bus: &mut H, value: ValueType) -> u16 {
-        match value {
-            ValueType::Constant(value) => value,
-            ValueType::Register(reg) => self.reg(reg),
-            ValueType::Immediate | ValueType::SignedImmediate => u16::from(self.immediate(bus)),
-            ValueType::Immediate16 => self.immediate16(bus),
-            ValueType::Address(address) => {
-                let address = self.operand_address(bus, address);
-                u16::from(self.address(bus, address))
-            }
-        }
-    }
-
-    fn operand_address<H: Bus>(&mut self, bus: &mut H, address: AddressType) -> u16 {
-        match address {
-            AddressType::Register(reg) => self.reg(reg),
-            AddressType::IncRegister(reg) => self.reg(reg).wrapping_add(0xFF00),
-            AddressType::Immediate => self.immediate16(bus),
-            AddressType::IncImmediate => u16::from(self.immediate(bus)).wrapping_add(0xFF00),
-        }
-    }
-
-    fn operand_condition(&self, condition: (Flag, bool)) -> bool {
-        let (flag, value) = condition;
-        self.flag(flag) == value
     }
 
     fn reference<H: Bus>(&mut self, bus: &mut H, reference: Reference) -> u16 {
