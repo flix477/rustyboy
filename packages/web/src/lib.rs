@@ -3,10 +3,10 @@ use wasm_bindgen::prelude::*;
 use rustyboy_core::cartridge::Cartridge;
 use rustyboy_core::config::Config;
 use rustyboy_core::gameboy::{DeviceType, Gameboy};
+use rustyboy_core::video::color::ColorFormat;
 
 use crate::input::InputJs;
 use crate::rendering::Renderer;
-use rustyboy_core::video::color::ColorFormat;
 
 pub mod debugger;
 pub mod input;

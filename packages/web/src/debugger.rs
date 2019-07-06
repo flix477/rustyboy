@@ -1,36 +1,59 @@
 use wasm_bindgen::prelude::*;
 
-use rustyboy_core::debugger::{Debugger, DebuggerAction};
+use rustyboy_core::debugger::breakpoint::{Breakpoint, BreakpointCondition};
 use rustyboy_core::debugger::commands::breakpoint::BreakpointAction;
-use rustyboy_core::debugger::breakpoint::{BreakpointCondition, Breakpoint};
+use rustyboy_core::debugger::{Debugger, DebuggerAction, DebuggerActionResult};
 use rustyboy_core::processor::registers::RegisterType;
 
 #[wasm_bindgen(js_name = Debugger)]
 pub struct DebuggerJs {
     #[wasm_bindgen(skip)]
-    debugger: Debugger,
+    pub debugger: Debugger,
 }
 //
-//#[wasm_bindgen(js_class = Debugger)]
-//impl DebuggerJs {
-//    #[wasm_bindgen(js_name = runAction)]
-//    pub fn add_breakpoint(&mut self, conditions: Vec<BreakpointConditionJs>) {
-//        self.debugger.run_action(
-//            DebuggerAction::Breakpoint(
-//                BreakpointAction::Add(Breakpoint {
-//                    conditions: conditions.iter().map(|x| x.into()).collect(),
-//                    one_time: false
-//                })
-//            ),
-//
-//        );
-//    }
-//}
+#[wasm_bindgen(js_class = Debugger)]
+impl DebuggerJs {
+    #[wasm_bindgen(constructor)]
+    pub fn new() -> DebuggerJs {
+        DebuggerJs {
+            debugger: Debugger::default()
+        }
+    }
+
+    #[wasm_bindgen(js_name = addBreakpoint)]
+    pub fn add_breakpoint(&mut self, condition: BreakpointConditionJs) -> DebuggerActionResultJs {
+        DebuggerActionResultJs::from(self.debugger.run_action(DebuggerAction::Breakpoint(
+            BreakpointAction::Add(Breakpoint {
+                conditions: vec![condition.into()],
+                one_time: false,
+            }),
+        )))
+    }
+
+    #[wasm_bindgen(js_name = removeBreakpoint)]
+    pub fn remove_breakpoint(&mut self, index: usize) -> DebuggerActionResultJs {
+        DebuggerActionResultJs::from(
+            self.debugger
+                .run_action(DebuggerAction::Breakpoint(BreakpointAction::Remove(index))),
+        )
+    }
+    //
+    #[wasm_bindgen(js_name = stepInto)]
+    pub fn step_into(&mut self) -> DebuggerActionResultJs {
+        DebuggerActionResultJs::from(self.debugger.run_action(DebuggerAction::StepInto))
+    }
+
+    #[wasm_bindgen(js_name = continueExecution)]
+    pub fn continue_execution(&mut self) -> DebuggerActionResultJs {
+        DebuggerActionResultJs::from(self.debugger.run_action(DebuggerAction::Continue))
+    }
+}
 
 #[wasm_bindgen(js_name = BreakpointCondition)]
+#[derive(PartialEq, Copy, Clone, Debug)]
 pub struct BreakpointConditionJs {
     pub register: RegisterTypeJs,
-    pub value: u16
+    pub value: u16,
 }
 
 impl Into<BreakpointCondition> for BreakpointConditionJs {
@@ -39,6 +62,7 @@ impl Into<BreakpointCondition> for BreakpointConditionJs {
     }
 }
 
+// This is quite ugly, finding a way to make this copy the original enum would be great
 #[wasm_bindgen]
 #[derive(PartialEq, Copy, Clone, Debug)]
 pub enum RegisterTypeJs {
@@ -75,6 +99,22 @@ impl Into<RegisterType> for RegisterTypeJs {
             RegisterTypeJs::L => RegisterType::L,
             RegisterTypeJs::SP => RegisterType::SP,
             RegisterTypeJs::PC => RegisterType::PC,
+        }
+    }
+}
+
+#[wasm_bindgen(js_name = DebuggerActionResult)]
+#[derive(PartialEq, Copy, Clone, Debug)]
+pub enum DebuggerActionResultJs {
+    Resume,
+    None,
+}
+
+impl From<DebuggerActionResult> for DebuggerActionResultJs {
+    fn from(value: DebuggerActionResult) -> DebuggerActionResultJs {
+        match value {
+            DebuggerActionResult::Resume => DebuggerActionResultJs::Resume,
+            DebuggerActionResult::None => DebuggerActionResultJs::None,
         }
     }
 }
