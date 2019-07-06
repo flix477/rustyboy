@@ -33,16 +33,15 @@ impl Gameboy {
 
     /// Runs the GameBoy until a VBlank interrupt occurs or, if a debugger is passed to the method,
     /// until a breakpoint is hit
-    pub fn run_to_event(&mut self, debugger: Option<&Debugger>) -> GameboyEvent {
+    pub fn run_to_event(&mut self, mut debugger: Option<&mut Debugger>) -> GameboyEvent {
         loop {
             let GameboyStepResult(cpu_step_result, status_mode) = self.step();
             if let Some(StatusMode::VBlank) = status_mode {
                 return GameboyEvent::VBlank;
-            } else if let (Some(debugger), ProcessorStepResult::InstructionCompleted) =
-                (debugger, cpu_step_result)
-            {
+            } else if let (Some(debugger), ProcessorStepResult::InstructionCompleted) = (debugger.as_mut(), cpu_step_result) {
                 let cpu_debug_info = self.processor.debug_info();
                 if debugger.should_run(&cpu_debug_info) {
+                    debugger.clean_breakpoints(&cpu_debug_info);
                     let debug_info = DebugInfo {
                         cpu_debug_info,
                         bus: self.hardware.read_all(),

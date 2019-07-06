@@ -1,6 +1,6 @@
 use crate::debugger::breakpoint::Breakpoint;
 use crate::debugger::commands::breakpoint::BreakpointAction;
-use crate::debugger::debug_info::{DebugInfo, ProcessorDebugInfo};
+use crate::debugger::debug_info::ProcessorDebugInfo;
 
 pub mod breakpoint;
 pub mod commands;
@@ -33,14 +33,11 @@ impl Debugger {
 
     pub fn run_action(
         &mut self,
-        action: DebuggerAction,
-        debug_info: &DebugInfo,
+        action: DebuggerAction
     ) -> DebuggerActionResult {
         if self.forced_break {
             self.forced_break = false;
         };
-
-        self.clean_breakpoints(&debug_info.cpu_debug_info);
 
         match action {
             DebuggerAction::Breakpoint(action) => commands::breakpoint::run(action, self),
@@ -89,10 +86,7 @@ mod tests {
             one_time: false,
         };
 
-        debugger.run_action(
-            DebuggerAction::Breakpoint(BreakpointAction::Add(breakpoint)),
-            &debug_info,
-        );
+        debugger.run_action(DebuggerAction::Breakpoint(BreakpointAction::Add(breakpoint)));
 
         assert_eq!(debugger.breakpoints.len(), 1);
     }
@@ -114,10 +108,7 @@ mod tests {
             forced_break: false,
         };
 
-        debugger.run_action(
-            DebuggerAction::Breakpoint(BreakpointAction::Remove(0)),
-            &debug_info,
-        );
+        debugger.run_action(DebuggerAction::Breakpoint(BreakpointAction::Remove(0)));
 
         assert_eq!(debugger.breakpoints.len(), 1);
     }

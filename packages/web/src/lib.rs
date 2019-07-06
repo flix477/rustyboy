@@ -8,6 +8,7 @@ use crate::input::InputJs;
 use crate::rendering::Renderer;
 use rustyboy_core::video::color::ColorFormat;
 
+pub mod debugger;
 pub mod input;
 pub mod rendering;
 
