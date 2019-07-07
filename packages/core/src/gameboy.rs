@@ -38,7 +38,9 @@ impl Gameboy {
             let GameboyStepResult(cpu_step_result, status_mode) = self.step();
             if let Some(StatusMode::VBlank) = status_mode {
                 return GameboyEvent::VBlank;
-            } else if let (Some(debugger), ProcessorStepResult::InstructionCompleted) = (debugger.as_mut(), cpu_step_result) {
+            } else if let (Some(debugger), ProcessorStepResult::InstructionCompleted) =
+                (debugger.as_mut(), cpu_step_result)
+            {
                 let cpu_debug_info = self.processor.debug_info();
                 if debugger.should_run(&cpu_debug_info) {
                     debugger.clean_breakpoints(&cpu_debug_info);

@@ -24,6 +24,7 @@ impl DebugInfo {
     pub fn parse_all(&self, address: u16) -> Vec<DebugInstructionInfo> {
         let mut parser = DebugOperandParser::new(address, &self);
         let mut instructions = vec![];
+
         loop {
             if let Some(instruction) = self.parse_instruction_with_parser(&mut parser) {
                 instructions.push(instruction);
@@ -99,8 +100,29 @@ pub enum ParsedOperand {
     Reference(Reference),
 }
 
+#[derive(Clone, Debug)]
 pub struct DebugInstructionInfo {
     pub line: u16,
     pub instruction: InstructionInfo,
     pub parsed_operands: Vec<ParsedOperand>,
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::processor::instruction::Mnemonic;
+    use crate::processor::registers::Registers;
+    use crate::tests::util::mock_debug_info;
+
+    #[test]
+    fn parse_all() {
+        let debug_info = mock_debug_info(Registers::default(), vec![0; 0x10000]);
+
+        let instructions: Vec<Mnemonic> = debug_info
+            .parse_all(0)
+            .iter()
+            .map(|x| *x.instruction.mnemonic())
+            .collect();
+
+        assert_eq!(instructions, vec![Mnemonic::NOP; 0x10000])
+    }
 }

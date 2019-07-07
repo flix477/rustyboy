@@ -2,20 +2,30 @@ import React, { FunctionComponent, useState, useEffect } from 'react';
 import { FixedSizeList as List } from 'react-window';
 import Line from './line';
 
-const emptyBus = new Uint8Array(0x10000);
+const initialInstructions = Array.from({length: 0x10000}, (_, i) => ({
+  line: i,
+  mnemonic: "NOP",
+  operands: "nn,n"
+}));
 
-interface Props {
-  bus?: Uint8Array
+export interface Instruction {
+  line: number;
+  mnemonic: string;
+  operands: string;
 }
 
-export const MemoryMap: FunctionComponent<Props> = ({bus}) => {
-    const [lastBus, setLastBus] = useState<Uint8Array>(emptyBus);
+interface Props {
+  instructions?: Instruction[];
+}
+
+export const MemoryMap: FunctionComponent<Props> = ({instructions}) => {
+    const [lastInstructions, setLastInstructions] = useState<Instruction[]>(initialInstructions);
 
     useEffect(() => {
-      if (bus) {
-        setLastBus(bus);
+      if (instructions) {
+        setLastInstructions(instructions);
       }
-    }, [bus, setLastBus]);
+    }, [instructions]);
 
     return (
       <List
@@ -24,7 +34,7 @@ export const MemoryMap: FunctionComponent<Props> = ({bus}) => {
         height={500}
         width={150}
         itemCount={0x10000}
-        itemData={lastBus}
+        itemData={lastInstructions}
       >
         {Line}
       </List>

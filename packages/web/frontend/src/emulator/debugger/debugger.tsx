@@ -1,6 +1,7 @@
-import React, { FunctionComponent, CSSProperties, useCallback } from 'react';
+import React, { FunctionComponent, CSSProperties, useCallback, useState, useEffect, useMemo } from 'react';
 import { Debugger as DebuggerType, DebugInfo, RegisterTypeJs } from 'rustyboy-web';
 import MemoryMap from './memory-map';
+import { Instruction } from './memory-map/memory-map';
 
 interface Props {
   debuggerRef: DebuggerType;
@@ -16,7 +17,16 @@ function style(loaded: boolean): CSSProperties {
 }
 
 export const Debugger: FunctionComponent<Props> = ({debuggerRef, debugInfo}) => {
+  const [lastDebugInfo, setLastDebugInfo] = useState<DebugInfo>();
+  const [instructions, setInstructions] = useState<Instruction[]>();
   const loaded = Boolean(debugInfo);
+
+  useEffect(() => {
+    if (debugInfo) {
+      setLastDebugInfo(debugInfo);
+      setInstructions(debugInfo.parseAll());
+    }
+  }, [debugInfo])
 
   const onClick = useCallback(() => {
     if (!loaded) {
@@ -26,7 +36,7 @@ export const Debugger: FunctionComponent<Props> = ({debuggerRef, debugInfo}) => 
 
   return (
     <div style={style(loaded)} onClick={onClick}>
-      <MemoryMap bus={debugInfo && debugInfo.bus()} />
+      <MemoryMap instructions={instructions} />
     </div>
   );
 };

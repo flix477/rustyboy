@@ -1,10 +1,12 @@
 use wasm_bindgen::prelude::*;
+use serde::Serialize;
 
 use rustyboy_core::debugger::breakpoint::{Breakpoint, BreakpointCondition};
 use rustyboy_core::debugger::commands::breakpoint::BreakpointAction;
-use rustyboy_core::debugger::debug_info::DebugInfo;
+use rustyboy_core::debugger::debug_info::{DebugInfo, ParsedOperand};
 use rustyboy_core::debugger::{Debugger, DebuggerAction, DebuggerActionResult};
 use rustyboy_core::processor::registers::RegisterType;
+use rustyboy_core::processor::instruction::Mnemonic;
 
 #[wasm_bindgen(js_name = Debugger)]
 pub struct DebuggerJs {
@@ -38,7 +40,7 @@ impl DebuggerJs {
                 .run_action(DebuggerAction::Breakpoint(BreakpointAction::Remove(index))),
         )
     }
-    //
+
     #[wasm_bindgen(js_name = stepInto)]
     pub fn step_into(&mut self) -> DebuggerActionResultJs {
         DebuggerActionResultJs::from(self.debugger.run_action(DebuggerAction::StepInto))
@@ -143,4 +145,78 @@ impl DebugInfoJs {
         // TODO: don't clone
         self.debug_info.bus.clone()
     }
+
+    #[wasm_bindgen(js_name = parseAll)]
+    pub fn parse_all(&self) -> JsValue {
+        let pc = self.debug_info.current_line();
+        let instructions: Vec<DebugInstructionInfoJs> = self.debug_info.parse_all(pc)
+            .iter()
+            .map(|x| DebugInstructionInfoJs {
+                line: x.line,
+                mnemonic: *x.instruction.mnemonic(),
+                parsed_operands: "n,nn".to_string()
+            })
+            .collect();
+        JsValue::from_serde(&instructions).unwrap()
+    }
+}
+
+#[derive(Serialize)]
+pub struct DebugInstructionInfoJs {
+    pub line: u16,
+    #[serde(with = "MnemonicDef")]
+    mnemonic: Mnemonic,
+    parsed_operands: String
+}
+
+#[derive(Serialize)]
+#[serde(remote = "Mnemonic")]
+pub enum MnemonicDef {
+    CB,
+    LD,
+    LDHL,
+    LDI,
+    LDD,
+    PUSH,
+    POP,
+    ADD,
+    ADC,
+    SUB,
+    SBC,
+    AND,
+    XOR,
+    OR,
+    CP,
+    INC,
+    DEC,
+    DAA,
+    CPL,
+    RLC,
+    RLCA,
+    RL,
+    RLA,
+    RRC,
+    RRCA,
+    RR,
+    RRA,
+    SLA,
+    SWAP,
+    SRA,
+    SRL,
+    BIT,
+    SET,
+    RES,
+    CCF,
+    SCF,
+    NOP,
+    HALT,
+    STOP,
+    DI,
+    EI,
+    JP,
+    JR,
+    CALL,
+    RET,
+    RETI,
+    RST,
 }

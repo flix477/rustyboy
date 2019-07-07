@@ -31,10 +31,7 @@ impl Debugger {
                 .any(|breakpoint| breakpoint.satisfied(debug_info))
     }
 
-    pub fn run_action(
-        &mut self,
-        action: DebuggerAction
-    ) -> DebuggerActionResult {
+    pub fn run_action(&mut self, action: DebuggerAction) -> DebuggerActionResult {
         if self.forced_break {
             self.forced_break = false;
         };
@@ -73,12 +70,9 @@ mod tests {
     use crate::debugger::breakpoint::Breakpoint;
     use crate::debugger::commands::breakpoint::BreakpointAction;
     use crate::debugger::{Debugger, DebuggerAction};
-    use crate::processor::registers::Registers;
-    use crate::tests::util::mock_debug_info;
 
     #[test]
     fn adds_breakpoint() {
-        let debug_info = mock_debug_info(Registers::default(), vec![]);
         let mut debugger = Debugger::default();
 
         let breakpoint = Breakpoint {
@@ -86,14 +80,15 @@ mod tests {
             one_time: false,
         };
 
-        debugger.run_action(DebuggerAction::Breakpoint(BreakpointAction::Add(breakpoint)));
+        debugger.run_action(DebuggerAction::Breakpoint(BreakpointAction::Add(
+            breakpoint,
+        )));
 
         assert_eq!(debugger.breakpoints.len(), 1);
     }
 
     #[test]
     fn removes_breakpoint() {
-        let debug_info = mock_debug_info(Registers::default(), vec![]);
         let mut debugger = Debugger {
             breakpoints: vec![
                 Breakpoint {
