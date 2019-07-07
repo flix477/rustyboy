@@ -2,6 +2,7 @@ use wasm_bindgen::prelude::*;
 
 use rustyboy_core::debugger::breakpoint::{Breakpoint, BreakpointCondition};
 use rustyboy_core::debugger::commands::breakpoint::BreakpointAction;
+use rustyboy_core::debugger::debug_info::DebugInfo;
 use rustyboy_core::debugger::{Debugger, DebuggerAction, DebuggerActionResult};
 use rustyboy_core::processor::registers::RegisterType;
 
@@ -16,15 +17,15 @@ impl DebuggerJs {
     #[wasm_bindgen(constructor)]
     pub fn new() -> DebuggerJs {
         DebuggerJs {
-            debugger: Debugger::default()
+            debugger: Debugger::default(),
         }
     }
 
     #[wasm_bindgen(js_name = addBreakpoint)]
-    pub fn add_breakpoint(&mut self, condition: BreakpointConditionJs) -> DebuggerActionResultJs {
+    pub fn add_breakpoint(&mut self, register: RegisterTypeJs, value: u16) -> DebuggerActionResultJs {
         DebuggerActionResultJs::from(self.debugger.run_action(DebuggerAction::Breakpoint(
             BreakpointAction::Add(Breakpoint {
-                conditions: vec![condition.into()],
+                conditions: vec![BreakpointCondition::RegisterEquals(register.into(), value)],
                 one_time: false,
             }),
         )))
@@ -52,8 +53,19 @@ impl DebuggerJs {
 #[wasm_bindgen(js_name = BreakpointCondition)]
 #[derive(PartialEq, Copy, Clone, Debug)]
 pub struct BreakpointConditionJs {
-    pub register: RegisterTypeJs,
-    pub value: u16,
+    register: RegisterTypeJs,
+    value: u16,
+}
+
+#[wasm_bindgen(js_class = BreakpointCondition)]
+impl BreakpointConditionJs {
+    #[wasm_bindgen(constructor)]
+    pub fn new(register: RegisterTypeJs, value: u16) -> Self {
+        BreakpointConditionJs {
+            register,
+            value
+        }
+    }
 }
 
 impl Into<BreakpointCondition> for BreakpointConditionJs {
@@ -116,5 +128,19 @@ impl From<DebuggerActionResult> for DebuggerActionResultJs {
             DebuggerActionResult::Resume => DebuggerActionResultJs::Resume,
             DebuggerActionResult::None => DebuggerActionResultJs::None,
         }
+    }
+}
+
+#[wasm_bindgen(js_name = DebugInfo)]
+pub struct DebugInfoJs {
+    #[wasm_bindgen(skip)]
+    pub debug_info: DebugInfo,
+}
+
+#[wasm_bindgen(js_class = DebugInfo)]
+impl DebugInfoJs {
+    pub fn bus(&self) -> Vec<u8> {
+        // TODO: don't clone
+        self.debug_info.bus.clone()
     }
 }

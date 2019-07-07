@@ -1,10 +1,5 @@
 import React, {FunctionComponent, useEffect, useCallback} from 'react';
-import {Gameboy as GameboyType, InputButton, InputTypeJs, Input} from 'rustyboy-web';
-
-async function update(gameboy: GameboyType) {
-  gameboy.runToVBlank();
-  requestAnimationFrame(() => update(gameboy));
-}
+import {Gameboy as GameboyType, InputButton, InputTypeJs, Input, Debugger, DebugInfo} from 'rustyboy-web';
 
 function eventToInputButton(event: KeyboardEvent): InputButton | null {
   switch (event.key) {
@@ -43,15 +38,47 @@ function onInput(gameboy: GameboyType): EventListener {
   };
 }
 
-interface Props {
-  gameboy: GameboyType;
+function update(gameboy: GameboyType, debuggerRef?: Debugger, onBreakpointHit?: (debugInfo: DebugInfo) => void) {
+  return () => {
+    let debugInfo = undefined;
+    if (debuggerRef) {
+      debugInfo = gameboy.runToEvent(debuggerRef);
+    } else gameboy.runToVBlank();
+  
+    if (debugInfo && onBreakpointHit)
+      onBreakpointHit(debugInfo);
+  }
 }
 
-const Gameboy: FunctionComponent<Props> = ({gameboy}) => {
+function useUpdate(updateFn: () => void) {
+  useEffect(() => {
+    let handle: number | null = null;
+
+    function callback() {
+      updateFn();
+      handle = requestAnimationFrame(callback);
+    }
+
+    callback();
+
+    return () => {
+      if (handle !== null) cancelAnimationFrame(handle)
+    }
+  }, [updateFn]);
+}
+
+interface Props {
+  gameboy: GameboyType;
+  debuggerRef?: Debugger;
+  onBreakpointHit?: (debugInfo: DebugInfo) => void
+}
+
+const Gameboy: FunctionComponent<Props> = ({gameboy, debuggerRef, onBreakpointHit}) => {
   const inputCallback = useCallback(onInput(gameboy), [gameboy]);
+  const updateCallback = useCallback(update(gameboy, debuggerRef, onBreakpointHit), [gameboy, debuggerRef, onBreakpointHit]);
+  useUpdate(updateCallback);
 
   useEffect(() => {
-    update(gameboy);
     window.addEventListener('keydown', inputCallback);
     window.addEventListener('keyup', inputCallback);
 
@@ -59,7 +86,7 @@ const Gameboy: FunctionComponent<Props> = ({gameboy}) => {
       window.removeEventListener('keydown', inputCallback);
       window.removeEventListener('keyup', inputCallback);
     };
-  }, [gameboy, inputCallback]);
+  }, [inputCallback]);
 
   return (
     <div>
