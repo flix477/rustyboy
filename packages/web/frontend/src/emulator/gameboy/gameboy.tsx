@@ -45,18 +45,23 @@ function update(gameboy: GameboyType, debuggerRef?: Debugger, onBreakpointHit?: 
       debugInfo = gameboy.runToEvent(debuggerRef);
     } else gameboy.runToVBlank();
   
-    if (debugInfo && onBreakpointHit)
+    if (debugInfo && onBreakpointHit) {
       onBreakpointHit(debugInfo);
+      return false;
+    }
+
+    return true;
   }
 }
 
-function useUpdate(updateFn: () => void) {
+function useUpdate(updateFn: () => boolean, condition?: boolean) {
   useEffect(() => {
+    if (!condition) return;
     let handle: number | null = null;
 
     function callback() {
-      updateFn();
-      handle = requestAnimationFrame(callback);
+      if (updateFn())
+        handle = requestAnimationFrame(callback);
     }
 
     callback();
@@ -64,19 +69,20 @@ function useUpdate(updateFn: () => void) {
     return () => {
       if (handle !== null) cancelAnimationFrame(handle)
     }
-  }, [updateFn]);
+  }, [updateFn, condition]);
 }
 
 interface Props {
   gameboy: GameboyType;
   debuggerRef?: Debugger;
-  onBreakpointHit?: (debugInfo: DebugInfo) => void
+  onBreakpointHit?: (debugInfo: DebugInfo) => void;
+  paused: boolean;
 }
 
-const Gameboy: FunctionComponent<Props> = ({gameboy, debuggerRef, onBreakpointHit}) => {
+const Gameboy: FunctionComponent<Props> = ({gameboy, debuggerRef, onBreakpointHit, paused}) => {
   const inputCallback = useCallback(onInput(gameboy), [gameboy]);
   const updateCallback = useCallback(update(gameboy, debuggerRef, onBreakpointHit), [gameboy, debuggerRef, onBreakpointHit]);
-  useUpdate(updateCallback);
+  useUpdate(updateCallback, !paused);
 
   useEffect(() => {
     window.addEventListener('keydown', inputCallback);

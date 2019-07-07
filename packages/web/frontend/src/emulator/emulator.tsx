@@ -13,7 +13,6 @@ export const Emulator: FunctionComponent<Props> = ({ gameboy }) => {
   const [debugInfo, setDebugInfo] = useState<DebugInfo>();
 
   const onBreakpointHit = (debugInfo: DebugInfo) => {
-    console.log("hi");
     setDebugInfo(debugInfo);
   };
 
@@ -23,7 +22,12 @@ export const Emulator: FunctionComponent<Props> = ({ gameboy }) => {
 
   return (
     <div>
-      <Gameboy gameboy={gameboy} debuggerRef={debuggerRef} onBreakpointHit={onBreakpointHit} />
+      <Gameboy
+        gameboy={gameboy}
+        debuggerRef={debuggerRef}
+        onBreakpointHit={onBreakpointHit}
+        paused={Boolean(debugInfo)}
+      />
       {debuggerRef && <Debugger debuggerRef={debuggerRef} debugInfo={debugInfo} />}
     </div>
   );
