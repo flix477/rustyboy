@@ -154,10 +154,15 @@ impl DebugInfoJs {
             .map(|x| DebugInstructionInfoJs {
                 line: x.line,
                 mnemonic: *x.instruction.mnemonic(),
-                parsed_operands: "n,nn".to_string()
+                operands: x.parsed_operands.iter().map(ParsedOperand::to_string).collect::<Vec<String>>().join(",")
             })
             .collect();
         JsValue::from_serde(&instructions).unwrap()
+    }
+
+    #[wasm_bindgen(js_name = currentLine)]
+    pub fn current_line(&self) -> u16 {
+        self.debug_info.current_line()
     }
 }
 
@@ -166,7 +171,7 @@ pub struct DebugInstructionInfoJs {
     pub line: u16,
     #[serde(with = "MnemonicDef")]
     mnemonic: Mnemonic,
-    parsed_operands: String
+    operands: String
 }
 
 #[derive(Serialize)]

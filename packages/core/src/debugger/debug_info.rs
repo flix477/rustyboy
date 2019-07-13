@@ -21,20 +21,28 @@ impl DebugInfo {
         self.cpu_debug_info.registers.program_counter.get()
     }
 
+    // TODO: refactor this? not very clean
     pub fn parse_all(&self, address: u16) -> Vec<DebugInstructionInfo> {
         let mut parser = DebugOperandParser::new(address, &self);
         let mut instructions = vec![];
+        let mut overflow = false;
 
         loop {
             if let Some(instruction) = self.parse_instruction_with_parser(&mut parser) {
                 instructions.push(instruction);
             }
 
-            if parser.program_counter().get() == address {
+            let pc = parser.program_counter().get();
+            if !overflow && pc <= address {
+                overflow = true;
+            }
+
+            if overflow && pc >= address {
                 break;
             }
         }
 
+        instructions.sort_by_key(|instruction| instruction.line);
         instructions
     }
 
@@ -98,6 +106,16 @@ pub enum ParsedOperand {
     Value((ValueType, u16)),
     Condition((Condition, bool)),
     Reference(Reference),
+}
+
+impl ToString for ParsedOperand {
+    fn to_string(&self) -> String {
+        match *self {
+            ParsedOperand::Value((value_type, _)) => value_type.to_string(),
+            ParsedOperand::Condition((condition, _)) => condition.to_string(),
+            ParsedOperand::Reference(reference) => reference.to_string(),
+        }
+    }
 }
 
 #[derive(Clone, Debug)]

@@ -1,6 +1,8 @@
 import React, {FunctionComponent, useEffect, useCallback} from 'react';
 import {Gameboy as GameboyType, InputButton, InputTypeJs, Input, Debugger, DebugInfo} from 'rustyboy-web';
 
+import "./gameboy.css";
+
 function eventToInputButton(event: KeyboardEvent): InputButton | null {
   switch (event.key) {
   case 'z': return InputButton.A;
@@ -95,7 +97,7 @@ const Gameboy: FunctionComponent<Props> = ({gameboy, debuggerRef, onBreakpointHi
   }, [inputCallback]);
 
   return (
-    <div>
+    <div className="gameboy">
       <canvas width="320" height="288" id="canvas" />
     </div>
   );

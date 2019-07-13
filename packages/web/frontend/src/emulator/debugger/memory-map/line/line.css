@@ -6,6 +6,10 @@
     font-family: 'Source Code Pro', monospace;
 }
 
+.memory-map .current-line {
+    background-color: rgb(247, 246, 225)
+}
+
 .memory-map .line .line-number {
     opacity: 0.3;
 }

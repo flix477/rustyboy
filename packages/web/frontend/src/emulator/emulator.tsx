@@ -3,6 +3,7 @@ import { Gameboy as GameboyType, Debugger as DebuggerType, DebugInfo } from 'rus
 
 import Gameboy from './gameboy';
 import Debugger from './debugger';
+import "./emulator.css";
 
 interface Props {
   gameboy: GameboyType
@@ -21,7 +22,7 @@ export const Emulator: FunctionComponent<Props> = ({ gameboy }) => {
   }, [setDebuggerRef]);
 
   return (
-    <div>
+    <div className="emulator">
       <Gameboy
         gameboy={gameboy}
         debuggerRef={debuggerRef}

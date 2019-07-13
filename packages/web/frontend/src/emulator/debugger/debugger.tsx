@@ -1,7 +1,8 @@
-import React, { FunctionComponent, CSSProperties, useCallback, useState, useEffect, useMemo } from 'react';
+import React, { FunctionComponent, CSSProperties, useCallback, useState, useEffect } from 'react';
 import { Debugger as DebuggerType, DebugInfo, RegisterTypeJs } from 'rustyboy-web';
 import MemoryMap from './memory-map';
-import { Instruction } from './memory-map/memory-map';
+import { Instruction } from './memory-map/line';
+import "./debugger.css";
 
 interface Props {
   debuggerRef: DebuggerType;
@@ -20,6 +21,7 @@ export const Debugger: FunctionComponent<Props> = ({debuggerRef, debugInfo}) => 
   const [lastDebugInfo, setLastDebugInfo] = useState<DebugInfo>();
   const [instructions, setInstructions] = useState<Instruction[]>();
   const loaded = Boolean(debugInfo);
+  const currentLine = debugInfo && debugInfo.currentLine();
 
   useEffect(() => {
     if (debugInfo) {
@@ -35,8 +37,8 @@ export const Debugger: FunctionComponent<Props> = ({debuggerRef, debugInfo}) => 
   }, [debuggerRef, loaded]);
 
   return (
-    <div style={style(loaded)} onClick={onClick}>
-      <MemoryMap instructions={instructions} />
+    <div className="debugger" style={style(loaded)} onClick={onClick}>
+      <MemoryMap instructions={instructions} currentLine={currentLine} />
     </div>
   );
 };
