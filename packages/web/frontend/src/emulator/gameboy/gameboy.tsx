@@ -3,6 +3,10 @@ import {Gameboy as GameboyType, InputButton, InputTypeJs, Input, Debugger, Debug
 
 import "./gameboy.css";
 
+function className(paused: boolean): string {
+  return paused ? "gameboy disabled" : "gameboy";
+}
+
 function eventToInputButton(event: KeyboardEvent): InputButton | null {
   switch (event.key) {
   case 'z': return InputButton.A;
@@ -79,9 +83,10 @@ interface Props {
   debuggerRef?: Debugger;
   onBreakpointHit?: (debugInfo: DebugInfo) => void;
   paused: boolean;
+  onClick?: () => void;
 }
 
-const Gameboy: FunctionComponent<Props> = ({gameboy, debuggerRef, onBreakpointHit, paused}) => {
+const Gameboy: FunctionComponent<Props> = ({gameboy, debuggerRef, onBreakpointHit, paused, onClick}) => {
   const inputCallback = useCallback(onInput(gameboy), [gameboy]);
   const updateCallback = useCallback(update(gameboy, debuggerRef, onBreakpointHit), [gameboy, debuggerRef, onBreakpointHit]);
   useUpdate(updateCallback, !paused);
@@ -97,7 +102,7 @@ const Gameboy: FunctionComponent<Props> = ({gameboy, debuggerRef, onBreakpointHi
   }, [inputCallback]);
 
   return (
-    <div className="gameboy">
+    <div className={className(paused)} onClick={onClick}>
       <canvas width="320" height="288" id="canvas" />
     </div>
   );

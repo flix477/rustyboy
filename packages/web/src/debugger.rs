@@ -3,7 +3,7 @@ use serde::Serialize;
 
 use rustyboy_core::debugger::breakpoint::{Breakpoint, BreakpointCondition};
 use rustyboy_core::debugger::commands::breakpoint::BreakpointAction;
-use rustyboy_core::debugger::debug_info::{DebugInfo, ParsedOperand};
+use rustyboy_core::debugger::debug_info::DebugInfo;
 use rustyboy_core::debugger::{Debugger, DebuggerAction, DebuggerActionResult};
 use rustyboy_core::processor::registers::RegisterType;
 use rustyboy_core::processor::instruction::Mnemonic;
@@ -24,11 +24,11 @@ impl DebuggerJs {
     }
 
     #[wasm_bindgen(js_name = addBreakpoint)]
-    pub fn add_breakpoint(&mut self, register: RegisterTypeJs, value: u16) -> DebuggerActionResultJs {
+    pub fn add_breakpoint(&mut self, register: RegisterTypeJs, value: u16, one_time: bool) -> DebuggerActionResultJs {
         DebuggerActionResultJs::from(self.debugger.run_action(DebuggerAction::Breakpoint(
             BreakpointAction::Add(Breakpoint {
                 conditions: vec![BreakpointCondition::RegisterEquals(register.into(), value)],
-                one_time: false,
+                one_time,
             }),
         )))
     }
@@ -154,7 +154,16 @@ impl DebugInfoJs {
             .map(|x| DebugInstructionInfoJs {
                 line: x.line,
                 mnemonic: *x.instruction.mnemonic(),
-                operands: x.parsed_operands.iter().map(ParsedOperand::to_string).collect::<Vec<String>>().join(",")
+                operands: x.parsed_operands.iter()
+                    .map(|operand| {
+                        if let Some(value) = operand.immediate_value() {
+                            format!("{:X}", value)
+                        } else {
+                            operand.to_string()
+                        }
+                    })
+                    .collect::<Vec<String>>()
+                    .join(",")
             })
             .collect();
         JsValue::from_serde(&instructions).unwrap()

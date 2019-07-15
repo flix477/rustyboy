@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent, useEffect, useState, useCallback } from 'react';
 import { Gameboy as GameboyType, Debugger as DebuggerType, DebugInfo } from 'rustyboy-web';
 
 import Gameboy from './gameboy';
@@ -21,6 +21,10 @@ export const Emulator: FunctionComponent<Props> = ({ gameboy }) => {
     setDebuggerRef(new DebuggerType());
   }, [setDebuggerRef]);
 
+  const onContinue = useCallback(() => {
+    setDebugInfo(undefined);
+  }, [setDebugInfo]);
+
   return (
     <div className="emulator">
       <Gameboy
@@ -28,8 +32,15 @@ export const Emulator: FunctionComponent<Props> = ({ gameboy }) => {
         debuggerRef={debuggerRef}
         onBreakpointHit={onBreakpointHit}
         paused={Boolean(debugInfo)}
+        onClick={onContinue}
       />
-      {debuggerRef && <Debugger debuggerRef={debuggerRef} debugInfo={debugInfo} />}
+      {debuggerRef && (
+        <Debugger
+          debuggerRef={debuggerRef}
+          debugInfo={debugInfo}
+          onContinue={onContinue}
+        />
+      )}
     </div>
   );
 };

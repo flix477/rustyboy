@@ -1,7 +1,7 @@
 use super::debug_operand_parser::{DebugOperandParser, ReadableVec};
 use crate::processor::decoder::Decoder;
 use crate::processor::instruction::{
-    Condition, InstructionInfo, Mnemonic, Operand, Prefix, Reference, ValueType,
+    Condition, InstructionInfo, Mnemonic, Operand, Prefix, Reference, ValueType, AddressType
 };
 use crate::processor::operand_parser::OperandParser;
 use crate::processor::registers::register::Register;
@@ -96,7 +96,10 @@ impl DebugInfo {
                 let parsed_condition = parser.operand_condition(condition);
                 ParsedOperand::Condition((condition, parsed_condition))
             }
-            Operand::Reference(reference) => ParsedOperand::Reference(reference),
+            Operand::Reference(reference) => {
+                let parsed_reference = parser.reference(bus, reference);
+                ParsedOperand::Reference((reference, parsed_reference))
+            },
         }
     }
 }
@@ -105,7 +108,23 @@ impl DebugInfo {
 pub enum ParsedOperand {
     Value((ValueType, u16)),
     Condition((Condition, bool)),
-    Reference(Reference),
+    Reference((Reference, u16)),
+}
+
+impl ParsedOperand {
+    /// If this represents an immediate value (whether 8bit or 16bit), returns the value else None
+    pub fn immediate_value(self) -> Option<u16> {
+        match self {
+            ParsedOperand::Reference((Reference::Address(AddressType::Immediate), value))
+            | ParsedOperand::Reference((Reference::Address(AddressType::IncImmediate), value))
+            | ParsedOperand::Value((ValueType::Immediate, value))
+            | ParsedOperand::Value((ValueType::Immediate16, value))
+            | ParsedOperand::Value((ValueType::SignedImmediate, value))
+            | ParsedOperand::Value((ValueType::Address(AddressType::Immediate), value))
+            | ParsedOperand::Value((ValueType::Address(AddressType::IncImmediate), value)) => Some(value),
+            _ => None
+        }
+    }
 }
 
 impl ToString for ParsedOperand {
@@ -113,7 +132,7 @@ impl ToString for ParsedOperand {
         match *self {
             ParsedOperand::Value((value_type, _)) => value_type.to_string(),
             ParsedOperand::Condition((condition, _)) => condition.to_string(),
-            ParsedOperand::Reference(reference) => reference.to_string(),
+            ParsedOperand::Reference((reference, _)) => reference.to_string(),
         }
     }
 }
