@@ -1,10 +1,10 @@
 import React, {FunctionComponent, useEffect, useCallback} from 'react';
 import {Gameboy as GameboyType, InputButton, InputTypeJs, Input, Debugger, DebugInfo} from 'rustyboy-web';
 
-import "./gameboy.css";
+import './gameboy.css';
 
 function className(paused: boolean): string {
-  return paused ? "gameboy disabled" : "gameboy";
+  return paused ? 'gameboy disabled' : 'gameboy';
 }
 
 function eventToInputButton(event: KeyboardEvent): InputButton | null {
@@ -57,7 +57,7 @@ function update(gameboy: GameboyType, debuggerRef?: Debugger, onBreakpointHit?: 
     }
 
     return true;
-  }
+  };
 }
 
 function useUpdate(updateFn: () => boolean, condition?: boolean) {
@@ -72,9 +72,9 @@ function useUpdate(updateFn: () => boolean, condition?: boolean) {
 
     callback();
 
-    return () => {
-      if (handle !== null) cancelAnimationFrame(handle)
-    }
+    return () => {
+      if (handle !== null) cancelAnimationFrame(handle);
+    };
   }, [updateFn, condition]);
 }
 

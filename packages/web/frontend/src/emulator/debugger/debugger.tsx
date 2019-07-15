@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useCallback, useState, useEffect } from 'react';
 import { Debugger as DebuggerType, DebugInfo, RegisterTypeJs } from 'rustyboy-web';
 import MemoryMap from './memory-map';
-import "./debugger.css";
+import './debugger.css';
 
 interface Props {
   debuggerRef: DebuggerType;
@@ -10,18 +10,18 @@ interface Props {
 }
 
 function className(loaded: boolean): string {
-  return loaded ? "debugger" : "debugger disabled";
+  return loaded ? 'debugger' : 'debugger disabled';
 }
 
 export const Debugger: FunctionComponent<Props> = ({debuggerRef, debugInfo, onContinue}) => {
   const [lastDebugInfo, setLastDebugInfo] = useState<DebugInfo>();
   const loaded = Boolean(debugInfo);
 
-  useEffect(() => {
+  useEffect(() => {
     if (debugInfo) {
       setLastDebugInfo(debugInfo);
     }
-  }, [debugInfo])
+  }, [debugInfo]);
 
   const onClick = useCallback(() => {
     if (!loaded) {

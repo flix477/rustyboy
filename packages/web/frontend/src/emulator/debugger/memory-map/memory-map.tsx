@@ -2,17 +2,17 @@ import React, { FunctionComponent, useState, useEffect, useRef } from 'react';
 import { FixedSizeList as List } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import Line, {Instruction} from './line';
-import "./memory-map.css";
+import './memory-map.css';
 import { DebugInfo } from 'rustyboy-web';
 
 const initialInstructions = Array.from({length: 0x10000}, (_, i) => ({
   line: i,
-  mnemonic: "NOP",
-  operands: "nn,n"
+  mnemonic: 'NOP',
+  operands: 'nn,n'
 }));
 
 interface Props {
-  debugInfo?: DebugInfo
+  debugInfo?: DebugInfo;
 }
 
 export const MemoryMap: FunctionComponent<Props> = ({debugInfo}) => {
@@ -24,16 +24,16 @@ export const MemoryMap: FunctionComponent<Props> = ({debugInfo}) => {
     instructions: lastInstructions
   };
 
-  useEffect(() => {
+  useEffect(() => {
     if (debugInfo) {
       setLastInstructions(debugInfo.parseAll());
     }
   }, [debugInfo]);
 
-  useEffect(() => {
+  useEffect(() => {
     if (currentLine !== undefined && listRef.current) {
       const index = lastInstructions.findIndex(instruction => instruction.line === currentLine);
-      if (index !== -1) listRef.current.scrollToItem(index, "center");
+      if (index !== -1) listRef.current.scrollToItem(index, 'center');
     }
   }, [currentLine, lastInstructions]);
 
@@ -41,17 +41,17 @@ export const MemoryMap: FunctionComponent<Props> = ({debugInfo}) => {
     <div>
       <AutoSizer>
         {({width, height}) => (
-        <List
-          ref={listRef}
-          className="memory-map"
-          itemSize={20}
-          height={height}
-          width={width}
-          itemCount={lastInstructions.length}
-          itemData={data}
-        >
-          {Line}
-        </List>
+          <List
+            ref={listRef}
+            className="memory-map"
+            itemSize={20}
+            height={height}
+            width={width}
+            itemCount={lastInstructions.length}
+            itemData={data}
+          >
+            {Line}
+          </List>
         )}
       </AutoSizer>
     </div>

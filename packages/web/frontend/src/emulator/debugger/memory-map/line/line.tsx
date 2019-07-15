@@ -14,13 +14,13 @@ function formatLine(line: number) {
 
 function getClassName(line: number, currentLine: number): string {
   if (line === currentLine) {
-    return "line current-line";
+    return 'line current-line';
   }
 
-  return "line";
+  return 'line';
 }
 
-const Line: FunctionComponent<ListChildComponentProps> = ({index, style, data}) => {
+const Line: FunctionComponent<ListChildComponentProps> = ({index, style, data}) => {
   const instruction = data.instructions[index] as Instruction;
   const formattedLine = formatLine(instruction.line);
   const className = getClassName(instruction.line, data.currentLine);
@@ -35,6 +35,6 @@ const Line: FunctionComponent<ListChildComponentProps> = ({index, style, data}) 
       </div>
     </div>
   );
-}
+};
 
 export default Line;

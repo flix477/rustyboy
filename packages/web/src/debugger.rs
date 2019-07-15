@@ -1,12 +1,12 @@
-use wasm_bindgen::prelude::*;
 use serde::Serialize;
+use wasm_bindgen::prelude::*;
 
 use rustyboy_core::debugger::breakpoint::{Breakpoint, BreakpointCondition};
 use rustyboy_core::debugger::commands::breakpoint::BreakpointAction;
 use rustyboy_core::debugger::debug_info::DebugInfo;
 use rustyboy_core::debugger::{Debugger, DebuggerAction, DebuggerActionResult};
-use rustyboy_core::processor::registers::RegisterType;
 use rustyboy_core::processor::instruction::Mnemonic;
+use rustyboy_core::processor::registers::RegisterType;
 
 #[wasm_bindgen(js_name = Debugger)]
 pub struct DebuggerJs {
@@ -24,7 +24,12 @@ impl DebuggerJs {
     }
 
     #[wasm_bindgen(js_name = addBreakpoint)]
-    pub fn add_breakpoint(&mut self, register: RegisterTypeJs, value: u16, one_time: bool) -> DebuggerActionResultJs {
+    pub fn add_breakpoint(
+        &mut self,
+        register: RegisterTypeJs,
+        value: u16,
+        one_time: bool,
+    ) -> DebuggerActionResultJs {
         DebuggerActionResultJs::from(self.debugger.run_action(DebuggerAction::Breakpoint(
             BreakpointAction::Add(Breakpoint {
                 conditions: vec![BreakpointCondition::RegisterEquals(register.into(), value)],
@@ -63,10 +68,7 @@ pub struct BreakpointConditionJs {
 impl BreakpointConditionJs {
     #[wasm_bindgen(constructor)]
     pub fn new(register: RegisterTypeJs, value: u16) -> Self {
-        BreakpointConditionJs {
-            register,
-            value
-        }
+        BreakpointConditionJs { register, value }
     }
 }
 
@@ -149,12 +151,16 @@ impl DebugInfoJs {
     #[wasm_bindgen(js_name = parseAll)]
     pub fn parse_all(&self) -> JsValue {
         let pc = self.debug_info.current_line();
-        let instructions: Vec<DebugInstructionInfoJs> = self.debug_info.parse_all(pc)
+        let instructions: Vec<DebugInstructionInfoJs> = self
+            .debug_info
+            .parse_all(pc)
             .iter()
             .map(|x| DebugInstructionInfoJs {
                 line: x.line,
                 mnemonic: *x.instruction.mnemonic(),
-                operands: x.parsed_operands.iter()
+                operands: x
+                    .parsed_operands
+                    .iter()
                     .map(|operand| {
                         if let Some(value) = operand.immediate_value() {
                             format!("{:X}", value)
@@ -163,7 +169,7 @@ impl DebugInfoJs {
                         }
                     })
                     .collect::<Vec<String>>()
-                    .join(",")
+                    .join(","),
             })
             .collect();
         JsValue::from_serde(&instructions).unwrap()
@@ -180,7 +186,7 @@ pub struct DebugInstructionInfoJs {
     pub line: u16,
     #[serde(with = "MnemonicDef")]
     mnemonic: Mnemonic,
-    operands: String
+    operands: String,
 }
 
 #[derive(Serialize)]
