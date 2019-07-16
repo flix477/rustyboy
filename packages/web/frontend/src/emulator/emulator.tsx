@@ -25,6 +25,11 @@ export const Emulator: FunctionComponent<Props> = ({ gameboy }) => {
     setDebugInfo(undefined);
   }, [setDebugInfo]);
 
+  const onGameboyClick = useCallback(() => {
+    if (debuggerRef) debuggerRef.continueExecution();
+    onContinue();
+  }, [debuggerRef, onContinue]);
+
   return (
     <div className="emulator">
       <Gameboy
@@ -32,7 +37,7 @@ export const Emulator: FunctionComponent<Props> = ({ gameboy }) => {
         debuggerRef={debuggerRef}
         onBreakpointHit={onBreakpointHit}
         paused={Boolean(debugInfo)}
-        onClick={onContinue}
+        onClick={onGameboyClick}
       />
       {debuggerRef && (
         <Debugger

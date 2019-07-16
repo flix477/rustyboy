@@ -1,5 +1,7 @@
 import React, { FunctionComponent, useCallback, useState, useEffect } from 'react';
 import { Debugger as DebuggerType, DebugInfo, RegisterTypeJs } from 'rustyboy-web';
+
+import Actions from './actions';
 import MemoryMap from './memory-map';
 import './debugger.css';
 
@@ -29,27 +31,10 @@ export const Debugger: FunctionComponent<Props> = ({debuggerRef, debugInfo, onCo
     }
   }, [debuggerRef, loaded]);
 
-  const onContinueClick = useCallback(() => {
-    if (debuggerRef && onContinue) {
-      debuggerRef.continueExecution();
-      onContinue();
-    }
-  }, [debuggerRef, onContinue]);
-
-  const onStepInto = useCallback(() => {
-    if (debuggerRef && onContinue) {
-      debuggerRef.stepInto();
-      onContinue();
-    }
-  }, [debuggerRef, onContinue]);
-
   return (
     <div className={className(loaded)} onClick={onClick}>
       <MemoryMap debugInfo={lastDebugInfo} />
-      <div>
-        <button disabled={!loaded} onClick={onContinueClick}>Continue</button>
-        <button disabled={!loaded} onClick={onStepInto}>Step into</button>
-      </div>
+      <Actions debugInfo={debugInfo} debuggerRef={debuggerRef} onContinue={onContinue} />
     </div>
   );
 };

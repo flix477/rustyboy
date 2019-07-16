@@ -1,6 +1,6 @@
 use wasm_bindgen::prelude::*;
 
-use crate::debugger::{DebugInfoJs, DebuggerJs};
+use crate::debugger::{debug_info::DebugInfoJs, DebuggerJs};
 use crate::input::InputJs;
 use crate::rendering::Renderer;
 use rustyboy_core::gameboy::{Gameboy, GameboyEvent};

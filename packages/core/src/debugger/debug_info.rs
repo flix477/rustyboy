@@ -7,10 +7,12 @@ use crate::processor::operand_parser::OperandParser;
 use crate::processor::registers::register::Register;
 use crate::processor::registers::Registers;
 
+#[derive(Clone)]
 pub struct ProcessorDebugInfo {
     pub registers: Registers,
 }
 
+#[derive(Clone)]
 pub struct DebugInfo {
     pub cpu_debug_info: ProcessorDebugInfo,
     pub bus: Vec<u8>,

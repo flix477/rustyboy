@@ -1,6 +1,6 @@
 use crate::debugger::breakpoint::Breakpoint;
 use crate::debugger::commands::breakpoint::BreakpointAction;
-use crate::debugger::debug_info::ProcessorDebugInfo;
+use crate::debugger::debug_info::{ProcessorDebugInfo, DebugInfo};
 
 pub mod breakpoint;
 pub mod commands;
@@ -31,7 +31,7 @@ impl Debugger {
                 .any(|breakpoint| breakpoint.satisfied(debug_info))
     }
 
-    pub fn run_action(&mut self, action: DebuggerAction) -> DebuggerActionResult {
+    pub fn run_action(&mut self, action: DebuggerAction<'_>) -> DebuggerActionResult {
         if self.forced_break {
             self.forced_break = false;
         };
@@ -40,6 +40,7 @@ impl Debugger {
             DebuggerAction::Breakpoint(action) => commands::breakpoint::run(action, self),
             DebuggerAction::Continue => DebuggerActionResult::Resume,
             DebuggerAction::StepInto => commands::step_into::run(self),
+            DebuggerAction::StepOver(debug_info) => commands::step_over::run(self, debug_info)
         }
     }
 
@@ -54,10 +55,11 @@ impl Debugger {
 }
 
 #[derive(Clone)]
-pub enum DebuggerAction {
+pub enum DebuggerAction<'a> {
     Breakpoint(BreakpointAction),
     Continue,
     StepInto,
+    StepOver(&'a DebugInfo)
 }
 
 pub enum DebuggerActionResult {

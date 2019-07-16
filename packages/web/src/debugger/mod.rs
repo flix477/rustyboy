@@ -1,19 +1,25 @@
-use serde::Serialize;
 use wasm_bindgen::prelude::*;
 
 use rustyboy_core::debugger::breakpoint::{Breakpoint, BreakpointCondition};
 use rustyboy_core::debugger::commands::breakpoint::BreakpointAction;
-use rustyboy_core::debugger::debug_info::DebugInfo;
 use rustyboy_core::debugger::{Debugger, DebuggerAction, DebuggerActionResult};
-use rustyboy_core::processor::instruction::Mnemonic;
 use rustyboy_core::processor::registers::RegisterType;
+use crate::debugger::debug_info::DebugInfoJs;
+
+pub mod debug_info;
 
 #[wasm_bindgen(js_name = Debugger)]
 pub struct DebuggerJs {
     #[wasm_bindgen(skip)]
     pub debugger: Debugger,
 }
-//
+
+impl Default for DebuggerJs {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[wasm_bindgen(js_class = Debugger)]
 impl DebuggerJs {
     #[wasm_bindgen(constructor)]
@@ -51,30 +57,14 @@ impl DebuggerJs {
         DebuggerActionResultJs::from(self.debugger.run_action(DebuggerAction::StepInto))
     }
 
+    #[wasm_bindgen(js_name = stepOver)]
+    pub fn step_over(&mut self, debug_info: &DebugInfoJs) -> DebuggerActionResultJs {
+        DebuggerActionResultJs::from(self.debugger.run_action(DebuggerAction::StepOver(&debug_info.debug_info)))
+    }
+
     #[wasm_bindgen(js_name = continueExecution)]
     pub fn continue_execution(&mut self) -> DebuggerActionResultJs {
         DebuggerActionResultJs::from(self.debugger.run_action(DebuggerAction::Continue))
-    }
-}
-
-#[wasm_bindgen(js_name = BreakpointCondition)]
-#[derive(PartialEq, Copy, Clone, Debug)]
-pub struct BreakpointConditionJs {
-    register: RegisterTypeJs,
-    value: u16,
-}
-
-#[wasm_bindgen(js_class = BreakpointCondition)]
-impl BreakpointConditionJs {
-    #[wasm_bindgen(constructor)]
-    pub fn new(register: RegisterTypeJs, value: u16) -> Self {
-        BreakpointConditionJs { register, value }
-    }
-}
-
-impl Into<BreakpointCondition> for BreakpointConditionJs {
-    fn into(self) -> BreakpointCondition {
-        BreakpointCondition::RegisterEquals(self.register.into(), self.value)
     }
 }
 
@@ -133,110 +123,4 @@ impl From<DebuggerActionResult> for DebuggerActionResultJs {
             DebuggerActionResult::None => DebuggerActionResultJs::None,
         }
     }
-}
-
-#[wasm_bindgen(js_name = DebugInfo)]
-pub struct DebugInfoJs {
-    #[wasm_bindgen(skip)]
-    pub debug_info: DebugInfo,
-}
-
-#[wasm_bindgen(js_class = DebugInfo)]
-impl DebugInfoJs {
-    pub fn bus(&self) -> Vec<u8> {
-        // TODO: don't clone
-        self.debug_info.bus.clone()
-    }
-
-    #[wasm_bindgen(js_name = parseAll)]
-    pub fn parse_all(&self) -> JsValue {
-        let pc = self.debug_info.current_line();
-        let instructions: Vec<DebugInstructionInfoJs> = self
-            .debug_info
-            .parse_all(pc)
-            .iter()
-            .map(|x| DebugInstructionInfoJs {
-                line: x.line,
-                mnemonic: *x.instruction.mnemonic(),
-                operands: x
-                    .parsed_operands
-                    .iter()
-                    .map(|operand| {
-                        if let Some(value) = operand.immediate_value() {
-                            format!("{:X}", value)
-                        } else {
-                            operand.to_string()
-                        }
-                    })
-                    .collect::<Vec<String>>()
-                    .join(","),
-            })
-            .collect();
-        JsValue::from_serde(&instructions).unwrap()
-    }
-
-    #[wasm_bindgen(js_name = currentLine)]
-    pub fn current_line(&self) -> u16 {
-        self.debug_info.current_line()
-    }
-}
-
-#[derive(Serialize)]
-pub struct DebugInstructionInfoJs {
-    pub line: u16,
-    #[serde(with = "MnemonicDef")]
-    mnemonic: Mnemonic,
-    operands: String,
-}
-
-#[derive(Serialize)]
-#[serde(remote = "Mnemonic")]
-pub enum MnemonicDef {
-    CB,
-    LD,
-    LDHL,
-    LDI,
-    LDD,
-    PUSH,
-    POP,
-    ADD,
-    ADC,
-    SUB,
-    SBC,
-    AND,
-    XOR,
-    OR,
-    CP,
-    INC,
-    DEC,
-    DAA,
-    CPL,
-    RLC,
-    RLCA,
-    RL,
-    RLA,
-    RRC,
-    RRCA,
-    RR,
-    RRA,
-    SLA,
-    SWAP,
-    SRA,
-    SRL,
-    BIT,
-    SET,
-    RES,
-    CCF,
-    SCF,
-    NOP,
-    HALT,
-    STOP,
-    DI,
-    EI,
-    JP,
-    JR,
-    CALL,
-    RET,
-    RETI,
-    RST,
 }
