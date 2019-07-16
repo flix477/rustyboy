@@ -6,21 +6,17 @@ use crate::processor::instruction::{
 use crate::processor::operand_parser::OperandParser;
 use crate::processor::registers::register::Register;
 use crate::processor::registers::Registers;
+use crate::video::debugging::VideoDebugInformation;
 
 #[derive(Clone)]
 pub struct ProcessorDebugInfo {
     pub registers: Registers,
-}
-
-#[derive(Clone)]
-pub struct DebugInfo {
-    pub cpu_debug_info: ProcessorDebugInfo,
     pub bus: Vec<u8>,
 }
 
-impl DebugInfo {
+impl ProcessorDebugInfo {
     pub fn current_line(&self) -> u16 {
-        self.cpu_debug_info.registers.program_counter.get()
+        self.registers.program_counter.get()
     }
 
     // TODO: refactor this? not very clean
@@ -104,6 +100,12 @@ impl DebugInfo {
             },
         }
     }
+}
+
+#[derive(Clone)]
+pub struct DebugInfo {
+    pub cpu_debug_info: ProcessorDebugInfo,
+    pub video_information: VideoDebugInformation
 }
 
 #[derive(Copy, Clone, Debug)]

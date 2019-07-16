@@ -1,5 +1,4 @@
-use crate::debugger::debug_info::ProcessorDebugInfo;
-use crate::processor::registers::RegisterType;
+use crate::processor::registers::{RegisterType, Registers};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Breakpoint {
@@ -8,10 +7,10 @@ pub struct Breakpoint {
 }
 
 impl Breakpoint {
-    pub fn satisfied(&self, debug_info: &ProcessorDebugInfo) -> bool {
+    pub fn satisfied(&self, registers: &Registers) -> bool {
         self.conditions
             .iter()
-            .all(|condition| condition.satisfied(debug_info))
+            .all(|condition| condition.satisfied(registers))
     }
 }
 
@@ -21,10 +20,10 @@ pub enum BreakpointCondition {
 }
 
 impl BreakpointCondition {
-    pub fn satisfied(self, debug_info: &ProcessorDebugInfo) -> bool {
+    pub fn satisfied(self, registers: &Registers) -> bool {
         match self {
             BreakpointCondition::RegisterEquals(register, value) => {
-                debug_info.registers.reg(register) == value
+                registers.reg(register) == value
             }
         }
     }
@@ -35,20 +34,18 @@ mod tests {
     use crate::debugger::breakpoint::{Breakpoint, BreakpointCondition};
     use crate::processor::registers::register::Register;
     use crate::processor::registers::{RegisterType, Registers};
-    use crate::tests::util::mock_debug_info;
 
     #[test]
     fn breakpoint_unsatisfied() {
         let mut registers = Registers::default();
         registers.program_counter.set(0);
 
-        let debug_info = mock_debug_info(registers, vec![]);
         let breakpoint = Breakpoint {
             conditions: vec![BreakpointCondition::RegisterEquals(RegisterType::PC, 1)],
             one_time: false,
         };
 
-        assert!(!breakpoint.satisfied(&debug_info.cpu_debug_info));
+        assert!(!breakpoint.satisfied(&registers));
     }
 
     #[test]
@@ -56,13 +53,12 @@ mod tests {
         let mut registers = Registers::default();
         registers.program_counter.set(0x10);
 
-        let debug_info = mock_debug_info(registers, vec![]);
         let breakpoint = Breakpoint {
             conditions: vec![BreakpointCondition::RegisterEquals(RegisterType::PC, 0x10)],
             one_time: false,
         };
 
-        assert!(breakpoint.satisfied(&debug_info.cpu_debug_info));
+        assert!(breakpoint.satisfied(&registers));
     }
 
     #[test]
@@ -71,7 +67,6 @@ mod tests {
         registers.program_counter.set(0x10);
         registers.hl.set(0);
 
-        let debug_info = mock_debug_info(registers, vec![]);
         let breakpoint = Breakpoint {
             conditions: vec![
                 BreakpointCondition::RegisterEquals(RegisterType::PC, 0x10),
@@ -80,6 +75,6 @@ mod tests {
             one_time: false,
         };
 
-        assert!(!breakpoint.satisfied(&debug_info.cpu_debug_info));
+        assert!(!breakpoint.satisfied(&registers));
     }
 }

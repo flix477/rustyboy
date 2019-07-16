@@ -1,6 +1,7 @@
 use crate::debugger::breakpoint::Breakpoint;
 use crate::debugger::commands::breakpoint::BreakpointAction;
 use crate::debugger::debug_info::{ProcessorDebugInfo, DebugInfo};
+use crate::processor::registers::Registers;
 
 pub mod breakpoint;
 pub mod commands;
@@ -23,12 +24,12 @@ impl Default for Debugger {
 }
 
 impl Debugger {
-    pub fn should_run(&self, debug_info: &ProcessorDebugInfo) -> bool {
+    pub fn should_run(&self, registers: &Registers) -> bool {
         self.forced_break
             || self
                 .breakpoints
                 .iter()
-                .any(|breakpoint| breakpoint.satisfied(debug_info))
+                .any(|breakpoint| breakpoint.satisfied(registers))
     }
 
     pub fn run_action(&mut self, action: DebuggerAction<'_>) -> DebuggerActionResult {
@@ -48,7 +49,7 @@ impl Debugger {
         self.breakpoints = self
             .breakpoints
             .iter()
-            .filter(|breakpoint| !breakpoint.one_time || !breakpoint.satisfied(debug_info))
+            .filter(|breakpoint| !breakpoint.one_time || !breakpoint.satisfied(&debug_info.registers))
             .cloned()
             .collect()
     }

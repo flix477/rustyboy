@@ -1,7 +1,7 @@
 use crate::bus::Readable;
 use crate::cartridge::Cartridge;
 use crate::config::Config;
-use crate::debugger::debug_info::DebugInfo;
+use crate::debugger::debug_info::{DebugInfo, ProcessorDebugInfo};
 use crate::debugger::Debugger;
 use crate::hardware::{joypad::Input, Hardware};
 use crate::processor::{Processor, ProcessorStepResult};
@@ -41,14 +41,18 @@ impl Gameboy {
             } else if let (Some(debugger), ProcessorStepResult::InstructionCompleted) =
                 (debugger.as_mut(), cpu_step_result)
             {
-                let cpu_debug_info = self.processor.debug_info();
-                if debugger.should_run(&cpu_debug_info) {
+                let registers = self.processor.registers;
+                if debugger.should_run(&registers) {
+                    let cpu_debug_info = ProcessorDebugInfo {
+                        registers,
+                        bus: self.hardware.read_all()
+                    };
                     debugger.clean_breakpoints(&cpu_debug_info);
                     let debug_info = DebugInfo {
                         cpu_debug_info,
-                        bus: self.hardware.read_all(),
+                        video_information: self.hardware.video().debug_information()
                     };
-                    return GameboyEvent::Debugger(debug_info);
+                    return GameboyEvent::Debugger(Box::new(debug_info));
                 }
             }
         }
@@ -81,7 +85,7 @@ pub enum DeviceType {
 /// Represents the event that triggered the end of a `run_to_event` call
 pub enum GameboyEvent {
     VBlank,
-    Debugger(DebugInfo),
+    Debugger(Box<DebugInfo>),
 }
 
 /// Represents the result of a single GameBoy step

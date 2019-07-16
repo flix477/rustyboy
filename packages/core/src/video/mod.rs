@@ -16,6 +16,7 @@ use crate::bus::{Readable, Writable};
 use crate::processor::interrupt::{Interrupt, InterruptHandler};
 use crate::video::palette::Palette;
 use crate::video::screen::{Screen, VideoInformation};
+use crate::video::debugging::VideoDebugInformation;
 
 pub struct Video {
     control: ControlRegister,
@@ -172,6 +173,18 @@ impl Video {
             bg_palette: &self.bg_palette,
             obj_palette0: &self.obj_palette0,
             obj_palette1: &self.obj_palette1,
+        }
+    }
+
+    pub fn debug_information(&self) -> VideoDebugInformation {
+        VideoDebugInformation {
+            scroll: self.position_registers.scroll(),
+            window: self.position_registers.window(),
+            vram: self.vram.clone(),
+            control: self.control,
+            bg_palette: self.bg_palette,
+            obj_palette0: self.obj_palette0,
+            obj_palette1: self.obj_palette1,
         }
     }
 }

@@ -1,5 +1,5 @@
 use crate::debugger::breakpoint::{Breakpoint, BreakpointCondition};
-use crate::debugger::debug_info::DebugInfo;
+use crate::debugger::debug_info::{DebugInfo, ProcessorDebugInfo};
 use crate::debugger::debug_operand_parser::DebugOperandParser;
 use crate::debugger::{Debugger, DebuggerActionResult};
 use crate::processor::registers::register::Register;
@@ -10,14 +10,14 @@ pub fn run(debugger: &mut Debugger, debug_info: &DebugInfo) -> DebuggerActionRes
         one_time: true,
         conditions: vec![BreakpointCondition::RegisterEquals(
             RegisterType::PC,
-            next_instruction_address(debug_info),
+            next_instruction_address(&debug_info.cpu_debug_info),
         )],
     });
 
     DebuggerActionResult::Resume
 }
 
-fn next_instruction_address(debug_info: &DebugInfo) -> u16 {
+fn next_instruction_address(debug_info: &ProcessorDebugInfo) -> u16 {
     let line = debug_info.current_line();
     let mut parser = DebugOperandParser::new(line, debug_info);
     debug_info.parse_instruction_with_parser(&mut parser);

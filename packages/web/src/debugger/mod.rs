@@ -1,10 +1,10 @@
 use wasm_bindgen::prelude::*;
 
+use crate::debugger::debug_info::DebugInfoJs;
 use rustyboy_core::debugger::breakpoint::{Breakpoint, BreakpointCondition};
 use rustyboy_core::debugger::commands::breakpoint::BreakpointAction;
 use rustyboy_core::debugger::{Debugger, DebuggerAction, DebuggerActionResult};
 use rustyboy_core::processor::registers::RegisterType;
-use crate::debugger::debug_info::DebugInfoJs;
 
 pub mod debug_info;
 
@@ -59,7 +59,10 @@ impl DebuggerJs {
 
     #[wasm_bindgen(js_name = stepOver)]
     pub fn step_over(&mut self, debug_info: &DebugInfoJs) -> DebuggerActionResultJs {
-        DebuggerActionResultJs::from(self.debugger.run_action(DebuggerAction::StepOver(&debug_info.debug_info)))
+        DebuggerActionResultJs::from(
+            self.debugger
+                .run_action(DebuggerAction::StepOver(&debug_info.debug_info)),
+        )
     }
 
     #[wasm_bindgen(js_name = continueExecution)]

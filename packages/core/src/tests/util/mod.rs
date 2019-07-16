@@ -1,13 +1,11 @@
-use crate::debugger::debug_info::{DebugInfo, ProcessorDebugInfo};
+use crate::debugger::debug_info::ProcessorDebugInfo;
 use crate::processor::registers::Registers;
 
 pub mod mock_bus;
 
-pub fn mock_debug_info(registers: Registers, bus: Vec<u8>) -> DebugInfo {
-    let cpu_debug_info = ProcessorDebugInfo { registers };
-
-    DebugInfo {
-        cpu_debug_info,
+pub fn mock_debug_info<'a>(registers: Registers, bus: Vec<u8>) -> ProcessorDebugInfo {
+    ProcessorDebugInfo {
+        registers,
         bus,
     }
 }

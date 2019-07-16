@@ -5,6 +5,7 @@ use self::sprite_attribute_table::SpriteAttributeTable;
 use crate::bus::{Readable, Writable};
 use crate::video::tile::Tile;
 
+#[derive(Clone)]
 pub struct VideoMemory {
     tile_data: [Tile; 384],
     oam: SpriteAttributeTable,

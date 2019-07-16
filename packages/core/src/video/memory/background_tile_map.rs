@@ -1,6 +1,6 @@
 use crate::video::control_register::TileDataAddressing;
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct BackgroundTileMap {
     tiles: [[u8; 32]; 32],
 }

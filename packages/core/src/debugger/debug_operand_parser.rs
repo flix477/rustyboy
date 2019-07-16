@@ -1,21 +1,21 @@
-use super::debug_info::DebugInfo;
 use crate::bus::Readable;
 use crate::processor::operand_parser::OperandParser;
 use crate::processor::registers::{
     flag_register::Flag, program_counter::ProgramCounter, RegisterType,
 };
 use crate::util::bitflags::Bitflags;
+use crate::debugger::debug_info::ProcessorDebugInfo;
 
 pub struct DebugOperandParser<'a> {
     program_counter: ProgramCounter,
-    debug_info: &'a DebugInfo,
+    cpu_debug_info: &'a ProcessorDebugInfo,
 }
 
 impl<'a> DebugOperandParser<'a> {
-    pub fn new(start_address: u16, debug_info: &'a DebugInfo) -> Self {
+    pub fn new(start_address: u16, cpu_debug_info: &'a ProcessorDebugInfo) -> Self {
         Self {
             program_counter: ProgramCounter::new(start_address),
-            debug_info,
+            cpu_debug_info,
         }
     }
 
@@ -30,11 +30,11 @@ impl OperandParser for DebugOperandParser<'_> {
     }
 
     fn reg(&self, register: RegisterType) -> u16 {
-        self.debug_info.cpu_debug_info.registers.reg(register)
+        self.cpu_debug_info.registers.reg(register)
     }
 
     fn flag(&self, flag: Flag) -> bool {
-        self.debug_info.cpu_debug_info.registers.af.flag(flag)
+        self.cpu_debug_info.registers.af.flag(flag)
     }
 }
 
