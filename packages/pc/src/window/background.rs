@@ -33,7 +33,7 @@ impl Window for BackgroundWindow {
         let mut target = self.display.draw();
         target.clear_color(0.0, 0.0, 1.0, 1.0);
 
-        let video = gameboy.hardware().video().video_information();
+        let video = gameboy.hardware().video().debug_information();
         let buffer = background_map_buffer(video.control.bg_map(), &video, ColorFormat::RGB);
 
         let img = RawImage2d::from_raw_rgb_reversed(

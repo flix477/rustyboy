@@ -21,8 +21,8 @@ impl Command for StepIntoCommand {
         &self,
         _: &[&str],
         debugger: &mut Debugger,
-        debug_info: &DebugInfo,
+        _: &DebugInfo,
     ) -> CommandResult {
-        CommandResult::from(debugger.run_action(DebuggerAction::StepInto, debug_info))
+        CommandResult::from(debugger.run_action(DebuggerAction::StepInto))
     }
 }

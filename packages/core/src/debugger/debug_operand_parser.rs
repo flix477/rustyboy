@@ -1,10 +1,10 @@
 use crate::bus::Readable;
+use crate::debugger::processor_debug_info::ProcessorDebugInfo;
 use crate::processor::operand_parser::OperandParser;
 use crate::processor::registers::{
     flag_register::Flag, program_counter::ProgramCounter, RegisterType,
 };
 use crate::util::bitflags::Bitflags;
-use crate::debugger::debug_info::ProcessorDebugInfo;
 
 pub struct DebugOperandParser<'a> {
     program_counter: ProgramCounter,

@@ -21,8 +21,8 @@ impl Command for ContinueCommand {
         &self,
         _: &[&str],
         debugger: &mut Debugger,
-        debug_info: &DebugInfo,
+        _: &DebugInfo,
     ) -> CommandResult {
-        CommandResult::from(debugger.run_action(DebuggerAction::Continue, debug_info))
+        CommandResult::from(debugger.run_action(DebuggerAction::Continue))
     }
 }

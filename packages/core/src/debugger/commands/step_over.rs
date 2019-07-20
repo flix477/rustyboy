@@ -1,6 +1,7 @@
 use crate::debugger::breakpoint::{Breakpoint, BreakpointCondition};
-use crate::debugger::debug_info::{DebugInfo, ProcessorDebugInfo};
+use crate::debugger::debug_info::DebugInfo;
 use crate::debugger::debug_operand_parser::DebugOperandParser;
+use crate::debugger::processor_debug_info::ProcessorDebugInfo;
 use crate::debugger::{Debugger, DebuggerActionResult};
 use crate::processor::registers::register::Register;
 use crate::processor::registers::RegisterType;
@@ -27,22 +28,22 @@ fn next_instruction_address(debug_info: &ProcessorDebugInfo) -> u16 {
 #[cfg(test)]
 mod tests {
     use crate::debugger::commands::step_over::next_instruction_address;
+    use crate::debugger::processor_debug_info::ProcessorDebugInfo;
     use crate::processor::registers::register::Register;
     use crate::processor::registers::Registers;
-    use crate::tests::util::mock_debug_info;
 
     #[test]
     fn gets_next_address_no_operands() {
         let mut registers = Registers::default();
         registers.program_counter.set(0);
 
-        let debug_info = mock_debug_info(
+        let debug_info = ProcessorDebugInfo {
             registers,
-            vec![
+            bus: vec![
                 0, // NOP
                 0, // NOP
             ],
-        );
+        };
 
         assert_eq!(1, next_instruction_address(&debug_info));
     }
@@ -52,13 +53,13 @@ mod tests {
         let mut registers = Registers::default();
         registers.program_counter.set(1);
 
-        let debug_info = mock_debug_info(
+        let debug_info = ProcessorDebugInfo {
             registers,
-            vec![
+            bus: vec![
                 0, 0x01, // LD BC,nn
                 0, 0, 0, // NOP
             ],
-        );
+        };
 
         assert_eq!(4, next_instruction_address(&debug_info));
     }

@@ -1,11 +1,13 @@
 use crate::bus::Readable;
 use crate::cartridge::Cartridge;
 use crate::config::Config;
-use crate::debugger::debug_info::{DebugInfo, ProcessorDebugInfo};
+use crate::debugger::debug_info::DebugInfo;
+use crate::debugger::processor_debug_info::ProcessorDebugInfo;
 use crate::debugger::Debugger;
 use crate::hardware::{joypad::Input, Hardware};
 use crate::processor::{Processor, ProcessorStepResult};
 use crate::video::status_register::StatusMode;
+use crate::processor::registers::register::Register;
 
 /// This struct represents a GameBoy with all its components
 pub struct Gameboy {
@@ -45,12 +47,12 @@ impl Gameboy {
                 if debugger.should_run(&registers) {
                     let cpu_debug_info = ProcessorDebugInfo {
                         registers,
-                        bus: self.hardware.read_all()
+                        bus: self.hardware.read_all(),
                     };
                     debugger.clean_breakpoints(&cpu_debug_info);
                     let debug_info = DebugInfo {
                         cpu_debug_info,
-                        video_information: self.hardware.video().debug_information()
+                        video_information: self.hardware.video().debug_information(),
                     };
                     return GameboyEvent::Debugger(Box::new(debug_info));
                 }

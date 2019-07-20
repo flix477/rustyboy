@@ -50,7 +50,7 @@ function update(gameboy: GameboyType, debuggerRef?: Debugger, onBreakpointHit?: 
     if (debuggerRef) {
       debugInfo = gameboy.runToEvent(debuggerRef);
     } else gameboy.runToVBlank();
-  
+    
     if (debugInfo && onBreakpointHit) {
       onBreakpointHit(debugInfo);
       return false;

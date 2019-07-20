@@ -1,8 +1,8 @@
 use crate::video::color::{Color, ColorFormat};
-use crate::video::screen::{Screen, VideoInformation, BACKGROUND_SIZE};
-use crate::video::memory::VideoMemory;
 use crate::video::control_register::ControlRegister;
+use crate::video::memory::VideoMemory;
 use crate::video::palette::Palette;
+use crate::video::screen::{Screen, VideoInformation, BACKGROUND_SIZE};
 
 // The difference between this struct and VideoInformation is that
 // this one does not borrow, everything is copied.
@@ -27,7 +27,7 @@ impl VideoDebugInformation {
             control: &self.control,
             bg_palette: &self.bg_palette,
             obj_palette0: &self.obj_palette0,
-            obj_palette1: &self.obj_palette1
+            obj_palette1: &self.obj_palette1,
         }
     }
 }

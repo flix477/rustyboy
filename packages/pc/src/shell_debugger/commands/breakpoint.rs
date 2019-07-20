@@ -85,12 +85,12 @@ impl Command for BreakpointCommand {
         &self,
         input: &[&str],
         debugger: &mut Debugger,
-        debug_info: &DebugInfo,
+        _: &DebugInfo,
     ) -> CommandResult {
         if let Some(action) = BreakpointCommandAction::parse(&input[1..]) {
             match action {
                 BreakpointCommandAction::BreakpointAction(action) => {
-                    debugger.run_action(DebuggerAction::Breakpoint(action), debug_info);
+                    debugger.run_action(DebuggerAction::Breakpoint(action));
                 }
                 BreakpointCommandAction::List => println!("{}", list_breakpoints(debugger)),
             }

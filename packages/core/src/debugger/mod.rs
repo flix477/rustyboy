@@ -1,12 +1,14 @@
 use crate::debugger::breakpoint::Breakpoint;
 use crate::debugger::commands::breakpoint::BreakpointAction;
-use crate::debugger::debug_info::{ProcessorDebugInfo, DebugInfo};
+use crate::debugger::debug_info::DebugInfo;
+use crate::debugger::processor_debug_info::ProcessorDebugInfo;
 use crate::processor::registers::Registers;
 
 pub mod breakpoint;
 pub mod commands;
 pub mod debug_info;
 pub mod debug_operand_parser;
+pub mod processor_debug_info;
 
 #[derive(Clone)]
 pub struct Debugger {
@@ -41,7 +43,7 @@ impl Debugger {
             DebuggerAction::Breakpoint(action) => commands::breakpoint::run(action, self),
             DebuggerAction::Continue => DebuggerActionResult::Resume,
             DebuggerAction::StepInto => commands::step_into::run(self),
-            DebuggerAction::StepOver(debug_info) => commands::step_over::run(self, debug_info)
+            DebuggerAction::StepOver(debug_info) => commands::step_over::run(self, debug_info),
         }
     }
 
@@ -49,7 +51,9 @@ impl Debugger {
         self.breakpoints = self
             .breakpoints
             .iter()
-            .filter(|breakpoint| !breakpoint.one_time || !breakpoint.satisfied(&debug_info.registers))
+            .filter(|breakpoint| {
+                !breakpoint.one_time || !breakpoint.satisfied(&debug_info.registers)
+            })
             .cloned()
             .collect()
     }
@@ -60,7 +64,7 @@ pub enum DebuggerAction<'a> {
     Breakpoint(BreakpointAction),
     Continue,
     StepInto,
-    StepOver(&'a DebugInfo)
+    StepOver(&'a DebugInfo),
 }
 
 pub enum DebuggerActionResult {

@@ -60,7 +60,7 @@ impl ShellDebugger {
         Some(command.execute(&separated, debugger, debug_info))
     }
 
-    pub fn run(&mut self, debugger: &mut Debugger, debug_info: DebugInfo) {
+    pub fn run(&mut self, debugger: &mut Debugger, debug_info: &DebugInfo) {
         if debugger.forced_break {
             debugger.forced_break = false;
         } else {

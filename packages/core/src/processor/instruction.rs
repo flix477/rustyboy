@@ -101,7 +101,7 @@ impl ToString for Reference {
     fn to_string(&self) -> String {
         match *self {
             Reference::Register(register) => register.to_string(),
-            Reference::Address(address) => address.to_string()
+            Reference::Address(address) => address.to_string(),
         }
     }
 }
@@ -139,7 +139,7 @@ impl ToString for AddressType {
             AddressType::Register(register) => format!("({})", register.to_string()),
             AddressType::IncRegister(register) => format!("({} + 0xFF00)", register.to_string()),
             AddressType::Immediate => "(nn)".to_string(),
-            AddressType::IncImmediate => "(nn + 0xFF00)".to_string()
+            AddressType::IncImmediate => "(nn + 0xFF00)".to_string(),
         }
     }
 }
@@ -169,7 +169,7 @@ impl ToString for ValueType {
             ValueType::SignedImmediate => "±n".to_string(),
             ValueType::Immediate16 => "nn".to_string(),
             ValueType::Address(address) => address.to_string(),
-            ValueType::Constant(value) => value.to_string()
+            ValueType::Constant(value) => value.to_string(),
         }
     }
 }

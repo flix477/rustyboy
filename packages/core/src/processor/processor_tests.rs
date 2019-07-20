@@ -4,7 +4,7 @@ use super::registers::flag_register::Flag;
 use super::registers::RegisterType as Reg;
 use super::Processor;
 use crate::processor::operand_parser::OperandParser;
-use crate::tests::util::mock_bus::MockBus;
+use crate::util::tests::mock_bus::MockBus;
 
 fn setup() -> Processor {
     let mut cpu = Processor::new();

@@ -1,5 +1,5 @@
 use crate::bus::Readable;
-use crate::processor::instruction::{AddressType, Condition, ValueType, Reference};
+use crate::processor::instruction::{AddressType, Condition, Reference, ValueType};
 use crate::processor::registers::flag_register::Flag;
 use crate::processor::registers::program_counter::ProgramCounter;
 use crate::processor::registers::RegisterType;

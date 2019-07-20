@@ -14,9 +14,9 @@ use self::position_registers::PositionRegisters;
 use self::status_register::{StatusMode, StatusRegister};
 use crate::bus::{Readable, Writable};
 use crate::processor::interrupt::{Interrupt, InterruptHandler};
+use crate::video::debugging::VideoDebugInformation;
 use crate::video::palette::Palette;
 use crate::video::screen::{Screen, VideoInformation};
-use crate::video::debugging::VideoDebugInformation;
 
 pub struct Video {
     control: ControlRegister,
