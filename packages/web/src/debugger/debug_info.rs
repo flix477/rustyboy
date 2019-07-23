@@ -55,16 +55,16 @@ impl DebugInfoJs {
         background_map_buffer(
             self.debug_info.video_information.control.bg_map(),
             &self.debug_info.video_information,
-            ColorFormat::RGB,
+            ColorFormat::RGBA,
         )
     }
 
     pub fn tile(&self, index: usize) -> Vec<u8> {
-        tile_buffer(index, &self.debug_info.video_information, ColorFormat::RGB)
+        tile_buffer(index, &self.debug_info.video_information, ColorFormat::RGBA)
     }
 
     pub fn sprite(&self, index: usize) -> Vec<u8> {
-        sprite_buffer(index, &self.debug_info.video_information, ColorFormat::RGB)
+        sprite_buffer(index, &self.debug_info.video_information, ColorFormat::RGBA)
     }
 }
 

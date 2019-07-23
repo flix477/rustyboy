@@ -3,6 +3,7 @@ import { Debugger as DebuggerType, DebugInfo, RegisterTypeJs } from 'rustyboy-we
 
 import Actions from './actions';
 import MemoryMap from './memory-map';
+import BackgroundTileMap from './background-tile-map';
 import './debugger.css';
 
 interface Props {
@@ -33,6 +34,7 @@ export const Debugger: FunctionComponent<Props> = ({debuggerRef, debugInfo, onCo
 
   return (
     <div className={className(loaded)} onClick={onClick}>
+      <BackgroundTileMap debugInfo={lastDebugInfo} />
       <MemoryMap debugInfo={lastDebugInfo} />
       <Actions debugInfo={debugInfo} debuggerRef={debuggerRef} onContinue={onContinue} />
     </div>
