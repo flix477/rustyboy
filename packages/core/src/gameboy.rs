@@ -6,6 +6,7 @@ use crate::debugger::Debugger;
 use crate::hardware::{joypad::Input, Hardware};
 use crate::processor::{Processor, ProcessorStepResult};
 use crate::video::status_register::StatusMode;
+use crate::video::color::ColorFormat;
 
 /// This struct represents a GameBoy with all its components
 pub struct Gameboy {
@@ -19,6 +20,12 @@ impl Gameboy {
             processor: Processor::new(),
             hardware: Hardware::new(cartridge),
         }
+    }
+
+    /// Resets the Gameboy to its initial state
+    pub fn reset(&mut self) {
+        self.processor = Processor::new();
+        self.hardware.reset();
     }
 
     /// Runs the GameBoy until a VBlank interrupt occurs.
@@ -85,3 +92,12 @@ pub enum GameboyEvent {
 
 /// Represents the result of a single GameBoy step
 pub struct GameboyStepResult(ProcessorStepResult, Option<StatusMode>);
+
+impl Iterator for Gameboy {
+    type Item = [u8; 69_120];
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.run_to_vblank();
+        Some(self.hardware().video().screen().buffer())
+    }
+}

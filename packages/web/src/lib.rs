@@ -7,6 +7,7 @@ use rustyboy_core::gameboy::{DeviceType, Gameboy};
 use crate::input::InputJs;
 use crate::rendering::Renderer;
 use rustyboy_core::video::color::ColorFormat;
+use rustyboy_core::video::screen::BUFFER_SIZE;
 
 pub mod input;
 pub mod rendering;
@@ -45,9 +46,9 @@ impl GameboyJs {
         self.gameboy.send_input(input.into());
     }
 
-    fn screen(&self) -> Vec<u8> {
+    fn screen(&self) -> [u8; BUFFER_SIZE * 3] {
         let screen = self.gameboy.hardware().video().screen();
-        screen.buffer(ColorFormat::RGB)
+        screen.buffer()
     }
 
     fn draw(&mut self) -> Result<(), JsValue> {

@@ -8,20 +8,21 @@ pub struct DrawnColor {
 }
 
 pub fn apply_option_buffer(
-    buffer: &mut Vec<DrawnColor>,
-    option_buffer: Vec<Option<DrawnColor>>,
+    buffer: &mut [DrawnColor],
+    option_buffer: &[Option<DrawnColor>],
     transparency: bool,
     prefer_existing: bool,
 ) {
-    for (index, option) in option_buffer.iter().enumerate() {
-        if let Some(drawn_color) = option {
-            let buffer_color = buffer[index].color_value;
-            let prefer_existing = prefer_existing && drawn_color.low_priority;
-            if (!transparency || drawn_color.color_value != 0)
-                && (!prefer_existing || buffer_color == 0)
-            {
-                buffer[index] = *drawn_color;
+    buffer.iter_mut()
+        .zip(option_buffer.iter())
+        .for_each(|(buffer_color, drawn_color)| {
+            if let Some(drawn_color) = drawn_color {
+                let prefer_existing = prefer_existing && drawn_color.low_priority;
+                if (!transparency || drawn_color.color_value != 0)
+                    && (!prefer_existing || buffer_color.color_value == 0)
+                {
+                    *buffer_color = *drawn_color;
+                }
             }
-        }
-    }
+        });
 }

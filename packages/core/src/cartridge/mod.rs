@@ -32,6 +32,10 @@ impl Cartridge {
     pub fn metadata(&self) -> &CartridgeMetadata {
         &self.metadata
     }
+
+    pub fn reset(&mut self) {
+        self.mbc = MBCFactory::from_metadata(&self.metadata);
+    }
 }
 
 impl Readable for Cartridge {
