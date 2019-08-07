@@ -1,9 +1,9 @@
 use console::style;
 
 use rustyboy_core::debugger::debug_info::DebugInfo;
+use rustyboy_core::debugger::processor_debug_info::ParsedOperand;
 use rustyboy_core::processor::instruction::{AddressType, Reference, ValueType};
 use rustyboy_core::processor::registers::{RegisterType, Registers};
-use rustyboy_core::debugger::processor_debug_info::ParsedOperand;
 
 const IMMEDIATE: &str = "n";
 const IMMEDIATE_16: &str = "nn";

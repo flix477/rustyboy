@@ -81,12 +81,7 @@ impl Command for BreakpointCommand {
         MATCHING_VALUES
     }
 
-    fn execute(
-        &self,
-        input: &[&str],
-        debugger: &mut Debugger,
-        _: &DebugInfo,
-    ) -> CommandResult {
+    fn execute(&self, input: &[&str], debugger: &mut Debugger, _: &DebugInfo) -> CommandResult {
         if let Some(action) = BreakpointCommandAction::parse(&input[1..]) {
             match action {
                 BreakpointCommandAction::BreakpointAction(action) => {

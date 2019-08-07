@@ -5,9 +5,9 @@ use crate::debugger::debug_info::DebugInfo;
 use crate::debugger::processor_debug_info::ProcessorDebugInfo;
 use crate::debugger::Debugger;
 use crate::hardware::{joypad::Input, Hardware};
+use crate::processor::registers::register::Register;
 use crate::processor::{Processor, ProcessorStepResult};
 use crate::video::status_register::StatusMode;
-use crate::processor::registers::register::Register;
 
 /// This struct represents a GameBoy with all its components
 pub struct Gameboy {

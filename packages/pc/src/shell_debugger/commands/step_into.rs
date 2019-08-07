@@ -17,12 +17,7 @@ impl Command for StepIntoCommand {
         MATCHING_VALUES
     }
 
-    fn execute(
-        &self,
-        _: &[&str],
-        debugger: &mut Debugger,
-        _: &DebugInfo,
-    ) -> CommandResult {
+    fn execute(&self, _: &[&str], debugger: &mut Debugger, _: &DebugInfo) -> CommandResult {
         CommandResult::from(debugger.run_action(DebuggerAction::StepInto))
     }
 }
