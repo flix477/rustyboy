@@ -51,11 +51,11 @@ impl Command for StatusCommand {
         if let Some(status_type) = StatusType::parse(&input[1..]) {
             match status_type {
                 StatusType::Address(address) => {
-                    println!("0x{:X}", debug_info.bus[address as usize])
+                    println!("0x{:X}", debug_info.cpu_debug_info.bus[address as usize])
                 }
                 StatusType::Immediate => {
                     let pc = debug_info.cpu_debug_info.registers.reg(RegisterType::PC);
-                    println!("0x{:X}", debug_info.bus[pc as usize]);
+                    println!("0x{:X}", debug_info.cpu_debug_info.bus[pc as usize]);
                 }
                 StatusType::Register(register) => {
                     println!("0x{:X}", debug_info.cpu_debug_info.registers.reg(register))

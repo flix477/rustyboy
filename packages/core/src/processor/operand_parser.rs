@@ -1,5 +1,5 @@
 use crate::bus::Readable;
-use crate::processor::instruction::{AddressType, Condition, ValueType};
+use crate::processor::instruction::{AddressType, Condition, Reference, ValueType};
 use crate::processor::registers::flag_register::Flag;
 use crate::processor::registers::program_counter::ProgramCounter;
 use crate::processor::registers::RegisterType;
@@ -43,5 +43,15 @@ pub trait OperandParser {
     fn operand_condition(&self, condition: Condition) -> bool {
         let Condition(flag, value) = condition;
         self.flag(flag) == value
+    }
+
+    fn reference<H: Readable>(&mut self, bus: &H, reference: Reference) -> u16 {
+        match reference {
+            Reference::Register(register) => self.reg(register),
+            Reference::Address(address) => {
+                let address = self.operand_address(bus, address);
+                u16::from(bus.read(address))
+            }
+        }
     }
 }

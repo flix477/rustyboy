@@ -2,6 +2,7 @@ use crate::bus::Readable;
 use crate::cartridge::Cartridge;
 use crate::config::Config;
 use crate::debugger::debug_info::DebugInfo;
+use crate::debugger::processor_debug_info::ProcessorDebugInfo;
 use crate::debugger::Debugger;
 use crate::hardware::{joypad::Input, Hardware};
 use crate::processor::{Processor, ProcessorStepResult};
@@ -40,21 +41,26 @@ impl Gameboy {
 
     /// Runs the GameBoy until a VBlank interrupt occurs or, if a debugger is passed to the method,
     /// until a breakpoint is hit
-    pub fn run_to_event(&mut self, debugger: Option<&Debugger>) -> GameboyEvent {
+    pub fn run_to_event(&mut self, mut debugger: Option<&mut Debugger>) -> GameboyEvent {
         loop {
             let GameboyStepResult(cpu_step_result, status_mode) = self.step();
             if let Some(StatusMode::VBlank) = status_mode {
                 return GameboyEvent::VBlank;
             } else if let (Some(debugger), ProcessorStepResult::InstructionCompleted) =
-                (debugger, cpu_step_result)
+                (debugger.as_mut(), cpu_step_result)
             {
-                let cpu_debug_info = self.processor.debug_info();
-                if debugger.should_run(&cpu_debug_info) {
-                    let debug_info = DebugInfo {
-                        cpu_debug_info,
+                let registers = self.processor.registers;
+                if debugger.should_run(&registers) {
+                    let cpu_debug_info = ProcessorDebugInfo {
+                        registers,
                         bus: self.hardware.read_all(),
                     };
-                    return GameboyEvent::Debugger(debug_info);
+                    debugger.clean_breakpoints(&cpu_debug_info);
+                    let debug_info = DebugInfo {
+                        cpu_debug_info,
+                        video_information: self.hardware.video().debug_information(),
+                    };
+                    return GameboyEvent::Debugger(Box::new(debug_info));
                 }
             }
         }
@@ -87,7 +93,7 @@ pub enum DeviceType {
 /// Represents the event that triggered the end of a `run_to_event` call
 pub enum GameboyEvent {
     VBlank,
-    Debugger(DebugInfo),
+    Debugger(Box<DebugInfo>),
 }
 
 /// Represents the result of a single GameBoy step

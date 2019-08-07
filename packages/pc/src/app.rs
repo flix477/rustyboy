@@ -88,8 +88,8 @@ fn start_emulation(cartridge: Cartridge, config: Config, options: RunOptions) {
     let mut shell_debugger = ShellDebugger::default();
 
     loop {
-        if let GameboyEvent::Debugger(debug_info) = gameboy.run_to_event(debugger.as_ref()) {
-            shell_debugger.run(debugger.as_mut().unwrap(), debug_info)
+        if let GameboyEvent::Debugger(debug_info) = gameboy.run_to_event(debugger.as_mut()) {
+            shell_debugger.run(debugger.as_mut().unwrap(), debug_info.as_ref())
         }
 
         for window in &mut windows {

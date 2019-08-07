@@ -8,9 +8,8 @@ body {
 }
 
 .container {
-  display: flex;
+  display: grid;
+  grid-template-rows: auto 1fr;
   width: 100vw;
   height: 100vh;
-  justify-content: center;
-  align-items: center;
 }

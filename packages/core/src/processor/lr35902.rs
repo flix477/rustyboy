@@ -290,16 +290,6 @@ pub trait LR35902: OperandParser {
         Ok(())
     }
 
-    fn reference<H: Bus>(&mut self, bus: &mut H, reference: Reference) -> u16 {
-        match reference {
-            Reference::Register(register) => self.reg(register),
-            Reference::Address(address) => {
-                let address = self.operand_address(bus, address);
-                u16::from(bus.read(address))
-            }
-        }
-    }
-
     fn set_reference<H: Bus>(&mut self, bus: &mut H, reference: Reference, value: u16) {
         match reference {
             Reference::Register(register) => {

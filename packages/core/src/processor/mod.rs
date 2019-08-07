@@ -14,14 +14,13 @@ use self::registers::flag_register::Flag;
 use self::registers::register::Register;
 use self::registers::{RegisterType, Registers};
 use crate::bus::Bus;
-use crate::debugger::debug_info::ProcessorDebugInfo;
 use crate::processor::operand_parser::OperandParser;
 use crate::processor::registers::program_counter::ProgramCounter;
 use crate::util::bitflags::Bitflags;
 
 /// This struct contains the logic for the GameBoy's processor
 pub struct Processor {
-    registers: Registers,
+    pub registers: Registers,
     halt_mode: HaltMode,
     /// Cycles left from the last instruction
     cycles_left: u8,
@@ -81,13 +80,6 @@ impl Processor {
         }
 
         ProcessorStepResult::InstructionInProgress
-    }
-
-    /// Returns debugging information about the processor
-    pub fn debug_info(&self) -> ProcessorDebugInfo {
-        ProcessorDebugInfo {
-            registers: self.registers,
-        }
     }
 }
 

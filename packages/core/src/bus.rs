@@ -4,7 +4,7 @@ pub trait Readable {
     fn read(&self, address: u16) -> u8;
 
     fn read_all(&self) -> Vec<u8> {
-        (0..0xFFFF)
+        (0..0x10000)
             .map(|address| self.read(address as u16))
             .collect()
     }
