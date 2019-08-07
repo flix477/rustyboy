@@ -2,10 +2,10 @@ use wasm_bindgen::prelude::*;
 
 use crate::debugger::{debug_info::DebugInfoJs, DebuggerJs};
 use crate::input::InputJs;
+use crate::log;
 use crate::rendering::Renderer;
 use rustyboy_core::gameboy::{Gameboy, GameboyEvent};
 use rustyboy_core::video::color::ColorFormat;
-use crate::log;
 
 #[wasm_bindgen(js_name = Gameboy)]
 pub struct GameboyJs {
