@@ -2,7 +2,6 @@ use wasm_bindgen::prelude::*;
 
 use crate::debugger::{debug_info::DebugInfoJs, DebuggerJs};
 use crate::input::InputJs;
-use crate::log;
 use crate::rendering::Renderer;
 use rustyboy_core::gameboy::{Gameboy, GameboyEvent};
 use rustyboy_core::video::color::ColorFormat;
@@ -30,7 +29,6 @@ impl GameboyJs {
     ) -> Result<Option<DebugInfoJs>, JsValue> {
         let event = self.gameboy.run_to_event(Some(&mut debugger_ref.debugger));
         self.draw()?;
-        log(debugger_ref.debugger.breakpoints.len().to_string().as_str());
         if let GameboyEvent::Debugger(debug_info) = event {
             return Ok(Some(DebugInfoJs { debug_info }));
         }
