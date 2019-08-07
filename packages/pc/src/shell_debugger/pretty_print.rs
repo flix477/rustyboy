@@ -1,6 +1,7 @@
 use console::style;
 
-use rustyboy_core::debugger::debug_info::{DebugInfo, ParsedOperand};
+use rustyboy_core::debugger::debug_info::DebugInfo;
+use rustyboy_core::debugger::processor_debug_info::ParsedOperand;
 use rustyboy_core::processor::instruction::{AddressType, Reference, ValueType};
 use rustyboy_core::processor::registers::{RegisterType, Registers};
 
@@ -20,8 +21,8 @@ pub fn format_registers(registers: &Registers) -> String {
 }
 
 pub fn format_debug_info(debug_info: &DebugInfo) -> String {
-    let line = debug_info.current_line();
-    let instruction = debug_info.parse_instruction(line);
+    let line = debug_info.cpu_debug_info.current_line();
+    let instruction = debug_info.cpu_debug_info.parse_instruction(line);
 
     let line = format!("0x{:X}", line);
 
@@ -59,8 +60,8 @@ pub fn format_debug_info(debug_info: &DebugInfo) -> String {
 fn parse_operand(operand: ParsedOperand) -> String {
     match operand {
         ParsedOperand::Reference(reference) => match reference {
-            Reference::Register(register) => style_register(register),
-            Reference::Address(address) => parse_address(address),
+            (Reference::Register(register), _) => style_register(register),
+            (Reference::Address(address), _) => parse_address(address),
         },
         ParsedOperand::Value((value, parsed_value)) => match value {
             ValueType::Register(register) => style_register(register),

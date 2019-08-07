@@ -5,6 +5,5 @@ pub mod debugger;
 pub mod gameboy;
 pub mod hardware;
 pub mod processor;
-mod tests;
 pub mod util;
 pub mod video;

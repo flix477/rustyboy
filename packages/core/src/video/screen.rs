@@ -13,6 +13,7 @@ pub const BACKGROUND_SIZE: (usize, usize) = (256, 256);
 const TILE_SIZE: u8 = 8;
 const SPRITES_ORIGIN: (u8, u8) = (8, 16);
 
+#[derive(Clone)]
 pub struct VideoInformation<'a> {
     pub scroll: (u8, u8),
     pub window: (u8, u8),

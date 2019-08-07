@@ -1,9 +1,10 @@
 import React, {FunctionComponent, useEffect, useCallback} from 'react';
-import {Gameboy as GameboyType, InputButton, InputTypeJs, Input} from 'rustyboy-web';
+import {Gameboy as GameboyType, InputButton, InputTypeJs, Input, Debugger, DebugInfo} from 'rustyboy-web';
 
-async function update(gameboy: GameboyType) {
-  gameboy.runToVBlank();
-  requestAnimationFrame(() => update(gameboy));
+import './gameboy.css';
+
+function className(paused: boolean): string {
+  return paused ? 'gameboy disabled' : 'gameboy';
 }
 
 function eventToInputButton(event: KeyboardEvent): InputButton | null {
@@ -43,15 +44,54 @@ function onInput(gameboy: GameboyType): EventListener {
   };
 }
 
-interface Props {
-  gameboy: GameboyType;
+function update(gameboy: GameboyType, debuggerRef?: Debugger, onBreakpointHit?: (debugInfo: DebugInfo) => void) {
+  return () => {
+    let debugInfo = undefined;
+    if (debuggerRef) {
+      debugInfo = gameboy.runToEvent(debuggerRef);
+    } else gameboy.runToVBlank();
+    
+    if (debugInfo && onBreakpointHit) {
+      onBreakpointHit(debugInfo);
+      return false;
+    }
+
+    return true;
+  };
 }
 
-const Gameboy: FunctionComponent<Props> = ({gameboy}) => {
+function useUpdate(updateFn: () => boolean, condition?: boolean) {
+  useEffect(() => {
+    if (!condition) return;
+    let handle: number | null = null;
+
+    function callback() {
+      if (updateFn())
+        handle = requestAnimationFrame(callback);
+    }
+
+    callback();
+
+    return () => {
+      if (handle !== null) cancelAnimationFrame(handle);
+    };
+  }, [updateFn, condition]);
+}
+
+interface Props {
+  gameboy: GameboyType;
+  debuggerRef?: Debugger;
+  onBreakpointHit?: (debugInfo: DebugInfo) => void;
+  paused: boolean;
+  onClick?: () => void;
+}
+
+const Gameboy: FunctionComponent<Props> = ({gameboy, debuggerRef, onBreakpointHit, paused, onClick}) => {
   const inputCallback = useCallback(onInput(gameboy), [gameboy]);
+  const updateCallback = useCallback(update(gameboy, debuggerRef, onBreakpointHit), [gameboy, debuggerRef, onBreakpointHit]);
+  useUpdate(updateCallback, !paused);
 
   useEffect(() => {
-    update(gameboy);
     window.addEventListener('keydown', inputCallback);
     window.addEventListener('keyup', inputCallback);
 
@@ -59,10 +99,10 @@ const Gameboy: FunctionComponent<Props> = ({gameboy}) => {
       window.removeEventListener('keydown', inputCallback);
       window.removeEventListener('keyup', inputCallback);
     };
-  }, [gameboy, inputCallback]);
+  }, [inputCallback]);
 
   return (
-    <div>
+    <div className={className(paused)} onClick={onClick}>
       <canvas width="320" height="288" id="canvas" />
     </div>
   );

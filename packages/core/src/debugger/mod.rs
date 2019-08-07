@@ -1,11 +1,14 @@
 use crate::debugger::breakpoint::Breakpoint;
 use crate::debugger::commands::breakpoint::BreakpointAction;
-use crate::debugger::debug_info::{DebugInfo, ProcessorDebugInfo};
+use crate::debugger::debug_info::DebugInfo;
+use crate::debugger::processor_debug_info::ProcessorDebugInfo;
+use crate::processor::registers::Registers;
 
 pub mod breakpoint;
 pub mod commands;
 pub mod debug_info;
 pub mod debug_operand_parser;
+pub mod processor_debug_info;
 
 #[derive(Clone)]
 pub struct Debugger {
@@ -23,29 +26,24 @@ impl Default for Debugger {
 }
 
 impl Debugger {
-    pub fn should_run(&self, debug_info: &ProcessorDebugInfo) -> bool {
+    pub fn should_run(&self, registers: &Registers) -> bool {
         self.forced_break
             || self
                 .breakpoints
                 .iter()
-                .any(|breakpoint| breakpoint.satisfied(debug_info))
+                .any(|breakpoint| breakpoint.satisfied(registers))
     }
 
-    pub fn run_action(
-        &mut self,
-        action: DebuggerAction,
-        debug_info: &DebugInfo,
-    ) -> DebuggerActionResult {
+    pub fn run_action(&mut self, action: DebuggerAction<'_>) -> DebuggerActionResult {
         if self.forced_break {
             self.forced_break = false;
         };
-
-        self.clean_breakpoints(&debug_info.cpu_debug_info);
 
         match action {
             DebuggerAction::Breakpoint(action) => commands::breakpoint::run(action, self),
             DebuggerAction::Continue => DebuggerActionResult::Resume,
             DebuggerAction::StepInto => commands::step_into::run(self),
+            DebuggerAction::StepOver(debug_info) => commands::step_over::run(self, debug_info),
         }
     }
 
@@ -53,17 +51,20 @@ impl Debugger {
         self.breakpoints = self
             .breakpoints
             .iter()
-            .filter(|breakpoint| !breakpoint.one_time || !breakpoint.satisfied(debug_info))
+            .filter(|breakpoint| {
+                !breakpoint.one_time || !breakpoint.satisfied(&debug_info.registers)
+            })
             .cloned()
             .collect()
     }
 }
 
 #[derive(Clone)]
-pub enum DebuggerAction {
+pub enum DebuggerAction<'a> {
     Breakpoint(BreakpointAction),
     Continue,
     StepInto,
+    StepOver(&'a DebugInfo),
 }
 
 pub enum DebuggerActionResult {
@@ -76,12 +77,9 @@ mod tests {
     use crate::debugger::breakpoint::Breakpoint;
     use crate::debugger::commands::breakpoint::BreakpointAction;
     use crate::debugger::{Debugger, DebuggerAction};
-    use crate::processor::registers::Registers;
-    use crate::tests::util::mock_debug_info;
 
     #[test]
     fn adds_breakpoint() {
-        let debug_info = mock_debug_info(Registers::default(), vec![]);
         let mut debugger = Debugger::default();
 
         let breakpoint = Breakpoint {
@@ -89,17 +87,15 @@ mod tests {
             one_time: false,
         };
 
-        debugger.run_action(
-            DebuggerAction::Breakpoint(BreakpointAction::Add(breakpoint)),
-            &debug_info,
-        );
+        debugger.run_action(DebuggerAction::Breakpoint(BreakpointAction::Add(
+            breakpoint,
+        )));
 
         assert_eq!(debugger.breakpoints.len(), 1);
     }
 
     #[test]
     fn removes_breakpoint() {
-        let debug_info = mock_debug_info(Registers::default(), vec![]);
         let mut debugger = Debugger {
             breakpoints: vec![
                 Breakpoint {
@@ -114,10 +110,7 @@ mod tests {
             forced_break: false,
         };
 
-        debugger.run_action(
-            DebuggerAction::Breakpoint(BreakpointAction::Remove(0)),
-            &debug_info,
-        );
+        debugger.run_action(DebuggerAction::Breakpoint(BreakpointAction::Remove(0)));
 
         assert_eq!(debugger.breakpoints.len(), 1);
     }

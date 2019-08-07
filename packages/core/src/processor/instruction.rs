@@ -69,6 +69,12 @@ pub enum Mnemonic {
 #[derive(Copy, Clone, Debug)]
 pub struct Condition(pub Flag, pub bool);
 
+impl ToString for Condition {
+    fn to_string(&self) -> String {
+        format!("if {}{}", if self.1 { "" } else { "!" }, self.0.to_string())
+    }
+}
+
 /// Represents a GameBoy instruction operand.
 /// An operand can simply be seen as an argument given to a function.
 /// GameBoy instructions typically have 0 to 2 operands.
@@ -89,6 +95,15 @@ pub enum Reference {
     Register(RegisterType),
     /// Represents a bus address to mutate
     Address(AddressType),
+}
+
+impl ToString for Reference {
+    fn to_string(&self) -> String {
+        match *self {
+            Reference::Register(register) => register.to_string(),
+            Reference::Address(address) => address.to_string(),
+        }
+    }
 }
 
 impl Reference {
@@ -118,6 +133,17 @@ pub enum AddressType {
     IncImmediate,
 }
 
+impl ToString for AddressType {
+    fn to_string(&self) -> String {
+        match *self {
+            AddressType::Register(register) => format!("({})", register.to_string()),
+            AddressType::IncRegister(register) => format!("({} + 0xFF00)", register.to_string()),
+            AddressType::Immediate => "(nn)".to_string(),
+            AddressType::IncImmediate => "(nn + 0xFF00)".to_string(),
+        }
+    }
+}
+
 /// Represents the type of a value used as an operand
 #[derive(Copy, Clone, Debug)]
 pub enum ValueType {
@@ -133,6 +159,19 @@ pub enum ValueType {
     Address(AddressType),
     /// Represents a constant value
     Constant(u16),
+}
+
+impl ToString for ValueType {
+    fn to_string(&self) -> String {
+        match *self {
+            ValueType::Register(register) => register.to_string(),
+            ValueType::Immediate => "n".to_string(),
+            ValueType::SignedImmediate => "±n".to_string(),
+            ValueType::Immediate16 => "nn".to_string(),
+            ValueType::Address(address) => address.to_string(),
+            ValueType::Constant(value) => value.to_string(),
+        }
+    }
 }
 
 /// Contains information about a GameBoy instruction
