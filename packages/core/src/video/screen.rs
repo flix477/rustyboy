@@ -1,6 +1,5 @@
 use crate::util::drawer::{apply_option_buffer, DrawnColor};
 use crate::util::wrap_value;
-use crate::video::color::ColorFormat;
 use crate::video::control_register::ControlRegister;
 use crate::video::memory::background_tile_map::BackgroundTileMap;
 use crate::video::memory::sprite_attribute_table::OAMEntry;

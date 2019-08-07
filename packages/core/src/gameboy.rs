@@ -7,7 +7,6 @@ use crate::debugger::Debugger;
 use crate::hardware::{joypad::Input, Hardware};
 use crate::processor::{Processor, ProcessorStepResult};
 use crate::video::status_register::StatusMode;
-use crate::video::color::ColorFormat;
 
 /// This struct represents a GameBoy with all its components
 pub struct Gameboy {

@@ -4,6 +4,7 @@ use rustyboy_core::video::color::ColorFormat;
 use rustyboy_core::video::debugging::{background_map_buffer, sprite_buffer, tile_buffer};
 use serde::Serialize;
 use wasm_bindgen::prelude::*;
+use rustyboy_core::video::screen::BACKGROUND_SIZE;
 
 #[wasm_bindgen(js_name = DebugInfo)]
 pub struct DebugInfoJs {
@@ -55,8 +56,7 @@ impl DebugInfoJs {
         background_map_buffer(
             self.debug_info.video_information.control.bg_map(),
             &self.debug_info.video_information,
-            ColorFormat::RGBA,
-        )
+        ).to_vec()
     }
 
     pub fn tile(&self, index: usize) -> Vec<u8> {

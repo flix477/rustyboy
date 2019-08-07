@@ -11,6 +11,7 @@ use crate::window::background::BackgroundWindow;
 use crate::window::tile_data::TileDataWindow;
 use crate::window::{screen::MainWindow, Window};
 use rustyboy_core::cartridge::cartridge_metadata::CartridgeMetadata;
+use std::time::{Instant, Duration};
 
 pub fn run() {
     let matches = App::new("rustyboy")
@@ -87,7 +88,13 @@ fn start_emulation(cartridge: Cartridge, config: Config, options: RunOptions) {
     let mut debugger = config.debugger;
     let mut shell_debugger = ShellDebugger::default();
 
+    let mut last_time = Instant::now();
+    let update_rate = Duration::from_millis(1000 / 60);
     loop {
+        let elapsed = last_time.elapsed();
+        if elapsed < update_rate { continue; }
+        last_time = Instant::now();
+
         if let GameboyEvent::Debugger(debug_info) = gameboy.run_to_event(debugger.as_mut()) {
             shell_debugger.run(debugger.as_mut().unwrap(), debug_info.as_ref())
         }
