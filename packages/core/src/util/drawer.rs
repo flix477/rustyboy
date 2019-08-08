@@ -13,7 +13,8 @@ pub fn apply_option_buffer(
     transparency: bool,
     prefer_existing: bool,
 ) {
-    buffer.iter_mut()
+    buffer
+        .iter_mut()
         .zip(option_buffer.iter())
         .for_each(|(buffer_color, drawn_color)| {
             if let Some(drawn_color) = drawn_color {

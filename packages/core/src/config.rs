@@ -10,7 +10,7 @@ impl Default for Config {
     fn default() -> Self {
         Self {
             device_type: DeviceType::GameBoy,
-            debugger: None
+            debugger: None,
         }
     }
 }

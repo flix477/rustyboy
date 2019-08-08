@@ -44,7 +44,7 @@ pub fn format_debug_info(debug_info: &DebugInfo) -> String {
             String::new()
         };
 
-        let mnemonic = format!("{:?}", instruction.instruction.mnemonic());
+        let mnemonic = format!("{:?}", instruction.instruction.mnemonic);
 
         format!(
             "{}: {} {}",

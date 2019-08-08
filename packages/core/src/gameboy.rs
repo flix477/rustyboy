@@ -32,7 +32,7 @@ impl Gameboy {
     /// Internally this is equivalent to calling `run_to_event(None)`
     pub fn run_to_vblank(&mut self) {
         loop {
-            if let GameboyEvent::VBlank = self.run_to_event(None) {
+            if let GameboyStepResult(_, Some(StatusMode::VBlank)) = self.step() {
                 break;
             }
         }

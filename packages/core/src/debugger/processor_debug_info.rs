@@ -1,5 +1,5 @@
 use crate::debugger::debug_operand_parser::{DebugOperandParser, ReadableVec};
-use crate::processor::decoder::Decoder;
+use crate::processor::decoder::decode_opcode;
 use crate::processor::instruction::{
     AddressType, Condition, InstructionInfo, Mnemonic, Operand, Prefix, Reference, ValueType,
 };
@@ -55,22 +55,19 @@ impl ProcessorDebugInfo {
         let bus = ReadableVec { value: &self.bus };
         let address = parser.program_counter().get();
 
-        let instruction =
-            Decoder::decode_opcode(parser.mut_program_counter().fetch(&bus), Prefix::None)?;
-        let instruction = if let Mnemonic::CB = instruction.mnemonic() {
-            Decoder::decode_opcode(parser.mut_program_counter().fetch(&bus), Prefix::CB)?
+        let instruction = decode_opcode(parser.mut_program_counter().fetch(&bus), Prefix::None)?;
+        let instruction = if let Mnemonic::CB = instruction.mnemonic {
+            decode_opcode(parser.mut_program_counter().fetch(&bus), Prefix::CB)?
         } else {
             instruction
         };
 
-        let parsed_operands = if let Some(operands) = instruction.operands() {
-            operands
-                .iter()
-                .map(|operand| Self::parse_operand(&bus, parser, *operand))
-                .collect()
-        } else {
-            vec![]
-        };
+        let parsed_operands = instruction
+            .operands
+            .iter()
+            .filter_map(Option::as_ref)
+            .map(|operand| Self::parse_operand(&bus, parser, *operand))
+            .collect();
 
         Some(DebugInstructionInfo {
             line: address,
@@ -159,7 +156,7 @@ mod tests {
         let instructions: Vec<Mnemonic> = debug_info
             .parse_all(0)
             .iter()
-            .map(|x| *x.instruction.mnemonic())
+            .map(|x| x.instruction.mnemonic)
             .collect();
 
         assert_eq!(instructions, vec![Mnemonic::NOP; 0x10000])

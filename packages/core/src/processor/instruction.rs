@@ -175,19 +175,19 @@ impl ToString for ValueType {
 }
 
 /// Contains information about a GameBoy instruction
-#[derive(Debug, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct InstructionInfo {
-    opcode: u8,
-    mnemonic: Mnemonic,
-    operands: Option<Vec<Operand>>,
-    cycle_count: u8,
+    pub opcode: u8,
+    pub mnemonic: Mnemonic,
+    pub operands: [Option<Operand>; 2],
+    pub cycle_count: u8,
 }
 
 impl InstructionInfo {
     pub fn new(
         opcode: u8,
         mnemonic: Mnemonic,
-        operands: Option<Vec<Operand>>,
+        operands: [Option<Operand>; 2],
         cycle_count: u8,
     ) -> InstructionInfo {
         InstructionInfo {
@@ -197,17 +197,41 @@ impl InstructionInfo {
             cycle_count,
         }
     }
+}
 
-    pub fn mnemonic(&self) -> &Mnemonic {
-        &self.mnemonic
+pub struct InstructionBuilder {
+    pub opcode: u8,
+    pub mnemonic: Mnemonic,
+    pub cycle_count: u8,
+}
+
+impl InstructionBuilder {
+    pub fn new(opcode: u8, mnemonic: Mnemonic, cycle_count: u8) -> Self {
+        Self {
+            opcode,
+            mnemonic,
+            cycle_count,
+        }
     }
 
-    // TODO: why is this not just a Vec
-    pub fn operands(&self) -> &Option<Vec<Operand>> {
-        &self.operands
+    pub fn none(self) -> InstructionInfo {
+        self.build([None, None])
     }
 
-    pub fn cycle_count(&self) -> u8 {
-        self.cycle_count
+    pub fn arg(self, operand: Operand) -> InstructionInfo {
+        self.build([Some(operand), None])
+    }
+
+    pub fn args(self, operand1: Operand, operand2: Operand) -> InstructionInfo {
+        self.build([Some(operand1), Some(operand2)])
+    }
+
+    fn build(self, operands: [Option<Operand>; 2]) -> InstructionInfo {
+        InstructionInfo {
+            opcode: self.opcode,
+            mnemonic: self.mnemonic,
+            cycle_count: self.cycle_count,
+            operands,
+        }
     }
 }

@@ -55,7 +55,8 @@ impl Screen {
         let line = Self::draw_line(video, ly);
         let base_buffer_index = ly as usize * SCREEN_SIZE.0;
 
-        self.buffer[base_buffer_index..].iter_mut()
+        self.buffer[base_buffer_index..]
+            .iter_mut()
             .zip(line.iter())
             .for_each(|(buffer_color, drawn_color)| *buffer_color = *drawn_color);
     }
@@ -98,13 +99,21 @@ impl Screen {
             Self::draw_background_map_line(video, background_tile_map, background_y as usize);
 
         (0..SCREEN_SIZE.0)
-            .map(|x| (x, full_line[wrap_value(scx as usize + x, BACKGROUND_SIZE.0) as usize]))
+            .map(|x| {
+                (
+                    x,
+                    full_line[wrap_value(scx as usize + x, BACKGROUND_SIZE.0) as usize],
+                )
+            })
             .for_each(|(x, color)| line[x] = color);
 
         line
     }
 
-    fn draw_window_line(video: &VideoInformation<'_>, ly: u8) -> [Option<DrawnColor>; SCREEN_SIZE.0] {
+    fn draw_window_line(
+        video: &VideoInformation<'_>,
+        ly: u8,
+    ) -> [Option<DrawnColor>; SCREEN_SIZE.0] {
         let mut line = [None; SCREEN_SIZE.0];
 
         let (window_x, window_y) = video.window;
@@ -121,7 +130,8 @@ impl Screen {
             &video.vram.background_tile_maps().1
         };
 
-        let background_line = Self::draw_background_map_line(video, background_tile_map, background_y as usize);
+        let background_line =
+            Self::draw_background_map_line(video, background_tile_map, background_y as usize);
 
         line.iter_mut().enumerate().for_each(|(x, color)| {
             *color = if x >= window_x {
@@ -167,7 +177,10 @@ impl Screen {
         line
     }
 
-    fn draw_sprites_line(video: &VideoInformation<'_>, ly: u8) -> [Option<DrawnColor>; SCREEN_SIZE.0] {
+    fn draw_sprites_line(
+        video: &VideoInformation<'_>,
+        ly: u8,
+    ) -> [Option<DrawnColor>; SCREEN_SIZE.0] {
         let mut line = [None; SCREEN_SIZE.0];
         let oam_entries = video.vram.oam().entries();
         let tile_data = video.vram.tile_data();

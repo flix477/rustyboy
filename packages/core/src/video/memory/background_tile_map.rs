@@ -1,4 +1,3 @@
-use crate::video::control_register::TileDataAddressing;
 
 #[derive(Default, Clone)]
 pub struct BackgroundTileMap {
@@ -8,18 +7,6 @@ pub struct BackgroundTileMap {
 impl BackgroundTileMap {
     pub fn new() -> Self {
         Self::default()
-    }
-
-    pub fn adjusted_tiles(&self, addressing_mode: TileDataAddressing) -> Vec<u16> {
-        self.tiles
-            .iter()
-            .flat_map(|row| row)
-            .cloned()
-            .map(|tile_index| {
-                let tile_index = u16::from(tile_index);
-                addressing_mode.adjust_index(tile_index)
-            })
-            .collect()
     }
 
     fn tile_info_at(&self, address: u16) -> (usize, usize) {
