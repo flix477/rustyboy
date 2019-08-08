@@ -242,6 +242,62 @@ impl Mnemonic {
     }
 }
 
+impl ToString for Mnemonic {
+    fn to_string(&self) -> String {
+        let string = match self {
+            Mnemonic::LD(_, _) => "LD",
+            Mnemonic::LDD(_, _) => "LDD",
+            Mnemonic::LDI(_, _) => "LDI",
+            Mnemonic::LDHL => "LDHL",
+            Mnemonic::PUSH(_) => "PUSH",
+            Mnemonic::POP(_) => "POP",
+            Mnemonic::ADD(_, _) => "ADD",
+            Mnemonic::ADC(_) => "ADC",
+            Mnemonic::SUB(_) => "SUB",
+            Mnemonic::SBC(_) => "SBC",
+            Mnemonic::AND(_) => "AND",
+            Mnemonic::OR(_) => "OR",
+            Mnemonic::XOR(_) => "XOR",
+            Mnemonic::CP(_) => "CP",
+            Mnemonic::INC(_) => "INC",
+            Mnemonic::DEC(_) => "DEC",
+            Mnemonic::DAA => "DAA",
+            Mnemonic::CPL => "CPL",
+            Mnemonic::CCF => "CCF",
+            Mnemonic::SCF => "SCF",
+            Mnemonic::NOP => "NOP",
+            Mnemonic::HALT => "HALT",
+            Mnemonic::STOP => "STOP",
+            Mnemonic::DI => "DI",
+            Mnemonic::EI => "EI",
+            Mnemonic::RLC(_) => "RLC",
+            Mnemonic::RL(_) => "RL",
+            Mnemonic::RRC(_) => "RRC",
+            Mnemonic::RR(_) => "RR",
+            Mnemonic::SWAP(_) => "SWAP",
+            Mnemonic::RLCA => "RLCA",
+            Mnemonic::RLA => "RLA",
+            Mnemonic::RRCA => "RRCA",
+            Mnemonic::RRA => "RRA",
+            Mnemonic::SLA(_) => "SLA",
+            Mnemonic::SRA(_) => "SRA",
+            Mnemonic::SRL(_) => "SRL",
+            Mnemonic::BIT(_, _) => "BIT",
+            Mnemonic::SET(_, _) => "SET",
+            Mnemonic::RES(_, _) => "RES",
+            Mnemonic::JP(_, _) => "JP",
+            Mnemonic::JR(_, _) => "JR",
+            Mnemonic::CALL(_, _) => "CALL",
+            Mnemonic::RST(_) => "RST",
+            Mnemonic::RET(_) => "RET",
+            Mnemonic::RETI => "RETI",
+            Mnemonic::CB => "CB",
+        };
+
+        string.to_string()
+    }
+}
+
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Operand {
     Reference(Reference),

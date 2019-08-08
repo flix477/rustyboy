@@ -4,7 +4,6 @@ use crate::debugger::{debug_info::DebugInfoJs, DebuggerJs};
 use crate::input::InputJs;
 use crate::rendering::Renderer;
 use rustyboy_core::gameboy::{Gameboy, GameboyEvent};
-use rustyboy_core::video::color::ColorFormat;
 use rustyboy_core::video::screen::BUFFER_SIZE;
 
 #[wasm_bindgen(js_name = Gameboy)]
