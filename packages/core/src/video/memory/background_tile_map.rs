@@ -1,4 +1,3 @@
-
 #[derive(Default, Clone)]
 pub struct BackgroundTileMap {
     tiles: [[u8; 32]; 32],

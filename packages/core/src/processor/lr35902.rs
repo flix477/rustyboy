@@ -18,12 +18,12 @@ pub trait LR35902: OperandParser {
     fn stop(&mut self);
 
     fn execute<H: Bus>(&mut self, bus: &mut H, instruction: InstructionInfo) {
-        let InstructionInfo {mnemonic, ..} = instruction;
+        let InstructionInfo { mnemonic, .. } = instruction;
         match mnemonic {
             Mnemonic::LD(reference, value) => {
                 let value = self.operand_value(bus, value);
                 self.ld(bus, reference, value);
-            },
+            }
             Mnemonic::LDD(reference, value) => self.ldd(bus, reference, value),
             Mnemonic::LDI(reference, value) => self.ldi(bus, reference, value),
             Mnemonic::LDHL => self.ldhl(bus),
@@ -47,27 +47,27 @@ pub trait LR35902: OperandParser {
             Mnemonic::ADC(value) => {
                 let value = self.operand_value(bus, value) as u8;
                 self.adc(value)
-            },
+            }
             Mnemonic::SUB(value) => {
                 let value = self.operand_value(bus, value) as u8;
                 self.sub(value)
-            },
+            }
             Mnemonic::SBC(value) => {
                 let value = self.operand_value(bus, value) as u8;
                 self.sbc(value)
-            },
+            }
             Mnemonic::AND(value) => {
                 let value = self.operand_value(bus, value) as u8;
                 self.and(value)
-            },
+            }
             Mnemonic::OR(value) => {
                 let value = self.operand_value(bus, value) as u8;
                 self.or(value)
-            },
+            }
             Mnemonic::XOR(value) => {
                 let value = self.operand_value(bus, value) as u8;
                 self.xor(value)
-            },
+            }
             Mnemonic::CP(value) => {
                 let value = self.operand_value(bus, value) as u8;
                 self.cp(value)
@@ -103,37 +103,37 @@ pub trait LR35902: OperandParser {
                 if self.operand_condition(condition) {
                     self.jp(address);
                 }
-            },
+            }
             Mnemonic::JP(_, value) => {
                 let address = self.operand_value(bus, value);
                 self.jp(address);
-            },
+            }
             Mnemonic::JR(Some(condition), value) => {
                 let address = self.operand_value(bus, value);
                 if self.operand_condition(condition) {
                     self.jr(address as i8);
                 }
-            },
+            }
             Mnemonic::JR(_, value) => {
                 let address = self.operand_value(bus, value);
                 self.jr(address as i8);
-            },
+            }
             Mnemonic::CALL(Some(condition), value) => {
                 let address = self.operand_value(bus, value);
                 if self.operand_condition(condition) {
-                    self.jr(address as i8);
+                    self.call(bus, address);
                 }
-            },
+            }
             Mnemonic::CALL(_, value) => {
                 let address = self.operand_value(bus, value);
-                self.jr(address as i8);
-            },
+                self.call(bus, address);
+            }
             Mnemonic::RST(value) => self.rst(bus, value),
             Mnemonic::RET(Some(condition)) => {
                 if self.operand_condition(condition) {
                     self.ret(bus);
                 }
-            },
+            }
             Mnemonic::RET(_) => self.ret(bus),
             Mnemonic::RETI => self.reti(bus),
             Mnemonic::CB => self.cb(bus),

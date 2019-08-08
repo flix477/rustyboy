@@ -112,14 +112,14 @@ impl ToString for ValueType {
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct InstructionInfo {
     pub mnemonic: Mnemonic,
-    pub cycle_count: u8
+    pub cycle_count: u8,
 }
 
 impl InstructionInfo {
     pub fn new(mnemonic: Mnemonic, cycle_count: u8) -> Self {
         Self {
             mnemonic,
-            cycle_count
+            cycle_count,
         }
     }
 }
@@ -173,18 +173,27 @@ pub enum Mnemonic {
     RST(u16),
     RET(Option<Condition>),
     RETI,
-    CB
+    CB,
 }
 
 impl Mnemonic {
     pub fn operands(self) -> Vec<Operand> {
         match self {
-            Mnemonic::LD(reference, value) => vec![Operand::Reference(reference), Operand::Value(value)],
-            Mnemonic::LDD(reference, value) => vec![Operand::Reference(reference), Operand::Value(value)],
-            Mnemonic::LDI(reference, value) => vec![Operand::Reference(reference), Operand::Value(value)],
+            Mnemonic::LD(reference, value) => {
+                vec![Operand::Reference(reference), Operand::Value(value)]
+            }
+            Mnemonic::LDD(reference, value) => {
+                vec![Operand::Reference(reference), Operand::Value(value)]
+            }
+            Mnemonic::LDI(reference, value) => {
+                vec![Operand::Reference(reference), Operand::Value(value)]
+            }
             Mnemonic::PUSH(value) => vec![Operand::Value(value)],
             Mnemonic::POP(register) => vec![Operand::Reference(Reference::Register(register))],
-            Mnemonic::ADD(register, value) => vec![Operand::Reference(Reference::Register(register)), Operand::Value(value)],
+            Mnemonic::ADD(register, value) => vec![
+                Operand::Reference(Reference::Register(register)),
+                Operand::Value(value),
+            ],
             Mnemonic::ADC(value) => vec![Operand::Value(value)],
             Mnemonic::SUB(value) => vec![Operand::Value(value)],
             Mnemonic::SBC(value) => vec![Operand::Value(value)],
@@ -202,18 +211,33 @@ impl Mnemonic {
             Mnemonic::SLA(reference) => vec![Operand::Reference(reference)],
             Mnemonic::SRA(reference) => vec![Operand::Reference(reference)],
             Mnemonic::SRL(reference) => vec![Operand::Reference(reference)],
-            Mnemonic::BIT(value, reference) => vec![Operand::Value(ValueType::Constant(value)), Operand::Reference(reference)],
-            Mnemonic::SET(value, reference) => vec![Operand::Value(ValueType::Constant(value)), Operand::Reference(reference)],
-            Mnemonic::RES(value, reference) => vec![Operand::Value(ValueType::Constant(value)), Operand::Reference(reference)],
+            Mnemonic::BIT(value, reference) => vec![
+                Operand::Value(ValueType::Constant(value)),
+                Operand::Reference(reference),
+            ],
+            Mnemonic::SET(value, reference) => vec![
+                Operand::Value(ValueType::Constant(value)),
+                Operand::Reference(reference),
+            ],
+            Mnemonic::RES(value, reference) => vec![
+                Operand::Value(ValueType::Constant(value)),
+                Operand::Reference(reference),
+            ],
             Mnemonic::JP(None, value) => vec![Operand::Value(value)],
-            Mnemonic::JP(Some(condition), value) => vec![Operand::Condition(condition), Operand::Value(value)],
+            Mnemonic::JP(Some(condition), value) => {
+                vec![Operand::Condition(condition), Operand::Value(value)]
+            }
             Mnemonic::JR(None, value) => vec![Operand::Value(value)],
-            Mnemonic::JR(Some(condition), value) => vec![Operand::Condition(condition), Operand::Value(value)],
+            Mnemonic::JR(Some(condition), value) => {
+                vec![Operand::Condition(condition), Operand::Value(value)]
+            }
             Mnemonic::CALL(None, value) => vec![Operand::Value(value)],
-            Mnemonic::CALL(Some(condition), value) => vec![Operand::Condition(condition), Operand::Value(value)],
+            Mnemonic::CALL(Some(condition), value) => {
+                vec![Operand::Condition(condition), Operand::Value(value)]
+            }
             Mnemonic::RST(value) => vec![Operand::Value(ValueType::Constant(value))],
             Mnemonic::RET(Some(condition)) => vec![Operand::Condition(condition)],
-            _ => vec![]
+            _ => vec![],
         }
     }
 }
@@ -222,5 +246,5 @@ impl Mnemonic {
 pub enum Operand {
     Reference(Reference),
     Value(ValueType),
-    Condition(Condition)
+    Condition(Condition),
 }

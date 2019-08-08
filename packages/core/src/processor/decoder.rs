@@ -40,7 +40,10 @@ pub fn decode_opcode(opcode: u8, prefix: Prefix) -> Option<InstructionInfo> {
         0x0A => Some(ld_rr(Reg::A, Reg::BC)),
         0x1A => Some(ld_rr(Reg::A, Reg::DE)),
         0xFA => Some(ld_rn16(Reg::A)),
-        0x3E => Some(InstructionInfo::new(Mnemonic::LD(Ref::Register(Reg::A), ValueType::Immediate), 8)),
+        0x3E => Some(InstructionInfo::new(
+            Mnemonic::LD(Ref::Register(Reg::A), ValueType::Immediate),
+            8,
+        )),
 
         // LD n,A
         0x02 => Some(ld_rr(Reg::BC, Reg::A)),
@@ -49,35 +52,77 @@ pub fn decode_opcode(opcode: u8, prefix: Prefix) -> Option<InstructionInfo> {
 
         // LD A,(C)
         // Put value at address $FF00 + register C into A
-        0xF2 => Some(InstructionInfo::new(Mnemonic::LD(Ref::Register(Reg::A),
-                                                       ValueType::Address(Addr::IncRegister(Reg::C))), 8)),
+        0xF2 => Some(InstructionInfo::new(
+            Mnemonic::LD(
+                Ref::Register(Reg::A),
+                ValueType::Address(Addr::IncRegister(Reg::C)),
+            ),
+            8,
+        )),
 
         // LD (C),A
         // Put A into address $FF00 + register C
-        0xE2 => Some(InstructionInfo::new(Mnemonic::LD(Ref::Address(Addr::IncRegister(Reg::C)), ValueType::Register(Reg::A)), 8)),
+        0xE2 => Some(InstructionInfo::new(
+            Mnemonic::LD(
+                Ref::Address(Addr::IncRegister(Reg::C)),
+                ValueType::Register(Reg::A),
+            ),
+            8,
+        )),
 
         // LDD A,(HL)
-        0x3A => Some(InstructionInfo::new(Mnemonic::LDD(Ref::Register(Reg::A), ValueType::Address(Addr::Register(Reg::HL))), 8)),
+        0x3A => Some(InstructionInfo::new(
+            Mnemonic::LDD(
+                Ref::Register(Reg::A),
+                ValueType::Address(Addr::Register(Reg::HL)),
+            ),
+            8,
+        )),
 
         // LDD (HL),A
-        0x32 => Some(InstructionInfo::new(Mnemonic::LDD(Ref::Address(Addr::Register(Reg::HL)),
-                                                        ValueType::Register(Reg::A)), 8)),
+        0x32 => Some(InstructionInfo::new(
+            Mnemonic::LDD(
+                Ref::Address(Addr::Register(Reg::HL)),
+                ValueType::Register(Reg::A),
+            ),
+            8,
+        )),
 
         // LDI A,(HL)
-        0x2A => Some(InstructionInfo::new(Mnemonic::LDI(Ref::Register(Reg::A),
-                                                        ValueType::Address(Addr::Register(Reg::HL))), 8)),
+        0x2A => Some(InstructionInfo::new(
+            Mnemonic::LDI(
+                Ref::Register(Reg::A),
+                ValueType::Address(Addr::Register(Reg::HL)),
+            ),
+            8,
+        )),
 
         // LDI (HL),A
-        0x22 => Some(InstructionInfo::new(Mnemonic::LDI(Ref::Address(Addr::Register(Reg::HL)),
-                                                        ValueType::Register(Reg::A)), 8)),
+        0x22 => Some(InstructionInfo::new(
+            Mnemonic::LDI(
+                Ref::Address(Addr::Register(Reg::HL)),
+                ValueType::Register(Reg::A),
+            ),
+            8,
+        )),
 
         // LDH (n),A
-        0xE0 => Some(InstructionInfo::new(Mnemonic::LD(Ref::Address(Addr::IncImmediate),
-                                                       ValueType::Register(Reg::A)), 12)),
+        0xE0 => Some(InstructionInfo::new(
+            Mnemonic::LD(
+                Ref::Address(Addr::IncImmediate),
+                ValueType::Register(Reg::A),
+            ),
+            12,
+        )),
 
         // LDH A,(n)
-        0xF0 => Some(InstructionInfo::new(Mnemonic::LD(Ref::Register(Reg::A),
-                                                       ValueType::Address(Addr::IncImmediate)), 12)),
+        0xF0 => Some(InstructionInfo::new(
+            Mnemonic::LD(
+                Ref::Register(Reg::A),
+                ValueType::Address(Addr::IncImmediate),
+            ),
+            12,
+        )),
 
         // LD n,nn 16bit
         0x01 => Some(ld_r16n16(Reg::BC)),
@@ -86,13 +131,19 @@ pub fn decode_opcode(opcode: u8, prefix: Prefix) -> Option<InstructionInfo> {
         0x31 => Some(ld_r16n16(Reg::SP)),
 
         // LD SP,HL
-        0xF9 => Some(InstructionInfo::new(Mnemonic::LD(Ref::Register(Reg::SP), ValueType::Register(Reg::HL)), 8)),
+        0xF9 => Some(InstructionInfo::new(
+            Mnemonic::LD(Ref::Register(Reg::SP), ValueType::Register(Reg::HL)),
+            8,
+        )),
 
         // LDHL SP,n
         0xF8 => Some(InstructionInfo::new(Mnemonic::LDHL, 12)),
 
         // LD (nn),SP
-        0x08 => Some(InstructionInfo::new(Mnemonic::LD(Ref::Address(Addr::Immediate), ValueType::Register(Reg::SP)), 20)),
+        0x08 => Some(InstructionInfo::new(
+            Mnemonic::LD(Ref::Address(Addr::Immediate), ValueType::Register(Reg::SP)),
+            20,
+        )),
 
         // PUSH nn
         0xF5 => Some(push(Reg::AF)),
@@ -115,8 +166,14 @@ pub fn decode_opcode(opcode: u8, prefix: Prefix) -> Option<InstructionInfo> {
         0x83 => Some(add_an(Reg::E)),
         0x84 => Some(add_an(Reg::H)),
         0x85 => Some(add_an(Reg::L)),
-        0x86 => Some(InstructionInfo::new(Mnemonic::ADD(Reg::A, ValueType::Address(Addr::Register(Reg::HL))), 8)),
-        0xC6 => Some(InstructionInfo::new(Mnemonic::ADD(Reg::A, ValueType::Immediate), 8)),
+        0x86 => Some(InstructionInfo::new(
+            Mnemonic::ADD(Reg::A, ValueType::Address(Addr::Register(Reg::HL))),
+            8,
+        )),
+        0xC6 => Some(InstructionInfo::new(
+            Mnemonic::ADD(Reg::A, ValueType::Immediate),
+            8,
+        )),
 
         // ADC A,n
         // Add n + Carry flag to A
@@ -211,7 +268,10 @@ pub fn decode_opcode(opcode: u8, prefix: Prefix) -> Option<InstructionInfo> {
         0x1C => Some(inc(Reg::E)),
         0x24 => Some(inc(Reg::H)),
         0x2C => Some(inc(Reg::L)),
-        0x34 => Some(InstructionInfo::new(Mnemonic::INC(Ref::Address(Addr::Register(Reg::HL))), 12)),
+        0x34 => Some(InstructionInfo::new(
+            Mnemonic::INC(Ref::Address(Addr::Register(Reg::HL))),
+            12,
+        )),
 
         // DEC n
         // Decrement register n
@@ -222,7 +282,10 @@ pub fn decode_opcode(opcode: u8, prefix: Prefix) -> Option<InstructionInfo> {
         0x1D => Some(dec(Reg::E)),
         0x25 => Some(dec(Reg::H)),
         0x2D => Some(dec(Reg::L)),
-        0x35 => Some(InstructionInfo::new(Mnemonic::DEC(Ref::Address(Addr::Register(Reg::HL))), 12)),
+        0x35 => Some(InstructionInfo::new(
+            Mnemonic::DEC(Ref::Address(Addr::Register(Reg::HL))),
+            12,
+        )),
 
         // ADD HL,n
         // Add to HL, result in HL
@@ -233,7 +296,10 @@ pub fn decode_opcode(opcode: u8, prefix: Prefix) -> Option<InstructionInfo> {
 
         // ADD SP,n
         // Add n to SP, result in SP
-        0xE8 => Some(InstructionInfo::new(Mnemonic::ADD(Reg::SP, ValueType::SignedImmediate), 16)),
+        0xE8 => Some(InstructionInfo::new(
+            Mnemonic::ADD(Reg::SP, ValueType::SignedImmediate),
+            16,
+        )),
 
         // INC nn
         // Increment register nn
@@ -287,7 +353,10 @@ pub fn decode_opcode(opcode: u8, prefix: Prefix) -> Option<InstructionInfo> {
         0x1F => Some(InstructionInfo::new(Mnemonic::RRA, 4)),
 
         // JP nn
-        0xC3 => Some(InstructionInfo::new(Mnemonic::JP(None, ValueType::Immediate16), 12)),
+        0xC3 => Some(InstructionInfo::new(
+            Mnemonic::JP(None, ValueType::Immediate16),
+            12,
+        )),
 
         // JP cc,nn
         0xC2 => Some(jp(Condition(Flag::Zero, false))),
@@ -296,10 +365,16 @@ pub fn decode_opcode(opcode: u8, prefix: Prefix) -> Option<InstructionInfo> {
         0xDA => Some(jp(Condition(Flag::Carry, true))),
 
         // JP (HL)
-        0xE9 => Some(InstructionInfo::new(Mnemonic::JP(None, ValueType::Register(Reg::HL)), 4)),
+        0xE9 => Some(InstructionInfo::new(
+            Mnemonic::JP(None, ValueType::Register(Reg::HL)),
+            4,
+        )),
 
         // JR n
-        0x18 => Some(InstructionInfo::new(Mnemonic::JR(None, ValueType::Immediate), 8)),
+        0x18 => Some(InstructionInfo::new(
+            Mnemonic::JR(None, ValueType::Immediate),
+            8,
+        )),
 
         // JR cc,nn
         0x20 => Some(jr(Condition(Flag::Zero, false))),
@@ -308,7 +383,10 @@ pub fn decode_opcode(opcode: u8, prefix: Prefix) -> Option<InstructionInfo> {
         0x38 => Some(jr(Condition(Flag::Carry, true))),
 
         // CALL nn
-        0xCD => Some(InstructionInfo::new(Mnemonic::CALL(None, ValueType::Immediate16), 12)),
+        0xCD => Some(InstructionInfo::new(
+            Mnemonic::CALL(None, ValueType::Immediate16),
+            12,
+        )),
 
         // CALL cc,nn
         0xC4 => Some(call(Condition(Flag::Zero, false))),
@@ -355,7 +433,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0x03 => Some(rlc(Reg::E)),
         0x04 => Some(rlc(Reg::H)),
         0x05 => Some(rlc(Reg::L)),
-        0x06 => Some(InstructionInfo::new(Mnemonic::RLC(Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0x06 => Some(InstructionInfo::new(
+            Mnemonic::RLC(Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         // RL n
         // Rotate n left through carry flag
@@ -366,7 +447,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0x13 => Some(rl(Reg::E)),
         0x14 => Some(rl(Reg::H)),
         0x15 => Some(rl(Reg::L)),
-        0x16 => Some(InstructionInfo::new(Mnemonic::RL(Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0x16 => Some(InstructionInfo::new(
+            Mnemonic::RL(Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         // RRC n
         // Rotate n right
@@ -377,7 +461,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0x0B => Some(rrc(Reg::E)),
         0x0C => Some(rrc(Reg::H)),
         0x0D => Some(rrc(Reg::L)),
-        0x0E => Some(InstructionInfo::new(Mnemonic::RRC(Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0x0E => Some(InstructionInfo::new(
+            Mnemonic::RRC(Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         // RR n
         // Rotate n right through carry flag
@@ -388,7 +475,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0x1B => Some(rr(Reg::E)),
         0x1C => Some(rr(Reg::H)),
         0x1D => Some(rr(Reg::L)),
-        0x1E => Some(InstructionInfo::new(Mnemonic::RR(Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0x1E => Some(InstructionInfo::new(
+            Mnemonic::RR(Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         // SWAP n
         // Swap upper and lower nibble of n
@@ -399,7 +489,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0x33 => Some(swap(Reg::E)),
         0x34 => Some(swap(Reg::H)),
         0x35 => Some(swap(Reg::L)),
-        0x36 => Some(InstructionInfo::new(Mnemonic::SWAP(Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0x36 => Some(InstructionInfo::new(
+            Mnemonic::SWAP(Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         // SLA n
         // Shift n left into carry
@@ -410,7 +503,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0x23 => Some(sla(Reg::E)),
         0x24 => Some(sla(Reg::H)),
         0x25 => Some(sla(Reg::L)),
-        0x26 => Some(InstructionInfo::new(Mnemonic::SLA(Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0x26 => Some(InstructionInfo::new(
+            Mnemonic::SLA(Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         // SRA n
         // Shift n right into carry, MSB untouched
@@ -421,7 +517,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0x2B => Some(sra(Reg::E)),
         0x2C => Some(sra(Reg::H)),
         0x2D => Some(sra(Reg::L)),
-        0x2E => Some(InstructionInfo::new(Mnemonic::SRA(Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0x2E => Some(InstructionInfo::new(
+            Mnemonic::SRA(Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         // SRL n
         // Shift n right into carry, MSB set to 0
@@ -432,7 +531,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0x3B => Some(srl(Reg::E)),
         0x3C => Some(srl(Reg::H)),
         0x3D => Some(srl(Reg::L)),
-        0x3E => Some(InstructionInfo::new(Mnemonic::SRL(Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0x3E => Some(InstructionInfo::new(
+            Mnemonic::SRL(Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         // BIT b,r
         // Test bit b in r
@@ -443,7 +545,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0x43 => Some(bit(0, Reg::E)),
         0x44 => Some(bit(0, Reg::H)),
         0x45 => Some(bit(0, Reg::L)),
-        0x46 => Some(InstructionInfo::new(Mnemonic::BIT(0, Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0x46 => Some(InstructionInfo::new(
+            Mnemonic::BIT(0, Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         0x4F => Some(bit(1, Reg::A)),
         0x48 => Some(bit(1, Reg::B)),
@@ -452,7 +557,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0x4B => Some(bit(1, Reg::E)),
         0x4C => Some(bit(1, Reg::H)),
         0x4D => Some(bit(1, Reg::L)),
-        0x4E => Some(InstructionInfo::new(Mnemonic::BIT(1, Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0x4E => Some(InstructionInfo::new(
+            Mnemonic::BIT(1, Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         0x57 => Some(bit(2, Reg::A)),
         0x50 => Some(bit(2, Reg::B)),
@@ -461,7 +569,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0x53 => Some(bit(2, Reg::E)),
         0x54 => Some(bit(2, Reg::H)),
         0x55 => Some(bit(2, Reg::L)),
-        0x56 => Some(InstructionInfo::new(Mnemonic::BIT(2, Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0x56 => Some(InstructionInfo::new(
+            Mnemonic::BIT(2, Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         0x5F => Some(bit(3, Reg::A)),
         0x58 => Some(bit(3, Reg::B)),
@@ -470,7 +581,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0x5B => Some(bit(3, Reg::E)),
         0x5C => Some(bit(3, Reg::H)),
         0x5D => Some(bit(3, Reg::L)),
-        0x5E => Some(InstructionInfo::new(Mnemonic::BIT(3, Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0x5E => Some(InstructionInfo::new(
+            Mnemonic::BIT(3, Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         0x67 => Some(bit(4, Reg::A)),
         0x60 => Some(bit(4, Reg::B)),
@@ -479,7 +593,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0x63 => Some(bit(4, Reg::E)),
         0x64 => Some(bit(4, Reg::H)),
         0x65 => Some(bit(4, Reg::L)),
-        0x66 => Some(InstructionInfo::new(Mnemonic::BIT(4, Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0x66 => Some(InstructionInfo::new(
+            Mnemonic::BIT(4, Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         0x6F => Some(bit(5, Reg::A)),
         0x68 => Some(bit(5, Reg::B)),
@@ -488,7 +605,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0x6B => Some(bit(5, Reg::E)),
         0x6C => Some(bit(5, Reg::H)),
         0x6D => Some(bit(5, Reg::L)),
-        0x6E => Some(InstructionInfo::new(Mnemonic::BIT(5, Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0x6E => Some(InstructionInfo::new(
+            Mnemonic::BIT(5, Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         0x77 => Some(bit(6, Reg::A)),
         0x70 => Some(bit(6, Reg::B)),
@@ -497,7 +617,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0x73 => Some(bit(6, Reg::E)),
         0x74 => Some(bit(6, Reg::H)),
         0x75 => Some(bit(6, Reg::L)),
-        0x76 => Some(InstructionInfo::new(Mnemonic::BIT(6, Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0x76 => Some(InstructionInfo::new(
+            Mnemonic::BIT(6, Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         0x7F => Some(bit(7, Reg::A)),
         0x78 => Some(bit(7, Reg::B)),
@@ -506,7 +629,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0x7B => Some(bit(7, Reg::E)),
         0x7C => Some(bit(7, Reg::H)),
         0x7D => Some(bit(7, Reg::L)),
-        0x7E => Some(InstructionInfo::new(Mnemonic::BIT(7, Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0x7E => Some(InstructionInfo::new(
+            Mnemonic::BIT(7, Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         // SET b,r
         // Set bit b in r
@@ -517,7 +643,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0xC3 => Some(set(0, Reg::E)),
         0xC4 => Some(set(0, Reg::H)),
         0xC5 => Some(set(0, Reg::L)),
-        0xC6 => Some(InstructionInfo::new(Mnemonic::SET(0, Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0xC6 => Some(InstructionInfo::new(
+            Mnemonic::SET(0, Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         0xCF => Some(set(1, Reg::A)),
         0xC8 => Some(set(1, Reg::B)),
@@ -526,7 +655,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0xCB => Some(set(1, Reg::E)),
         0xCC => Some(set(1, Reg::H)),
         0xCD => Some(set(1, Reg::L)),
-        0xCE => Some(InstructionInfo::new(Mnemonic::SET(1, Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0xCE => Some(InstructionInfo::new(
+            Mnemonic::SET(1, Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         0xD7 => Some(set(2, Reg::A)),
         0xD0 => Some(set(2, Reg::B)),
@@ -535,7 +667,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0xD3 => Some(set(2, Reg::E)),
         0xD4 => Some(set(2, Reg::H)),
         0xD5 => Some(set(2, Reg::L)),
-        0xD6 => Some(InstructionInfo::new(Mnemonic::SET(2, Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0xD6 => Some(InstructionInfo::new(
+            Mnemonic::SET(2, Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         0xDF => Some(set(3, Reg::A)),
         0xD8 => Some(set(3, Reg::B)),
@@ -544,7 +679,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0xDB => Some(set(3, Reg::E)),
         0xDC => Some(set(3, Reg::H)),
         0xDD => Some(set(3, Reg::L)),
-        0xDE => Some(InstructionInfo::new(Mnemonic::SET(3, Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0xDE => Some(InstructionInfo::new(
+            Mnemonic::SET(3, Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         0xE7 => Some(set(4, Reg::A)),
         0xE0 => Some(set(4, Reg::B)),
@@ -553,7 +691,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0xE3 => Some(set(4, Reg::E)),
         0xE4 => Some(set(4, Reg::H)),
         0xE5 => Some(set(4, Reg::L)),
-        0xE6 => Some(InstructionInfo::new(Mnemonic::SET(4, Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0xE6 => Some(InstructionInfo::new(
+            Mnemonic::SET(4, Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         0xEF => Some(set(5, Reg::A)),
         0xE8 => Some(set(5, Reg::B)),
@@ -562,7 +703,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0xEB => Some(set(5, Reg::E)),
         0xEC => Some(set(5, Reg::H)),
         0xED => Some(set(5, Reg::L)),
-        0xEE => Some(InstructionInfo::new(Mnemonic::SET(5, Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0xEE => Some(InstructionInfo::new(
+            Mnemonic::SET(5, Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         0xF7 => Some(set(6, Reg::A)),
         0xF0 => Some(set(6, Reg::B)),
@@ -571,7 +715,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0xF3 => Some(set(6, Reg::E)),
         0xF4 => Some(set(6, Reg::H)),
         0xF5 => Some(set(6, Reg::L)),
-        0xF6 => Some(InstructionInfo::new(Mnemonic::SET(6, Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0xF6 => Some(InstructionInfo::new(
+            Mnemonic::SET(6, Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         0xFF => Some(set(7, Reg::A)),
         0xF8 => Some(set(7, Reg::B)),
@@ -580,7 +727,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0xFB => Some(set(7, Reg::E)),
         0xFC => Some(set(7, Reg::H)),
         0xFD => Some(set(7, Reg::L)),
-        0xFE => Some(InstructionInfo::new(Mnemonic::SET(7, Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0xFE => Some(InstructionInfo::new(
+            Mnemonic::SET(7, Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         // RES b,r
         // Reset bit b in r
@@ -591,7 +741,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0x83 => Some(res(0, Reg::E)),
         0x84 => Some(res(0, Reg::H)),
         0x85 => Some(res(0, Reg::L)),
-        0x86 => Some(InstructionInfo::new(Mnemonic::RES(0, Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0x86 => Some(InstructionInfo::new(
+            Mnemonic::RES(0, Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         0x8F => Some(res(1, Reg::A)),
         0x88 => Some(res(1, Reg::B)),
@@ -600,7 +753,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0x8B => Some(res(1, Reg::E)),
         0x8C => Some(res(1, Reg::H)),
         0x8D => Some(res(1, Reg::L)),
-        0x8E => Some(InstructionInfo::new(Mnemonic::RES(1, Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0x8E => Some(InstructionInfo::new(
+            Mnemonic::RES(1, Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         0x97 => Some(res(2, Reg::A)),
         0x90 => Some(res(2, Reg::B)),
@@ -609,7 +765,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0x93 => Some(res(2, Reg::E)),
         0x94 => Some(res(2, Reg::H)),
         0x95 => Some(res(2, Reg::L)),
-        0x96 => Some(InstructionInfo::new(Mnemonic::RES(2, Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0x96 => Some(InstructionInfo::new(
+            Mnemonic::RES(2, Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         0x9F => Some(res(3, Reg::A)),
         0x98 => Some(res(3, Reg::B)),
@@ -618,7 +777,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0x9B => Some(res(3, Reg::E)),
         0x9C => Some(res(3, Reg::H)),
         0x9D => Some(res(3, Reg::L)),
-        0x9E => Some(InstructionInfo::new(Mnemonic::RES(3, Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0x9E => Some(InstructionInfo::new(
+            Mnemonic::RES(3, Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         0xA7 => Some(res(4, Reg::A)),
         0xA0 => Some(res(4, Reg::B)),
@@ -627,7 +789,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0xA3 => Some(res(4, Reg::E)),
         0xA4 => Some(res(4, Reg::H)),
         0xA5 => Some(res(4, Reg::L)),
-        0xA6 => Some(InstructionInfo::new(Mnemonic::RES(4, Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0xA6 => Some(InstructionInfo::new(
+            Mnemonic::RES(4, Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         0xAF => Some(res(5, Reg::A)),
         0xA8 => Some(res(5, Reg::B)),
@@ -636,7 +801,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0xAB => Some(res(5, Reg::E)),
         0xAC => Some(res(5, Reg::H)),
         0xAD => Some(res(5, Reg::L)),
-        0xAE => Some(InstructionInfo::new(Mnemonic::RES(5, Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0xAE => Some(InstructionInfo::new(
+            Mnemonic::RES(5, Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         0xB7 => Some(res(6, Reg::A)),
         0xB0 => Some(res(6, Reg::B)),
@@ -645,7 +813,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0xB3 => Some(res(6, Reg::E)),
         0xB4 => Some(res(6, Reg::H)),
         0xB5 => Some(res(6, Reg::L)),
-        0xB6 => Some(InstructionInfo::new(Mnemonic::RES(6, Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0xB6 => Some(InstructionInfo::new(
+            Mnemonic::RES(6, Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
 
         0xBF => Some(res(7, Reg::A)),
         0xB8 => Some(res(7, Reg::B)),
@@ -654,7 +825,10 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
         0xBB => Some(res(7, Reg::E)),
         0xBC => Some(res(7, Reg::H)),
         0xBD => Some(res(7, Reg::L)),
-        0xBE => Some(InstructionInfo::new(Mnemonic::RES(7, Ref::Address(Addr::Register(Reg::HL))), 16)),
+        0xBE => Some(InstructionInfo::new(
+            Mnemonic::RES(7, Ref::Address(Addr::Register(Reg::HL))),
+            16,
+        )),
     }
 }
 
@@ -720,15 +894,24 @@ fn ld_rn(register: Reg) -> InstructionInfo {
 }
 
 fn ld_rn16(register: Reg) -> InstructionInfo {
-    InstructionInfo::new(Mnemonic::LD(Ref::Register(register), ValueType::Address(Addr::Immediate)), 16)
+    InstructionInfo::new(
+        Mnemonic::LD(Ref::Register(register), ValueType::Address(Addr::Immediate)),
+        16,
+    )
 }
 
 fn ld_n16r(register: Reg) -> InstructionInfo {
-    InstructionInfo::new(Mnemonic::LD(Ref::Address(Addr::Immediate), ValueType::Register(register)), 16)
+    InstructionInfo::new(
+        Mnemonic::LD(Ref::Address(Addr::Immediate), ValueType::Register(register)),
+        16,
+    )
 }
 
 fn ld_r16n16(register: Reg) -> InstructionInfo {
-    InstructionInfo::new(Mnemonic::LD(Ref::Register(register), ValueType::Immediate16), 12)
+    InstructionInfo::new(
+        Mnemonic::LD(Ref::Register(register), ValueType::Immediate16),
+        12,
+    )
 }
 
 fn push(register: Reg) -> InstructionInfo {
