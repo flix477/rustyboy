@@ -832,6 +832,8 @@ fn decode_cb_opcode(opcode: u8) -> Option<InstructionInfo> {
     }
 }
 
+// TODO: refactor some of those functions, they were pretty much the first I ever did in Rust
+// and it shows
 fn parse_ld_rr(opcode: u8) -> Option<InstructionInfo> {
     let r1 = match opcode {
         0x78..=0x7F => Some(Reg::A),
