@@ -3,8 +3,7 @@ use std::slice;
 
 use rustyboy_core::cartridge::Cartridge;
 use rustyboy_core::config::Config;
-use rustyboy_core::gameboy::{DeviceType, Gameboy as RustGameboy};
-use rustyboy_core::video::color::ColorFormat;
+use rustyboy_core::gameboy::{Gameboy as RustGameboy};
 
 pub mod input;
 
@@ -22,10 +21,7 @@ pub unsafe extern "C" fn create_gameboy(buffer: *const c_uchar, length: c_ulong)
     let buffer: &[c_uchar] = slice::from_raw_parts(buffer, length as usize);
 
     let cartridge = Cartridge::from_buffer(buffer.to_vec()).unwrap();
-    let config = Config {
-        debugger: None,
-        device_type: DeviceType::GameBoy,
-    };
+    let config = Config::default();
 
     let gameboy = RustGameboy::new(cartridge, &config);
     let ffi_gameboy = Gameboy { gameboy };
@@ -40,13 +36,13 @@ pub unsafe extern "C" fn gameboy_run_to_vblank(gameboy: *mut Gameboy) -> *mut c_
         Box::from_raw(gameboy)
     };
     gameboy.gameboy.run_to_vblank();
-    let mut buffer: Box<[u8]> = gameboy
+    let buffer = gameboy
         .gameboy
         .hardware()
         .video()
         .screen()
-        .buffer(ColorFormat::RGBA)
-        .into_boxed_slice();
+        .buffer();
+    let mut buffer = Box::new(buffer);
 
     let pointer: *mut c_uchar = buffer.as_mut_ptr();
     std::mem::forget(buffer);
