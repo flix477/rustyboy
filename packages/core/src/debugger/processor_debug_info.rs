@@ -1,8 +1,6 @@
 use crate::debugger::debug_operand_parser::{DebugOperandParser, ReadableVec};
 use crate::processor::decoder::decode_opcode;
-use crate::processor::instruction::{
-    AddressType, Condition, InstructionInfo, Mnemonic, Operand, Prefix, Reference, ValueType,
-};
+use crate::processor::instruction::{AddressType, Condition, InstructionInfo, Mnemonic, Prefix, Reference, ValueType, Operand};
 use crate::processor::operand_parser::OperandParser;
 use crate::processor::registers::register::Register;
 use crate::processor::registers::Registers;
@@ -63,9 +61,9 @@ impl ProcessorDebugInfo {
         };
 
         let parsed_operands = instruction
-            .operands
+            .mnemonic
+            .operands()
             .iter()
-            .filter_map(Option::as_ref)
             .map(|operand| Self::parse_operand(&bus, parser, *operand))
             .collect();
 

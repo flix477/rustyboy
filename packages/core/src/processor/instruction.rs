@@ -10,63 +10,10 @@ pub enum Prefix {
     None,
 }
 
-/// Represents the mnemonic of a GameBoy instruction.
-/// The mnemonic is simply the name of the instruction.
-#[derive(Copy, Clone, Debug, PartialEq)]
-pub enum Mnemonic {
-    CB,
-    LD,
-    LDHL,
-    LDI,
-    LDD,
-    PUSH,
-    POP,
-    ADD,
-    ADC,
-    SUB,
-    SBC,
-    AND,
-    XOR,
-    OR,
-    CP,
-    INC,
-    DEC,
-    DAA,
-    CPL,
-    RLC,
-    RLCA,
-    RL,
-    RLA,
-    RRC,
-    RRCA,
-    RR,
-    RRA,
-    SLA,
-    SWAP,
-    SRA,
-    SRL,
-    BIT,
-    SET,
-    RES,
-    CCF,
-    SCF,
-    NOP,
-    HALT,
-    STOP,
-    DI,
-    EI,
-    JP,
-    JR,
-    CALL,
-    RET,
-    RETI,
-    RST,
-}
-
 /// Represents a condition operand.
 /// The first value is the CPU flag to check and the second value is the expected value.
 /// If the flag's value is equal to the expected value, the condition is fulfilled.
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Condition(pub Flag, pub bool);
 
 impl ToString for Condition {
@@ -75,21 +22,8 @@ impl ToString for Condition {
     }
 }
 
-/// Represents a GameBoy instruction operand.
-/// An operand can simply be seen as an argument given to a function.
-/// GameBoy instructions typically have 0 to 2 operands.
-#[derive(Copy, Clone, Debug)]
-pub enum Operand {
-    /// An operand that represents a reference to mutate, like a register or an address
-    Reference(Reference),
-    /// An operand that represents an integer value
-    Value(ValueType),
-    /// An operand that represents a condition to fulfill
-    Condition(Condition),
-}
-
 /// An operand type that represents a reference to mutate in an instruction
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Reference {
     /// Represents a register to mutate
     Register(RegisterType),
@@ -120,7 +54,7 @@ impl Reference {
 
 /// Represents the type of an address used as an operand.
 /// All addresses are 16-bit.
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum AddressType {
     /// Represents an address which is the value of a register
     Register(RegisterType),
@@ -145,7 +79,7 @@ impl ToString for AddressType {
 }
 
 /// Represents the type of a value used as an operand
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum ValueType {
     /// Represents a value in a register
     Register(RegisterType),
@@ -175,63 +109,118 @@ impl ToString for ValueType {
 }
 
 /// Contains information about a GameBoy instruction
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct InstructionInfo {
-    pub opcode: u8,
     pub mnemonic: Mnemonic,
-    pub operands: [Option<Operand>; 2],
-    pub cycle_count: u8,
+    pub cycle_count: u8
 }
 
 impl InstructionInfo {
-    pub fn new(
-        opcode: u8,
-        mnemonic: Mnemonic,
-        operands: [Option<Operand>; 2],
-        cycle_count: u8,
-    ) -> InstructionInfo {
-        InstructionInfo {
-            opcode,
-            mnemonic,
-            operands,
-            cycle_count,
-        }
-    }
-}
-
-pub struct InstructionBuilder {
-    pub opcode: u8,
-    pub mnemonic: Mnemonic,
-    pub cycle_count: u8,
-}
-
-impl InstructionBuilder {
-    pub fn new(opcode: u8, mnemonic: Mnemonic, cycle_count: u8) -> Self {
+    pub fn new(mnemonic: Mnemonic, cycle_count: u8) -> Self {
         Self {
-            opcode,
             mnemonic,
-            cycle_count,
+            cycle_count
         }
     }
+}
 
-    pub fn none(self) -> InstructionInfo {
-        self.build([None, None])
-    }
+/// Represents the mnemonic of a GameBoy instruction.
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub enum Mnemonic {
+    LD(Reference, ValueType),
+    LDD(Reference, ValueType),
+    LDI(Reference, ValueType),
+    LDHL,
+    PUSH(ValueType),
+    POP(RegisterType),
+    ADD(RegisterType, ValueType),
+    ADC(ValueType),
+    SUB(ValueType),
+    SBC(ValueType),
+    AND(ValueType),
+    OR(ValueType),
+    XOR(ValueType),
+    CP(ValueType),
+    INC(Reference),
+    DEC(Reference),
+    DAA,
+    CPL,
+    CCF,
+    SCF,
+    NOP,
+    HALT,
+    STOP,
+    DI,
+    EI,
+    RLC(Reference),
+    RL(Reference),
+    RRC(Reference),
+    RR(Reference),
+    SWAP(Reference),
+    RLCA,
+    RLA,
+    RRCA,
+    RRA,
+    SLA(Reference),
+    SRA(Reference),
+    SRL(Reference),
+    BIT(u16, Reference),
+    SET(u16, Reference),
+    RES(u16, Reference),
+    JP(Option<Condition>, ValueType),
+    JR(Option<Condition>, ValueType),
+    CALL(Option<Condition>, ValueType),
+    RST(u16),
+    RET(Option<Condition>),
+    RETI,
+    CB
+}
 
-    pub fn arg(self, operand: Operand) -> InstructionInfo {
-        self.build([Some(operand), None])
-    }
-
-    pub fn args(self, operand1: Operand, operand2: Operand) -> InstructionInfo {
-        self.build([Some(operand1), Some(operand2)])
-    }
-
-    fn build(self, operands: [Option<Operand>; 2]) -> InstructionInfo {
-        InstructionInfo {
-            opcode: self.opcode,
-            mnemonic: self.mnemonic,
-            cycle_count: self.cycle_count,
-            operands,
+impl Mnemonic {
+    pub fn operands(self) -> Vec<Operand> {
+        match self {
+            Mnemonic::LD(reference, value) => vec![Operand::Reference(reference), Operand::Value(value)],
+            Mnemonic::LDD(reference, value) => vec![Operand::Reference(reference), Operand::Value(value)],
+            Mnemonic::LDI(reference, value) => vec![Operand::Reference(reference), Operand::Value(value)],
+            Mnemonic::PUSH(value) => vec![Operand::Value(value)],
+            Mnemonic::POP(register) => vec![Operand::Reference(Reference::Register(register))],
+            Mnemonic::ADD(register, value) => vec![Operand::Reference(Reference::Register(register)), Operand::Value(value)],
+            Mnemonic::ADC(value) => vec![Operand::Value(value)],
+            Mnemonic::SUB(value) => vec![Operand::Value(value)],
+            Mnemonic::SBC(value) => vec![Operand::Value(value)],
+            Mnemonic::AND(value) => vec![Operand::Value(value)],
+            Mnemonic::OR(value) => vec![Operand::Value(value)],
+            Mnemonic::XOR(value) => vec![Operand::Value(value)],
+            Mnemonic::CP(value) => vec![Operand::Value(value)],
+            Mnemonic::INC(reference) => vec![Operand::Reference(reference)],
+            Mnemonic::DEC(reference) => vec![Operand::Reference(reference)],
+            Mnemonic::RLC(reference) => vec![Operand::Reference(reference)],
+            Mnemonic::RL(reference) => vec![Operand::Reference(reference)],
+            Mnemonic::RRC(reference) => vec![Operand::Reference(reference)],
+            Mnemonic::RR(reference) => vec![Operand::Reference(reference)],
+            Mnemonic::SWAP(reference) => vec![Operand::Reference(reference)],
+            Mnemonic::SLA(reference) => vec![Operand::Reference(reference)],
+            Mnemonic::SRA(reference) => vec![Operand::Reference(reference)],
+            Mnemonic::SRL(reference) => vec![Operand::Reference(reference)],
+            Mnemonic::BIT(value, reference) => vec![Operand::Value(ValueType::Constant(value)), Operand::Reference(reference)],
+            Mnemonic::SET(value, reference) => vec![Operand::Value(ValueType::Constant(value)), Operand::Reference(reference)],
+            Mnemonic::RES(value, reference) => vec![Operand::Value(ValueType::Constant(value)), Operand::Reference(reference)],
+            Mnemonic::JP(None, value) => vec![Operand::Value(value)],
+            Mnemonic::JP(Some(condition), value) => vec![Operand::Condition(condition), Operand::Value(value)],
+            Mnemonic::JR(None, value) => vec![Operand::Value(value)],
+            Mnemonic::JR(Some(condition), value) => vec![Operand::Condition(condition), Operand::Value(value)],
+            Mnemonic::CALL(None, value) => vec![Operand::Value(value)],
+            Mnemonic::CALL(Some(condition), value) => vec![Operand::Condition(condition), Operand::Value(value)],
+            Mnemonic::RST(value) => vec![Operand::Value(ValueType::Constant(value))],
+            Mnemonic::RET(Some(condition)) => vec![Operand::Condition(condition)],
+            _ => vec![]
         }
     }
+}
+
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub enum Operand {
+    Reference(Reference),
+    Value(ValueType),
+    Condition(Condition)
 }

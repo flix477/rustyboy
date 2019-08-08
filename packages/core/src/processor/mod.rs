@@ -122,8 +122,7 @@ impl LR35902 for Processor {
         let opcode = self.immediate(bus);
         if let Some(instruction) = decode_opcode(opcode, prefix) {
             let cycle_count = instruction.cycle_count;
-            self.execute(bus, instruction)
-                .expect("Error with instruction");
+            self.execute(bus, instruction);
             cycle_count
         } else {
             0 // i guess?

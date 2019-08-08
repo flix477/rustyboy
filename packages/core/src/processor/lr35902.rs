@@ -1,66 +1,11 @@
 use crate::bus::Bus;
-use crate::processor::instruction::{InstructionInfo, Mnemonic, Operand, Prefix, Reference, ValueType, Condition};
+use crate::processor::instruction::{InstructionInfo, Mnemonic, Prefix, Reference, ValueType};
 use crate::processor::operand_parser::OperandParser;
 use crate::processor::registers::flag_register::{
     carry_add, half_carry_add, half_carry_add16, half_carry_sub, Flag,
 };
 use crate::processor::registers::RegisterType;
 use crate::util::bits;
-
-pub struct InstructionInfo2 {
-    mnemonic: Mnemonic2,
-    cycle_count: u16
-}
-
-pub enum Mnemonic2 {
-    LD(Reference, ValueType),
-    LDD(Reference, ValueType),
-    LDI(Reference, ValueType),
-    LDHL,
-    PUSH(ValueType),
-    POP(RegisterType),
-    ADD(RegisterType, ValueType),
-    ADC(ValueType),
-    SUB(ValueType),
-    SBC(ValueType),
-    AND(ValueType),
-    OR(ValueType),
-    XOR(ValueType),
-    CP(ValueType),
-    INC(Reference),
-    DEC(Reference),
-    DAA,
-    CPL,
-    CCF,
-    SCF,
-    NOP,
-    HALT,
-    STOP,
-    DI,
-    EI,
-    RLC(Reference),
-    RL(Reference),
-    RRC(Reference),
-    RR(Reference),
-    SWAP(Reference),
-    RLCA,
-    RLA,
-    RRCA,
-    RRA,
-    SLA(Reference),
-    SRA(Reference),
-    SRL(Reference),
-    BIT(u16, Reference),
-    SET(u16, Reference),
-    RES(u16, Reference),
-    JP(Option<Condition>, ValueType),
-    JR(Option<Condition>, ValueType),
-    CALL(Option<Condition>, ValueType),
-    RST(u16),
-    RET(Option<Condition>),
-    RETI,
-    CB
-}
 
 pub trait LR35902: OperandParser {
     fn set_reg(&mut self, register: RegisterType, value: u16);
@@ -72,294 +17,127 @@ pub trait LR35902: OperandParser {
     fn halt<H: Bus>(&mut self, bus: &H);
     fn stop(&mut self);
 
-    fn execute<H: Bus>(&mut self, bus: &mut H, instruction: InstructionInfo2) -> Result<(), &str> {
-        let InstructionInfo2 {mnemonic, ..} = instruction;
+    fn execute<H: Bus>(&mut self, bus: &mut H, instruction: InstructionInfo) {
+        let InstructionInfo {mnemonic, ..} = instruction;
         match mnemonic {
-            Mnemonic2::LD => {
-                if let [Some(Operand::Reference(r)), Some(Operand::Value(v))] = operands
-                {
-                    let value = self.operand_value(bus, v);
-                    self.ld(bus, r, value);
-                } else {
-                    return Err("Wrong arguments");
-                }
+            Mnemonic::LD(reference, value) => {
+                let value = self.operand_value(bus, value);
+                self.ld(bus, reference, value);
             },
-            Mnemonic2::LDD => {
-                if let [Some(Operand::Reference(r)), Some(Operand::Value(v))] = operands {
-                    self.ldd(bus, r, v);
-                } else {
-                    return Err("Wrong arguments");
-                }
-            },
-            Mnemonic2::LDI => {
-                if let [Some(Operand::Reference(r)), Some(Operand::Value(v))] = operands {
-                    self.ldi(bus, r, v);
-                } else {
-                    return Err("Wrong arguments");
-                }
+            Mnemonic::LDD(reference, value) => self.ldd(bus, reference, value),
+            Mnemonic::LDI(reference, value) => self.ldi(bus, reference, value),
+            Mnemonic::LDHL => self.ldhl(bus),
+            Mnemonic::PUSH(value) => {
+                let value = self.operand_value(bus, value);
+                self.push(bus, value);
             }
-            Mnemonic2::LDHL => self.ldhl(bus),
-            Mnemonic2::PUSH => {
-                if let [Some(Operand::Value(value)), _] = operands {
-                    let value = self.operand_value(bus, value);
-                    self.push(bus, value);
-                } else {
-                    return Err("Wrong argument");
-                }
-            }
-            Mnemonic2::POP => {
-                if let [Some(Operand::Reference(Reference::Register(r))), _] = operands {
-                    self.pop(bus, r);
-                } else {
-                    return Err("Wrong argument");
-                }
-            }
-            Mnemonic2::ADD => {
-                if let [Some(Operand::Reference(Reference::Register(r))), Some(Operand::Value(v))] =
-                    operands
-                {
-                    let value = self.operand_value(bus, v);
-                    if r.is16bit() {
-                        if r == RegisterType::SP {
-                            self.add_sp(value as i8);
-                        } else {
-                            self.add16(r, value);
-                        }
+            Mnemonic::POP(register) => self.pop(bus, register),
+            Mnemonic::ADD(register, value) => {
+                let value = self.operand_value(bus, value);
+                if register.is16bit() {
+                    if register == RegisterType::SP {
+                        self.add_sp(value as i8);
                     } else {
-                        self.add(r, value as u8);
+                        self.add16(register, value);
                     }
                 } else {
-                    return Err("Wrong arguments");
+                    self.add(register, value as u8);
                 }
             }
-            Mnemonic2::ADC => {
-                if let [Some(Operand::Value(value)), _] = operands {
-                    let value = self.operand_value(bus, value) as u8;
-                    self.adc(value)
-                } else {
-                    return Err("Wrong arguments");
-                }
+            Mnemonic::ADC(value) => {
+                let value = self.operand_value(bus, value) as u8;
+                self.adc(value)
             },
-            Mnemonic2::SUB => {
-                if let [Some(Operand::Value(value)), _] = operands {
-                    let value = self.operand_value(bus, value) as u8;
-                    self.sub(value)
-                } else {
-                    return Err("Wrong arguments");
-                }
+            Mnemonic::SUB(value) => {
+                let value = self.operand_value(bus, value) as u8;
+                self.sub(value)
             },
-            Mnemonic2::SBC => {
-                if let [Some(Operand::Value(value)), _] = operands {
-                    let value = self.operand_value(bus, value) as u8;
-                    self.sbc(value)
-                } else {
-                    return Err("Wrong arguments");
-                }
+            Mnemonic::SBC(value) => {
+                let value = self.operand_value(bus, value) as u8;
+                self.sbc(value)
             },
-            Mnemonic2::AND => {
-                if let [Some(Operand::Value(value)), _] = operands {
-                    let value = self.operand_value(bus, value) as u8;
-                    self.and(value)
-                } else {
-                    return Err("Wrong arguments");
-                }
+            Mnemonic::AND(value) => {
+                let value = self.operand_value(bus, value) as u8;
+                self.and(value)
             },
-            Mnemonic2::OR => {
-                if let [Some(Operand::Value(value)), _] = operands {
-                    let value = self.operand_value(bus, value) as u8;
-                    self.or(value)
-                } else {
-                    return Err("Wrong arguments");
-                }
+            Mnemonic::OR(value) => {
+                let value = self.operand_value(bus, value) as u8;
+                self.or(value)
             },
-            Mnemonic2::XOR => {
-                if let [Some(Operand::Value(value)), _] = operands {
-                    let value = self.operand_value(bus, value) as u8;
-                    self.xor(value)
-                } else {
-                    return Err("Wrong arguments");
-                }
+            Mnemonic::XOR(value) => {
+                let value = self.operand_value(bus, value) as u8;
+                self.xor(value)
             },
-            Mnemonic2::CP => {
-                if let [Some(Operand::Value(value)), _] = operands {
-                    let value = self.operand_value(bus, value);
-                    self.cp(value as u8);
-                } else {
-                    return Err("Wrong argument");
-                }
+            Mnemonic::CP(value) => {
+                let value = self.operand_value(bus, value) as u8;
+                self.cp(value)
             }
-            Mnemonic2::INC | Mnemonic2::DEC => {
-                if let [Some(Operand::Reference(reference)), _] = operands {
-                    if let Mnemonic2::INC = mnemonic {
-                        self.inc(bus, reference);
-                    } else {
-                        self.dec(bus, reference);
-                    }
-                } else {
-                    return Err("Wrong argument");
-                }
-            }
-            Mnemonic2::DAA => self.daa(),
-            Mnemonic2::CPL => self.cpl(),
-            Mnemonic2::CCF => self.ccf(),
-            Mnemonic2::SCF => self.scf(),
-            Mnemonic2::NOP => {}
-            Mnemonic2::HALT => self.halt(bus),
-            Mnemonic2::STOP => self.stop(),
-            Mnemonic2::DI => self.di(bus),
-            Mnemonic2::EI => self.ei(),
-            Mnemonic2::RLC => {
-                if let [Some(Operand::Reference(reference)), _] = operands {
-                    self.rlc(bus, reference);
-                } else {
-                    return Err("Wrong argument");
-                }
-            },
-            Mnemonic2::RL => {
-                if let [Some(Operand::Reference(reference)), _] = operands {
-                    self.rl(bus, reference);
-                } else {
-                    return Err("Wrong argument");
+            Mnemonic::INC(reference) => self.inc(bus, reference),
+            Mnemonic::DEC(reference) => self.dec(bus, reference),
+            Mnemonic::DAA => self.daa(),
+            Mnemonic::CPL => self.cpl(),
+            Mnemonic::CCF => self.ccf(),
+            Mnemonic::SCF => self.scf(),
+            Mnemonic::NOP => {}
+            Mnemonic::HALT => self.halt(bus),
+            Mnemonic::STOP => self.stop(),
+            Mnemonic::DI => self.di(bus),
+            Mnemonic::EI => self.ei(),
+            Mnemonic::RLC(reference) => self.rlc(bus, reference),
+            Mnemonic::RL(reference) => self.rl(bus, reference),
+            Mnemonic::RRC(reference) => self.rrc(bus, reference),
+            Mnemonic::RR(reference) => self.rr(bus, reference),
+            Mnemonic::SWAP(reference) => self.swap(bus, reference),
+            Mnemonic::RLCA => self.rlca(bus),
+            Mnemonic::RLA => self.rla(bus),
+            Mnemonic::RRCA => self.rrca(bus),
+            Mnemonic::RRA => self.rra(bus),
+            Mnemonic::SLA(reference) => self.sla(bus, reference),
+            Mnemonic::SRA(reference) => self.sra(bus, reference),
+            Mnemonic::SRL(reference) => self.srl(bus, reference),
+            Mnemonic::BIT(value, reference) => self.bit(bus, value as u8, reference),
+            Mnemonic::SET(value, reference) => self.set(bus, value as u8, reference),
+            Mnemonic::RES(value, reference) => self.res(bus, value as u8, reference),
+            Mnemonic::JP(Some(condition), value) => {
+                let address = self.operand_value(bus, value);
+                if self.operand_condition(condition) {
+                    self.jp(address);
                 }
             },
-            Mnemonic2::RRC => {
-                if let [Some(Operand::Reference(reference)), _] = operands {
-                    self.rrc(bus, reference);
-                } else {
-                    return Err("Wrong argument");
+            Mnemonic::JP(_, value) => {
+                let address = self.operand_value(bus, value);
+                self.jp(address);
+            },
+            Mnemonic::JR(Some(condition), value) => {
+                let address = self.operand_value(bus, value);
+                if self.operand_condition(condition) {
+                    self.jr(address as i8);
                 }
             },
-            Mnemonic2::RR => {
-                if let [Some(Operand::Reference(reference)), _] = operands {
-                    self.rr(bus, reference);
-                } else {
-                    return Err("Wrong argument");
+            Mnemonic::JR(_, value) => {
+                let address = self.operand_value(bus, value);
+                self.jr(address as i8);
+            },
+            Mnemonic::CALL(Some(condition), value) => {
+                let address = self.operand_value(bus, value);
+                if self.operand_condition(condition) {
+                    self.jr(address as i8);
                 }
             },
-            Mnemonic2::SWAP => {
-                if let [Some(Operand::Reference(reference)), _] = operands {
-                    self.swap(bus, reference);
-                } else {
-                    return Err("Wrong argument");
-                }
-            }
-            Mnemonic2::RLCA => self.rlca(bus),
-            Mnemonic2::RLA => self.rla(bus),
-            Mnemonic2::RRCA => self.rrca(bus),
-            Mnemonic2::RRA => self.rra(bus),
-            Mnemonic2::SLA => {
-                if let [Some(Operand::Reference(r)), _] = operands {
-                    self.sla(bus, r);
-                } else {
-                    return Err("Wrong argument");
-                }
+            Mnemonic::CALL(_, value) => {
+                let address = self.operand_value(bus, value);
+                self.jr(address as i8);
             },
-            Mnemonic2::SRA => {
-                if let [Some(Operand::Reference(r)), _] = operands {
-                    self.sra(bus, r);
-                } else {
-                    return Err("Wrong argument");
-                }
-            },
-            Mnemonic2::SRL => {
-                if let [Some(Operand::Reference(r)), _] = operands {
-                    self.srl(bus, r);
-                } else {
-                    return Err("Wrong argument");
-                }
-            }
-            Mnemonic2::BIT => {
-                if let [Some(Operand::Value(ValueType::Constant(value))), Some(Operand::Reference(r))] = operands {
-                    self.bit(bus, value as u8, r);
-                } else {
-                    return Err("Wrong argument");
-                }
-            },
-            Mnemonic2::SET => {
-                if let [Some(Operand::Value(ValueType::Constant(value))), Some(Operand::Reference(r))] = operands {
-                    self.set(bus, value as u8, r);
-                } else {
-                    return Err("Wrong argument");
-                }
-            },
-            Mnemonic2::RES => {
-                if let [Some(Operand::Value(ValueType::Constant(value))), Some(Operand::Reference(r))] = operands {
-                    self.res(bus, value as u8, r);
-                } else {
-                    return Err("Wrong argument");
-                }
-            },
-            Mnemonic2::JP => {
-                match operands {
-                    [Some(Operand::Condition(condition)), Some(Operand::Value(value))] => {
-                        let address = self.operand_value(bus, value);
-                        if self.operand_condition(condition) {
-                            self.jp(address);
-                        }
-                    },
-                    [Some(Operand::Value(value)), _] => {
-                        let address = self.operand_value(bus, value);
-                        self.jp(address);
-                    }
-                    _ => {
-                        return Err("Requires arguments");
-                    }
-                }
-            },
-            Mnemonic2::JR => {
-                match operands {
-                    [Some(Operand::Condition(condition)), Some(Operand::Value(value))] => {
-                        let address = self.operand_value(bus, value);
-                        if self.operand_condition(condition) {
-                            self.jr(address as i8);
-                        }
-                    },
-                    [Some(Operand::Value(value)), _] => {
-                        let address = self.operand_value(bus, value);
-                        self.jr(address as i8);
-                    }
-                    _ => {
-                        return Err("Requires arguments");
-                    }
-                }
-            },
-            Mnemonic2::CALL => {
-                match operands {
-                    [Some(Operand::Condition(condition)), Some(Operand::Value(value))] => {
-                        let address = self.operand_value(bus, value);
-                        if self.operand_condition(condition) {
-                            self.jr(address as i8);
-                        }
-                    },
-                    [Some(Operand::Value(value)), _] => {
-                        let address = self.operand_value(bus, value);
-                        self.jr(address as i8);
-                    }
-                    _ => {
-                        return Err("Requires arguments");
-                    }
-                }
-            },
-            Mnemonic2::RST => {
-                if let [Some(Operand::Value(ValueType::Constant(v))), _] = operands {
-                    self.rst(bus, v);
-                } else {
-                    return Err("Requires argument");
-                }
-            }
-            Mnemonic2::RET => {
-                if let [Some(Operand::Condition(condition)), _] = operands {
-                    if self.operand_condition(condition) {
-                        self.ret(bus);
-                    }
-                } else {
+            Mnemonic::RST(value) => self.rst(bus, value),
+            Mnemonic::RET(Some(condition)) => {
+                if self.operand_condition(condition) {
                     self.ret(bus);
                 }
-            }
-            Mnemonic2::RETI => self.reti(bus),
-            Mnemonic2::CB => self.cb(bus),
+            },
+            Mnemonic::RET(_) => self.ret(bus),
+            Mnemonic::RETI => self.reti(bus),
+            Mnemonic::CB => self.cb(bus),
         };
-        Ok(())
     }
 
     fn set_reference<H: Bus>(&mut self, bus: &mut H, reference: Reference, value: u16) {
