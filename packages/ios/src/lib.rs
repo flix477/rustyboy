@@ -3,7 +3,7 @@ use std::slice;
 
 use rustyboy_core::cartridge::Cartridge;
 use rustyboy_core::config::Config;
-use rustyboy_core::gameboy::{Gameboy as RustGameboy};
+use rustyboy_core::gameboy::Gameboy as RustGameboy;
 
 pub mod input;
 
@@ -36,12 +36,7 @@ pub unsafe extern "C" fn gameboy_run_to_vblank(gameboy: *mut Gameboy) -> *mut c_
         Box::from_raw(gameboy)
     };
     gameboy.gameboy.run_to_vblank();
-    let buffer = gameboy
-        .gameboy
-        .hardware()
-        .video()
-        .screen()
-        .buffer();
+    let buffer = gameboy.gameboy.hardware().video().screen().buffer();
     let mut buffer = Box::new(buffer);
 
     let pointer: *mut c_uchar = buffer.as_mut_ptr();
