@@ -54,7 +54,8 @@ impl DebugInfoJs {
         background_map_buffer(
             self.debug_info.video_information.control.bg_map(),
             &self.debug_info.video_information,
-        ).to_vec()
+        )
+        .to_vec()
     }
 
     pub fn tile(&self, index: usize) -> Vec<u8> {
