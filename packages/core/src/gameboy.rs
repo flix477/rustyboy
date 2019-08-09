@@ -22,11 +22,17 @@ impl Gameboy {
         }
     }
 
+    /// Resets the Gameboy to its initial state
+    pub fn reset(&mut self) {
+        self.processor = Processor::new();
+        self.hardware.reset();
+    }
+
     /// Runs the GameBoy until a VBlank interrupt occurs.
     /// Internally this is equivalent to calling `run_to_event(None)`
     pub fn run_to_vblank(&mut self) {
         loop {
-            if let GameboyEvent::VBlank = self.run_to_event(None) {
+            if let GameboyStepResult(_, Some(StatusMode::VBlank)) = self.step() {
                 break;
             }
         }
@@ -91,3 +97,12 @@ pub enum GameboyEvent {
 
 /// Represents the result of a single GameBoy step
 pub struct GameboyStepResult(ProcessorStepResult, Option<StatusMode>);
+
+impl Iterator for Gameboy {
+    type Item = [u8; 69_120];
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.run_to_vblank();
+        Some(self.hardware().video().screen().buffer())
+    }
+}

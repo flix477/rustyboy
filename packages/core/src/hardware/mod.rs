@@ -33,6 +33,19 @@ impl Hardware {
         }
     }
 
+    // TODO: can we find a way to just make a new Hardware
+    // instead so we don't duplicate the constructor?
+    // I'm also a bit worried about having to clone cartridge around
+    pub fn reset(&mut self) {
+        self.cartridge.reset();
+        self.high_ram = [0; 127];
+        self.internal_ram = [0; 8192];
+        self.video = Video::default();
+        self.timer = Timer::new();
+        self.joypad = Joypad::new();
+        self.interrupt_handler = InterruptHandler::new();
+    }
+
     pub fn clock(&mut self) -> Option<StatusMode> {
         self.timer.clock(&mut self.interrupt_handler);
         self.video.clock(&mut self.interrupt_handler)

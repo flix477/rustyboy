@@ -4,7 +4,7 @@ use crate::debugger::{debug_info::DebugInfoJs, DebuggerJs};
 use crate::input::InputJs;
 use crate::rendering::Renderer;
 use rustyboy_core::gameboy::{Gameboy, GameboyEvent};
-use rustyboy_core::video::color::ColorFormat;
+use rustyboy_core::video::screen::BUFFER_SIZE;
 
 #[wasm_bindgen(js_name = Gameboy)]
 pub struct GameboyJs {
@@ -41,9 +41,9 @@ impl GameboyJs {
         self.gameboy.send_input(input.into());
     }
 
-    fn screen(&self) -> Vec<u8> {
+    fn screen(&self) -> [u8; BUFFER_SIZE * 3] {
         let screen = self.gameboy.hardware().video().screen();
-        screen.buffer(ColorFormat::RGB)
+        screen.buffer()
     }
 
     fn draw(&mut self) -> Result<(), JsValue> {

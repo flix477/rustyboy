@@ -10,7 +10,6 @@ use rustyboy_core::video::screen::BACKGROUND_SIZE;
 
 use super::{create_display, Window};
 use crate::keymap::keymap;
-use rustyboy_core::video::color::ColorFormat;
 
 pub struct BackgroundWindow {
     display: Display,
@@ -34,7 +33,7 @@ impl Window for BackgroundWindow {
         target.clear_color(0.0, 0.0, 1.0, 1.0);
 
         let video = gameboy.hardware().video().debug_information();
-        let buffer = background_map_buffer(video.control.bg_map(), &video, ColorFormat::RGB);
+        let buffer = background_map_buffer(video.control.bg_map(), &video);
 
         let img = RawImage2d::from_raw_rgb_reversed(
             &buffer,

@@ -35,18 +35,27 @@ impl VideoDebugInformation {
 pub fn background_map_buffer(
     background_map_index: u8,
     debug_info: &VideoDebugInformation,
-    format: ColorFormat,
-) -> Vec<u8> {
+) -> [u8; BACKGROUND_SIZE.0 * BACKGROUND_SIZE.1 * 3] {
+    let mut buffer = [0; BACKGROUND_SIZE.0 * BACKGROUND_SIZE.1 * 3];
+
     let background_map = if background_map_index == 0 {
         &debug_info.vram.background_tile_maps().0
     } else {
         &debug_info.vram.background_tile_maps().1
     };
 
-    (0..BACKGROUND_SIZE.1)
-        .flat_map(|line| Screen::draw_background_map_line(&debug_info.into(), background_map, line))
-        .flat_map(|drawn_color| drawn_color.color.format(format))
-        .collect()
+    for y in 0..BACKGROUND_SIZE.1 {
+        let line = Screen::draw_background_map_line(&debug_info.into(), background_map, y);
+        for (x, color) in line.iter().enumerate() {
+            let index = (y * BACKGROUND_SIZE.0 + x) * 3;
+            let [r, g, b] = color.color.to_rgb();
+            buffer[index] = r;
+            buffer[index + 1] = g;
+            buffer[index + 2] = b;
+        }
+    }
+
+    buffer
 }
 
 pub fn tile_buffer(

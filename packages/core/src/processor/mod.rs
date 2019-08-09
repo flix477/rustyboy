@@ -7,13 +7,13 @@ pub mod operand_parser;
 mod processor_tests;
 pub mod registers;
 
-use self::decoder::Decoder;
 use self::instruction::Prefix;
 use self::lr35902::LR35902;
 use self::registers::flag_register::Flag;
 use self::registers::register::Register;
 use self::registers::{RegisterType, Registers};
 use crate::bus::Bus;
+use crate::processor::decoder::decode_opcode;
 use crate::processor::operand_parser::OperandParser;
 use crate::processor::registers::program_counter::ProgramCounter;
 use crate::util::bitflags::Bitflags;
@@ -120,10 +120,9 @@ impl LR35902 for Processor {
 
     fn execute_next<H: Bus>(&mut self, bus: &mut H, prefix: Prefix) -> u8 {
         let opcode = self.immediate(bus);
-        if let Some(instruction) = Decoder::decode_opcode(opcode, prefix) {
-            let cycle_count = instruction.cycle_count();
-            self.execute(bus, instruction)
-                .expect("Error with instruction");
+        if let Some(instruction) = decode_opcode(opcode, prefix) {
+            let cycle_count = instruction.cycle_count;
+            self.execute(bus, instruction);
             cycle_count
         } else {
             0 // i guess?
@@ -164,7 +163,7 @@ enum HaltMode {
     Normal,
     /// Bugged HALT mode, CPU execution continues and next instruction is executed twice
     Bugged,
-    /// No HALT mode, CPu execution continues
+    /// No HALT mode, CPU execution continues
     None,
 }
 

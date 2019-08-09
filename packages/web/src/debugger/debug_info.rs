@@ -1,5 +1,4 @@
 use rustyboy_core::debugger::debug_info::DebugInfo;
-use rustyboy_core::processor::instruction::Mnemonic;
 use rustyboy_core::video::color::ColorFormat;
 use rustyboy_core::video::debugging::{background_map_buffer, sprite_buffer, tile_buffer};
 use serde::Serialize;
@@ -28,7 +27,7 @@ impl DebugInfoJs {
             .iter()
             .map(|x| DebugInstructionInfoJs {
                 line: x.line,
-                mnemonic: *x.instruction.mnemonic(),
+                mnemonic: x.instruction.mnemonic.to_string(),
                 operands: x
                     .parsed_operands
                     .iter()
@@ -55,8 +54,8 @@ impl DebugInfoJs {
         background_map_buffer(
             self.debug_info.video_information.control.bg_map(),
             &self.debug_info.video_information,
-            ColorFormat::RGBA,
         )
+        .to_vec()
     }
 
     pub fn tile(&self, index: usize) -> Vec<u8> {
@@ -71,59 +70,6 @@ impl DebugInfoJs {
 #[derive(Serialize)]
 pub struct DebugInstructionInfoJs {
     pub line: u16,
-    #[serde(with = "MnemonicDef")]
-    mnemonic: Mnemonic,
+    mnemonic: String,
     operands: String,
-}
-
-#[derive(Serialize)]
-#[serde(remote = "Mnemonic")]
-pub enum MnemonicDef {
-    CB,
-    LD,
-    LDHL,
-    LDI,
-    LDD,
-    PUSH,
-    POP,
-    ADD,
-    ADC,
-    SUB,
-    SBC,
-    AND,
-    XOR,
-    OR,
-    CP,
-    INC,
-    DEC,
-    DAA,
-    CPL,
-    RLC,
-    RLCA,
-    RL,
-    RLA,
-    RRC,
-    RRCA,
-    RR,
-    RRA,
-    SLA,
-    SWAP,
-    SRA,
-    SRL,
-    BIT,
-    SET,
-    RES,
-    CCF,
-    SCF,
-    NOP,
-    HALT,
-    STOP,
-    DI,
-    EI,
-    JP,
-    JR,
-    CALL,
-    RET,
-    RETI,
-    RST,
 }
