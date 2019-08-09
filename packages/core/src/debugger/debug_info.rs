@@ -1,8 +1,8 @@
-use crate::processor::instruction::InstructionInfo;
-use crate::processor::registers::Registers;
+use crate::debugger::processor_debug_info::ProcessorDebugInfo;
+use crate::video::debugging::VideoDebugInformation;
 
-pub struct DebugInfo<'a> {
-    pub registers: &'a Registers,
-    pub line: u16,
-    pub instruction: &'a InstructionInfo,
+#[derive(Clone)]
+pub struct DebugInfo {
+    pub cpu_debug_info: ProcessorDebugInfo,
+    pub video_information: VideoDebugInformation,
 }

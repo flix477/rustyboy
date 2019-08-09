@@ -5,7 +5,7 @@ pub trait Register {
     fn decrement(&mut self);
 }
 
-#[derive(Default)]
+#[derive(Default, Copy, Clone)]
 pub struct SingleRegister {
     value: u8,
 }
@@ -15,7 +15,7 @@ impl SingleRegister {
         SingleRegister::default()
     }
 
-    pub fn get_bit(&self, idx: u8) -> bool {
+    pub fn get_bit(self, idx: u8) -> bool {
         self.value >> (7 - idx) == 1
     }
 
@@ -47,7 +47,7 @@ impl Register for SingleRegister {
     }
 }
 
-#[derive(Default)]
+#[derive(Default, Copy, Clone)]
 pub struct DualRegister {
     pub high: SingleRegister,
     pub low: SingleRegister,

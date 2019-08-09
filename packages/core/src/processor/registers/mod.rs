@@ -1,12 +1,18 @@
-use crate::processor::flag_register::FlagRegister;
-use crate::processor::program_counter::ProgramCounter;
-use crate::processor::register::*;
-use crate::processor::stack_pointer::StackPointer;
+use self::flag_register::FlagRegister;
+use self::program_counter::ProgramCounter;
+use self::register::*;
+use self::stack_pointer::StackPointer;
+
+pub mod flag_register;
+pub mod program_counter;
+pub mod register;
+pub mod stack_pointer;
 
 pub const DEFAULT_BC: u16 = 0x13;
 pub const DEFAULT_DE: u16 = 0xD8;
 pub const DEFAULT_HL: u16 = 0x14D;
 
+#[derive(Copy, Clone)]
 pub struct Registers {
     pub af: FlagRegister,
     pub bc: DualRegister,
@@ -92,7 +98,7 @@ impl Default for Registers {
             de: DualRegister::from(DEFAULT_DE),
             hl: DualRegister::from(DEFAULT_HL),
             stack_pointer: StackPointer::new(),
-            program_counter: ProgramCounter::new(),
+            program_counter: ProgramCounter::default(),
         }
     }
 }

@@ -43,14 +43,15 @@ impl Tile {
         (((lsb >> x) & 1) << 1) | ((msb >> x) & 1)
     }
 
-    pub fn colored_line(&self, y: u8, x_flipped: bool, y_flipped: bool) -> Vec<u8> {
-        (0..8)
-            .map(|col| {
-                let x = if x_flipped { 7 - col } else { col };
-                let y = if y_flipped { 7 - y } else { y };
-                self.color_value_at(x as u8, y as u8)
-            })
-            .collect()
+    pub fn colored_line(&self, y: u8, x_flipped: bool, y_flipped: bool) -> [u8; 8] {
+        let mut line = [0; 8];
+        line.iter_mut().enumerate().for_each(|(col, line_color)| {
+            let x = if x_flipped { 7 - col } else { col };
+            let y = if y_flipped { 7 - y } else { y };
+            *line_color = self.color_value_at(x as u8, y as u8)
+        });
+
+        line
     }
 }
 

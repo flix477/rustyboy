@@ -1,5 +1,6 @@
 pub mod color;
 mod control_register;
+pub mod debugging;
 mod memory;
 pub mod palette;
 mod position_registers;
@@ -13,6 +14,7 @@ use self::position_registers::PositionRegisters;
 use self::status_register::{StatusMode, StatusRegister};
 use crate::bus::{Readable, Writable};
 use crate::processor::interrupt::{Interrupt, InterruptHandler};
+use crate::video::debugging::VideoDebugInformation;
 use crate::video::palette::Palette;
 use crate::video::screen::{Screen, VideoInformation};
 
@@ -160,6 +162,30 @@ impl Video {
     fn check_lyc(&self) -> bool {
         self.status.lyc_interrupt_enabled()
             && self.position_registers.ly() == self.position_registers.lyc()
+    }
+
+    pub fn video_information(&self) -> VideoInformation<'_> {
+        VideoInformation {
+            scroll: self.position_registers.scroll(),
+            window: self.position_registers.window(),
+            vram: &self.vram,
+            control: &self.control,
+            bg_palette: &self.bg_palette,
+            obj_palette0: &self.obj_palette0,
+            obj_palette1: &self.obj_palette1,
+        }
+    }
+
+    pub fn debug_information(&self) -> VideoDebugInformation {
+        VideoDebugInformation {
+            scroll: self.position_registers.scroll(),
+            window: self.position_registers.window(),
+            vram: self.vram.clone(),
+            control: self.control,
+            bg_palette: self.bg_palette,
+            obj_palette0: self.obj_palette0,
+            obj_palette1: self.obj_palette1,
+        }
     }
 }
 

@@ -8,12 +8,12 @@ edition = "2018"
 crate-type = ["cdylib"]
 
 [dependencies]
-wasm-bindgen = "0.2.45"
-js-sys = "0.3.22"
+js-sys = "0.3.24"
+serde = { version = "1.0.94", features = ["derive"] }
 rustyboy-core = { path = "../core" }
 
 [dependencies.web-sys]
-version = "0.3.22"
+version = "0.3.24"
 features = [
   'Document',
   'Element',
@@ -25,3 +25,7 @@ features = [
   'WebGlTexture',
   'Window',
 ]
+
+[dependencies.wasm-bindgen]
+version = "0.2.47"
+features = ["serde-serialize"]

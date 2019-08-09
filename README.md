@@ -1,6 +1,30 @@
 # rustyboy
-🎮 Very WIP Gameboy emulator written in Rust.
-Please don't use it yet, it's no good.
+🎮 WIP Gameboy emulator for iOS, Web and PC written in [Rust](https://www.rust-lang.org).
+
+This is a monorepo. You can find individual ports in their respective subfolders under `packages/`
+
+### Feature list
+| Feature                  | State                       |
+| ------------------------ | --------------------------- |
+| CPU emulation            | Almost complete (see tests) |
+| PPU emulation            | Complete ✅                 |
+| Input emulation          | Complete ✅                 |
+| Timer emulation          | Complete ✅                 |
+| Sound emulation          | Not started 🚫              |
+| Serial port emulation    | Not started 🚫              |
+| Game Boy Color emulation | Not started 🚫              |
+| Super Game Boy emulation | Not started 🚫              |
+| MBC emulation            | In progress ⚠️              |
+
+### Game compatibility table
+| Game                              | Compatibility     |
+| --------------------------------- | ----------------- |
+| Castlevania II: Belmont's Revenge | Playable ✅       |
+| Link's Awakening                  | In game ⚠️        |
+| Mega Man: Dr. Wily's Revenge      | Playable ✅       |
+| Pokémon Red/Blue                  | Playable ✅       |
+| Super Mario Land                  | Playable ✅       |
+| Tetris                            | Playable ✅       |
 
 ### Blargg's CPU Tests
 Test ROMs are available [here](http://slack.net/~ant/old/gb-tests/)
@@ -21,5 +45,5 @@ Test ROMs are available [here](http://slack.net/~ant/old/gb-tests/)
 
 ### Want to make your own? Have some reads
 - [Official Gameboy Programming Manual](https://ia801906.us.archive.org/19/items/GameBoyProgManVer1.1/GameBoyProgManVer1.1.pdf)
-- [Pandocs](http://marc.rawer.de/Gameboy/Docs/GBCPUman.pdf), one of the biggest resources on the Gameboy online (also available in HTML [here](http://gbdev.gg8.se/wiki/articles/Pan_Docs))
+- [Pandocs](http://marc.rawer.de/Gameboy/Docs/GBCPUman.pdf) (also available in HTML [here](http://gbdev.gg8.se/wiki/articles/Pan_Docs))
 - [Gameboy cycle-accurate docs](https://github.com/AntonioND/giibiiadvance/blob/master/docs/TCAGBD.pdf)

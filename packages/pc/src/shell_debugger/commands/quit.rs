@@ -1,5 +1,4 @@
-use super::{Command, CommandResult, DebuggerState};
-use rustyboy_core::bus::Bus;
+use super::{Command, CommandResult, Debugger};
 use rustyboy_core::debugger::debug_info::DebugInfo;
 
 const MATCHING_VALUES: &[&str] = &["quit", "q"];
@@ -17,13 +16,7 @@ impl Command for QuitCommand {
         MATCHING_VALUES
     }
 
-    fn execute(
-        &self,
-        _: &[&str],
-        _: &mut DebuggerState,
-        _: &DebugInfo<'_>,
-        _: &dyn Bus,
-    ) -> CommandResult {
+    fn execute(&self, _: &[&str], _: &mut Debugger, _: &DebugInfo) -> CommandResult {
         std::process::exit(0);
     }
 }

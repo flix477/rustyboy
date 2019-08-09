@@ -1,6 +1,7 @@
-use crate::processor::register::{DualRegister, Register, SingleRegister};
+use super::register::{DualRegister, Register, SingleRegister};
 use crate::util::bitflags::Bitflags;
 
+#[derive(Copy, Clone)]
 pub struct FlagRegister {
     register: DualRegister,
 }
@@ -54,12 +55,23 @@ impl Bitflags<Flag> for FlagRegister {
     }
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Flag {
     Carry = 16,     // c, set when an addition becomes bigger than 0xFF or 0xFFFF
     HalfCarry = 32, // h
     AddSub = 64,    // n
     Zero = 128,     // z, set when an operation has been zero
+}
+
+impl ToString for Flag {
+    fn to_string(&self) -> String {
+        match *self {
+            Flag::Carry => "c".to_string(),
+            Flag::HalfCarry => "h".to_string(),
+            Flag::AddSub => "n".to_string(),
+            Flag::Zero => "z".to_string(),
+        }
+    }
 }
 
 impl Into<u8> for Flag {

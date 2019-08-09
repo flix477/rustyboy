@@ -99,8 +99,14 @@ impl Renderer {
 }
 
 fn initialize_position_buffer(context: &WebGlRenderingContext) -> Result<WebGlBuffer, JsValue> {
+    #[rustfmt::skip]
     let vertices: [f32; 12] = [
-        -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, -1.0,
+        -1.0, 1.0,
+        1.0, 1.0,
+        1.0, -1.0,
+        -1.0, 1.0,
+        1.0, -1.0,
+        -1.0, -1.0,
     ];
 
     initialize_buffer(context, &vertices)
@@ -109,7 +115,15 @@ fn initialize_position_buffer(context: &WebGlRenderingContext) -> Result<WebGlBu
 fn initialize_texture_coord_buffer(
     context: &WebGlRenderingContext,
 ) -> Result<WebGlBuffer, JsValue> {
-    let vertices: [f32; 12] = [0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0];
+    #[rustfmt::skip]
+    let vertices: [f32; 12] = [
+        0.0, 0.0,
+        1.0, 0.0,
+        1.0, 1.0,
+        0.0, 0.0,
+        1.0, 1.0,
+        0.0, 1.0
+    ];
 
     initialize_buffer(context, &vertices)
 }

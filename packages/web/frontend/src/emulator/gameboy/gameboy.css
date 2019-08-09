@@ -1,0 +1,9 @@
+.gameboy {
+    align-self: center;
+    justify-self: center;
+    transition: opacity 500ms;
+}
+
+.gameboy.disabled {
+    opacity: 0.4;
+}

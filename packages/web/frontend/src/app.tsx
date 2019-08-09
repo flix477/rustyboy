@@ -23,7 +23,7 @@ function useWasm() {
 const App: FunctionComponent = () => {
   const imports = useWasm();
   const rustyboy = imports && imports.rustyboy;
-  const Gameboy = imports && imports.Gameboy && imports.Gameboy.default;
+  const Emulator = imports && imports.Emulator && imports.Emulator.default;
   const [game, setGame] = useState<Blob>();
   const [gameboy, setGameboy] = useState<GameboyType>();
   const loading = !imports;
@@ -46,15 +46,13 @@ const App: FunctionComponent = () => {
 
   return (
     <div className="container">
-      <div className="content">
-        {loading && <p>Loading...</p>}
-        {gameboy && Gameboy && <Gameboy gameboy={gameboy} />}
-        <input type="file" accept=".gb" onChange={value => {
-          if (value.target.files && value.target.files[0]) {
-            setGame(value.target.files[0]);
-          }
-        }} />
-      </div>
+      {loading && <p>Loading...</p>}
+      <input type="file" accept=".gb" onChange={value => {
+        if (value.target.files && value.target.files[0]) {
+          setGame(value.target.files[0]);
+        }
+      }} />
+      {gameboy && Emulator && <Emulator gameboy={gameboy} />}
     </div>
   );
 };

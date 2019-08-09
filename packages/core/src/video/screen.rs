@@ -1,6 +1,5 @@
 use crate::util::drawer::{apply_option_buffer, DrawnColor};
 use crate::util::wrap_value;
-use crate::video::color::ColorFormat;
 use crate::video::control_register::ControlRegister;
 use crate::video::memory::background_tile_map::BackgroundTileMap;
 use crate::video::memory::sprite_attribute_table::OAMEntry;
@@ -10,9 +9,11 @@ use crate::video::tile::Tile;
 
 pub const SCREEN_SIZE: (usize, usize) = (160, 144);
 pub const BACKGROUND_SIZE: (usize, usize) = (256, 256);
+pub const BUFFER_SIZE: usize = SCREEN_SIZE.0 * SCREEN_SIZE.1;
 const TILE_SIZE: u8 = 8;
 const SPRITES_ORIGIN: (u8, u8) = (8, 16);
 
+#[derive(Clone)]
 pub struct VideoInformation<'a> {
     pub scroll: (u8, u8),
     pub window: (u8, u8),
@@ -34,28 +35,34 @@ impl<'a> VideoInformation<'a> {
 }
 
 pub struct Screen {
-    buffer: Vec<DrawnColor>,
+    buffer: [DrawnColor; BUFFER_SIZE],
 }
 
 impl Screen {
-    pub fn buffer(&self, format: ColorFormat) -> Vec<u8> {
-        self.buffer
-            .iter()
-            .flat_map(|drawn_color| drawn_color.color.format(format))
-            .collect()
+    pub fn buffer(&self) -> [u8; BUFFER_SIZE * 3] {
+        let mut formatted_buffer = [0u8; BUFFER_SIZE * 3];
+        for (i, color) in self.buffer.iter().enumerate() {
+            let [r, g, b] = color.color.to_rgb();
+            let i = i * 3;
+            formatted_buffer[i] = r;
+            formatted_buffer[i + 1] = g;
+            formatted_buffer[i + 2] = b;
+        }
+        formatted_buffer
     }
 
     pub fn draw_line_to_buffer(&mut self, video: VideoInformation<'_>, ly: u8) {
         let line = Self::draw_line(video, ly);
         let base_buffer_index = ly as usize * SCREEN_SIZE.0;
 
-        for (x, color) in line.iter().enumerate() {
-            self.buffer[base_buffer_index + x] = *color;
-        }
+        self.buffer[base_buffer_index..]
+            .iter_mut()
+            .zip(line.iter())
+            .for_each(|(buffer_color, drawn_color)| *buffer_color = *drawn_color);
     }
 
-    fn draw_line(video: VideoInformation<'_>, ly: u8) -> Vec<DrawnColor> {
-        let mut line_buffer = vec![DrawnColor::default(); SCREEN_SIZE.0];
+    fn draw_line(video: VideoInformation<'_>, ly: u8) -> [DrawnColor; SCREEN_SIZE.0] {
+        let mut line_buffer = [DrawnColor::default(); SCREEN_SIZE.0];
         if video.control.lcd_enabled() {
             // Background & Window
             if video.control.bg_window_enabled() {
@@ -63,21 +70,22 @@ impl Screen {
 
                 if video.control.window_enabled() {
                     let window = Self::draw_window_line(&video, ly);
-                    apply_option_buffer(&mut line_buffer, window, false);
+                    apply_option_buffer(&mut line_buffer, &window, false, false);
                 }
             }
 
             if video.control.obj_enabled() {
                 // Sprites
                 let sprites = Self::draw_sprites_line(&video, ly);
-                apply_option_buffer(&mut line_buffer, sprites, true);
+                apply_option_buffer(&mut line_buffer, &sprites, true, true);
             }
         }
 
         line_buffer
     }
 
-    fn draw_background_line(video: &VideoInformation<'_>, ly: u8) -> Vec<DrawnColor> {
+    fn draw_background_line(video: &VideoInformation<'_>, ly: u8) -> [DrawnColor; SCREEN_SIZE.0] {
+        let mut line = [DrawnColor::default(); SCREEN_SIZE.0];
         let (scx, scy) = video.scroll;
         let background_tile_map = if video.control.bg_map() == 0 {
             &video.vram.background_tile_maps().0
@@ -87,18 +95,31 @@ impl Screen {
 
         let background_y = scy.wrapping_add(ly);
 
-        let line = Self::draw_background_map_line(video, background_tile_map, background_y);
+        let full_line =
+            Self::draw_background_map_line(video, background_tile_map, background_y as usize);
 
         (0..SCREEN_SIZE.0)
-            .map(|x| line[wrap_value(scx as usize + x, BACKGROUND_SIZE.0) as usize])
-            .collect()
+            .map(|x| {
+                (
+                    x,
+                    full_line[wrap_value(scx as usize + x, BACKGROUND_SIZE.0) as usize],
+                )
+            })
+            .for_each(|(x, color)| line[x] = color);
+
+        line
     }
 
-    fn draw_window_line(video: &VideoInformation<'_>, ly: u8) -> Vec<Option<DrawnColor>> {
+    fn draw_window_line(
+        video: &VideoInformation<'_>,
+        ly: u8,
+    ) -> [Option<DrawnColor>; SCREEN_SIZE.0] {
+        let mut line = [None; SCREEN_SIZE.0];
+
         let (window_x, window_y) = video.window;
         let window_x = window_x.saturating_sub(7) as usize;
         if window_y > ly || window_x >= SCREEN_SIZE.0 {
-            return vec![];
+            return line;
         }
 
         let background_y = ly - window_y;
@@ -109,27 +130,30 @@ impl Screen {
             &video.vram.background_tile_maps().1
         };
 
-        let line = Self::draw_background_map_line(video, background_tile_map, background_y);
+        let background_line =
+            Self::draw_background_map_line(video, background_tile_map, background_y as usize);
 
-        (0..SCREEN_SIZE.0)
-            .map(|x| {
-                if x >= window_x {
-                    Some(line[x - window_x])
-                } else {
-                    None
-                }
-            })
-            .collect()
+        line.iter_mut().enumerate().for_each(|(x, color)| {
+            *color = if x >= window_x {
+                Some(background_line[x - window_x])
+            } else {
+                None
+            };
+        });
+
+        line
     }
 
-    fn draw_background_map_line(
+    pub fn draw_background_map_line(
         video: &VideoInformation<'_>,
         background_tile_map: &BackgroundTileMap,
-        background_y: u8,
-    ) -> Vec<DrawnColor> {
+        background_y: usize,
+    ) -> [DrawnColor; BACKGROUND_SIZE.0] {
+        let mut line = [DrawnColor::default(); BACKGROUND_SIZE.0];
         let tile_data = video.vram.tile_data();
-        let background_tile_map_y = (background_y - background_y % TILE_SIZE) / TILE_SIZE;
-        let tile_y = background_y - background_tile_map_y * TILE_SIZE;
+        let background_tile_map_y =
+            (background_y - background_y % TILE_SIZE as usize) / TILE_SIZE as usize;
+        let tile_y = background_y - background_tile_map_y * TILE_SIZE as usize;
 
         let palette = video.bg_palette;
         let tiles = &background_tile_map.tiles()[background_tile_map_y as usize];
@@ -139,16 +163,25 @@ impl Screen {
             .iter()
             .map(|tile_index| addressing_mode.adjust_index(u16::from(*tile_index)))
             .map(|tile_index| &tile_data[tile_index as usize])
-            .flat_map(|tile| tile.colored_line(tile_y, false, false).to_vec())
+            .flat_map(|tile| tile.colored_line(tile_y as u8, false, false).to_vec())
             .map(|color| DrawnColor {
                 color: palette.color(color),
                 color_value: color,
                 low_priority: false,
             })
-            .collect()
+            .zip(line.iter_mut())
+            .for_each(|(drawn_color, buffer_color)| {
+                *buffer_color = drawn_color;
+            });
+
+        line
     }
 
-    fn draw_sprites_line(video: &VideoInformation<'_>, ly: u8) -> Vec<Option<DrawnColor>> {
+    fn draw_sprites_line(
+        video: &VideoInformation<'_>,
+        ly: u8,
+    ) -> [Option<DrawnColor>; SCREEN_SIZE.0] {
+        let mut line = [None; SCREEN_SIZE.0];
         let oam_entries = video.vram.oam().entries();
         let tile_data = video.vram.tile_data();
         let tall_sprites = video.control.obj_big_size();
@@ -159,8 +192,9 @@ impl Screen {
             inner_start: (u8, u8),
         }
 
-        let sprites: Vec<(u8, Vec<DrawnColor>)> = oam_entries
+        oam_entries
             .iter()
+            .rev() // loop in reverse so we draw sprites that are earlier in oam as higher priority
             .filter(|entry| entry.visible(tall_sprites))
             .map(|entry| {
                 let (x, y) = entry.position;
@@ -185,6 +219,7 @@ impl Screen {
 
                 ly >= abs_y1 && ly < abs_y2
             })
+            .take(10) // display only the first 10 sprites of the line
             .map(|(position, entry)| {
                 // get the line buffer in the sprite
                 let palette = video.obj_palette(entry.obj_palette_number());
@@ -215,23 +250,23 @@ impl Screen {
 
                 (position.absolute.0, line)
             })
-            .collect();
+            .for_each(|(absolute_x, sprite_line)| {
+                sprite_line.iter().enumerate().for_each(|(x, color)| {
+                    let index = absolute_x as usize + x;
+                    if color.color_value != 0 {
+                        line[index] = Some(*color);
+                    }
+                })
+            });
 
-        let mut buffer = vec![None; SCREEN_SIZE.0];
-        for (absolute_x, line) in &sprites {
-            for (x, color) in line.iter().enumerate() {
-                buffer[*absolute_x as usize + x] = Some(*color);
-            }
-        }
-
-        buffer
+        line
     }
 }
 
 impl Default for Screen {
     fn default() -> Self {
         Self {
-            buffer: vec![DrawnColor::default(); SCREEN_SIZE.0 * SCREEN_SIZE.1],
+            buffer: [DrawnColor::default(); BUFFER_SIZE],
         }
     }
 }

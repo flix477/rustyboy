@@ -1,5 +1,6 @@
 use super::color::Color;
 
+#[derive(Copy, Clone)]
 pub struct Palette {
     register: u8,
 }
@@ -9,11 +10,11 @@ impl Palette {
         Palette { register: value }
     }
 
-    pub fn color(&self, idx: u8) -> Color {
+    pub fn color(self, idx: u8) -> Color {
         Color::from((self.register >> (2 * idx)) & 0b11)
     }
 
-    pub fn get(&self) -> u8 {
+    pub fn get(self) -> u8 {
         self.register
     }
 

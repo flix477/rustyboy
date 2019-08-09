@@ -1,6 +1,7 @@
 use crate::bus::{Readable, Writable};
 use crate::util::bits::get_bit;
 
+#[derive(Clone)]
 pub struct SpriteAttributeTable {
     table: [OAMEntry; 40],
 }
