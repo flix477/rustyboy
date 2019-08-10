@@ -30,7 +30,7 @@ impl Window for MainWindow {
     fn update(&mut self, gameboy: &mut Gameboy) {
         let mut target = self.display.draw();
         target.clear_color(0.0, 0.0, 1.0, 1.0);
-        let buf = gameboy.hardware().video().screen().buffer();
+        let buf = gameboy.hardware().video().screen().buffer.rgb();
         let img =
             RawImage2d::from_raw_rgb_reversed(&buf, (SCREEN_SIZE.0 as u32, SCREEN_SIZE.1 as u32));
         glium::Texture2d::new(&self.display, img)

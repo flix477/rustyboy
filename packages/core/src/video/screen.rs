@@ -6,6 +6,7 @@ use crate::video::memory::sprite_attribute_table::OAMEntry;
 use crate::video::memory::VideoMemory;
 use crate::video::palette::Palette;
 use crate::video::tile::Tile;
+use crate::video::color::Color;
 
 pub const SCREEN_SIZE: (usize, usize) = (160, 144);
 pub const BACKGROUND_SIZE: (usize, usize) = (256, 256);
@@ -34,31 +35,20 @@ impl<'a> VideoInformation<'a> {
     }
 }
 
+#[derive(Default)]
 pub struct Screen {
-    buffer: [DrawnColor; BUFFER_SIZE],
+    pub buffer: ScreenBuffer
 }
 
 impl Screen {
-    pub fn buffer(&self) -> [u8; BUFFER_SIZE * 3] {
-        let mut formatted_buffer = [0u8; BUFFER_SIZE * 3];
-        for (i, color) in self.buffer.iter().enumerate() {
-            let [r, g, b] = color.color.to_rgb();
-            let i = i * 3;
-            formatted_buffer[i] = r;
-            formatted_buffer[i + 1] = g;
-            formatted_buffer[i + 2] = b;
-        }
-        formatted_buffer
-    }
-
     pub fn draw_line_to_buffer(&mut self, video: VideoInformation<'_>, ly: u8) {
         let line = Self::draw_line(video, ly);
         let base_buffer_index = ly as usize * SCREEN_SIZE.0;
 
-        self.buffer[base_buffer_index..]
+        self.buffer.buffer[base_buffer_index..]
             .iter_mut()
             .zip(line.iter())
-            .for_each(|(buffer_color, drawn_color)| *buffer_color = *drawn_color);
+            .for_each(|(buffer_color, drawn_color)| *buffer_color = drawn_color.color);
     }
 
     fn draw_line(video: VideoInformation<'_>, ly: u8) -> [DrawnColor; SCREEN_SIZE.0] {
@@ -263,14 +253,6 @@ impl Screen {
     }
 }
 
-impl Default for Screen {
-    fn default() -> Self {
-        Self {
-            buffer: [DrawnColor::default(); BUFFER_SIZE],
-        }
-    }
-}
-
 #[derive(Debug)]
 pub struct Sprite {
     pub tiles: Vec<Tile>,
@@ -292,5 +274,44 @@ impl Sprite {
 
     pub fn y_flipped(&self) -> bool {
         self.attributes.y_flipped()
+    }
+}
+
+pub struct ScreenBuffer {
+    buffer: [Color; BUFFER_SIZE]
+}
+
+impl Default for ScreenBuffer {
+    fn default() -> Self {
+        Self {
+            buffer: [Color::default(); BUFFER_SIZE]
+        }
+    }
+}
+
+impl ScreenBuffer {
+    pub fn rgb(&self) -> [u8; BUFFER_SIZE * 3] {
+        let mut formatted_buffer = [0u8; BUFFER_SIZE * 3];
+        for (i, color) in self.buffer.iter().enumerate() {
+            let [r, g, b] = color.to_rgb();
+            let i = i * 3;
+            formatted_buffer[i] = r;
+            formatted_buffer[i + 1] = g;
+            formatted_buffer[i + 2] = b;
+        }
+        formatted_buffer
+    }
+
+    pub fn rgba(&self) -> [u8; BUFFER_SIZE * 4] {
+        let mut formatted_buffer = [0u8; BUFFER_SIZE * 4];
+        for (i, color) in self.buffer.iter().enumerate() {
+            let [r, g, b] = color.to_rgb();
+            let i = i * 4;
+            formatted_buffer[i] = r;
+            formatted_buffer[i + 1] = g;
+            formatted_buffer[i + 2] = b;
+            formatted_buffer[i + 3] = 255;
+        }
+        formatted_buffer
     }
 }
