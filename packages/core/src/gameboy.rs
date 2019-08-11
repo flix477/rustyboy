@@ -6,6 +6,7 @@ use crate::debugger::processor_debug_info::ProcessorDebugInfo;
 use crate::debugger::Debugger;
 use crate::hardware::{joypad::Input, Hardware};
 use crate::processor::{Processor, ProcessorStepResult};
+use crate::video::screen::BUFFER_SIZE;
 use crate::video::status_register::StatusMode;
 
 /// This struct represents a GameBoy with all its components
@@ -99,10 +100,10 @@ pub enum GameboyEvent {
 pub struct GameboyStepResult(ProcessorStepResult, Option<StatusMode>);
 
 impl Iterator for Gameboy {
-    type Item = [u8; 69_120];
+    type Item = [u8; BUFFER_SIZE * 3];
 
     fn next(&mut self) -> Option<Self::Item> {
         self.run_to_vblank();
-        Some(self.hardware().video().screen().buffer())
+        Some(self.hardware().video().screen().buffer.rgb())
     }
 }
