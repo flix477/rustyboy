@@ -1,6 +1,8 @@
 # rustyboy
 🎮 WIP Gameboy emulator for iOS, Web and PC written in [Rust](https://www.rust-lang.org).
 
+[![CircleCI](https://circleci.com/gh/flix477/rustyboy/tree/master.svg?style=svg)](https://circleci.com/gh/flix477/rustyboy/tree/master)
+
 This is a monorepo. You can find individual ports in their respective subfolders under `packages/`
 
 ### Feature list
