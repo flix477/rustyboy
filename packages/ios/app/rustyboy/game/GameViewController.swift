@@ -5,7 +5,13 @@ import MetalKit
 class GameViewController: UIViewController {
     var renderer: Renderer!
     var gameboy: Gameboy!
-    let controller = ControllerView()
+    lazy var controller: ControllerView = {
+        let controller = ControllerView()
+        controller.onReset = {
+            self.gameboy.reset()
+        }
+        return controller
+    }()
 
     lazy var mtkView: MTKView! = {
         let mtkView = MTKView()

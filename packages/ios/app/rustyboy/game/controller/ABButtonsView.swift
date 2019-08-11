@@ -5,7 +5,8 @@ class ABButtonsView: UIView {
     static let buttonSize = CGFloat(70)
     static let aButtonOffset = (CGFloat(-10), CGFloat(6))
     static let bButtonOffset = (CGFloat(10), CGFloat(-31))
-    var pressed: GameboyButtonType?
+    var initialPress: GameboyButtonType?
+    var secondPress: GameboyButtonType?
 
     lazy var panGestureRecognizer: UIPanGestureRecognizer = {
         let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(self.onPan))
@@ -88,41 +89,42 @@ class ABButtonsView: UIView {
 
     func onABButtonEvent(buttonType: GameboyButtonType, eventType: ButtonEventType) {
         if eventType == .up {
-            self.pressed = nil
+            self.initialPress = nil
         } else {
-            self.pressed = buttonType
+            self.initialPress = buttonType
         }
 
         self.onButtonEvent?(buttonType, eventType)
     }
 
-    @objc func onPan() {
-        let point = self.panGestureRecognizer.location(in: self)
-        let state = self.panGestureRecognizer.state
-        guard let button = self.hitTest(point, with: nil) as? UIButton else {
-            if let pressed = self.pressed {
-                self.onButtonEvent?(pressed, .up)
-                self.pressed = nil
-            }
-            return
+    func clearAdditionalPresses() {
+        if let secondPress = self.secondPress {
+            self.onButtonEvent?(secondPress, .up)
+            self.secondPress = nil
         }
-        let buttonType = self.buttonType(button)!
+    }
 
-        if state == .began || state == .changed {
-            if let pressed = self.pressed {
-                if pressed != buttonType {
-                    self.onButtonEvent?(pressed, .up)
-                    self.pressed = buttonType
+    @objc func onPan(_ gestureRecognizer: UIPanGestureRecognizer) {
+        if let initialPress = self.initialPress {
+            let state = self.panGestureRecognizer.state
+            let point = self.panGestureRecognizer.location(in: self)
+            guard let button = self.hitTest(point, with: nil) as? UIButton else {
+                self.clearAdditionalPresses()
+                return
+            }
+            let buttonType = self.buttonType(button)!
+            if state == .began || state == .changed && buttonType != self.secondPress {
+                if buttonType == initialPress {
+                    self.clearAdditionalPresses()
+                } else {
+                    self.clearAdditionalPresses()
+                    self.secondPress = buttonType
                     self.onButtonEvent?(buttonType, .down)
                 }
-            } else {
-                self.pressed = buttonType
-                self.onButtonEvent?(buttonType, .down)
-            }
-        } else if state == .ended {
-            if let pressed = self.pressed {
-                self.onButtonEvent?(pressed, .up)
-                self.pressed = nil
+            } else if state == .ended {
+                self.clearAdditionalPresses()
+                self.onButtonEvent?(initialPress, .up)
+                self.initialPress = nil
             }
         }
     }
@@ -164,9 +166,12 @@ class ABButton: UIButton {
         self.setImage(self.pressedImage, for: .highlighted)
 
         self.addTarget(self, action: #selector(self.buttonDown), for: .touchDown)
+//        self.addTarget(self, action: #selector(self.buttonDown), for: .touchDragEnter)
+//        self.addTarget(self, action: #selector(self.buttonDown), for: .touchDragInside)
         self.addTarget(self, action: #selector(self.buttonUp), for: .touchUpInside)
-        self.addTarget(self, action: #selector(self.buttonDown), for: .touchDragEnter)
-        self.addTarget(self, action: #selector(self.buttonUp), for: .touchDragExit)
+//        self.addTarget(self, action: #selector(self.buttonUp), for: .touchDragExit)
+//        self.addTarget(self, action: #selector(self.buttonUp), for: .touchCancel)
+//        self.addTarget(self, action: #selector(self.buttonUp), for: .touchDragOutside)
     }
 
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {

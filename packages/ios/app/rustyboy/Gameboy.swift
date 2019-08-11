@@ -24,6 +24,10 @@ class Gameboy {
         gameboy_send_input(self.gameboyPointer, buttonType.toCore(), eventType.toCore())
     }
 
+    func reset() {
+        gameboy_reset(self.gameboyPointer)
+    }
+
     deinit {
         gameboy_free(self.gameboyPointer)
     }

@@ -46,6 +46,17 @@ pub unsafe extern "C" fn gameboy_run_to_vblank(gameboy: *mut Gameboy) -> *mut c_
 }
 
 #[no_mangle]
+pub unsafe extern "C" fn gameboy_reset(gameboy: *mut Gameboy) {
+    let mut gameboy = {
+        assert!(!gameboy.is_null(), "Gameboy is null");
+        Box::from_raw(gameboy)
+    };
+    gameboy.gameboy.reset();
+
+    Box::into_raw(gameboy);
+}
+
+#[no_mangle]
 pub unsafe extern "C" fn gameboy_free(gameboy: *mut Gameboy) {
     if gameboy.is_null() {
         return;

@@ -8,6 +8,7 @@ class ControllerView: UIView {
     static let margin = CGFloat(8)
     static let spacing = CGFloat(38)
     var onButtonEvent: ((GameboyButtonType, ButtonEventType) -> Void)?
+    var onReset: (() -> Void)?
 
     lazy var directionalPad: DirectionalPadView = {
         let directionalPad = DirectionalPadView()
@@ -39,6 +40,21 @@ class ControllerView: UIView {
         return startSelectButtons
     }()
 
+    lazy var resetButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.widthAnchor.constraint(equalToConstant: ControllerView.startSelectSize.0).isActive = true
+        button.heightAnchor.constraint(equalToConstant: ControllerView.startSelectSize.1).isActive = true
+        button.backgroundColor = Theme.tintColor
+        button.setTitleColor(UIColor.white, for: .normal)
+        button.setTitleColor(UIColor.lightGray, for: .highlighted)
+        button.setTitle("Reset", for: .normal)
+        button.contentEdgeInsets = UIEdgeInsets(top: 24, left: 64, bottom: 24, right: 64)
+        button.layer.cornerRadius = 5
+        button.addTarget(self, action: #selector(self.reset), for: .touchUpInside)
+        return button
+    }()
+
     override open class var requiresConstraintBasedLayout: Bool {
         return true
     }
@@ -53,6 +69,7 @@ class ControllerView: UIView {
         self.addSubview(self.directionalPad)
         self.addSubview(self.abButtons)
         self.addSubview(self.startSelectButtons)
+        self.addSubview(self.resetButton)
         self.backgroundColor = UIColor(red: 240, green: 240, blue: 240)
 
         self.startSelectButtons.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
@@ -76,5 +93,14 @@ class ControllerView: UIView {
         ).isActive = true
         self.abButtons.centerYAnchor.constraint(equalTo: self.directionalPad.centerYAnchor).isActive = true
 
+        self.resetButton.trailingAnchor.constraint(
+            equalTo: self.trailingAnchor,
+            constant: -ControllerView.margin
+            ).isActive = true
+        self.resetButton.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
+    }
+
+    @objc func reset() {
+        self.onReset?()
     }
 }
