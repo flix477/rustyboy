@@ -1,12 +1,12 @@
 use crate::util::drawer::{apply_option_buffer, DrawnColor};
 use crate::util::wrap_value;
+use crate::video::color::Color;
 use crate::video::control_register::ControlRegister;
 use crate::video::memory::background_tile_map::BackgroundTileMap;
 use crate::video::memory::sprite_attribute_table::OAMEntry;
 use crate::video::memory::VideoMemory;
 use crate::video::palette::Palette;
 use crate::video::tile::Tile;
-use crate::video::color::Color;
 
 pub const SCREEN_SIZE: (usize, usize) = (160, 144);
 pub const BACKGROUND_SIZE: (usize, usize) = (256, 256);
@@ -37,7 +37,7 @@ impl<'a> VideoInformation<'a> {
 
 #[derive(Default)]
 pub struct Screen {
-    pub buffer: ScreenBuffer
+    pub buffer: ScreenBuffer,
 }
 
 impl Screen {
@@ -278,13 +278,13 @@ impl Sprite {
 }
 
 pub struct ScreenBuffer {
-    buffer: [Color; BUFFER_SIZE]
+    buffer: [Color; BUFFER_SIZE],
 }
 
 impl Default for ScreenBuffer {
     fn default() -> Self {
         Self {
-            buffer: [Color::default(); BUFFER_SIZE]
+            buffer: [Color::default(); BUFFER_SIZE],
         }
     }
 }
