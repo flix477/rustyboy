@@ -11,11 +11,13 @@ function drawCanvas(buffer: Uint8Array, dimensions: [number, number], canvasRef:
   context.clearRect(0, 0, canvasRef.width, canvasRef.height);
   const imageData = context.createImageData(dimensions[0], dimensions[1]);
 
-  for (let i = 0; i < imageData.data.length; i++) {
-    imageData.data[i] = buffer[i];
-    imageData.data[i + 1] = buffer[i + 1];
-    imageData.data[i + 2] = buffer[i + 2];
-    imageData.data[i + 3] = buffer[i + 3];
+  for (let i = 0; i < dimensions[0] * dimensions[1]; i++) {
+    let bufferIndex = i * 3;
+    let imageDataIndex = i * 4;
+    imageData.data[imageDataIndex] = buffer[bufferIndex];
+    imageData.data[imageDataIndex + 1] = buffer[bufferIndex + 1];
+    imageData.data[imageDataIndex + 2] = buffer[bufferIndex + 2];
+    imageData.data[imageDataIndex + 3] = 255;
   }
 
   context.putImageData(imageData, 0, 0);
