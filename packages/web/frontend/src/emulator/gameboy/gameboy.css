@@ -1,9 +1,16 @@
 .gameboy {
-    align-self: center;
-    justify-self: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     transition: opacity 500ms;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .gameboy.disabled {
     opacity: 0.4;
+}
+
+.gameboy canvas {
+    transform: translateY(16px);
 }

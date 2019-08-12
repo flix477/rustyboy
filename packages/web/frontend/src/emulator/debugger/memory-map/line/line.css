@@ -4,10 +4,11 @@
     display: grid;
     grid-template-columns: 48px 1fr;
     font-family: 'Source Code Pro', monospace;
+    color: white;
 }
 
 .memory-map .current-line {
-    background-color: rgb(247, 246, 225)
+    background-color: rgba(255, 255, 255, 0.116)
 }
 
 .memory-map .line .line-number {

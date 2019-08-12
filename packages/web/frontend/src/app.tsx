@@ -47,11 +47,13 @@ const App: FunctionComponent = () => {
   return (
     <div className="container">
       {loading && <p>Loading...</p>}
-      <input type="file" accept=".gb" onChange={value => {
-        if (value.target.files && value.target.files[0]) {
-          setGame(value.target.files[0]);
-        }
-      }} />
+      {!gameboy && (
+        <input type="file" accept=".gb" onChange={value => {
+          if (value.target.files && value.target.files[0]) {
+            setGame(value.target.files[0]);
+          }
+        }} />
+      )}
       {gameboy && Emulator && <Emulator gameboy={gameboy} />}
     </div>
   );

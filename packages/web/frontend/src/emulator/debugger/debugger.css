@@ -1,5 +1,5 @@
 .debugger {
-    background-color: rgb(254, 254, 254);
+    background-color: rgb(41, 41, 41);
     display: grid;
     grid-template-rows: 1fr 1fr auto;
     transition: opacity 500ms;
