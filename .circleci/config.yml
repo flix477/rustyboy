@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  check:
     docker:
       - image: flix477/rustyboy:latest
     steps:
@@ -20,8 +20,8 @@ jobs:
       - run: make test -s
 workflows:
   version: 2
-  build:
+  check:
     jobs:
-      - build
+      - check
       - lint
       - test
