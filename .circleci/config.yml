@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  check:
     docker:
       - image: flix477/rustyboy:latest
     steps:
@@ -18,10 +18,30 @@ jobs:
     steps:
       - checkout
       - run: make test -s
+  build:
+    docker:
+      - image: flix477/rustyboy:latest
+    steps:
+      - checkout
+      - run: make build -s
+  deploy:
+    docker:
+      - image: flix477/rustyboy:latest
+    steps:
+      - checkout
+      - run: make test -s
 workflows:
   version: 2
   check:
     jobs:
-      - build
+      - check
       - lint
       - test
+  build-and-deploy:
+    jobs:
+      - deploy:
+        requires:
+          - build
+        filters:
+          tags:
+            only: /^v.*/
