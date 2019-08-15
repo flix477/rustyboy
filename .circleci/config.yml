@@ -21,3 +21,14 @@ jobs:
           name: Check tests
           command: |
             make test -s
+  release:
+    docker:
+      - image: flix477/rustyboy:latest
+
+    steps:
+      - checkout
+
+      - run:
+          name: Build
+          command: |
+            make build -s
