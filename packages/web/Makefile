@@ -16,7 +16,7 @@ build: build-app
 check-lib:
 	cargo check
 
-check-app:
+check-app: install-dependencies
 	cd frontend; \
 	npx tsc
 
