@@ -6,29 +6,26 @@ jobs:
 
     steps:
       - checkout
+      - run: make check -s
 
-      - run:
-          name: Check
-          command: |
-            make check -s
-
-      - run:
-          name: Check lint
-          command: |
-            make lint -s
-
-      - run:
-          name: Check tests
-          command: |
-            make test -s
-  release:
+  lint:
     docker:
       - image: flix477/rustyboy:latest
 
     steps:
       - checkout
+      - run: make lint -s
 
-      - run:
-          name: Build
-          command: |
-            make build -s
+  test:
+    docker:
+      - image: flix477/rustyboy:latest
+
+    steps:
+      - checkout
+      - run: make test -s
+workflows:
+  version: 2
+  check:
+    - build
+    - lint
+    - test
