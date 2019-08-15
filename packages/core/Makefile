@@ -1,7 +1,7 @@
-.PHONY: build test lint clippy format
+.PHONY: check test lint clippy format
 
-build:
-	cargo build
+check:
+	cargo check
 
 clippy:
 	rustup component add clippy; \

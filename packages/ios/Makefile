@@ -1,13 +1,13 @@
-.PHONY: build test lint test-lib lint-lib format-lib clippy-lib lint-app install-pods build-lib
+.PHONY: build test lint test-lib lint-lib format-lib clippy-lib lint-app install-pods check
 
 install-pods:
 	./scripts/install-pods.sh
 
-build-lib:
-	cargo build
-
-build: build-lib install-pods
+build: install-pods
 	./scripts/build.sh
+
+check:
+	cargo check
 
 test-lib:
 	cargo test

@@ -8,9 +8,9 @@ jobs:
       - checkout
 
       - run:
-          name: Build
+          name: Check
           command: |
-            make build -s
+            make check -s
 
       - run:
           name: Check lint
