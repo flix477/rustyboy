@@ -20,7 +20,7 @@ check-app: install-dependencies build-lib
 	cd frontend; \
 	npx tsc
 
-check: check-lib check-app
+check: check-app
 
 test-lib:
 	cargo test
