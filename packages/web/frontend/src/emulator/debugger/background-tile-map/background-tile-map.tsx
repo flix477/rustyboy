@@ -12,8 +12,8 @@ function drawCanvas(buffer: Uint8Array, dimensions: [number, number], canvasRef:
   const imageData = context.createImageData(dimensions[0], dimensions[1]);
 
   for (let i = 0; i < dimensions[0] * dimensions[1]; i++) {
-    let bufferIndex = i * 3;
-    let imageDataIndex = i * 4;
+    const bufferIndex = i * 3;
+    const imageDataIndex = i * 4;
     imageData.data[imageDataIndex] = buffer[bufferIndex];
     imageData.data[imageDataIndex + 1] = buffer[bufferIndex + 1];
     imageData.data[imageDataIndex + 2] = buffer[bufferIndex + 2];
