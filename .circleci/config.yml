@@ -39,9 +39,10 @@ workflows:
       - test
   build-and-deploy:
     jobs:
+      - build:
+          filters:
+            tags:
+              only: /^v.*/
       - deploy:
-        requires:
-          - build
-        filters:
-          tags:
-            only: /^v.*/
+          requires:
+            - build
