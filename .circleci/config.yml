@@ -20,7 +20,7 @@ jobs:
       - run: make test -s
 workflows:
   version: 2
-  check:
+  build:
     jobs:
       - check
       - lint
