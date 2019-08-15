@@ -1,4 +1,4 @@
-.PHONY: build test lint build-lib link-lib build-app test-lib lint-lib format-lib clippy-lib lint-app install-dependencies
+.PHONY: build test lint build-lib link-lib build-app check check-app check-lib test-lib lint-lib format-lib clippy-lib lint-app install-dependencies
 
 install-dependencies:
 	cd frontend; \
@@ -12,6 +12,15 @@ build-app: install-dependencies build-lib
 	npm run build
 
 build: build-app
+
+check-lib:
+	cargo check
+
+check-app: install-dependencies build-lib
+	cd frontend; \
+	npx tsc
+
+check: check-app
 
 test-lib:
 	cargo test
