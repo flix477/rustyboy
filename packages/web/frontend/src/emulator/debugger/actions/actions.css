@@ -1,0 +1,22 @@
+.actions {
+    padding: 4px 0;
+    padding-left: 8px;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.actions button {
+    background: none;
+    border: none;
+    transition: opacity 0.3s;
+    cursor: pointer;
+}
+
+.actions button svg {
+    color: rgba(255, 255, 255, 0.9);
+    width: 16px;
+    height: 16px;
+}
+
+.debugger.disabled .actions button {
+    opacity: 0.5;
+}
