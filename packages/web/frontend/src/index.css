@@ -16,10 +16,10 @@ body {
 }
 
 .fileSelectionContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+  display: grid;
+  grid-auto-flow: row;
+  grid-gap: 8px;
+  text-align: center;
 }
 
 h1 {
@@ -27,6 +27,7 @@ h1 {
   font-size: 48px;
   text-transform: uppercase;
   font-style: italic;
+  margin: 8px 0;
 }
 
 .cartridge {
@@ -41,10 +42,11 @@ h1 {
 }
 
 .cartridgeInput {
-  margin-top: 8px;
+  display: inline-block;
 }
 
 .cartridgeInput label {
+  display: inline-block;
   border: 3px white solid;
   border-radius: 8px;
   padding: 16px;
@@ -56,11 +58,15 @@ h1 {
 .cartridges {
   display: grid;
   grid-gap: 16px;
-  margin-bottom: 56px;
   grid-template-columns: 1fr 1fr 1fr;
 }
 
 .cartridgeInput label:hover {
   background-color: white;
   color: #943d7a;
+}
+
+.hasDebugger span {
+  margin-left: 4px;
+  font-size: 12px;
 }

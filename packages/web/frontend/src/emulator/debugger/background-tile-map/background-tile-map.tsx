@@ -1,5 +1,6 @@
 import React, {FunctionComponent, useRef, useEffect} from 'react';
 import { DebugInfo } from 'rustyboy-web';
+import './background-tile-map.css';
 
 interface Props {
     debugInfo?: DebugInfo;
@@ -33,7 +34,7 @@ export const BackgroundTileMap: FunctionComponent<Props> = ({debugInfo}) => {
 
   return (
     <div className="background-tile-map">
-      <canvas ref={canvasRef} />
+      <canvas width={256} height={256} ref={canvasRef} />
     </div>
   );
 };

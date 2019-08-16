@@ -4,6 +4,7 @@
     display: grid;
     grid-template-columns: 48px 1fr;
     font-family: 'Source Code Pro', monospace;
+    padding-left: 8px;
     color: white;
 }
 

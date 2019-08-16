@@ -26,6 +26,7 @@ const App: FunctionComponent = () => {
   const Emulator = imports && imports.Emulator && imports.Emulator.default;
   const [game, setGame] = useState<Blob>();
   const [gameboy, setGameboy] = useState<GameboyType>();
+  const [hasDebugger, setHasDebugger] = useState(false);
   const loading = !imports;
 
   useEffect(() => {
@@ -44,9 +45,10 @@ const App: FunctionComponent = () => {
     load();
   }, [game, loading, rustyboy]);
 
+  if (loading) return <p>Loading...</p>;
+
   return (
     <div className="container">
-      {loading && <p>Loading...</p>}
       {!gameboy && (
         <div className="fileSelectionContainer">
           <h1>Rustyboy</h1>
@@ -58,9 +60,20 @@ const App: FunctionComponent = () => {
               }
             }} />
           </div>
+          <label htmlFor="hasDebugger" className="hasDebugger">
+            <input
+              id="hasDebugger"
+              name="hasDebugger"
+              type="checkbox"
+              onChange={(e) => setHasDebugger(e.target.checked)}
+            />
+            <span>Debug mode</span>
+          </label>
         </div>
       )}
-      {gameboy && Emulator && <Emulator gameboy={gameboy} />}
+      {gameboy && Emulator && (
+        <Emulator hasDebugger={hasDebugger} gameboy={gameboy} />
+      )}
     </div>
   );
 };

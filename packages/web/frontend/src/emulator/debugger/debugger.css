@@ -1,10 +1,6 @@
 .debugger {
     background-color: rgb(41, 41, 41);
     display: grid;
-    grid-template-rows: 1fr 1fr auto;
-    transition: opacity 500ms;
-}
-
-.debugger.disabled {
-    opacity: 0.4;
+    grid-template-rows: auto 1fr auto;
+    box-shadow: 0 0 16px rgba(0, 0, 0, 0.2);
 }

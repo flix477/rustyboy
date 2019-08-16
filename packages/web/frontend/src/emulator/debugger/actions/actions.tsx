@@ -1,6 +1,11 @@
 import React, {FunctionComponent, useCallback} from 'react';
 import { Debugger as DebuggerType, DebugInfo } from 'rustyboy-web';
 
+import {ReactComponent as PlayIcon} from './debugger-play.svg';
+import {ReactComponent as StepOverIcon} from './debugger-over.svg';
+import {ReactComponent as StepIntoIcon} from './debugger-in.svg';
+import './actions.css';
+
 interface Props {
   debuggerRef: DebuggerType;
   debugInfo?: DebugInfo;
@@ -30,10 +35,16 @@ export const Actions: FunctionComponent<Props> = ({onContinue, debuggerRef, debu
   }, [debuggerRef, onContinue, debugInfo]);
 
   return (
-    <div>
-      <button disabled={!debuggerRef} onClick={onContinueClick}>Continue</button>
-      <button disabled={!debuggerRef} onClick={onStepInto}>Step into</button>
-      <button disabled={!debuggerRef} onClick={onStepOver}>Step over</button>
+    <div className="actions">
+      <button disabled={!debuggerRef} onClick={onContinueClick}>
+        <PlayIcon />
+      </button>
+      <button disabled={!debuggerRef} onClick={onStepInto}>
+        <StepIntoIcon />
+      </button>
+      <button disabled={!debuggerRef} onClick={onStepOver}>
+        <StepOverIcon />
+      </button>
     </div>
   );
 };
