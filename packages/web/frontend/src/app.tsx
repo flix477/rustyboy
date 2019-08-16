@@ -1,6 +1,7 @@
 import React, {FunctionComponent, useState, useEffect} from 'react';
 import {Gameboy as GameboyType} from 'rustyboy-web';
 import {imports} from './imports';
+import {ReactComponent as Cartridge} from './cartridge-o.svg';
 
 function useWasm() {
   const [wasm, setWasm] = useState();
@@ -48,11 +49,24 @@ const App: FunctionComponent = () => {
     <div className="container">
       {loading && <p>Loading...</p>}
       {!gameboy && (
-        <input type="file" accept=".gb" onChange={value => {
-          if (value.target.files && value.target.files[0]) {
-            setGame(value.target.files[0]);
-          }
-        }} />
+        <div className="fileSelectionContainer">
+          <h1>Rustyboy</h1>
+          {/* <div className="cartridges">
+            <Cartridge className="cartridge" />
+            <Cartridge className="cartridge" />
+            <Cartridge className="cartridge" />
+            <Cartridge className="cartridge" />
+            <Cartridge className="cartridge" />
+          </div> */}
+          <div className="cartridgeInput">
+            <label htmlFor="cartridge">Load game</label>
+            <input hidden id="cartridge" name="cartridge" type="file" accept=".gb" onChange={value => {
+              if (value.target.files && value.target.files[0]) {
+                setGame(value.target.files[0]);
+              }
+            }} />
+          </div>
+        </div>
       )}
       {gameboy && Emulator && <Emulator gameboy={gameboy} />}
     </div>

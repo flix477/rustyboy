@@ -32,20 +32,22 @@ export const Emulator: FunctionComponent<Props> = ({ gameboy }) => {
 
   return (
     <div className="emulator">
-      <Gameboy
-        gameboy={gameboy}
-        debuggerRef={debuggerRef}
-        onBreakpointHit={onBreakpointHit}
-        paused={Boolean(debugInfo)}
-        onClick={onGameboyClick}
-      />
-      {debuggerRef && (
+      <div className="gameboyContainer">
+        <Gameboy
+          gameboy={gameboy}
+          debuggerRef={debuggerRef}
+          onBreakpointHit={onBreakpointHit}
+          paused={Boolean(debugInfo)}
+          onClick={onGameboyClick}
+        />
+      </div>
+      {/* {debuggerRef && (
         <Debugger
           debuggerRef={debuggerRef}
           debugInfo={debugInfo}
           onContinue={onContinue}
         />
-      )}
+      )} */}
     </div>
   );
 };

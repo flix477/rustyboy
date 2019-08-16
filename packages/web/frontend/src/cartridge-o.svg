@@ -1,0 +1,224 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="341" height="341" enable-background="new" viewBox="0 0 90.22 90.22">
+  <defs>
+    <linearGradient id="f">
+      <stop offset="0" stop-color="#fff" stop-opacity=".26"/>
+      <stop offset=".32" stop-color="#d0d0d0" stop-opacity=".06"/>
+      <stop offset=".46" stop-color="#a1a1a1" stop-opacity=".01"/>
+      <stop offset="1" stop-opacity=".25"/>
+    </linearGradient>
+    <linearGradient id="e">
+      <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="1" stop-opacity=".4"/>
+    </linearGradient>
+    <linearGradient id="d">
+      <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="1" stop-opacity=".64"/>
+    </linearGradient>
+    <linearGradient id="c">
+      <stop offset="0" stop-color="#eee"/>
+      <stop offset="1" stop-color="#eee" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="b">
+      <stop offset="0" stop-color="#fff" stop-opacity=".26"/>
+      <stop offset=".32" stop-color="#d0d0d0" stop-opacity=".06"/>
+      <stop offset=".46" stop-color="#a1a1a1" stop-opacity=".01"/>
+      <stop offset="1" stop-opacity=".64"/>
+    </linearGradient>
+    <linearGradient id="a">
+      <stop offset="0" stop-color="#aaa"/>
+      <stop offset="1" stop-color="#999"/>
+    </linearGradient>
+    <linearGradient id="M" x1="48.06" x2="48.06" y1="23.57" y2="6.19" gradientUnits="userSpaceOnUse" xlink:href="#a"/>
+    <linearGradient id="o" x1="47.87" x2="47.87" y1="78.85" y2="26.12" gradientUnits="userSpaceOnUse" xlink:href="#a"/>
+    <linearGradient id="s" x1="9.13" x2="9.13" y1="10.06" y2="8.74" gradientUnits="userSpaceOnUse" xlink:href="#b"/>
+    <linearGradient id="u" x1="9.13" x2="9.13" y1="10.06" y2="8.74" gradientTransform="translate(0 2.65)" gradientUnits="userSpaceOnUse" xlink:href="#b"/>
+    <linearGradient id="w" x1="9.13" x2="9.13" y1="10.06" y2="8.74" gradientTransform="translate(0 5.3)" gradientUnits="userSpaceOnUse" xlink:href="#b"/>
+    <linearGradient id="y" x1="9.13" x2="9.13" y1="10.06" y2="8.74" gradientTransform="translate(0 7.94)" gradientUnits="userSpaceOnUse" xlink:href="#b"/>
+    <linearGradient id="A" x1="9.13" x2="9.13" y1="10.06" y2="8.74" gradientTransform="translate(0 10.58)" gradientUnits="userSpaceOnUse" xlink:href="#b"/>
+    <linearGradient id="C" x1="9.13" x2="9.13" y1="10.06" y2="8.74" gradientTransform="translate(71.57 -.53)" gradientUnits="userSpaceOnUse" xlink:href="#b"/>
+    <linearGradient id="E" x1="9.13" x2="9.13" y1="10.06" y2="8.74" gradientTransform="translate(71.57 2.11)" gradientUnits="userSpaceOnUse" xlink:href="#b"/>
+    <linearGradient id="G" x1="9.13" x2="9.13" y1="10.06" y2="8.74" gradientTransform="translate(71.57 4.76)" gradientUnits="userSpaceOnUse" xlink:href="#b"/>
+    <linearGradient id="I" x1="9.13" x2="9.13" y1="10.06" y2="8.74" gradientTransform="translate(71.57 7.4)" gradientUnits="userSpaceOnUse" xlink:href="#b"/>
+    <linearGradient id="K" x1="9.13" x2="9.13" y1="10.06" y2="8.74" gradientTransform="translate(71.57 10.05)" gradientUnits="userSpaceOnUse" xlink:href="#b"/>
+    <linearGradient id="T" x2=".66" y1="18.79" y2="18.79" gradientTransform="matrix(1 0 0 2.4232 0 -.38)" gradientUnits="userSpaceOnUse" xlink:href="#c"/>
+    <linearGradient id="V" x2=".66" y1="18.79" y2="18.79" gradientTransform="translate(89.3)" gradientUnits="userSpaceOnUse" xlink:href="#d"/>
+    <linearGradient id="X" x1="1.98" x2="2.11" y1="39.29" y2="37.31" gradientTransform="matrix(1 0 0 1.4041 0 -15.07)" gradientUnits="userSpaceOnUse" xlink:href="#e"/>
+    <linearGradient id="R" x1="49.76" x2="49.66" y1="22.53" y2="6.85" gradientUnits="userSpaceOnUse" xlink:href="#f"/>
+    <clipPath id="W"/>
+    <clipPath id="S"/>
+    <clipPath id="Q">
+      <path fill="#b3b3b3" d="M2.51 2.12v35.72h2.65v52.92h84.67V37.84h2.64V7.41c0-.62-.65-1.32-1.32-1.32h-6.62V2.12c0-.65-.61-1.3-1.32-1.32H3.84c-.66.02-1.3.62-1.33 1.32z"/>
+      <path fill="#b3b3b3" d="M2.51 37.84v51.6c0 .7.65 1.32 1.33 1.32h1.32V37.84zM89.83 37.84h2.64v51.6c0 .65-.67 1.32-1.32 1.32h-1.32z"/>
+    </clipPath>
+    <clipPath id="L">
+      <path fill="#b3b3b3" d="M2.51 2.12v35.72h2.65v52.92h84.67V37.84h2.64V7.41c0-.62-.65-1.32-1.32-1.32h-6.62V2.12c0-.65-.61-1.3-1.32-1.32H3.84c-.66.02-1.3.62-1.33 1.32z"/>
+      <path fill="#b3b3b3" d="M2.51 37.84v51.6c0 .7.65 1.32 1.33 1.32h1.32V37.84zM89.83 37.84h2.64v51.6c0 .65-.67 1.32-1.32 1.32h-1.32z"/>
+    </clipPath>
+    <clipPath id="J"/>
+    <clipPath id="H"/>
+    <clipPath id="F"/>
+    <clipPath id="D"/>
+    <clipPath id="B"/>
+    <clipPath id="z">
+      <path fill="#b3b3b3" d="M2.51 2.12v35.72h2.65v52.92h84.67V37.84h2.64V7.41c0-.62-.65-1.32-1.32-1.32h-6.62V2.12c0-.65-.61-1.3-1.32-1.32H3.84c-.66.02-1.3.62-1.33 1.32z"/>
+      <path fill="#b3b3b3" d="M2.51 37.84v51.6c0 .7.65 1.32 1.33 1.32h1.32V37.84zM89.83 37.84h2.64v51.6c0 .65-.67 1.32-1.32 1.32h-1.32z"/>
+    </clipPath>
+    <clipPath id="x">
+      <path fill="#b3b3b3" d="M2.51 2.12v35.72h2.65v52.92h84.67V37.84h2.64V7.41c0-.62-.65-1.32-1.32-1.32h-6.62V2.12c0-.65-.61-1.3-1.32-1.32H3.84c-.66.02-1.3.62-1.33 1.32z"/>
+      <path fill="#b3b3b3" d="M2.51 37.84v51.6c0 .7.65 1.32 1.33 1.32h1.32V37.84zM89.83 37.84h2.64v51.6c0 .65-.67 1.32-1.32 1.32h-1.32z"/>
+    </clipPath>
+    <clipPath id="v">
+      <path fill="#b3b3b3" d="M2.51 2.12v35.72h2.65v52.92h84.67V37.84h2.64V7.41c0-.62-.65-1.32-1.32-1.32h-6.62V2.12c0-.65-.61-1.3-1.32-1.32H3.84c-.66.02-1.3.62-1.33 1.32z"/>
+      <path fill="#b3b3b3" d="M2.51 37.84v51.6c0 .7.65 1.32 1.33 1.32h1.32V37.84zM89.83 37.84h2.64v51.6c0 .65-.67 1.32-1.32 1.32h-1.32z"/>
+    </clipPath>
+    <clipPath id="t">
+      <path fill="#b3b3b3" d="M2.51 2.12v35.72h2.65v52.92h84.67V37.84h2.64V7.41c0-.62-.65-1.32-1.32-1.32h-6.62V2.12c0-.65-.61-1.3-1.32-1.32H3.84c-.66.02-1.3.62-1.33 1.32z"/>
+      <path fill="#b3b3b3" d="M2.51 37.84v51.6c0 .7.65 1.32 1.33 1.32h1.32V37.84zM89.83 37.84h2.64v51.6c0 .65-.67 1.32-1.32 1.32h-1.32z"/>
+    </clipPath>
+    <clipPath id="r">
+      <path fill="#b3b3b3" d="M2.51 2.12v35.72h2.65v52.92h84.67V37.84h2.64V7.41c0-.62-.65-1.32-1.32-1.32h-6.62V2.12c0-.65-.61-1.3-1.32-1.32H3.84c-.66.02-1.3.62-1.33 1.32z"/>
+      <path fill="#b3b3b3" d="M2.51 37.84v51.6c0 .7.65 1.32 1.33 1.32h1.32V37.84zM89.83 37.84h2.64v51.6c0 .65-.67 1.32-1.32 1.32h-1.32z"/>
+    </clipPath>
+    <clipPath id="n">
+      <path fill="#b3b3b3" d="M2.51 2.12v35.72h2.65v52.92h84.67V37.84h2.64V7.41c0-.62-.65-1.32-1.32-1.32h-6.62V2.12c0-.65-.61-1.3-1.32-1.32H3.84c-.66.02-1.3.62-1.33 1.32z"/>
+      <path fill="#b3b3b3" d="M2.51 37.84v51.6c0 .7.65 1.32 1.33 1.32h1.32V37.84zM89.83 37.84h2.64v51.6c0 .65-.67 1.32-1.32 1.32h-1.32z"/>
+    </clipPath>
+    <clipPath id="k">
+      <path fill="#b3b3b3" d="M2.51 2.12v35.72h2.65v52.92h84.67V37.84h2.64V7.41c0-.62-.65-1.32-1.32-1.32h-6.62V2.12c0-.65-.61-1.3-1.32-1.32H3.84c-.66.02-1.3.62-1.33 1.32z"/>
+      <path fill="#b3b3b3" d="M2.51 37.84v51.6c0 .7.65 1.32 1.33 1.32h1.32V37.84zM89.83 37.84h2.64v51.6c0 .65-.67 1.32-1.32 1.32h-1.32z"/>
+    </clipPath>
+    <clipPath id="j">
+      <path fill="#b3b3b3" d="M2.51 2.12v35.72h2.65v52.92h84.67V37.84h2.64V7.41c0-.62-.65-1.32-1.32-1.32h-6.62V2.12c0-.65-.61-1.3-1.32-1.32H3.84c-.66.02-1.3.62-1.33 1.32z"/>
+      <path fill="#b3b3b3" d="M2.51 37.84v51.6c0 .7.65 1.32 1.33 1.32h1.32V37.84zM89.83 37.84h2.64v51.6c0 .65-.67 1.32-1.32 1.32h-1.32z"/>
+    </clipPath>
+    <clipPath id="i">
+      <path fill="#b3b3b3" d="M2.51 2.12v35.72h2.65v52.92h84.67V37.84h2.64V7.41c0-.62-.65-1.32-1.32-1.32h-6.62V2.12c0-.65-.61-1.3-1.32-1.32H3.84c-.66.02-1.3.62-1.33 1.32z"/>
+      <path fill="#b3b3b3" d="M2.51 37.84v51.6c0 .7.65 1.32 1.33 1.32h1.32V37.84zM89.83 37.84h2.64v51.6c0 .65-.67 1.32-1.32 1.32h-1.32z"/>
+    </clipPath>
+    <clipPath id="h">
+      <path fill="#b3b3b3" d="M2.51 2.12v35.72h2.65v52.92h84.67V37.84h2.64V7.41c0-.62-.65-1.32-1.32-1.32h-6.62V2.12c0-.65-.61-1.3-1.32-1.32H3.84c-.66.02-1.3.62-1.33 1.32z"/>
+      <path fill="#b3b3b3" d="M2.51 37.84v51.6c0 .7.65 1.32 1.33 1.32h1.32V37.84zM89.83 37.84h2.64v51.6c0 .65-.67 1.32-1.32 1.32h-1.32z"/>
+    </clipPath>
+    <clipPath id="g">
+      <path fill="#b3b3b3" d="M2.51 2.12v35.72h2.65v52.92h84.67V37.84h2.64V7.41c0-.62-.65-1.32-1.32-1.32h-6.62V2.12c0-.65-.61-1.3-1.32-1.32H3.84c-.66.02-1.3.62-1.33 1.32z"/>
+      <path fill="#b3b3b3" d="M2.51 37.84v51.6c0 .7.65 1.32 1.33 1.32h1.32V37.84zM89.83 37.84h2.64v51.6c0 .65-.67 1.32-1.32 1.32h-1.32z"/>
+    </clipPath>
+    <filter id="p" color-interpolation-filters="sRGB">
+      <feFlood flood-color="#000" flood-opacity=".11" result="flood"/>
+      <feComposite in="flood" in2="SourceGraphic" operator="out" result="composite1"/>
+      <feGaussianBlur in="composite1" result="blur" stdDeviation="1.4"/>
+      <feOffset dx="1" dy="1" result="offset"/>
+      <feComposite in="offset" in2="SourceGraphic" operator="atop" result="fbSourceGraphic"/>
+      <feColorMatrix in="fbSourceGraphic" result="fbSourceGraphicAlpha" values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"/>
+      <feFlood flood-color="#FFF" flood-opacity=".26" result="flood"/>
+      <feComposite in="flood" in2="fbSourceGraphic" operator="out" result="composite1"/>
+      <feGaussianBlur in="composite1" result="blur" stdDeviation="1.4"/>
+      <feOffset dx="-1" dy="-1" result="offset"/>
+      <feComposite in="offset" in2="fbSourceGraphic" operator="atop" result="composite2"/>
+    </filter>
+    <linearGradient id="q" x1="85.11" x2="9.3" y1="84.11" y2="20.24" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff" stop-opacity=".3"/>
+      <stop offset=".32" stop-color="#d0d0d0" stop-opacity=".06"/>
+      <stop offset=".46" stop-color="#a1a1a1" stop-opacity=".01"/>
+      <stop offset="1" stop-opacity=".29"/>
+    </linearGradient>
+    <filter id="l" color-interpolation-filters="sRGB">
+      <feFlood flood-color="#FFF" flood-opacity=".51" result="flood"/>
+      <feComposite in="flood" in2="SourceGraphic" operator="out" result="composite1"/>
+      <feGaussianBlur in="composite1" result="blur" stdDeviation=".1"/>
+      <feOffset dx="-.1" dy="-.1" result="offset"/>
+      <feComposite in="offset" in2="SourceGraphic" operator="atop" result="fbSourceGraphic"/>
+      <feColorMatrix in="fbSourceGraphic" result="fbSourceGraphicAlpha" values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"/>
+      <feFlood flood-color="#000" flood-opacity=".51" result="flood"/>
+      <feComposite in="flood" in2="fbSourceGraphic" operator="out" result="composite1"/>
+      <feGaussianBlur in="composite1" result="blur" stdDeviation=".1"/>
+      <feOffset dx=".1" dy=".1" result="offset"/>
+      <feComposite in="offset" in2="fbSourceGraphic" operator="atop" result="composite2"/>
+    </filter>
+    <linearGradient id="m" x1="38.65" x2="56.41" y1="79.31" y2="88.52" gradientUnits="userSpaceOnUse">
+      <stop offset="0"/>
+      <stop offset=".39" stop-color="#d0d0d0" stop-opacity=".72"/>
+      <stop offset=".45" stop-color="#e7e7e7" stop-opacity=".84"/>
+      <stop offset="1" stop-color="#fff" stop-opacity=".96"/>
+    </linearGradient>
+    <filter id="O" color-interpolation-filters="sRGB">
+      <feFlood flood-color="#FFF" flood-opacity=".5" result="flood"/>
+      <feComposite in="flood" in2="SourceGraphic" operator="in" result="composite1"/>
+      <feGaussianBlur in="composite1" result="blur" stdDeviation=".1"/>
+      <feOffset dx="-.1" dy="-.1" result="offset"/>
+      <feComposite in="SourceGraphic" in2="offset" result="fbSourceGraphic"/>
+      <feColorMatrix in="fbSourceGraphic" result="fbSourceGraphicAlpha" values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"/>
+      <feFlood flood-color="#000" flood-opacity=".5" result="flood"/>
+      <feComposite in="flood" in2="fbSourceGraphic" operator="in" result="composite1"/>
+      <feGaussianBlur in="composite1" result="blur" stdDeviation=".1"/>
+      <feOffset dx=".1" dy=".1" result="offset"/>
+      <feComposite in="fbSourceGraphic" in2="offset" result="composite2"/>
+    </filter>
+    <linearGradient id="N" x1="13.96" x2="75.19" y1="14.92" y2="14.92" gradientUnits="userSpaceOnUse" xlink:href="#a"/>
+    <linearGradient id="P" x1="42.99" x2="42.99" y1="17.46" y2="4.23" gradientUnits="userSpaceOnUse" xlink:href="#f"/>
+    <linearGradient id="Z" x1="48.95" x2="48.95" y1=".26" y2=".93" gradientUnits="userSpaceOnUse" xlink:href="#c"/>
+    <linearGradient id="ab" x1="85.99" x2="85.99" y1="5.56" y2="6.22" gradientUnits="userSpaceOnUse" xlink:href="#c"/>
+    <linearGradient id="ad" x1="81.36" x2="82.02" y1="2.91" y2="2.91" gradientUnits="userSpaceOnUse" xlink:href="#d"/>
+    <linearGradient id="af" x1="44.98" x2="44.98" y1="89.56" y2="90.22" gradientUnits="userSpaceOnUse" xlink:href="#d"/>
+    <clipPath id="Y"/>
+    <clipPath id="ac"/>
+    <clipPath id="aa"/>
+    <clipPath id="ae"/>
+    <clipPath id="ag">
+      <path fill="#b3b3b3" d="M2.51 2.12v35.72h2.65v52.92h84.67V37.84h2.64V7.41c0-.62-.65-1.32-1.32-1.32h-6.62V2.12c0-.65-.61-1.3-1.32-1.32H3.84c-.66.02-1.3.62-1.33 1.32z"/>
+      <path fill="#b3b3b3" d="M2.51 37.84v51.6c0 .7.65 1.32 1.33 1.32h1.32V37.84zM89.83 37.84h2.64v51.6c0 .65-.67 1.32-1.32 1.32h-1.32z"/>
+    </clipPath>
+    <clipPath id="U"/>
+  </defs>
+  <path fill="#b3b3b3" d="M2.51 2.12v35.72h2.65v52.92h84.67V37.84h2.64V7.41c0-.62-.65-1.32-1.32-1.32h-6.62V2.12c0-.65-.61-1.3-1.32-1.32H3.84c-.66.02-1.3.62-1.33 1.32z" clip-path="url(#g)" transform="translate(-2.51 -.53)"/>
+  <path fill="#ccc" d="M2.51 37.84v51.6c0 .7.65 1.32 1.33 1.32h1.32V37.84z" clip-path="url(#h)" transform="translate(-2.51 -.53)"/>
+  <path fill="#999" d="M89.83 37.84h2.64v51.6c0 .65-.67 1.32-1.32 1.32h-1.32z" clip-path="url(#j)" transform="translate(-2.51 -.53)"/>
+  <path fill="#999" d="M40.22 80.17c-.66 0 0 .67.66 1.33l5.95 5.95c.66.66.66.66 1.32 0l5.96-5.95c.66-.66 1.32-1.33.66-1.33z" clip-path="url(#k)" transform="translate(-2.51 -.53)"/>
+  <path fill="#999" stroke="url(#m)" stroke-opacity=".29" stroke-width=".22" d="M40.22 80.17c-.66 0 0 .67.66 1.33l5.95 5.95c.66.66.66.66 1.32 0l5.96-5.95c.66-.66 1.32-1.33.66-1.33z" clip-path="url(#k)" filter="url(#l)" transform="translate(-2.51 -.53)"/>
+  <rect width="63.5" height="52.92" x="15.74" y="25.93" fill="url(#o)" clip-path="url(#n)" rx="2" ry="2" transform="translate(-2.51 -.53)"/>
+  <rect width="63.5" height="52.92" x="15.74" y="25.93" fill="#aaa" stroke="url(#q)" stroke-opacity=".64" stroke-width=".5" clip-path="url(#n)" filter="url(#p)" rx="2" ry="2" transform="translate(-2.51 -.53)"/>
+  <g opacity=".49">
+    <path fill="url(#s)" d="M18.39 8.74H2.5v1.32H18.4z" clip-path="url(#r)" transform="translate(-2.51 -.53)"/>
+    <path fill="url(#u)" d="M18.39 11.38H2.5v1.32H18.4z" clip-path="url(#t)" transform="translate(-2.51 -.53)"/>
+    <path fill="url(#w)" d="M18.39 14.03H2.5v1.32H18.4z" clip-path="url(#v)" transform="translate(-2.51 -.53)"/>
+    <path fill="url(#y)" d="M18.39 16.67H2.5V18H18.4z" clip-path="url(#x)" transform="translate(-2.51 -.53)"/>
+    <path fill="url(#A)" d="M18.39 19.32H2.5v1.32H18.4z" clip-path="url(#z)" transform="translate(-2.51 -.53)"/>
+    <path fill="url(#C)" d="M89.96 8.2H74.08v1.33h15.88z" clip-path="url(#B)"/>
+    <path fill="url(#E)" d="M89.96 10.85H74.08v1.32h15.88z" clip-path="url(#D)"/>
+    <path fill="url(#G)" d="M89.96 13.5H74.08v1.32h15.88z" clip-path="url(#F)"/>
+    <path fill="url(#I)" d="M89.96 16.14H74.08v1.32h15.88z" clip-path="url(#H)"/>
+    <path fill="url(#K)" d="M89.96 18.79H74.08v1.32h15.88z" clip-path="url(#J)"/>
+  </g>
+  <rect width="74.08" height="17.2" x="10.45" y="6.09" fill="url(#M)" stroke="#b3b3b3" stroke-width="1.13" clip-path="url(#L)" ry="12" transform="translate(-2.51 -.53)"/>
+  <g fill="url(#N)" filter="url(#O)">
+    <g aria-label="Nintendo">
+      <path d="M19.27 14.27h.88l1.13 2.12v-2.12h.75v3.09h-.89l-1.12-2.12v2.12h-.75zM22.78 15.04h.74v2.32h-.74zm0-.9h.74v.6h-.74zM26.56 15.95v1.4h-.74v-1.07q0-.3-.02-.42-.01-.11-.04-.17-.05-.07-.12-.1-.08-.05-.17-.05-.23 0-.36.18-.14.18-.14.5v1.13h-.74v-2.31h.74v.34q.17-.2.36-.3.19-.1.41-.1.4 0 .61.25.21.25.21.71zM28.06 14.38v.66h.76v.53h-.76v.98q0 .16.06.22.07.06.26.06h.38v.52h-.64q-.43 0-.62-.18-.18-.18-.18-.62v-.98h-.37v-.53h.37v-.66zM31.59 16.2v.2h-1.73q.02.26.19.4.16.12.45.12.23 0 .47-.07.25-.07.5-.2v.56q-.25.1-.52.15-.26.05-.52.05-.63 0-.98-.31-.35-.32-.35-.9 0-.57.34-.9.35-.32.95-.32.54 0 .87.33.33.33.33.88zm-.76-.25q0-.22-.13-.34-.12-.13-.32-.13-.21 0-.35.12-.13.12-.16.35zM34.47 15.95v1.4h-.74v-1.07l-.01-.42q-.02-.11-.05-.17-.04-.07-.12-.1-.07-.05-.17-.05-.23 0-.36.18-.13.18-.13.5v1.13h-.74v-2.31h.74v.34q.16-.2.35-.3.19-.1.42-.1.4 0 .6.25.21.25.21.71zM36.74 15.38v-1.24h.74v3.22h-.74v-.34q-.15.2-.34.3-.18.1-.42.1-.43 0-.7-.34-.28-.35-.28-.88t.27-.87q.28-.35.7-.35.25 0 .43.1.19.1.34.3zm-.49 1.5q.24 0 .36-.18.13-.17.13-.5t-.13-.5q-.12-.18-.36-.18-.23 0-.36.18-.12.17-.12.5t.12.5q.13.18.36.18zM39.3 15.51q-.24 0-.38.18-.12.18-.12.5t.12.52q.14.18.38.18t.37-.18q.13-.18.13-.51t-.13-.5q-.13-.19-.37-.19zm0-.53q.6 0 .93.33.34.32.34.89t-.34.9q-.33.31-.93.31-.6 0-.94-.32-.33-.32-.33-.9t.33-.88q.34-.33.94-.33z" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal"/>
+    </g>
+    <g aria-label="GAME BOY" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal">
+      <path d="M43.3 17.49q-.55 0-.97-.25-.42-.25-.65-.73-.23-.48-.23-1.13 0-.86.37-1.55.37-.69.99-1.08.62-.4 1.36-.4.34 0 .7.09.36.07.59.2l-.17.58q-.27-.11-.6-.18-.31-.08-.6-.08-.6 0-1.03.34-.43.34-.66.9-.21.54-.21 1.14 0 .72.32 1.13.33.41.97.41.42 0 .73-.13l.22-1.23h-.64l.11-.6h1.3l-.38 2.2q-.3.16-.7.26-.42.1-.82.1zM47.3 12.45h.68l.72 4.94H48l-.18-1.33h-1.63l-.64 1.33h-.71zm.4 3l-.23-2.06-.96 2.06z" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal"/>
+      <path d="M50.16 12.45h.6l.67 2.45 1.53-2.45h.6l-.27 4.94h-.7l.24-3.64-1.62 2.47-.77-2.47-1.05 3.64h-.7zM54.68 12.45h2.76l-.11.6h-2.08l-.26 1.45h1.64l-.1.61h-1.64l-.3 1.67h2.14l-.1.61H53.8zM58.93 12.45h1.11q.72 0 1.1.24.36.24.36.82 0 .43-.2.74-.18.31-.5.48.68.25.68 1.03 0 .8-.53 1.21-.53.42-1.44.42h-1.45zm.96 2.05q.42 0 .67-.22.25-.23.25-.6 0-.33-.17-.48-.18-.15-.53-.15h-.62l-.25 1.45zm-.37 2.28q.55 0 .9-.24.36-.25.36-.7 0-.73-.8-.73h-.85l-.3 1.67zM63.58 17.49q-.84 0-1.32-.55-.49-.56-.49-1.54 0-.85.36-1.55.37-.7.98-1.1.62-.4 1.34-.4.84 0 1.33.56.48.55.48 1.53 0 .85-.36 1.55t-.98 1.1q-.62.4-1.34.4zm.12-.6q.54 0 .96-.35.41-.34.64-.89.23-.55.23-1.17 0-.69-.3-1.1-.3-.42-.9-.42-.54 0-.95.34-.42.33-.64.89-.23.55-.23 1.17 0 .68.29 1.1.3.42.9.42zM67.42 15.11l-1.05-2.66h.71l.8 2.05 1.5-2.05h.7l-1.97 2.66-.4 2.28H67z" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal"/>
+    </g>
+  </g>
+  <g fill="url(#P)" filter="url(#O)">
+    <g aria-label="Nintendo">
+      <path d="M19.27 14.27h.88l1.13 2.12v-2.12h.75v3.09h-.89l-1.12-2.12v2.12h-.75zM22.78 15.04h.74v2.32h-.74zm0-.9h.74v.6h-.74zM26.56 15.95v1.4h-.74v-1.07q0-.3-.02-.42-.01-.11-.04-.17-.05-.07-.12-.1-.08-.05-.17-.05-.23 0-.36.18-.14.18-.14.5v1.13h-.74v-2.31h.74v.34q.17-.2.36-.3.19-.1.41-.1.4 0 .61.25.21.25.21.71zM28.06 14.38v.66h.76v.53h-.76v.98q0 .16.06.22.07.06.26.06h.38v.52h-.64q-.43 0-.62-.18-.18-.18-.18-.62v-.98h-.37v-.53h.37v-.66zM31.59 16.2v.2h-1.73q.02.26.19.4.16.12.45.12.23 0 .47-.07.25-.07.5-.2v.56q-.25.1-.52.15-.26.05-.52.05-.63 0-.98-.31-.35-.32-.35-.9 0-.57.34-.9.35-.32.95-.32.54 0 .87.33.33.33.33.88zm-.76-.25q0-.22-.13-.34-.12-.13-.32-.13-.21 0-.35.12-.13.12-.16.35zM34.47 15.95v1.4h-.74v-1.07l-.01-.42q-.02-.11-.05-.17-.04-.07-.12-.1-.07-.05-.17-.05-.23 0-.36.18-.13.18-.13.5v1.13h-.74v-2.31h.74v.34q.16-.2.35-.3.19-.1.42-.1.4 0 .6.25.21.25.21.71zM36.74 15.38v-1.24h.74v3.22h-.74v-.34q-.15.2-.34.3-.18.1-.42.1-.43 0-.7-.34-.28-.35-.28-.88t.27-.87q.28-.35.7-.35.25 0 .43.1.19.1.34.3zm-.49 1.5q.24 0 .36-.18.13-.17.13-.5t-.13-.5q-.12-.18-.36-.18-.23 0-.36.18-.12.17-.12.5t.12.5q.13.18.36.18zM39.3 15.51q-.24 0-.38.18-.12.18-.12.5t.12.52q.14.18.38.18t.37-.18q.13-.18.13-.51t-.13-.5q-.13-.19-.37-.19zm0-.53q.6 0 .93.33.34.32.34.89t-.34.9q-.33.31-.93.31-.6 0-.94-.32-.33-.32-.33-.9t.33-.88q.34-.33.94-.33z" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal"/>
+    </g>
+    <g aria-label="GAME BOY" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal">
+      <path d="M43.3 17.49q-.55 0-.97-.25-.42-.25-.65-.73-.23-.48-.23-1.13 0-.86.37-1.55.37-.69.99-1.08.62-.4 1.36-.4.34 0 .7.09.36.07.59.2l-.17.58q-.27-.11-.6-.18-.31-.08-.6-.08-.6 0-1.03.34-.43.34-.66.9-.21.54-.21 1.14 0 .72.32 1.13.33.41.97.41.42 0 .73-.13l.22-1.23h-.64l.11-.6h1.3l-.38 2.2q-.3.16-.7.26-.42.1-.82.1zM47.3 12.45h.68l.72 4.94H48l-.18-1.33h-1.63l-.64 1.33h-.71zm.4 3l-.23-2.06-.96 2.06z" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal"/>
+      <path d="M50.16 12.45h.6l.67 2.45 1.53-2.45h.6l-.27 4.94h-.7l.24-3.64-1.62 2.47-.77-2.47-1.05 3.64h-.7zM54.68 12.45h2.76l-.11.6h-2.08l-.26 1.45h1.64l-.1.61h-1.64l-.3 1.67h2.14l-.1.61H53.8zM58.93 12.45h1.11q.72 0 1.1.24.36.24.36.82 0 .43-.2.74-.18.31-.5.48.68.25.68 1.03 0 .8-.53 1.21-.53.42-1.44.42h-1.45zm.96 2.05q.42 0 .67-.22.25-.23.25-.6 0-.33-.17-.48-.18-.15-.53-.15h-.62l-.25 1.45zm-.37 2.28q.55 0 .9-.24.36-.25.36-.7 0-.73-.8-.73h-.85l-.3 1.67zM63.58 17.49q-.84 0-1.32-.55-.49-.56-.49-1.54 0-.85.36-1.55.37-.7.98-1.1.62-.4 1.34-.4.84 0 1.33.56.48.55.48 1.53 0 .85-.36 1.55t-.98 1.1q-.62.4-1.34.4zm.12-.6q.54 0 .96-.35.41-.34.64-.89.23-.55.23-1.17 0-.69-.3-1.1-.3-.42-.9-.42-.54 0-.95.34-.42.33-.64.89-.23.55-.23 1.17 0 .68.29 1.1.3.42.9.42zM67.42 15.11l-1.05-2.66h.71l.8 2.05 1.5-2.05h.7l-1.97 2.66-.4 2.28H67z" style="font-feature-settings:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal"/>
+    </g>
+  </g>
+  <g>
+    <rect width="74.08" height="17.2" x="10.45" y="6.09" fill="url(#R)" clip-path="url(#Q)" opacity=".61" ry="12" transform="translate(-2.51 -.53)"/>
+  </g>
+  <g opacity=".57">
+    <path fill="url(#T)" d="M0 90.03h.66V.26H0z" clip-path="url(#S)"/>
+    <path fill="url(#V)" d="M89.3 37.3h.66V.27h-.66z" clip-path="url(#U)" transform="matrix(1 0 0 2.7439 0 -12.14)"/>
+    <path fill="url(#X)" d="M0 37.3v1.86l2.65 1.86v-3.71z" clip-path="url(#W)"/>
+    <path fill="url(#X)" d="M0 37.3v1.86l2.65 1.86v-3.71z" clip-path="url(#W)" transform="matrix(-1 0 0 1 89.96 0)"/>
+    <path fill="url(#Z)" d="M0 .26h82.68v.66H0z" clip-path="url(#Y)"/>
+    <path fill="url(#ab)" d="M82.02 5.56h7.94v.66h-7.94z" clip-path="url(#aa)"/>
+    <path fill="url(#ad)" d="M81.36.26h.66v5.29h-.66z" clip-path="url(#ac)"/>
+    <path fill="url(#af)" d="M0 89.56h89.96v.66H0z" clip-path="url(#ae)"/>
+  </g>
+</svg>
