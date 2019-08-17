@@ -25,16 +25,25 @@ function drawCanvas(buffer: Uint8Array, dimensions: [number, number], canvasRef:
 }
 
 export const BackgroundTileMap: FunctionComponent<Props> = ({debugInfo}) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const bgTileMap1Ref = useRef<HTMLCanvasElement>(null);
+  const bgTileMap2Ref = useRef<HTMLCanvasElement>(null);
+
   useEffect(() => {
-    if (debugInfo && canvasRef.current) {
-      drawCanvas(debugInfo.background(), [256, 256], canvasRef.current);
+    if (debugInfo && bgTileMap1Ref.current) {
+      drawCanvas(debugInfo.background_tile_map1(), [256, 256], bgTileMap1Ref.current);
     }
-  }, [canvasRef, debugInfo]);
+  }, [bgTileMap1Ref, debugInfo]);
+
+  useEffect(() => {
+    if (debugInfo && bgTileMap2Ref.current) {
+      drawCanvas(debugInfo.background_tile_map2(), [256, 256], bgTileMap2Ref.current);
+    }
+  }, [bgTileMap2Ref, debugInfo]);
 
   return (
     <div className="background-tile-map">
-      <canvas width={256} height={256} ref={canvasRef} />
+      <canvas width={256} height={256} ref={bgTileMap1Ref} />
+      <canvas width={256} height={256} ref={bgTileMap2Ref} />
     </div>
   );
 };

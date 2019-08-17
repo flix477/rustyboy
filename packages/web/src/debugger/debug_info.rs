@@ -50,12 +50,12 @@ impl DebugInfoJs {
         self.debug_info.cpu_debug_info.current_line()
     }
 
-    pub fn background(&self) -> Vec<u8> {
-        background_map_buffer(
-            self.debug_info.video_information.control.bg_map(),
-            &self.debug_info.video_information,
-        )
-        .to_vec()
+    pub fn background_tile_map1(&self) -> Vec<u8> {
+        background_map_buffer(0, &self.debug_info.video_information).to_vec()
+    }
+
+    pub fn background_tile_map2(&self) -> Vec<u8> {
+        background_map_buffer(1, &self.debug_info.video_information).to_vec()
     }
 
     pub fn tile(&self, index: usize) -> Vec<u8> {

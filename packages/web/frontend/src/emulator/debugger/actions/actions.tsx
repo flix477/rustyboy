@@ -36,14 +36,14 @@ export const Actions: FunctionComponent<Props> = ({onContinue, debuggerRef, debu
 
   return (
     <div className="actions">
-      <button disabled={!debuggerRef} onClick={onContinueClick}>
+      <button disabled={!debuggerRef} onClick={onContinueClick} title="Continue">
         <PlayIcon />
       </button>
-      <button disabled={!debuggerRef} onClick={onStepInto}>
-        <StepIntoIcon />
-      </button>
-      <button disabled={!debuggerRef} onClick={onStepOver}>
+      <button disabled={!debuggerRef} onClick={onStepOver} title="Step over">
         <StepOverIcon />
+      </button>
+      <button disabled={!debuggerRef} onClick={onStepInto} title="Step into">
+        <StepIntoIcon />
       </button>
     </div>
   );

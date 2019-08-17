@@ -4,3 +4,7 @@
     grid-template-rows: auto 1fr auto;
     box-shadow: 0 0 16px rgba(0, 0, 0, 0.2);
 }
+
+.debugger.disabled > * {
+    pointer-events: none;
+}

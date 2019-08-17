@@ -17,6 +17,11 @@
 
 .gameboy.disabled {
     opacity: 0.4;
+    filter: grayscale();
+}
+
+.gameboy.disabled canvas {
+    opacity: 0.8;
 }
 
 .gameboy .background {

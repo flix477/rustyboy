@@ -1,9 +1,9 @@
-import React, { FunctionComponent, useState, useEffect, useRef } from 'react';
+import React, { FunctionComponent, useState, useEffect, useRef, useCallback } from 'react';
 import { FixedSizeList as List } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import Line, {Instruction} from './line';
-import './memory-map.css';
+import Line from './line';
 import { DebugInfo } from 'rustyboy-web';
+import './memory-map.css';
 
 const initialInstructions = Array.from({length: 0x10000}, (_, i) => ({
   line: i,
@@ -13,9 +13,18 @@ const initialInstructions = Array.from({length: 0x10000}, (_, i) => ({
 
 interface Props {
   debugInfo?: DebugInfo;
+  addBreakpoint: (line: number) => void;
+  removeBreakpoint: (line: number) => void;
+  breakpoints: Uint16Array;
 }
 
-export const MemoryMap: FunctionComponent<Props> = ({debugInfo}) => {
+interface Instruction {
+  line: number;
+  mnemonic: string;
+  operands: string;
+}
+
+export const MemoryMap: FunctionComponent<Props> = ({debugInfo, addBreakpoint, removeBreakpoint, breakpoints}) => {
   const listRef = useRef<List>(null);
   const currentLine = debugInfo && debugInfo.currentLine();
   const [lastInstructions, setLastInstructions] = useState<Instruction[]>(initialInstructions);
@@ -24,11 +33,27 @@ export const MemoryMap: FunctionComponent<Props> = ({debugInfo}) => {
     instructions: lastInstructions
   };
 
+  const onBreakpoint = useCallback(line => {
+    const breakpoint = breakpoints.findIndex(x => x === line);
+    if (breakpoint !== -1) {
+      removeBreakpoint(breakpoint);
+    } else {
+      addBreakpoint(line);
+    }
+  }, [breakpoints, addBreakpoint, removeBreakpoint]);
+
   useEffect(() => {
     if (debugInfo) {
-      setLastInstructions(debugInfo.parseAll());
+      setLastInstructions(
+        debugInfo.parseAll()
+          .map((instruction: Instruction) => ({
+              ...instruction,
+              isBreakpoint: breakpoints.some(x => instruction.line === x),
+              onBreakpoint
+          }))
+      );
     }
-  }, [debugInfo]);
+  }, [debugInfo, breakpoints, onBreakpoint]);
 
   useEffect(() => {
     if (currentLine !== undefined && listRef.current) {

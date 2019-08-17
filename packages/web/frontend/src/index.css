@@ -1,5 +1,6 @@
 body {
-  background-color: #943d7a;
+  --primary: #943d7a;
+  background-color: var(--primary);
   color: white;
   margin: 0;
   font-family: 'Cabin', sans-serif;
