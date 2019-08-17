@@ -1,9 +1,35 @@
 .gameboy {
-    align-self: center;
-    justify-self: center;
-    transition: opacity 500ms;
+    position: relative;
+    display: inline-block;
+    animation: fadeUp 0.3s forwards ease-out;
+}
+
+@keyframes fadeUp {
+    from {
+        transform: translateY(80%);
+        opacity: 0.3;
+    }
+    to {
+        transform: translateY(10%);
+        opacity: 1;
+    }
 }
 
 .gameboy.disabled {
     opacity: 0.4;
+    filter: grayscale();
+}
+
+.gameboy.disabled canvas {
+    opacity: 0.8;
+}
+
+.gameboy .background {
+    box-shadow: 0 0 36px rgba(0, 0, 0, 0.3);
+}
+
+.gameboy canvas {
+    position: absolute;
+    left: calc(50% - 173px);
+    top: 130px;
 }

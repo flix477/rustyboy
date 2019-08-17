@@ -1,6 +1,7 @@
 import React, {FunctionComponent, useEffect, useCallback} from 'react';
 import {Gameboy as GameboyType, InputButton, InputTypeJs, Input, Debugger, DebugInfo} from 'rustyboy-web';
 
+import {ReactComponent as GameboyBackground} from './gameboy-full-o1.svg';
 import './gameboy.css';
 
 function className(paused: boolean): string {
@@ -103,7 +104,8 @@ const Gameboy: FunctionComponent<Props> = ({gameboy, debuggerRef, onBreakpointHi
 
   return (
     <div className={className(paused)} onClick={onClick}>
-      <canvas width="320" height="288" id="canvas" />
+      <GameboyBackground className="background" />
+      <canvas width="345" height="313" id="canvas" />
     </div>
   );
 };

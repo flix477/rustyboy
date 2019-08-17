@@ -26,6 +26,7 @@ const App: FunctionComponent = () => {
   const Emulator = imports && imports.Emulator && imports.Emulator.default;
   const [game, setGame] = useState<Blob>();
   const [gameboy, setGameboy] = useState<GameboyType>();
+  const [hasDebugger, setHasDebugger] = useState(false);
   const loading = !imports;
 
   useEffect(() => {
@@ -44,15 +45,35 @@ const App: FunctionComponent = () => {
     load();
   }, [game, loading, rustyboy]);
 
+  if (loading) return <p>Loading...</p>;
+
   return (
     <div className="container">
-      {loading && <p>Loading...</p>}
-      <input type="file" accept=".gb" onChange={value => {
-        if (value.target.files && value.target.files[0]) {
-          setGame(value.target.files[0]);
-        }
-      }} />
-      {gameboy && Emulator && <Emulator gameboy={gameboy} />}
+      {!gameboy && (
+        <div className="fileSelectionContainer">
+          <h1>Rustyboy</h1>
+          <div className="cartridgeInput">
+            <label htmlFor="cartridge">Load game</label>
+            <input hidden id="cartridge" name="cartridge" type="file" accept=".gb" onChange={value => {
+              if (value.target.files && value.target.files[0]) {
+                setGame(value.target.files[0]);
+              }
+            }} />
+          </div>
+          <label htmlFor="hasDebugger" className="hasDebugger">
+            <input
+              id="hasDebugger"
+              name="hasDebugger"
+              type="checkbox"
+              onChange={(e) => setHasDebugger(e.target.checked)}
+            />
+            <span>Debug mode</span>
+          </label>
+        </div>
+      )}
+      {gameboy && Emulator && (
+        <Emulator hasDebugger={hasDebugger} gameboy={gameboy} />
+      )}
     </div>
   );
 };

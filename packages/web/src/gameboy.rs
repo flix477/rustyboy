@@ -64,4 +64,8 @@ impl GameboyJs {
         self.renderer = Some(renderer);
         Ok(())
     }
+
+    pub fn reset(&mut self) {
+        self.gameboy.reset()
+    }
 }

@@ -18,6 +18,7 @@ function className(loaded: boolean): string {
 
 export const Debugger: FunctionComponent<Props> = ({debuggerRef, debugInfo, onContinue}) => {
   const [lastDebugInfo, setLastDebugInfo] = useState<DebugInfo>();
+  const [breakpoints, setBreakpoints] = useState<Uint16Array>(new Uint16Array());
   const loaded = Boolean(debugInfo);
 
   useEffect(() => {
@@ -32,10 +33,20 @@ export const Debugger: FunctionComponent<Props> = ({debuggerRef, debugInfo, onCo
     }
   }, [debuggerRef, loaded]);
 
+  const addBreakpoint = useCallback(line => {
+    debuggerRef.addBreakpoint(RegisterTypeJs.PC, line, false);
+    setBreakpoints(debuggerRef.breakpoints());
+  }, [debuggerRef]);
+
+  const removeBreakpoint = useCallback(index => {
+    debuggerRef.removeBreakpoint(index);
+    setBreakpoints(debuggerRef.breakpoints());
+  }, [debuggerRef]);
+
   return (
     <div className={className(loaded)} onClick={onClick}>
       <BackgroundTileMap debugInfo={lastDebugInfo} />
-      <MemoryMap debugInfo={lastDebugInfo} />
+      <MemoryMap breakpoints={breakpoints} addBreakpoint={addBreakpoint} removeBreakpoint={removeBreakpoint} debugInfo={lastDebugInfo} />
       <Actions debugInfo={debugInfo} debuggerRef={debuggerRef} onContinue={onContinue} />
     </div>
   );

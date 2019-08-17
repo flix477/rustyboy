@@ -44,6 +44,30 @@ impl DebuggerJs {
         )))
     }
 
+    #[wasm_bindgen]
+    pub fn breakpoints(&self) -> Vec<u16> {
+        self.debugger
+            .breakpoints
+            .iter()
+            .filter_map(|breakpoint| {
+                breakpoint
+                    .conditions
+                    .iter()
+                    .filter_map(|condition| {
+                        if let BreakpointCondition::RegisterEquals(RegisterType::PC, value) =
+                            condition
+                        {
+                            Some(value)
+                        } else {
+                            None
+                        }
+                    })
+                    .next()
+                    .copied()
+            })
+            .collect()
+    }
+
     #[wasm_bindgen(js_name = removeBreakpoint)]
     pub fn remove_breakpoint(&mut self, index: usize) -> DebuggerActionResultJs {
         DebuggerActionResultJs::from(

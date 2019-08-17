@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 9.95 10.37">
+  <g fill="none" stroke="currentColor">
+    <path stroke-width=".6" d="M.3 5.68L4.96.46 7.5 3.38"/>
+    <path stroke-linecap="square" stroke-linejoin="round" stroke-width=".58" d="M6.2 4.57L8.68 2.1l.91 3.4z" paint-order="markers fill stroke"/>
+    <path stroke-linecap="square" stroke-linejoin="round" stroke-width=".6" d="M.3 7.61h9.34v2.46H.3z" paint-order="markers fill stroke"/>
+  </g>
+</svg>

@@ -7,9 +7,10 @@ import './emulator.css';
 
 interface Props {
   gameboy: GameboyType;
+  hasDebugger: boolean;
 }
 
-export const Emulator: FunctionComponent<Props> = ({ gameboy }) => {
+export const Emulator: FunctionComponent<Props> = ({ gameboy, hasDebugger }) => {
   const [debuggerRef, setDebuggerRef] = useState<DebuggerType>();
   const [debugInfo, setDebugInfo] = useState<DebugInfo>();
 
@@ -18,8 +19,10 @@ export const Emulator: FunctionComponent<Props> = ({ gameboy }) => {
   };
 
   useEffect(() => {
-    setDebuggerRef(new DebuggerType());
-  }, [setDebuggerRef]);
+    if (hasDebugger) {
+      setDebuggerRef(new DebuggerType());
+    }
+  }, [hasDebugger, setDebuggerRef]);
 
   const onContinue = useCallback(() => {
     setDebugInfo(undefined);
@@ -32,13 +35,15 @@ export const Emulator: FunctionComponent<Props> = ({ gameboy }) => {
 
   return (
     <div className="emulator">
-      <Gameboy
-        gameboy={gameboy}
-        debuggerRef={debuggerRef}
-        onBreakpointHit={onBreakpointHit}
-        paused={Boolean(debugInfo)}
-        onClick={onGameboyClick}
-      />
+      <div className="gameboyContainer">
+        <Gameboy
+          gameboy={gameboy}
+          debuggerRef={debuggerRef}
+          onBreakpointHit={onBreakpointHit}
+          paused={Boolean(debugInfo)}
+          onClick={onGameboyClick}
+        />
+      </div>
       {debuggerRef && (
         <Debugger
           debuggerRef={debuggerRef}
