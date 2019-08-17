@@ -7,7 +7,7 @@ export interface Instruction {
   mnemonic: string;
   operands: string;
   isBreakpoint: boolean;
-  onBreakpoint?: (line: number) => void
+  onBreakpoint?: (line: number) => void;
 }
 
 function formatLine(line: number) {

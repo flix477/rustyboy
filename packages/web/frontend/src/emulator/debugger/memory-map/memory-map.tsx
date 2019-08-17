@@ -47,9 +47,9 @@ export const MemoryMap: FunctionComponent<Props> = ({debugInfo, addBreakpoint, r
       setLastInstructions(
         debugInfo.parseAll()
           .map((instruction: Instruction) => ({
-              ...instruction,
-              isBreakpoint: breakpoints.some(x => instruction.line === x),
-              onBreakpoint
+            ...instruction,
+            isBreakpoint: breakpoints.some(x => instruction.line === x),
+            onBreakpoint
           }))
       );
     }
