@@ -73,7 +73,7 @@ impl Processor {
                 self.cycles_left += self.execute_next(bus, Prefix::None);
             }
         } else {
-            self.cycles_left -= 1;
+            self.cycles_left = self.cycles_left.saturating_sub(1);
             if self.cycles_left == 0 {
                 return ProcessorStepResult::InstructionCompleted;
             }

@@ -11,7 +11,7 @@ use crate::cartridge::mbc::mbc2::MBC2;
 use crate::cartridge::mbc::mbc3::MBC3;
 use crate::cartridge::mbc::mbc5::MBC5;
 
-pub struct MBCFactory {}
+pub struct MBCFactory;
 impl MBCFactory {
     pub fn from_metadata(metadata: &CartridgeMetadata) -> Option<Box<dyn MemoryBankController>> {
         let variant = MBCVariant::from_capabilities(&metadata.capabilities)?;
@@ -43,19 +43,25 @@ pub trait MemoryBankController {
 
     fn write_rom(&mut self, _address: usize, _value: u8) {}
 
-    fn read_ram(&self, address: usize, buffer: &[u8]) -> u8 {
+    fn read_ram(&self, address: usize, ram: &[u8]) -> u8 {
         let address = self.relative_ram_address(address);
-        buffer[address]
+        if address < ram.len() {
+            ram[address]
+        } else {
+            0xFF
+        }
     }
 
-    fn write_ram(&mut self, address: usize, value: u8, buffer: &mut Vec<u8>) {
+    fn write_ram(&self, address: usize, value: u8, ram: &mut [u8]) {
         let address = self.relative_ram_address(address);
-        buffer[address] = value;
+        if address < ram.len() {
+            ram[address] = value
+        }
     }
 
     fn relative_ram_address(&self, address: usize) -> usize {
         let current_bank = self.ram_bank() as usize;
-        address + current_bank * 0x2000
+        address + current_bank * 0x2000 - 0xA000
     }
 }
 
