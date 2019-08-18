@@ -18,16 +18,6 @@ This is a monorepo. You can find individual ports in their respective subfolders
 | Super Game Boy emulation | Not started 🚫              |
 | MBC emulation            | In progress ⚠️              |
 
-### Game compatibility table
-| Game                              | Compatibility     |
-| --------------------------------- | ----------------- |
-| Castlevania II: Belmont's Revenge | Playable ✅       |
-| Link's Awakening                  | In game ⚠️        |
-| Mega Man: Dr. Wily's Revenge      | Playable ✅       |
-| Pokémon Red/Blue                  | Playable ✅       |
-| Super Mario Land                  | Playable ✅       |
-| Tetris                            | Playable ✅       |
-
 ### Blargg's CPU Tests
 Test ROMs are available [here](http://slack.net/~ant/old/gb-tests/)
 
