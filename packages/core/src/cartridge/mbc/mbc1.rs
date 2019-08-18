@@ -162,7 +162,7 @@ mod tests {
     #[test]
     fn ram_bank_default() {
         let mbc = MBC1::new(&[]);
-        assert_eq!(mbc.relative_ram_address(0xA000), 0xA000);
+        assert_eq!(mbc.relative_ram_address(0xA000), 0);
     }
 
     #[test]
