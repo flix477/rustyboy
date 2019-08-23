@@ -58,7 +58,7 @@ impl Gameboy {
                     debugger.clean_breakpoints(&cpu_debug_info);
                     let debug_info = DebugInfo {
                         cpu_debug_info,
-                        video_information: self.hardware.video().debug_information(),
+                        video_information: self.hardware.video.debug_information(),
                     };
                     return GameboyEvent::Debugger(Box::new(debug_info));
                 }
@@ -104,6 +104,6 @@ impl Iterator for Gameboy {
 
     fn next(&mut self) -> Option<Self::Item> {
         self.run_to_vblank();
-        Some(self.hardware().video().screen().buffer.rgb())
+        Some(self.hardware().video.screen().buffer.rgb())
     }
 }

@@ -4,13 +4,15 @@ use rustyboy_core::cartridge::Cartridge;
 use rustyboy_core::config::Config;
 use rustyboy_core::debugger::Debugger;
 use rustyboy_core::gameboy::{DeviceType, Gameboy, GameboyEvent};
+use std::fs;
 use std::process::exit;
 
 use crate::shell_debugger::ShellDebugger;
 use crate::window::background::BackgroundWindow;
 use crate::window::tile_data::TileDataWindow;
-use crate::window::{screen::MainWindow, Window};
+use crate::window::{screen::MainWindow, UpdateResult, Window};
 use rustyboy_core::cartridge::cartridge_metadata::CartridgeMetadata;
+use std::path::PathBuf;
 use std::time::{Duration, Instant};
 
 pub fn run() {
@@ -53,6 +55,7 @@ pub fn run() {
         show_background: matches.is_present("background"),
         show_tile_data: matches.is_present("tiles"),
         show_sprite_data: matches.is_present("sprites"),
+        path: PathBuf::from(path),
     };
 
     start_emulation(cartridge, config, options);
@@ -79,12 +82,13 @@ struct RunOptions {
     pub show_background: bool,
     pub show_tile_data: bool,
     pub show_sprite_data: bool,
+    pub path: PathBuf,
 }
 
 fn start_emulation(cartridge: Cartridge, config: Config, options: RunOptions) {
     let mut gameboy = Gameboy::new(cartridge, &config);
 
-    let mut windows = create_windows(options);
+    let mut windows = create_windows(&options);
     let mut debugger = config.debugger;
     let mut shell_debugger = ShellDebugger::default();
 
@@ -101,13 +105,28 @@ fn start_emulation(cartridge: Cartridge, config: Config, options: RunOptions) {
             shell_debugger.run(debugger.as_mut().unwrap(), debug_info.as_ref())
         }
 
-        for window in &mut windows {
-            window.update(&mut gameboy);
+        if let UpdateResult::Close = update_windows(&mut gameboy, &mut windows) {
+            if let Some(ram) = &gameboy.hardware().cartridge.ram {
+                fs::write(options.path.with_extension("sav"), ram)
+                    .expect("Could not save cartridge RAM; game progress might have been lost");
+            }
+
+            break;
         }
     }
 }
 
-fn create_windows(options: RunOptions) -> Vec<Box<dyn Window>> {
+fn update_windows(gameboy: &mut Gameboy, windows: &mut Vec<Box<dyn Window>>) -> UpdateResult {
+    for window in windows.iter_mut() {
+        if let UpdateResult::Close = window.update(gameboy) {
+            return UpdateResult::Close;
+        }
+    }
+
+    UpdateResult::Continue
+}
+
+fn create_windows(options: &RunOptions) -> Vec<Box<dyn Window>> {
     let main_window = MainWindow::new();
     let mut windows: Vec<Box<dyn Window>> = vec![Box::new(main_window)];
 
