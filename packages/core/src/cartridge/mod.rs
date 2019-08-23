@@ -73,7 +73,6 @@ impl Cartridge {
             }
         }
     }
-
 }
 
 impl Readable for Cartridge {

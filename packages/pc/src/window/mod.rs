@@ -29,5 +29,5 @@ pub fn create_display(
 
 pub enum UpdateResult {
     Continue,
-    Close
+    Close,
 }

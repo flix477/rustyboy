@@ -4,16 +4,16 @@ use rustyboy_core::cartridge::Cartridge;
 use rustyboy_core::config::Config;
 use rustyboy_core::debugger::Debugger;
 use rustyboy_core::gameboy::{DeviceType, Gameboy, GameboyEvent};
-use std::process::exit;
 use std::fs;
+use std::process::exit;
 
 use crate::shell_debugger::ShellDebugger;
 use crate::window::background::BackgroundWindow;
 use crate::window::tile_data::TileDataWindow;
-use crate::window::{screen::MainWindow, Window, UpdateResult};
+use crate::window::{screen::MainWindow, UpdateResult, Window};
 use rustyboy_core::cartridge::cartridge_metadata::CartridgeMetadata;
-use std::time::{Duration, Instant};
 use std::path::PathBuf;
+use std::time::{Duration, Instant};
 
 pub fn run() {
     let matches = App::new("rustyboy")
@@ -55,7 +55,7 @@ pub fn run() {
         show_background: matches.is_present("background"),
         show_tile_data: matches.is_present("tiles"),
         show_sprite_data: matches.is_present("sprites"),
-        path: PathBuf::from(path)
+        path: PathBuf::from(path),
     };
 
     start_emulation(cartridge, config, options);
@@ -82,7 +82,7 @@ struct RunOptions {
     pub show_background: bool,
     pub show_tile_data: bool,
     pub show_sprite_data: bool,
-    pub path: PathBuf
+    pub path: PathBuf,
 }
 
 fn start_emulation(cartridge: Cartridge, config: Config, options: RunOptions) {

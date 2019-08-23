@@ -9,8 +9,8 @@ use rustyboy_core::video::screen::BACKGROUND_SIZE;
 
 use super::{create_display, Window};
 use crate::keymap::keymap;
-use rustyboy_core::video::color::{Color, ColorFormat};
 use crate::window::UpdateResult;
+use rustyboy_core::video::color::{Color, ColorFormat};
 
 const TILE_SIZE: usize = 8;
 const GRID_DIMENSIONS: (usize, usize) = (12, 32);

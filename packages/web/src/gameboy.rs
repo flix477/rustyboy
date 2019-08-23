@@ -42,7 +42,7 @@ impl GameboyJs {
     }
 
     fn screen(&self) -> [u8; BUFFER_SIZE * 3] {
-        let screen = self.gameboy.hardware().video().screen();
+        let screen = self.gameboy.hardware().video.screen();
         screen.buffer.rgb()
     }
 
