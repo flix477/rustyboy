@@ -10,6 +10,7 @@ use rustyboy_core::video::screen::BACKGROUND_SIZE;
 use super::{create_display, Window};
 use crate::keymap::keymap;
 use rustyboy_core::video::color::{Color, ColorFormat};
+use crate::window::UpdateResult;
 
 const TILE_SIZE: usize = 8;
 const GRID_DIMENSIONS: (usize, usize) = (12, 32);
@@ -31,11 +32,11 @@ impl TileDataWindow {
 }
 
 impl Window for TileDataWindow {
-    fn update(&mut self, gameboy: &mut Gameboy) {
+    fn update(&mut self, gameboy: &mut Gameboy) -> UpdateResult {
         let mut target = self.display.draw();
         target.clear_color(0.0, 0.0, 1.0, 1.0);
 
-        let tile_data = gameboy.hardware().video().memory().tile_data();
+        let tile_data = gameboy.hardware().video.memory().tile_data();
 
         let mut buffer: Vec<u8> = vec![];
         for y in 0..GRID_DIMENSIONS.1 * TILE_SIZE {
@@ -84,6 +85,8 @@ impl Window for TileDataWindow {
                 }
             }
             _ => {}
-        })
+        });
+
+        UpdateResult::Continue
     }
 }

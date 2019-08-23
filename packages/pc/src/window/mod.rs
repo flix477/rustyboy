@@ -9,7 +9,7 @@ pub mod screen;
 pub mod tile_data;
 
 pub trait Window {
-    fn update(&mut self, gameboy: &mut Gameboy);
+    fn update(&mut self, gameboy: &mut Gameboy) -> UpdateResult;
 }
 
 pub fn create_display(
@@ -25,4 +25,9 @@ pub fn create_display(
         });
     let ctx = ContextBuilder::new();
     Display::new(window, ctx, &events_loop).unwrap()
+}
+
+pub enum UpdateResult {
+    Continue,
+    Close
 }

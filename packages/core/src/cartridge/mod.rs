@@ -7,17 +7,27 @@ use crate::cartridge::cartridge_metadata::CartridgeMetadata;
 use crate::cartridge::mbc::{MBCFactory, MemoryBankController};
 use std::error::Error;
 use std::fs;
+use std::path::Path;
 
 pub struct Cartridge {
     buffer: Vec<u8>,
     metadata: CartridgeMetadata,
     mbc: Option<Box<dyn MemoryBankController>>,
-    ram: Option<Vec<u8>>,
+    pub ram: Option<Vec<u8>>,
 }
 
 impl Cartridge {
     pub fn from_file(filename: &str) -> Result<Cartridge, Box<dyn Error>> {
-        Cartridge::from_buffer(fs::read(filename)?)
+        let mut cartridge = Cartridge::from_buffer(fs::read(filename)?)?;
+
+        if cartridge.ram.is_some() {
+            let ram_path = Path::new(filename).with_extension("sav");
+            if let Ok(ram_buffer) = fs::read(ram_path) {
+                cartridge.ram = Some(ram_buffer);
+            }
+        }
+
+        Ok(cartridge)
     }
 
     pub fn from_buffer(buffer: Vec<u8>) -> Result<Cartridge, Box<dyn Error>> {
@@ -63,6 +73,7 @@ impl Cartridge {
             }
         }
     }
+
 }
 
 impl Readable for Cartridge {

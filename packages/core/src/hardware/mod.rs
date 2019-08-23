@@ -11,11 +11,11 @@ pub mod joypad;
 mod timer;
 
 pub struct Hardware {
-    cartridge: Cartridge,
+    pub cartridge: Cartridge,
     interrupt_handler: InterruptHandler,
     joypad: Joypad,
     timer: Timer,
-    video: Video,
+    pub video: Video,
     internal_ram: [u8; 8192],
     high_ram: [u8; 127],
 }
@@ -51,9 +51,6 @@ impl Hardware {
         self.video.clock(&mut self.interrupt_handler)
     }
 
-    pub fn video(&self) -> &Video {
-        &self.video
-    }
     pub fn interrupt_handler(&self) -> &InterruptHandler {
         &self.interrupt_handler
     }
