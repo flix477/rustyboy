@@ -12,7 +12,7 @@ use crate::window::background::BackgroundWindow;
 use crate::window::tile_data::TileDataWindow;
 use crate::window::{screen::MainWindow, UpdateResult, Window};
 use rustyboy_core::cartridge::cartridge_metadata::CartridgeMetadata;
-use std::path::{PathBuf, Path};
+use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
 
 pub fn run() {
@@ -61,7 +61,8 @@ pub fn run() {
     let mut gameboy = Gameboy::new(cartridge, &config);
     let savestate_path = Path::new(path).with_extension("state");
     if let Ok(buffer) = fs::read(savestate_path) {
-        gameboy.load_savestate(buffer)
+        gameboy
+            .load_savestate(buffer)
             .unwrap_or_else(|_| println!("Couldn't load savestate. Maybe it is corrupted?"))
     }
 
