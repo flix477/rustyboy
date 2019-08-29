@@ -103,14 +103,16 @@ impl PositionRegisters {
 
 impl Savestate for PositionRegisters {
     fn dump_savestate(&self, buffer: &mut Vec<u8>) {
-        self.state.state.dump_savestate(buffer);
+        self.state.next_state.dump_savestate(buffer);
     }
 
     fn load_savestate<'a>(
         &mut self,
         buffer: &mut std::slice::Iter<'a, u8>,
     ) -> Result<(), LoadSavestateError> {
-        self.state.state.load_savestate(buffer)
+        self.state.next_state.load_savestate(buffer)?;
+        self.state.apply_next_state();
+        Ok(())
     }
 }
 
