@@ -1,7 +1,8 @@
 use crate::bus::{Readable, Writable};
 use crate::processor::interrupt::{Interrupt, InterruptHandler};
+use crate::util::savestate::{Savestate, LoadSavestateError, read_savestate_byte, read_savestate_bool, write_savestate_u16, read_savestate_u16};
 
-const CLOCK_SPEEDS: [usize; 4] = [1024, 16, 64, 256];
+const CLOCK_SPEEDS: [u16; 4] = [1024, 16, 64, 256];
 
 pub struct Timer {
     counter_enabled: bool,
@@ -71,6 +72,23 @@ impl Writable for Timer {
     }
 }
 
+impl Savestate for Timer {
+    fn dump_savestate(&self, buffer: &mut Vec<u8>) {
+        buffer.push(self.counter_enabled as u8);
+        self.divider.dump_savestate(buffer);
+        self.counter.dump_savestate(buffer);
+        buffer.push(self.modulo);
+    }
+
+    fn load_savestate<'a>(&mut self, buffer: &mut std::slice::Iter<u8>) -> Result<(), LoadSavestateError> {
+        self.counter_enabled = read_savestate_bool(buffer)?;
+        self.divider.load_savestate(buffer)?;
+        self.counter.load_savestate(buffer)?;
+        self.modulo = read_savestate_byte(buffer)?;
+        Ok(())
+    }
+}
+
 #[derive(PartialEq)]
 enum ClockResult {
     Overflow,
@@ -78,13 +96,13 @@ enum ClockResult {
 }
 
 struct Counter {
-    cycles_per_tick: usize,
-    cycles_left: usize,
+    cycles_per_tick: u16,
+    cycles_left: u16,
     pub value: u8,
 }
 
 impl Counter {
-    pub fn new(cycles_per_tick: usize) -> Self {
+    pub fn new(cycles_per_tick: u16) -> Self {
         Self {
             cycles_per_tick,
             cycles_left: cycles_per_tick,
@@ -108,12 +126,27 @@ impl Counter {
         }
     }
 
-    pub fn cycles_per_tick(&self) -> usize {
+    pub fn cycles_per_tick(&self) -> u16 {
         self.cycles_per_tick
     }
 
-    pub fn set_cycles_per_tick(&mut self, value: usize) {
+    pub fn set_cycles_per_tick(&mut self, value: u16) {
         // TODO: what happens to self.cycles_left?
         self.cycles_per_tick = value;
+    }
+}
+
+impl Savestate for Counter {
+    fn dump_savestate(&self, buffer: &mut Vec<u8>) {
+        write_savestate_u16(buffer, self.cycles_per_tick);
+        write_savestate_u16(buffer, self.cycles_left);
+        buffer.push(self.value);
+    }
+
+    fn load_savestate<'a>(&mut self, buffer: &mut std::slice::Iter<u8>) -> Result<(), LoadSavestateError> {
+        self.cycles_per_tick = read_savestate_u16(buffer)?;
+        self.cycles_left = read_savestate_u16(buffer)?;
+        self.value = read_savestate_byte(buffer)?;
+        Ok(())
     }
 }

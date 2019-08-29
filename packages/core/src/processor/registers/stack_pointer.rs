@@ -3,7 +3,7 @@ use crate::bus::Bus;
 
 #[derive(Copy, Clone)]
 pub struct StackPointer {
-    value: u16,
+    pub value: u16,
 }
 
 impl StackPointer {

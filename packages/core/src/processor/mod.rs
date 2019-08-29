@@ -17,6 +17,7 @@ use crate::processor::decoder::decode_opcode;
 use crate::processor::operand_parser::OperandParser;
 use crate::processor::registers::program_counter::ProgramCounter;
 use crate::util::bitflags::Bitflags;
+use crate::util::savestate::{Savestate, LoadSavestateError, read_savestate_byte, read_savestate_bool};
 
 /// This struct contains the logic for the GameBoy's processor
 pub struct Processor {
@@ -157,7 +158,7 @@ impl LR35902 for Processor {
 /// it bugs and repeats the instruction following it twice.
 ///
 /// https://github.com/AntonioND/giibiiadvance/blob/master/docs/TCAGBD.pdf section 4.10
-#[derive(PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 enum HaltMode {
     /// Normal HALT mode, CPU execution is stopped
     Normal,
@@ -167,6 +168,17 @@ enum HaltMode {
     None,
 }
 
+impl HaltMode {
+    pub fn from(value: u8) -> Option<Self> {
+        match value {
+            0 => Some(HaltMode::Normal),
+            1 => Some(HaltMode::Bugged),
+            2 => Some(HaltMode::None),
+            _ => None
+        }
+    }
+}
+
 /// Represents the result of a single CPU step
 #[derive(PartialEq)]
 pub enum ProcessorStepResult {
@@ -174,4 +186,21 @@ pub enum ProcessorStepResult {
     InstructionInProgress,
     /// Means we have completely finished the last instruction
     InstructionCompleted,
+}
+
+impl Savestate for Processor {
+    fn dump_savestate(&self, buffer: &mut Vec<u8>) {
+        self.registers.dump_savestate(buffer);
+        buffer.push(self.halt_mode as u8);
+        buffer.push(self.cycles_left);
+        buffer.push(self.pending_ei as u8);
+    }
+
+    fn load_savestate<'a>(&mut self, buffer: &mut std::slice::Iter<u8>) -> Result<(), LoadSavestateError> {
+        self.registers.load_savestate(buffer)?;
+        self.halt_mode = buffer.next().cloned().and_then(HaltMode::from).ok_or(LoadSavestateError::InvalidSavestate)?;
+        self.cycles_left = read_savestate_byte(buffer)?;
+        self.pending_ei = read_savestate_bool(buffer)?;
+        Ok(())
+    }
 }

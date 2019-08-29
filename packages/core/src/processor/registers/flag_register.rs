@@ -3,7 +3,7 @@ use crate::util::bitflags::Bitflags;
 
 #[derive(Copy, Clone)]
 pub struct FlagRegister {
-    register: DualRegister,
+    pub register: DualRegister,
 }
 
 impl FlagRegister {
@@ -25,10 +25,6 @@ impl FlagRegister {
 
     pub fn set_flags(&mut self, value: u8) {
         self.register.low.set(u16::from(value) & 0xF0);
-    }
-
-    pub fn register(&self) -> &DualRegister {
-        &self.register
     }
 
     pub fn set(&mut self, value: u16) {

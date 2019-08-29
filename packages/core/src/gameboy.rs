@@ -8,6 +8,7 @@ use crate::hardware::{joypad::Input, Hardware};
 use crate::processor::{Processor, ProcessorStepResult};
 use crate::video::screen::BUFFER_SIZE;
 use crate::video::status_register::StatusMode;
+use crate::util::savestate::{LoadSavestateError, Savestate};
 
 /// This struct represents a GameBoy with all its components
 pub struct Gameboy {
@@ -81,6 +82,20 @@ impl Gameboy {
     /// Sends an button event to the GameBoy
     pub fn send_input(&mut self, input: Input) {
         self.hardware.send_input(input);
+    }
+
+    pub fn dump_savestate(&self) -> Vec<u8> {
+        let mut buffer = Vec::new();
+        self.processor.dump_savestate(&mut buffer);
+        self.hardware.dump_savestate(&mut buffer);
+        buffer
+    }
+
+    pub fn load_savestate(&mut self, buffer: Vec<u8>) -> Result<(), LoadSavestateError> {
+        let mut iter = buffer.iter();
+        self.processor.load_savestate(&mut iter)?;
+        self.hardware.load_savestate(&mut iter)?;
+        Ok(())
     }
 }
 

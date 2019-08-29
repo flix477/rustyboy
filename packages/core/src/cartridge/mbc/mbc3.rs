@@ -2,6 +2,7 @@ use super::real_time_clock::{RTCRegister, RealTimeClock};
 use super::MemoryBankController;
 use crate::cartridge::cartridge_capability::CartridgeCapability;
 use std::cmp;
+use crate::util::savestate::{Savestate, LoadSavestateError, read_savestate_byte, read_savestate_bool};
 
 pub struct MBC3 {
     rom_bank: u8,
@@ -37,6 +38,24 @@ impl MBC3 {
 
     pub fn clock(&self) -> &Option<RealTimeClock> {
         &self.clock
+    }
+}
+
+impl Savestate for MBC3 {
+    fn dump_savestate(&self, buffer: &mut Vec<u8>) {
+        buffer.push(self.rom_bank);
+        buffer.push(self.ram_enabled as u8);
+        buffer.push(self.ram_bank);
+        buffer.push(self.mode as u8);
+        // TODO: save clock or nah?
+    }
+
+    fn load_savestate<'a>(&mut self, buffer: &mut std::slice::Iter<u8>) -> Result<(), LoadSavestateError> {
+        self.rom_bank = read_savestate_byte(buffer)?;
+        self.ram_enabled = read_savestate_bool(buffer)?;
+        self.ram_bank = read_savestate_byte(buffer)?;
+        self.mode = buffer.next().cloned().and_then(MBC3Mode::from).ok_or(LoadSavestateError::InvalidSavestate)?;
+        Ok(())
     }
 }
 
@@ -108,10 +127,20 @@ impl MemoryBankController for MBC3 {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum MBC3Mode {
     RAM,
     RTC,
+}
+
+impl MBC3Mode {
+    pub fn from(value: u8) -> Option<MBC3Mode> {
+        match value {
+            0 => Some(MBC3Mode::RAM),
+            1 => Some(MBC3Mode::RTC),
+            _ => None
+        }
+    }
 }
 
 #[cfg(test)]

@@ -1,5 +1,6 @@
 use crate::bus::{Readable, Writable};
 use crate::util::bitflags::Bitflags;
+use crate::util::savestate::{Savestate, LoadSavestateError, read_savestate_byte, read_savestate_bool};
 
 /// Represents a hardware interrupt.
 ///
@@ -73,6 +74,17 @@ impl Bitflags<Interrupt> for InterruptRegister {
     }
     fn set_register(&mut self, value: u8) {
         self.register = value;
+    }
+}
+
+impl Savestate for InterruptRegister {
+    fn dump_savestate(&self, buffer: &mut Vec<u8>) {
+        buffer.push(self.register);
+    }
+
+    fn load_savestate<'a>(&mut self, buffer: &mut std::slice::Iter<u8>) -> Result<(), LoadSavestateError> {
+        self.register = read_savestate_byte(buffer)?;
+        Ok(())
     }
 }
 
@@ -162,6 +174,21 @@ impl Writable for InterruptHandler {
             0xFF0F => self.interrupt_request.register = value,
             _ => {}
         }
+    }
+}
+
+impl Savestate for InterruptHandler {
+    fn dump_savestate(&self, buffer: &mut Vec<u8>) {
+        self.interrupt_request.dump_savestate(buffer);
+        self.interrupt_enable.dump_savestate(buffer);
+        buffer.push(self.interrupt_master_enable as u8);
+    }
+
+    fn load_savestate<'a>(&mut self, buffer: &mut std::slice::Iter<u8>) -> Result<(), LoadSavestateError> {
+        self.interrupt_request.load_savestate(buffer)?;
+        self.interrupt_request.load_savestate(buffer)?;
+        self.interrupt_master_enable = read_savestate_bool(buffer)?;
+        Ok(())
     }
 }
 

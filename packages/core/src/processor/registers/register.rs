@@ -7,7 +7,7 @@ pub trait Register {
 
 #[derive(Default, Copy, Clone)]
 pub struct SingleRegister {
-    value: u8,
+    pub value: u8,
 }
 
 impl SingleRegister {

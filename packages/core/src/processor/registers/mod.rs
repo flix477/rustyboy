@@ -2,6 +2,7 @@ use self::flag_register::FlagRegister;
 use self::program_counter::ProgramCounter;
 use self::register::*;
 use self::stack_pointer::StackPointer;
+use crate::util::savestate::{Savestate, LoadSavestateError, read_savestate_byte, write_savestate_u16, read_savestate_u16};
 
 pub mod flag_register;
 pub mod program_counter;
@@ -29,7 +30,7 @@ impl Registers {
 
     pub fn reg(&self, register: RegisterType) -> u16 {
         match register {
-            RegisterType::AF => self.af.register().get(),
+            RegisterType::AF => self.af.register.get(),
             RegisterType::BC => self.bc.get(),
             RegisterType::DE => self.de.get(),
             RegisterType::HL => self.hl.get(),
@@ -150,5 +151,34 @@ impl RegisterType {
             || self == RegisterType::HL
             || self == RegisterType::SP
             || self == RegisterType::PC
+    }
+}
+
+impl Savestate for Registers {
+    fn dump_savestate(&self, buffer: &mut Vec<u8>) {
+        buffer.push(self.af.register.high.value);
+        buffer.push(self.af.register.low.value);
+        buffer.push(self.bc.high.value);
+        buffer.push(self.bc.low.value);
+        buffer.push(self.de.high.value);
+        buffer.push(self.de.low.value);
+        buffer.push(self.hl.high.value);
+        buffer.push(self.hl.low.value);
+        write_savestate_u16(buffer, self.stack_pointer.value);
+        write_savestate_u16(buffer, self.program_counter.value);
+    }
+
+    fn load_savestate<'a>(&mut self, buffer: &mut std::slice::Iter<u8>) -> Result<(), LoadSavestateError> {
+        self.af.register.high.value = read_savestate_byte(buffer)?;
+        self.af.register.low.value = read_savestate_byte(buffer)?;
+        self.bc.high.value = read_savestate_byte(buffer)?;
+        self.bc.low.value = read_savestate_byte(buffer)?;
+        self.de.high.value = read_savestate_byte(buffer)?;
+        self.de.low.value = read_savestate_byte(buffer)?;
+        self.hl.high.value = read_savestate_byte(buffer)?;
+        self.hl.low.value = read_savestate_byte(buffer)?;
+        self.stack_pointer.value = read_savestate_u16(buffer)?;
+        self.program_counter.value = read_savestate_u16(buffer)?;
+        Ok(())
     }
 }

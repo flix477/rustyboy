@@ -8,6 +8,7 @@ use crate::cartridge::mbc::{MBCFactory, MemoryBankController};
 use std::error::Error;
 use std::fs;
 use std::path::Path;
+use crate::util::savestate::{Savestate, LoadSavestateError};
 
 pub struct Cartridge {
     buffer: Vec<u8>,
@@ -104,5 +105,29 @@ impl Writable for Cartridge {
             0xA000..=0xBFFF => self.write_ram(address as usize, value), // switchable ram bank
             _ => {}
         }
+    }
+}
+
+impl Savestate for Cartridge {
+    fn dump_savestate(&self, buffer: &mut Vec<u8>) {
+        if let Some(mbc) = &self.mbc {
+            mbc.dump_savestate(buffer);
+        }
+
+        if let Some(ram) = &self.ram {
+            buffer.append(&mut ram.clone());
+        }
+    }
+
+    fn load_savestate<'a>(&mut self, buffer: &mut std::slice::Iter<u8>) -> Result<(), LoadSavestateError> {
+        if let Some(ref mut mbc) = self.mbc {
+            mbc.load_savestate(buffer)?;
+        }
+
+//        if let Some(ref mut ram) = self.ram {
+//            std::mem::replace(ram, buffer.take(ram.len()).cloned().collect());
+//        }
+
+        Ok(())
     }
 }
