@@ -12,7 +12,7 @@ use crate::window::background::BackgroundWindow;
 use crate::window::tile_data::TileDataWindow;
 use crate::window::{screen::MainWindow, UpdateResult, Window};
 use rustyboy_core::cartridge::cartridge_metadata::CartridgeMetadata;
-use std::path::PathBuf;
+use std::path::{PathBuf, Path};
 use std::time::{Duration, Instant};
 
 pub fn run() {
@@ -58,7 +58,14 @@ pub fn run() {
         path: PathBuf::from(path),
     };
 
-    start_emulation(cartridge, config, options);
+    let mut gameboy = Gameboy::new(cartridge, &config);
+    let savestate_path = Path::new(path).with_extension("state");
+    if let Ok(buffer) = fs::read(savestate_path) {
+        gameboy.load_savestate(buffer)
+            .unwrap_or_else(|_| println!("Couldn't load savestate. Maybe it is corrupted?"))
+    }
+
+    start_emulation(gameboy, config, options);
 }
 
 fn print_cartridge_info(metadata: &CartridgeMetadata) {
@@ -85,9 +92,7 @@ struct RunOptions {
     pub path: PathBuf,
 }
 
-fn start_emulation(cartridge: Cartridge, config: Config, options: RunOptions) {
-    let mut gameboy = Gameboy::new(cartridge, &config);
-
+fn start_emulation(mut gameboy: Gameboy, config: Config, options: RunOptions) {
     let mut windows = create_windows(&options);
     let mut debugger = config.debugger;
     let mut shell_debugger = ShellDebugger::default();
@@ -112,6 +117,8 @@ fn start_emulation(cartridge: Cartridge, config: Config, options: RunOptions) {
             }
 
             let savestate = &gameboy.dump_savestate();
+            fs::write(options.path.with_extension("state"), savestate)
+                .expect("Could not create a savestate.");
 
             break;
         }
