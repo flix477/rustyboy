@@ -5,8 +5,8 @@ use crate::video::Video;
 
 use self::joypad::{Input, Joypad};
 use self::timer::Timer;
+use crate::util::savestate::{LoadSavestateError, Savestate};
 use crate::video::status_register::StatusMode;
-use crate::util::savestate::{Savestate, LoadSavestateError};
 
 pub mod joypad;
 mod timer;
@@ -254,7 +254,10 @@ impl Savestate for Hardware {
         self.timer.dump_savestate(buffer);
     }
 
-    fn load_savestate<'a>(&mut self, buffer: &mut std::slice::Iter<u8>) -> Result<(), LoadSavestateError> {
+    fn load_savestate<'a>(
+        &mut self,
+        buffer: &mut std::slice::Iter<u8>,
+    ) -> Result<(), LoadSavestateError> {
         self.cartridge.load_savestate(buffer)?;
         self.interrupt_handler.load_savestate(buffer)?;
         self.timer.load_savestate(buffer)?;

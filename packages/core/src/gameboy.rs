@@ -6,9 +6,9 @@ use crate::debugger::processor_debug_info::ProcessorDebugInfo;
 use crate::debugger::Debugger;
 use crate::hardware::{joypad::Input, Hardware};
 use crate::processor::{Processor, ProcessorStepResult};
+use crate::util::savestate::{LoadSavestateError, Savestate};
 use crate::video::screen::BUFFER_SIZE;
 use crate::video::status_register::StatusMode;
-use crate::util::savestate::{LoadSavestateError, Savestate};
 
 /// This struct represents a GameBoy with all its components
 pub struct Gameboy {

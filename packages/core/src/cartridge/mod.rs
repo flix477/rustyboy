@@ -5,10 +5,10 @@ mod mbc;
 use crate::bus::{Readable, Writable};
 use crate::cartridge::cartridge_metadata::CartridgeMetadata;
 use crate::cartridge::mbc::{MBCFactory, MemoryBankController};
+use crate::util::savestate::{LoadSavestateError, Savestate};
 use std::error::Error;
 use std::fs;
 use std::path::Path;
-use crate::util::savestate::{Savestate, LoadSavestateError};
 
 pub struct Cartridge {
     buffer: Vec<u8>,
@@ -119,14 +119,17 @@ impl Savestate for Cartridge {
         }
     }
 
-    fn load_savestate<'a>(&mut self, buffer: &mut std::slice::Iter<u8>) -> Result<(), LoadSavestateError> {
+    fn load_savestate<'a>(
+        &mut self,
+        buffer: &mut std::slice::Iter<u8>,
+    ) -> Result<(), LoadSavestateError> {
         if let Some(ref mut mbc) = self.mbc {
             mbc.load_savestate(buffer)?;
         }
 
-//        if let Some(ref mut ram) = self.ram {
-//            std::mem::replace(ram, buffer.take(ram.len()).cloned().collect());
-//        }
+        //        if let Some(ref mut ram) = self.ram {
+        //            std::mem::replace(ram, buffer.take(ram.len()).cloned().collect());
+        //        }
 
         Ok(())
     }

@@ -1,6 +1,9 @@
 use crate::bus::{Readable, Writable};
 use crate::processor::interrupt::{Interrupt, InterruptHandler};
-use crate::util::savestate::{Savestate, LoadSavestateError, read_savestate_byte, read_savestate_bool, write_savestate_u16, read_savestate_u16};
+use crate::util::savestate::{
+    read_savestate_bool, read_savestate_byte, read_savestate_u16, write_savestate_u16,
+    LoadSavestateError, Savestate,
+};
 
 const CLOCK_SPEEDS: [u16; 4] = [1024, 16, 64, 256];
 
@@ -80,7 +83,10 @@ impl Savestate for Timer {
         buffer.push(self.modulo);
     }
 
-    fn load_savestate<'a>(&mut self, buffer: &mut std::slice::Iter<u8>) -> Result<(), LoadSavestateError> {
+    fn load_savestate<'a>(
+        &mut self,
+        buffer: &mut std::slice::Iter<u8>,
+    ) -> Result<(), LoadSavestateError> {
         self.counter_enabled = read_savestate_bool(buffer)?;
         self.divider.load_savestate(buffer)?;
         self.counter.load_savestate(buffer)?;
@@ -143,7 +149,10 @@ impl Savestate for Counter {
         buffer.push(self.value);
     }
 
-    fn load_savestate<'a>(&mut self, buffer: &mut std::slice::Iter<u8>) -> Result<(), LoadSavestateError> {
+    fn load_savestate<'a>(
+        &mut self,
+        buffer: &mut std::slice::Iter<u8>,
+    ) -> Result<(), LoadSavestateError> {
         self.cycles_per_tick = read_savestate_u16(buffer)?;
         self.cycles_left = read_savestate_u16(buffer)?;
         self.value = read_savestate_byte(buffer)?;

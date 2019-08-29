@@ -17,7 +17,9 @@ use crate::processor::decoder::decode_opcode;
 use crate::processor::operand_parser::OperandParser;
 use crate::processor::registers::program_counter::ProgramCounter;
 use crate::util::bitflags::Bitflags;
-use crate::util::savestate::{Savestate, LoadSavestateError, read_savestate_byte, read_savestate_bool};
+use crate::util::savestate::{
+    read_savestate_bool, read_savestate_byte, LoadSavestateError, Savestate,
+};
 
 /// This struct contains the logic for the GameBoy's processor
 pub struct Processor {
@@ -174,7 +176,7 @@ impl HaltMode {
             0 => Some(HaltMode::Normal),
             1 => Some(HaltMode::Bugged),
             2 => Some(HaltMode::None),
-            _ => None
+            _ => None,
         }
     }
 }
@@ -196,9 +198,16 @@ impl Savestate for Processor {
         buffer.push(self.pending_ei as u8);
     }
 
-    fn load_savestate<'a>(&mut self, buffer: &mut std::slice::Iter<u8>) -> Result<(), LoadSavestateError> {
+    fn load_savestate<'a>(
+        &mut self,
+        buffer: &mut std::slice::Iter<u8>,
+    ) -> Result<(), LoadSavestateError> {
         self.registers.load_savestate(buffer)?;
-        self.halt_mode = buffer.next().cloned().and_then(HaltMode::from).ok_or(LoadSavestateError::InvalidSavestate)?;
+        self.halt_mode = buffer
+            .next()
+            .cloned()
+            .and_then(HaltMode::from)
+            .ok_or(LoadSavestateError::InvalidSavestate)?;
         self.cycles_left = read_savestate_byte(buffer)?;
         self.pending_ei = read_savestate_bool(buffer)?;
         Ok(())

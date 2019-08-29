@@ -1,6 +1,8 @@
 use super::MemoryBankController;
 use crate::cartridge::cartridge_capability::CartridgeCapability;
-use crate::util::savestate::{Savestate, read_savestate_bool, read_savestate_byte, LoadSavestateError};
+use crate::util::savestate::{
+    read_savestate_bool, read_savestate_byte, LoadSavestateError, Savestate,
+};
 
 pub struct MBC1 {
     mode: MBC1Mode,
@@ -66,8 +68,15 @@ impl Savestate for MBC1 {
         buffer.push(self.register);
     }
 
-    fn load_savestate<'a>(&mut self, buffer: &mut std::slice::Iter<u8>) -> Result<(), LoadSavestateError> {
-        self.mode = buffer.next().cloned().and_then(MBC1Mode::from).ok_or(LoadSavestateError::InvalidSavestate)?;
+    fn load_savestate<'a>(
+        &mut self,
+        buffer: &mut std::slice::Iter<u8>,
+    ) -> Result<(), LoadSavestateError> {
+        self.mode = buffer
+            .next()
+            .cloned()
+            .and_then(MBC1Mode::from)
+            .ok_or(LoadSavestateError::InvalidSavestate)?;
         self.ram_enabled = read_savestate_bool(buffer)?;
         self.register = read_savestate_byte(buffer)?;
         Ok(())
@@ -137,7 +146,7 @@ impl MBC1Mode {
         match value {
             0 => Some(MBC1Mode::MaxROM),
             1 => Some(MBC1Mode::MaxRAM),
-            _ => None
+            _ => None,
         }
     }
 }
