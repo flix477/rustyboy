@@ -17,9 +17,7 @@ use crate::processor::decoder::decode_opcode;
 use crate::processor::operand_parser::OperandParser;
 use crate::processor::registers::program_counter::ProgramCounter;
 use crate::util::bitflags::Bitflags;
-use crate::util::savestate::{
-    read_savestate_bool, read_savestate_byte, LoadSavestateError, Savestate,
-};
+use crate::util::savestate::{read_savestate_bool, read_savestate_byte, LoadSavestateError, Savestate, SavestateStream};
 
 /// This struct contains the logic for the GameBoy's processor
 pub struct Processor {
@@ -200,7 +198,7 @@ impl Savestate for Processor {
 
     fn load_savestate<'a>(
         &mut self,
-        buffer: &mut SavestateStream,
+        buffer: &mut SavestateStream<'a>,
     ) -> Result<(), LoadSavestateError> {
         self.registers.load_savestate(buffer)?;
         self.halt_mode = buffer

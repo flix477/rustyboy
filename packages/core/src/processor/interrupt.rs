@@ -1,8 +1,6 @@
 use crate::bus::{Readable, Writable};
 use crate::util::bitflags::Bitflags;
-use crate::util::savestate::{
-    read_savestate_bool, read_savestate_byte, LoadSavestateError, Savestate,
-};
+use crate::util::savestate::{read_savestate_bool, read_savestate_byte, LoadSavestateError, Savestate, SavestateStream};
 
 /// Represents a hardware interrupt.
 ///
@@ -86,7 +84,7 @@ impl Savestate for InterruptRegister {
 
     fn load_savestate<'a>(
         &mut self,
-        buffer: &mut SavestateStream,
+        buffer: &mut SavestateStream<'a>,
     ) -> Result<(), LoadSavestateError> {
         self.register = read_savestate_byte(buffer)?;
         Ok(())
@@ -191,7 +189,7 @@ impl Savestate for InterruptHandler {
 
     fn load_savestate<'a>(
         &mut self,
-        buffer: &mut SavestateStream,
+        buffer: &mut SavestateStream<'a>,
     ) -> Result<(), LoadSavestateError> {
         self.interrupt_request.load_savestate(buffer)?;
         self.interrupt_request.load_savestate(buffer)?;

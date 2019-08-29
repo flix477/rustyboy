@@ -5,7 +5,7 @@ mod mbc;
 use crate::bus::{Readable, Writable};
 use crate::cartridge::cartridge_metadata::CartridgeMetadata;
 use crate::cartridge::mbc::{MBCFactory, MemoryBankController};
-use crate::util::savestate::{LoadSavestateError, Savestate};
+use crate::util::savestate::{LoadSavestateError, Savestate, SavestateStream};
 use std::error::Error;
 use std::fs;
 use std::path::Path;
@@ -121,7 +121,7 @@ impl Savestate for Cartridge {
 
     fn load_savestate<'a>(
         &mut self,
-        buffer: &mut SavestateStream,
+        buffer: &mut SavestateStream<'a>,
     ) -> Result<(), LoadSavestateError> {
         if let Some(ref mut mbc) = self.mbc {
             mbc.load_savestate(buffer)?;

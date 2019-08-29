@@ -1,9 +1,6 @@
 use crate::bus::{Readable, Writable};
 use crate::processor::interrupt::{Interrupt, InterruptHandler};
-use crate::util::savestate::{
-    read_savestate_bool, read_savestate_byte, read_savestate_u16, write_savestate_u16,
-    LoadSavestateError, Savestate,
-};
+use crate::util::savestate::{read_savestate_bool, read_savestate_byte, read_savestate_u16, write_savestate_u16, LoadSavestateError, Savestate, SavestateStream};
 
 const CLOCK_SPEEDS: [u16; 4] = [1024, 16, 64, 256];
 
@@ -85,7 +82,7 @@ impl Savestate for Timer {
 
     fn load_savestate<'a>(
         &mut self,
-        buffer: &mut SavestateStream,
+        buffer: &mut SavestateStream<'a>,
     ) -> Result<(), LoadSavestateError> {
         self.counter_enabled = read_savestate_bool(buffer)?;
         self.divider.load_savestate(buffer)?;
@@ -151,7 +148,7 @@ impl Savestate for Counter {
 
     fn load_savestate<'a>(
         &mut self,
-        buffer: &mut SavestateStream,
+        buffer: &mut SavestateStream<'a>,
     ) -> Result<(), LoadSavestateError> {
         self.cycles_per_tick = read_savestate_u16(buffer)?;
         self.cycles_left = read_savestate_u16(buffer)?;

@@ -5,7 +5,7 @@ use crate::video::Video;
 
 use self::joypad::{Input, Joypad};
 use self::timer::Timer;
-use crate::util::savestate::{LoadSavestateError, Savestate};
+use crate::util::savestate::{LoadSavestateError, Savestate, SavestateStream};
 use crate::video::status_register::StatusMode;
 
 pub mod joypad;
@@ -256,7 +256,7 @@ impl Savestate for Hardware {
 
     fn load_savestate<'a>(
         &mut self,
-        buffer: &mut SavestateStream,
+        buffer: &mut SavestateStream<'a>,
     ) -> Result<(), LoadSavestateError> {
         self.cartridge.load_savestate(buffer)?;
         self.interrupt_handler.load_savestate(buffer)?;

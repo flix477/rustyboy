@@ -1,4 +1,4 @@
-pub type SavestateStream = std::slice::Iter<'_, u8>;
+pub type SavestateStream<'a> = std::slice::Iter<'a, u8>;
 
 pub enum LoadSavestateError {
     InvalidSavestate,
@@ -8,7 +8,7 @@ pub trait Savestate {
     fn dump_savestate(&self, buffer: &mut Vec<u8>);
     fn load_savestate<'a>(
         &mut self,
-        buffer: &mut SavestateStream,
+        buffer: &mut SavestateStream<'a>,
     ) -> Result<(), LoadSavestateError>;
 }
 

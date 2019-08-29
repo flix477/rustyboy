@@ -2,9 +2,7 @@ use self::flag_register::FlagRegister;
 use self::program_counter::ProgramCounter;
 use self::register::*;
 use self::stack_pointer::StackPointer;
-use crate::util::savestate::{
-    read_savestate_byte, read_savestate_u16, write_savestate_u16, LoadSavestateError, Savestate,
-};
+use crate::util::savestate::{read_savestate_byte, read_savestate_u16, write_savestate_u16, LoadSavestateError, Savestate, SavestateStream};
 
 pub mod flag_register;
 pub mod program_counter;
@@ -172,7 +170,7 @@ impl Savestate for Registers {
 
     fn load_savestate<'a>(
         &mut self,
-        buffer: &mut SavestateStream,
+        buffer: &mut SavestateStream<'a>,
     ) -> Result<(), LoadSavestateError> {
         self.af.register.high.value = read_savestate_byte(buffer)?;
         self.af.register.low.value = read_savestate_byte(buffer)?;
