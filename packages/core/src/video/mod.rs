@@ -14,6 +14,9 @@ use self::position_registers::PositionRegisters;
 use self::status_register::{StatusMode, StatusRegister};
 use crate::bus::{Readable, Writable};
 use crate::processor::interrupt::{Interrupt, InterruptHandler};
+use crate::util::savestate::{
+    read_savestate_byte, read_savestate_u16, write_savestate_u16, LoadSavestateError, Savestate,
+};
 use crate::video::debugging::VideoDebugInformation;
 use crate::video::palette::Palette;
 use crate::video::screen::{Screen, VideoInformation};
@@ -245,5 +248,40 @@ impl Writable for Video {
             0xFF4B => self.position_registers.set_window_x(value, self.mode), // window x position
             _ => unimplemented!(),
         }
+    }
+}
+
+impl Savestate for Video {
+    fn dump_savestate(&self, buffer: &mut Vec<u8>) {
+        buffer.push(self.control.register);
+        buffer.push(self.status.register);
+        buffer.push(self.mode as u8);
+        self.position_registers.dump_savestate(buffer);
+        self.bg_palette.dump_savestate(buffer);
+        self.obj_palette0.dump_savestate(buffer);
+        self.obj_palette1.dump_savestate(buffer);
+        self.vram.dump_savestate(buffer);
+        write_savestate_u16(buffer, self.cycles_left);
+    }
+
+    fn load_savestate<'a>(
+        &mut self,
+        buffer: &mut std::slice::Iter<'a, u8>,
+    ) -> Result<(), LoadSavestateError> {
+        self.control.register = read_savestate_byte(buffer)?;
+        self.status.register = read_savestate_byte(buffer)?;
+        self.mode = buffer
+            .next()
+            .cloned()
+            .and_then(StatusMode::from)
+            .ok_or(LoadSavestateError::InvalidSavestate)?;
+        self.position_registers.load_savestate(buffer)?;
+        self.bg_palette.load_savestate(buffer)?;
+        self.obj_palette0.load_savestate(buffer)?;
+        self.obj_palette1.load_savestate(buffer)?;
+        self.vram.load_savestate(buffer)?;
+        self.cycles_left = read_savestate_u16(buffer)?;
+
+        Ok(())
     }
 }

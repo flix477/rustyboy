@@ -1,5 +1,6 @@
 use crate::bus::{Readable, Writable};
 use crate::util::bits::get_bit;
+use crate::util::savestate::{read_savestate_byte, LoadSavestateError, Savestate};
 
 #[derive(Clone)]
 pub struct SpriteAttributeTable {
@@ -42,6 +43,23 @@ impl Writable for SpriteAttributeTable {
     fn write(&mut self, address: u16, value: u8) {
         let (entry_idx, byte_idx) = self.entry_byte_at(address);
         self.table[entry_idx as usize].set_byte(byte_idx as u8, value);
+    }
+}
+
+impl Savestate for SpriteAttributeTable {
+    fn dump_savestate(&self, buffer: &mut Vec<u8>) {
+        self.table.iter().for_each(|x| x.dump_savestate(buffer));
+    }
+
+    fn load_savestate<'a>(
+        &mut self,
+        buffer: &mut std::slice::Iter<'a, u8>,
+    ) -> Result<(), LoadSavestateError> {
+        for entry in self.table.iter_mut() {
+            entry.load_savestate(buffer)?;
+        }
+
+        Ok(())
     }
 }
 
@@ -107,5 +125,25 @@ impl OAMEntry {
             && self.position.1 != 0
             && self.position.1 < 160
             && (self.position.1 > 8 || tall_sprite)
+    }
+}
+
+impl Savestate for OAMEntry {
+    fn dump_savestate(&self, buffer: &mut Vec<u8>) {
+        buffer.push(self.position.0);
+        buffer.push(self.position.1);
+        buffer.push(self.tile_number);
+        buffer.push(self.attributes);
+    }
+
+    fn load_savestate<'a>(
+        &mut self,
+        buffer: &mut std::slice::Iter<'a, u8>,
+    ) -> Result<(), LoadSavestateError> {
+        self.position.0 = read_savestate_byte(buffer)?;
+        self.position.1 = read_savestate_byte(buffer)?;
+        self.tile_number = read_savestate_byte(buffer)?;
+        self.attributes = read_savestate_byte(buffer)?;
+        Ok(())
     }
 }

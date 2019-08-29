@@ -5,6 +5,7 @@ pub mod bits;
 pub mod bytes_convert;
 pub mod drawer;
 pub mod parse_hex;
+pub mod savestate;
 #[cfg(test)]
 pub mod tests;
 

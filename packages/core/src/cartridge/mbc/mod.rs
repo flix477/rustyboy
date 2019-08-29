@@ -10,6 +10,7 @@ use crate::cartridge::mbc::mbc1::MBC1;
 use crate::cartridge::mbc::mbc2::MBC2;
 use crate::cartridge::mbc::mbc3::MBC3;
 use crate::cartridge::mbc::mbc5::MBC5;
+use crate::util::savestate::Savestate;
 
 pub struct MBCFactory;
 impl MBCFactory {
@@ -31,7 +32,7 @@ impl MBCFactory {
     }
 }
 
-pub trait MemoryBankController {
+pub trait MemoryBankController: Savestate {
     fn rom_bank(&self) -> u16;
     fn ram_bank(&self) -> u8;
     fn ram_enabled(&self) -> bool;

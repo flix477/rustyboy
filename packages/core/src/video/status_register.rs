@@ -3,7 +3,7 @@ use crate::video::Video;
 
 #[derive(Default)]
 pub struct StatusRegister {
-    register: u8,
+    pub register: u8,
 }
 
 // TODO: bunch of stuff
@@ -44,14 +44,14 @@ pub enum StatusMode {
     LCDTransfer = 3,
 }
 
-impl From<u8> for StatusMode {
-    fn from(value: u8) -> Self {
+impl StatusMode {
+    pub fn from(value: u8) -> Option<Self> {
         match value {
-            0 => StatusMode::HBlank,
-            1 => StatusMode::VBlank,
-            2 => StatusMode::ReadingOAM,
-            3 => StatusMode::LCDTransfer,
-            _ => panic!("Invalid value."),
+            0 => Some(StatusMode::HBlank),
+            1 => Some(StatusMode::VBlank),
+            2 => Some(StatusMode::ReadingOAM),
+            3 => Some(StatusMode::LCDTransfer),
+            _ => None,
         }
     }
 }

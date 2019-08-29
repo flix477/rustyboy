@@ -3,7 +3,7 @@ use crate::bus::Readable;
 
 #[derive(Copy, Clone)]
 pub struct ProgramCounter {
-    value: u16,
+    pub value: u16,
 }
 
 impl ProgramCounter {

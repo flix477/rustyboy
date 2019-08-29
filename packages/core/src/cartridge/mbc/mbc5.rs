@@ -1,5 +1,9 @@
 use super::MemoryBankController;
 use crate::cartridge::cartridge_capability::CartridgeCapability;
+use crate::util::savestate::{
+    read_savestate_bool, read_savestate_byte, read_savestate_u16, write_savestate_u16,
+    LoadSavestateError, Savestate, SavestateStream,
+};
 
 pub struct MBC5 {
     rom_bank: u16,
@@ -9,7 +13,6 @@ pub struct MBC5 {
 
 impl MBC5 {
     pub fn new(_capabilities: &[CartridgeCapability]) -> MBC5 {
-        //        let has_ram = capabilities.contains(&CartridgeCapability::RAM);
         MBC5 {
             rom_bank: 0,
             ram_enabled: false,
@@ -19,6 +22,24 @@ impl MBC5 {
 
     pub fn set_ram_enabled(&mut self, enabled: bool) {
         self.ram_enabled = enabled;
+    }
+}
+
+impl Savestate for MBC5 {
+    fn dump_savestate(&self, buffer: &mut Vec<u8>) {
+        write_savestate_u16(buffer, self.rom_bank);
+        buffer.push(self.ram_enabled as u8);
+        buffer.push(self.ram_bank);
+    }
+
+    fn load_savestate<'a>(
+        &mut self,
+        buffer: &mut SavestateStream<'a>,
+    ) -> Result<(), LoadSavestateError> {
+        self.rom_bank = read_savestate_u16(buffer)?;
+        self.ram_enabled = read_savestate_bool(buffer)?;
+        self.ram_bank = read_savestate_byte(buffer)?;
+        Ok(())
     }
 }
 

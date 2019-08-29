@@ -5,6 +5,7 @@ mod mbc;
 use crate::bus::{Readable, Writable};
 use crate::cartridge::cartridge_metadata::CartridgeMetadata;
 use crate::cartridge::mbc::{MBCFactory, MemoryBankController};
+use crate::util::savestate::{LoadSavestateError, Savestate, SavestateStream};
 use std::error::Error;
 use std::fs;
 use std::path::Path;
@@ -104,5 +105,32 @@ impl Writable for Cartridge {
             0xA000..=0xBFFF => self.write_ram(address as usize, value), // switchable ram bank
             _ => {}
         }
+    }
+}
+
+impl Savestate for Cartridge {
+    fn dump_savestate(&self, buffer: &mut Vec<u8>) {
+        if let Some(mbc) = &self.mbc {
+            mbc.dump_savestate(buffer);
+        }
+
+        if let Some(ram) = &self.ram {
+            buffer.append(&mut ram.clone());
+        }
+    }
+
+    fn load_savestate<'a>(
+        &mut self,
+        buffer: &mut SavestateStream<'a>,
+    ) -> Result<(), LoadSavestateError> {
+        if let Some(ref mut mbc) = self.mbc {
+            mbc.load_savestate(buffer)?;
+        }
+
+        if let Some(ref mut ram) = self.ram {
+            std::mem::replace(ram, buffer.take(ram.len()).cloned().collect());
+        }
+
+        Ok(())
     }
 }

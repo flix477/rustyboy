@@ -2,7 +2,7 @@ use crate::util::bits::get_bit;
 
 #[derive(Copy, Clone)]
 pub struct ControlRegister {
-    register: u8,
+    pub register: u8,
 }
 
 // TODO: bunch of stuff

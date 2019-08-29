@@ -1,5 +1,8 @@
 use super::MemoryBankController;
 use crate::cartridge::cartridge_capability::CartridgeCapability;
+use crate::util::savestate::{
+    read_savestate_bool, read_savestate_byte, LoadSavestateError, Savestate, SavestateStream,
+};
 
 pub struct MBC1 {
     mode: MBC1Mode,
@@ -58,6 +61,28 @@ impl MBC1 {
     }
 }
 
+impl Savestate for MBC1 {
+    fn dump_savestate(&self, buffer: &mut Vec<u8>) {
+        buffer.push(self.mode as u8);
+        buffer.push(self.ram_enabled as u8);
+        buffer.push(self.register);
+    }
+
+    fn load_savestate<'a>(
+        &mut self,
+        buffer: &mut SavestateStream<'a>,
+    ) -> Result<(), LoadSavestateError> {
+        self.mode = buffer
+            .next()
+            .cloned()
+            .and_then(MBC1Mode::from)
+            .ok_or(LoadSavestateError::InvalidSavestate)?;
+        self.ram_enabled = read_savestate_bool(buffer)?;
+        self.register = read_savestate_byte(buffer)?;
+        Ok(())
+    }
+}
+
 impl MemoryBankController for MBC1 {
     fn rom_bank(&self) -> u16 {
         let mask = self.rom_bank_mask();
@@ -110,10 +135,20 @@ impl MemoryBankController for MBC1 {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum MBC1Mode {
     MaxROM,
     MaxRAM,
+}
+
+impl MBC1Mode {
+    pub fn from(value: u8) -> Option<MBC1Mode> {
+        match value {
+            0 => Some(MBC1Mode::MaxROM),
+            1 => Some(MBC1Mode::MaxRAM),
+            _ => None,
+        }
+    }
 }
 
 #[cfg(test)]

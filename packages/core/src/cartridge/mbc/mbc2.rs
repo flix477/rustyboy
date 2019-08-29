@@ -1,5 +1,8 @@
 use super::MemoryBankController;
 use crate::cartridge::cartridge_capability::CartridgeCapability;
+use crate::util::savestate::{
+    read_savestate_bool, read_savestate_byte, LoadSavestateError, Savestate, SavestateStream,
+};
 use std::cmp;
 
 // TODO: RAM is 512*4bit, maybe should only return the 4 necessary bits on read
@@ -14,6 +17,22 @@ impl MBC2 {
             rom_bank: 1,
             ram_enabled: false,
         }
+    }
+}
+
+impl Savestate for MBC2 {
+    fn dump_savestate(&self, buffer: &mut Vec<u8>) {
+        buffer.push(self.rom_bank);
+        buffer.push(self.ram_enabled as u8);
+    }
+
+    fn load_savestate<'a>(
+        &mut self,
+        buffer: &mut SavestateStream<'a>,
+    ) -> Result<(), LoadSavestateError> {
+        self.rom_bank = read_savestate_byte(buffer)?;
+        self.ram_enabled = read_savestate_bool(buffer)?;
+        Ok(())
     }
 }
 
