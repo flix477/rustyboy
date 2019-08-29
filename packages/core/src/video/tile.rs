@@ -1,3 +1,7 @@
+use crate::util::savestate::{
+    read_savestate_u16, write_savestate_u16, LoadSavestateError, Savestate,
+};
+
 #[derive(Copy, Clone, Debug)]
 pub struct Tile {
     data: [u16; 8],
@@ -52,6 +56,25 @@ impl Tile {
         });
 
         line
+    }
+}
+
+impl Savestate for Tile {
+    fn dump_savestate(&self, buffer: &mut Vec<u8>) {
+        for line in &self.data {
+            write_savestate_u16(buffer, *line);
+        }
+    }
+
+    fn load_savestate<'a>(
+        &mut self,
+        buffer: &mut std::slice::Iter<'a, u8>,
+    ) -> Result<(), LoadSavestateError> {
+        for line in 0..self.data.len() {
+            self.data[line] = read_savestate_u16(buffer)?;
+        }
+
+        Ok(())
     }
 }
 

@@ -1,3 +1,4 @@
+use crate::util::savestate::{read_savestate_byte, LoadSavestateError, Savestate};
 use crate::video::status_register::StatusMode;
 
 pub struct PositionRegisters {
@@ -100,12 +101,49 @@ impl PositionRegisters {
     }
 }
 
+impl Savestate for PositionRegisters {
+    fn dump_savestate(&self, buffer: &mut Vec<u8>) {
+        self.state.state.dump_savestate(buffer);
+    }
+
+    fn load_savestate<'a>(
+        &mut self,
+        buffer: &mut std::slice::Iter<'a, u8>,
+    ) -> Result<(), LoadSavestateError> {
+        self.state.state.load_savestate(buffer)
+    }
+}
+
 #[derive(Default, Copy, Clone, Debug)]
 struct PositionRegistersState {
     pub scroll: (u8, u8),
     pub window: (u8, u8),
     pub ly: u8,
     pub lyc: u8,
+}
+
+impl Savestate for PositionRegistersState {
+    fn dump_savestate(&self, buffer: &mut Vec<u8>) {
+        buffer.push(self.scroll.0);
+        buffer.push(self.scroll.1);
+        buffer.push(self.window.0);
+        buffer.push(self.window.1);
+        buffer.push(self.ly);
+        buffer.push(self.lyc);
+    }
+
+    fn load_savestate<'a>(
+        &mut self,
+        buffer: &mut std::slice::Iter<'a, u8>,
+    ) -> Result<(), LoadSavestateError> {
+        self.scroll.0 = read_savestate_byte(buffer)?;
+        self.scroll.1 = read_savestate_byte(buffer)?;
+        self.window.0 = read_savestate_byte(buffer)?;
+        self.window.1 = read_savestate_byte(buffer)?;
+        self.ly = read_savestate_byte(buffer)?;
+        self.lyc = read_savestate_byte(buffer)?;
+        Ok(())
+    }
 }
 
 struct DelayedState<T: Copy + Clone> {

@@ -111,6 +111,8 @@ fn start_emulation(cartridge: Cartridge, config: Config, options: RunOptions) {
                     .expect("Could not save cartridge RAM; game progress might have been lost");
             }
 
+            let savestate = &gameboy.dump_savestate();
+
             break;
         }
     }

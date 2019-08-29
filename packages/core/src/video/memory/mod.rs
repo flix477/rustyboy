@@ -3,6 +3,7 @@ pub mod sprite_attribute_table;
 use self::background_tile_map::BackgroundTileMap;
 use self::sprite_attribute_table::SpriteAttributeTable;
 use crate::bus::{Readable, Writable};
+use crate::util::savestate::{LoadSavestateError, Savestate};
 use crate::video::tile::Tile;
 
 #[derive(Clone)]
@@ -88,5 +89,29 @@ impl Writable for VideoMemory {
             0xFE00..=0xFE9F => self.oam.write(address, value),
             _ => unimplemented!(),
         }
+    }
+}
+
+impl Savestate for VideoMemory {
+    fn dump_savestate(&self, buffer: &mut Vec<u8>) {
+        self.tile_data.iter().for_each(|x| x.dump_savestate(buffer));
+        self.oam.dump_savestate(buffer);
+        self.background_tile_maps.0.dump_savestate(buffer);
+        self.background_tile_maps.1.dump_savestate(buffer);
+    }
+
+    fn load_savestate<'a>(
+        &mut self,
+        buffer: &mut std::slice::Iter<'a, u8>,
+    ) -> Result<(), LoadSavestateError> {
+        for tile in self.tile_data.iter_mut() {
+            tile.load_savestate(buffer)?;
+        }
+
+        self.oam.load_savestate(buffer)?;
+        self.background_tile_maps.0.load_savestate(buffer)?;
+        self.background_tile_maps.1.load_savestate(buffer)?;
+
+        Ok(())
     }
 }

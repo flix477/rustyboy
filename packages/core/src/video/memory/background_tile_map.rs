@@ -1,3 +1,5 @@
+use crate::util::savestate::{read_savestate_byte, LoadSavestateError, Savestate};
+
 #[derive(Default, Clone)]
 pub struct BackgroundTileMap {
     tiles: [[u8; 32]; 32],
@@ -26,5 +28,28 @@ impl BackgroundTileMap {
 
     pub fn tiles(&self) -> &[[u8; 32]; 32] {
         &self.tiles
+    }
+}
+
+impl Savestate for BackgroundTileMap {
+    fn dump_savestate(&self, buffer: &mut Vec<u8>) {
+        for y in &self.tiles {
+            for x in y {
+                buffer.push(*x);
+            }
+        }
+    }
+
+    fn load_savestate<'a>(
+        &mut self,
+        buffer: &mut std::slice::Iter<'a, u8>,
+    ) -> Result<(), LoadSavestateError> {
+        for y in 0..self.tiles.len() {
+            for x in 0..self.tiles[y].len() {
+                self.tiles[y][x] = read_savestate_byte(buffer)?;
+            }
+        }
+
+        Ok(())
     }
 }
