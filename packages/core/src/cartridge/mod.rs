@@ -127,9 +127,9 @@ impl Savestate for Cartridge {
             mbc.load_savestate(buffer)?;
         }
 
-        //        if let Some(ref mut ram) = self.ram {
-        //            std::mem::replace(ram, buffer.take(ram.len()).cloned().collect());
-        //        }
+        if let Some(ref mut ram) = self.ram {
+            std::mem::replace(ram, buffer.take(ram.len()).cloned().collect());
+        }
 
         Ok(())
     }
