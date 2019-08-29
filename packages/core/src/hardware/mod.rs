@@ -256,7 +256,7 @@ impl Savestate for Hardware {
 
     fn load_savestate<'a>(
         &mut self,
-        buffer: &mut std::slice::Iter<u8>,
+        buffer: &mut SavestateStream,
     ) -> Result<(), LoadSavestateError> {
         self.cartridge.load_savestate(buffer)?;
         self.interrupt_handler.load_savestate(buffer)?;

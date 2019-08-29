@@ -200,7 +200,7 @@ impl Savestate for Processor {
 
     fn load_savestate<'a>(
         &mut self,
-        buffer: &mut std::slice::Iter<u8>,
+        buffer: &mut SavestateStream,
     ) -> Result<(), LoadSavestateError> {
         self.registers.load_savestate(buffer)?;
         self.halt_mode = buffer

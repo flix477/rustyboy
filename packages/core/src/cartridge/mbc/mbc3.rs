@@ -54,7 +54,7 @@ impl Savestate for MBC3 {
 
     fn load_savestate<'a>(
         &mut self,
-        buffer: &mut std::slice::Iter<u8>,
+        buffer: &mut SavestateStream,
     ) -> Result<(), LoadSavestateError> {
         self.rom_bank = read_savestate_byte(buffer)?;
         self.ram_enabled = read_savestate_bool(buffer)?;

@@ -85,7 +85,7 @@ impl Savestate for Timer {
 
     fn load_savestate<'a>(
         &mut self,
-        buffer: &mut std::slice::Iter<u8>,
+        buffer: &mut SavestateStream,
     ) -> Result<(), LoadSavestateError> {
         self.counter_enabled = read_savestate_bool(buffer)?;
         self.divider.load_savestate(buffer)?;
@@ -151,7 +151,7 @@ impl Savestate for Counter {
 
     fn load_savestate<'a>(
         &mut self,
-        buffer: &mut std::slice::Iter<u8>,
+        buffer: &mut SavestateStream,
     ) -> Result<(), LoadSavestateError> {
         self.cycles_per_tick = read_savestate_u16(buffer)?;
         self.cycles_left = read_savestate_u16(buffer)?;

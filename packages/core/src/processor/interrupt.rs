@@ -86,7 +86,7 @@ impl Savestate for InterruptRegister {
 
     fn load_savestate<'a>(
         &mut self,
-        buffer: &mut std::slice::Iter<u8>,
+        buffer: &mut SavestateStream,
     ) -> Result<(), LoadSavestateError> {
         self.register = read_savestate_byte(buffer)?;
         Ok(())
@@ -191,7 +191,7 @@ impl Savestate for InterruptHandler {
 
     fn load_savestate<'a>(
         &mut self,
-        buffer: &mut std::slice::Iter<u8>,
+        buffer: &mut SavestateStream,
     ) -> Result<(), LoadSavestateError> {
         self.interrupt_request.load_savestate(buffer)?;
         self.interrupt_request.load_savestate(buffer)?;

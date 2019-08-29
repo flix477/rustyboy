@@ -121,7 +121,7 @@ impl Savestate for Cartridge {
 
     fn load_savestate<'a>(
         &mut self,
-        buffer: &mut std::slice::Iter<u8>,
+        buffer: &mut SavestateStream,
     ) -> Result<(), LoadSavestateError> {
         if let Some(ref mut mbc) = self.mbc {
             mbc.load_savestate(buffer)?;

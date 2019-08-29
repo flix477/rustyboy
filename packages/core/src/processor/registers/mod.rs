@@ -172,7 +172,7 @@ impl Savestate for Registers {
 
     fn load_savestate<'a>(
         &mut self,
-        buffer: &mut std::slice::Iter<u8>,
+        buffer: &mut SavestateStream,
     ) -> Result<(), LoadSavestateError> {
         self.af.register.high.value = read_savestate_byte(buffer)?;
         self.af.register.low.value = read_savestate_byte(buffer)?;
