@@ -1,6 +1,9 @@
 use super::MemoryBankController;
 use crate::cartridge::cartridge_capability::CartridgeCapability;
-use crate::util::savestate::{read_savestate_bool, read_savestate_byte, read_savestate_u16, write_savestate_u16, LoadSavestateError, Savestate, SavestateStream};
+use crate::util::savestate::{
+    read_savestate_bool, read_savestate_byte, read_savestate_u16, write_savestate_u16,
+    LoadSavestateError, Savestate, SavestateStream,
+};
 
 pub struct MBC5 {
     rom_bank: u16,

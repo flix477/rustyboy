@@ -1,6 +1,9 @@
 use crate::bus::{Readable, Writable};
 use crate::processor::interrupt::{Interrupt, InterruptHandler};
-use crate::util::savestate::{read_savestate_bool, read_savestate_byte, read_savestate_u16, write_savestate_u16, LoadSavestateError, Savestate, SavestateStream};
+use crate::util::savestate::{
+    read_savestate_bool, read_savestate_byte, read_savestate_u16, write_savestate_u16,
+    LoadSavestateError, Savestate, SavestateStream,
+};
 
 const CLOCK_SPEEDS: [u16; 4] = [1024, 16, 64, 256];
 

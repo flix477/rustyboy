@@ -2,7 +2,10 @@ use self::flag_register::FlagRegister;
 use self::program_counter::ProgramCounter;
 use self::register::*;
 use self::stack_pointer::StackPointer;
-use crate::util::savestate::{read_savestate_byte, read_savestate_u16, write_savestate_u16, LoadSavestateError, Savestate, SavestateStream};
+use crate::util::savestate::{
+    read_savestate_byte, read_savestate_u16, write_savestate_u16, LoadSavestateError, Savestate,
+    SavestateStream,
+};
 
 pub mod flag_register;
 pub mod program_counter;

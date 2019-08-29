@@ -1,6 +1,8 @@
 use crate::bus::{Readable, Writable};
 use crate::util::bitflags::Bitflags;
-use crate::util::savestate::{read_savestate_bool, read_savestate_byte, LoadSavestateError, Savestate, SavestateStream};
+use crate::util::savestate::{
+    read_savestate_bool, read_savestate_byte, LoadSavestateError, Savestate, SavestateStream,
+};
 
 /// Represents a hardware interrupt.
 ///
