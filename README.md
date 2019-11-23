@@ -1,7 +1,6 @@
-# rustyboy
-🎮 WIP Gameboy emulator for iOS, Web and PC written in [Rust](https://www.rust-lang.org).
+# rustyboy [![CircleCI](https://circleci.com/gh/flix477/rustyboy/tree/master.svg?style=svg)](https://circleci.com/gh/flix477/rustyboy/tree/master)
 
-[![CircleCI](https://circleci.com/gh/flix477/rustyboy/tree/master.svg?style=svg)](https://circleci.com/gh/flix477/rustyboy/tree/master)
+🎮 WIP Gameboy emulator for iOS, Web and PC written in [Rust](https://www.rust-lang.org).
 
 Try out the web version [here](https://flix477.github.io/rustyboy.github.io/)! (doesn't work really well on mobile)
 
