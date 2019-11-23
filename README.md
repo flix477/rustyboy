@@ -3,7 +3,9 @@
 
 [![CircleCI](https://circleci.com/gh/flix477/rustyboy/tree/master.svg?style=svg)](https://circleci.com/gh/flix477/rustyboy/tree/master)
 
-This is a monorepo. You can find individual ports in their respective subfolders under `packages/`
+Try out the web version [here](https://flix477.github.io/rustyboy.github.io/)! (doesn't work really well on mobile)
+
+<img width="1437" alt="Rustyboy web version" src="https://user-images.githubusercontent.com/6579510/69486400-50282180-0e19-11ea-81b3-428a843b306c.png">
 
 ### Feature list
 | Feature                  | State                       |
@@ -17,6 +19,8 @@ This is a monorepo. You can find individual ports in their respective subfolders
 | Game Boy Color emulation | Not started 🚫              |
 | Super Game Boy emulation | Not started 🚫              |
 | MBC emulation            | In progress ⚠️              |
+
+This is a monorepo. You can find individual ports in their respective subfolders under `packages/`
 
 ### Blargg's CPU Tests
 Test ROMs are available [here](http://slack.net/~ant/old/gb-tests/)
