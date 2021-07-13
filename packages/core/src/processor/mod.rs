@@ -50,8 +50,7 @@ impl Processor {
     /// This method performs a single CPU step and returns the result
     pub fn step<H: Bus>(&mut self, bus: &mut H) -> ProcessorStepResult {
         // check for interrupts
-        let interrupt = bus.fetch_interrupt();
-        if let Some(interrupt) = interrupt {
+        if let Some(interrupt) = bus.fetch_interrupt() {
             self.halt_mode = HaltMode::None;
             if bus.master_interrupt_enable() {
                 bus.service_interrupt(interrupt);

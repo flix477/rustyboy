@@ -2,13 +2,10 @@ import Foundation
 import MetalKit
 
 class Renderer: NSObject, MTKViewDelegate {
-    let device: MTLDevice
-    let mtkView: MTKView
-    let pipelineState: MTLRenderPipelineState
-
-    lazy var commandQueue: MTLCommandQueue = {
-        return self.device.makeCommandQueue()!
-    }()
+    private let device: MTLDevice
+    private let pipelineState: MTLRenderPipelineState
+    private let onDraw: (() -> UnsafeMutablePointer<UInt8>)?
+    private let commandQueue: MTLCommandQueue
 
     lazy var vertexBuffer: MTLBuffer = {
         let vertices = [
@@ -27,23 +24,23 @@ class Renderer: NSObject, MTKViewDelegate {
 
     lazy var texture: MTLTexture = {
         let textureDescriptor = MTLTextureDescriptor()
-        textureDescriptor.pixelFormat = self.mtkView.colorPixelFormat
+        textureDescriptor.pixelFormat = .bgra8Unorm
         textureDescriptor.width = Int(SCREEN_WIDTH)
         textureDescriptor.height = Int(SCREEN_HEIGHT)
         return self.device.makeTexture(descriptor: textureDescriptor)!
     }()
 
-    var onDraw: (() -> UnsafeMutablePointer<UInt8>)?
-
-    init?(mtkView: MTKView) {
-        self.mtkView = mtkView
-        self.device = mtkView.device!
+    init?(device: MTLDevice, onDraw: (() -> UnsafeMutablePointer<UInt8>)? = nil) {
+        self.device = device
+        self.commandQueue = device.makeCommandQueue()!
         do {
-            self.pipelineState = try Renderer.buildRenderPipelineWith(device: self.device, metalKitView: self.mtkView)
+            self.pipelineState = try Renderer.buildRenderPipelineWith(device: self.device)
         } catch {
             print("Unable to compile render pipeline state: \(error)")
             return nil
         }
+
+        self.onDraw = onDraw
 
         super.init()
     }
@@ -57,30 +54,32 @@ class Renderer: NSObject, MTKViewDelegate {
             self.updateTextureWith(bufferPointer: buffer)
         }
 
-        guard let commandBuffer = self.commandQueue.makeCommandBuffer() else { return }
+        guard let commandBuffer = self.commandQueue.makeCommandBuffer(),
+              let renderPassDescriptor = view.currentRenderPassDescriptor,
+              let currentDrawable = view.currentDrawable else { return }
 
-        guard let renderPassDescriptor = view.currentRenderPassDescriptor else { return }
         renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 1)
 
-        guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(
-            descriptor: renderPassDescriptor
-        ) else { return }
+        guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else {
+            return
+        }
+
         renderEncoder.setRenderPipelineState(self.pipelineState)
         renderEncoder.setVertexBuffer(self.vertexBuffer, offset: 0, index: 0)
         renderEncoder.setFragmentTexture(self.texture, index: 0)
         renderEncoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         renderEncoder.endEncoding()
 
-        commandBuffer.present(view.currentDrawable!)
+        commandBuffer.present(currentDrawable)
         commandBuffer.commit()
     }
 
-    class func buildRenderPipelineWith(device: MTLDevice, metalKitView: MTKView) throws -> MTLRenderPipelineState {
+    class func buildRenderPipelineWith(device: MTLDevice) throws -> MTLRenderPipelineState {
         let pipelineDescriptor = MTLRenderPipelineDescriptor()
         let library = device.makeDefaultLibrary()
         pipelineDescriptor.vertexFunction = library?.makeFunction(name: "vertexShader")
         pipelineDescriptor.fragmentFunction = library?.makeFunction(name: "fragmentShader")
-        pipelineDescriptor.colorAttachments[0].pixelFormat = metalKitView.colorPixelFormat
+        pipelineDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
         return try device.makeRenderPipelineState(descriptor: pipelineDescriptor)
     }
 

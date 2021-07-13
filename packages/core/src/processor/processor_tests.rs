@@ -127,11 +127,11 @@ fn ldhl() {
     assert_eq!(65535, cpu.reg(Reg::HL));
 
     // Flags affected
-    assert_eq!(false, cpu.flag(Flag::Zero));
-    assert_eq!(false, cpu.flag(Flag::AddSub));
+    assert!(!cpu.flag(Flag::Zero));
+    assert!(!cpu.flag(Flag::AddSub));
     // TODO: i have no idea what value they should be lol
-    //        assert_eq!(true, cpu.flag(Flag::HalfCarry));
-    //        assert_eq!(true, cpu.flag(Flag::Carry));
+    //        assert!(cpu.flag(Flag::HalfCarry));
+    //        assert!(cpu.flag(Flag::Carry));
 }
 
 #[test]
@@ -183,10 +183,10 @@ mod add {
         assert_eq!(1, cpu.reg(Reg::A));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Carry));
     }
 
     #[test]
@@ -200,10 +200,10 @@ mod add {
         assert_eq!(0, cpu.reg(Reg::A));
 
         // Flags affected
-        assert_eq!(true, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(true, cpu.flag(Flag::HalfCarry));
-        assert_eq!(true, cpu.flag(Flag::Carry));
+        assert!(cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(cpu.flag(Flag::HalfCarry));
+        assert!(cpu.flag(Flag::Carry));
     }
 
     #[test]
@@ -217,10 +217,10 @@ mod add {
         assert_eq!(0x10, cpu.reg(Reg::A));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(true, cpu.flag(Flag::HalfCarry));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Carry));
     }
 
     #[test]
@@ -234,10 +234,10 @@ mod add {
         assert_eq!(0x4C00, cpu.reg(Reg::HL));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Carry));
     }
 
     #[test]
@@ -251,10 +251,10 @@ mod add {
         assert_eq!(0, cpu.reg(Reg::BC));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(true, cpu.flag(Flag::HalfCarry));
-        assert_eq!(true, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(cpu.flag(Flag::HalfCarry));
+        assert!(cpu.flag(Flag::Carry));
     }
 
     #[test]
@@ -267,10 +267,10 @@ mod add {
         assert_eq!(0x10, cpu.reg(Reg::SP));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(true, cpu.flag(Flag::HalfCarry));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Carry));
     }
 
     #[test]
@@ -283,10 +283,10 @@ mod add {
         assert_eq!(0x100, cpu.reg(Reg::SP));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(true, cpu.flag(Flag::HalfCarry));
-        assert_eq!(true, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(cpu.flag(Flag::HalfCarry));
+        assert!(cpu.flag(Flag::Carry));
     }
 
     #[test]
@@ -299,10 +299,10 @@ mod add {
         assert_eq!(0x8000, cpu.reg(Reg::SP));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(true, cpu.flag(Flag::HalfCarry));
-        assert_eq!(true, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(cpu.flag(Flag::HalfCarry));
+        assert!(cpu.flag(Flag::Carry));
     }
 
     #[test]
@@ -315,10 +315,10 @@ mod add {
         assert_eq!(0, cpu.reg(Reg::SP));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(true, cpu.flag(Flag::HalfCarry));
-        assert_eq!(true, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(cpu.flag(Flag::HalfCarry));
+        assert!(cpu.flag(Flag::Carry));
     }
 }
 
@@ -338,10 +338,10 @@ mod adc {
         assert_eq!(0, cpu.reg(Reg::A));
 
         // Flags affected
-        assert_eq!(true, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(true, cpu.flag(Flag::HalfCarry));
-        assert_eq!(true, cpu.flag(Flag::Carry));
+        assert!(cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(cpu.flag(Flag::HalfCarry));
+        assert!(cpu.flag(Flag::Carry));
     }
 
     #[test]
@@ -356,10 +356,10 @@ mod adc {
         assert_eq!(0xFF, cpu.reg(Reg::A));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Carry));
     }
 
     #[test]
@@ -373,10 +373,10 @@ mod adc {
         assert_eq!(0xB0, cpu.reg(Reg::AF));
 
         // Flags affected
-        assert_eq!(true, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(true, cpu.flag(Flag::HalfCarry));
-        assert_eq!(true, cpu.flag(Flag::Carry));
+        assert!(cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(cpu.flag(Flag::HalfCarry));
+        assert!(cpu.flag(Flag::Carry));
     }
 }
 
@@ -395,10 +395,10 @@ mod base_sub {
         assert_eq!(0, result);
 
         // Flags affected
-        assert_eq!(true, cpu.flag(Flag::Zero));
-        assert_eq!(true, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(cpu.flag(Flag::Zero));
+        assert!(cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Carry));
     }
 
     #[test]
@@ -412,10 +412,10 @@ mod base_sub {
         assert_eq!(0xFF, result);
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(true, cpu.flag(Flag::AddSub));
-        assert_eq!(true, cpu.flag(Flag::HalfCarry));
-        assert_eq!(true, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(cpu.flag(Flag::AddSub));
+        assert!(cpu.flag(Flag::HalfCarry));
+        assert!(cpu.flag(Flag::Carry));
     }
 
     #[test]
@@ -429,10 +429,10 @@ mod base_sub {
         assert_eq!(0xEF, result);
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(true, cpu.flag(Flag::AddSub));
-        assert_eq!(true, cpu.flag(Flag::HalfCarry));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(cpu.flag(Flag::AddSub));
+        assert!(cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Carry));
     }
 }
 
@@ -463,10 +463,10 @@ mod sbc {
         assert_eq!(0, cpu.reg(Reg::A));
 
         // Flags affected
-        assert_eq!(true, cpu.flag(Flag::Zero));
-        assert_eq!(true, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(cpu.flag(Flag::Zero));
+        assert!(cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Carry));
     }
 
     #[test]
@@ -481,10 +481,10 @@ mod sbc {
         assert_eq!(1, cpu.reg(Reg::A));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(true, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Carry));
     }
 
     #[test]
@@ -499,10 +499,10 @@ mod sbc {
         assert_eq!(0x7F, cpu.reg(Reg::A));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(true, cpu.flag(Flag::AddSub));
-        assert_eq!(true, cpu.flag(Flag::HalfCarry));
-        assert_eq!(true, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(cpu.flag(Flag::AddSub));
+        assert!(cpu.flag(Flag::HalfCarry));
+        assert!(cpu.flag(Flag::Carry));
     }
 
     #[test]
@@ -517,10 +517,10 @@ mod sbc {
         assert_eq!(0xE1, cpu.reg(Reg::A));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(true, cpu.flag(Flag::AddSub));
-        assert_eq!(true, cpu.flag(Flag::HalfCarry));
-        assert_eq!(true, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(cpu.flag(Flag::AddSub));
+        assert!(cpu.flag(Flag::HalfCarry));
+        assert!(cpu.flag(Flag::Carry));
     }
 
     #[test]
@@ -535,10 +535,10 @@ mod sbc {
         assert_eq!(0xFF, cpu.reg(Reg::A));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(true, cpu.flag(Flag::AddSub));
-        assert_eq!(true, cpu.flag(Flag::HalfCarry));
-        assert_eq!(true, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(cpu.flag(Flag::AddSub));
+        assert!(cpu.flag(Flag::HalfCarry));
+        assert!(cpu.flag(Flag::Carry));
     }
 
     #[test]
@@ -553,10 +553,10 @@ mod sbc {
         assert_eq!(1, cpu.reg(Reg::A));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(true, cpu.flag(Flag::AddSub));
-        assert_eq!(true, cpu.flag(Flag::HalfCarry));
-        assert_eq!(true, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(cpu.flag(Flag::AddSub));
+        assert!(cpu.flag(Flag::HalfCarry));
+        assert!(cpu.flag(Flag::Carry));
     }
 }
 
@@ -571,10 +571,10 @@ fn and() {
     assert_eq!(0xF, cpu.reg(Reg::A));
 
     // Flags affected
-    assert_eq!(false, cpu.flag(Flag::Zero));
-    assert_eq!(false, cpu.flag(Flag::AddSub));
-    assert_eq!(true, cpu.flag(Flag::HalfCarry));
-    assert_eq!(false, cpu.flag(Flag::Carry));
+    assert!(!cpu.flag(Flag::Zero));
+    assert!(!cpu.flag(Flag::AddSub));
+    assert!(cpu.flag(Flag::HalfCarry));
+    assert!(!cpu.flag(Flag::Carry));
 }
 
 #[test]
@@ -588,10 +588,10 @@ fn or() {
     assert_eq!(0xFF, cpu.reg(Reg::A));
 
     // Flags affected
-    assert_eq!(false, cpu.flag(Flag::Zero));
-    assert_eq!(false, cpu.flag(Flag::AddSub));
-    assert_eq!(false, cpu.flag(Flag::HalfCarry));
-    assert_eq!(false, cpu.flag(Flag::Carry));
+    assert!(!cpu.flag(Flag::Zero));
+    assert!(!cpu.flag(Flag::AddSub));
+    assert!(!cpu.flag(Flag::HalfCarry));
+    assert!(!cpu.flag(Flag::Carry));
 }
 
 #[test]
@@ -605,10 +605,10 @@ fn xor() {
     assert_eq!(0xF0, cpu.reg(Reg::A));
 
     // Flags affected
-    assert_eq!(false, cpu.flag(Flag::Zero));
-    assert_eq!(false, cpu.flag(Flag::AddSub));
-    assert_eq!(false, cpu.flag(Flag::HalfCarry));
-    assert_eq!(false, cpu.flag(Flag::Carry));
+    assert!(!cpu.flag(Flag::Zero));
+    assert!(!cpu.flag(Flag::AddSub));
+    assert!(!cpu.flag(Flag::HalfCarry));
+    assert!(!cpu.flag(Flag::Carry));
 }
 
 #[cfg(test)]
@@ -626,10 +626,10 @@ mod inc {
         assert_eq!(1, cpu.reg(Reg::A));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Carry));
     }
 
     #[test]
@@ -643,10 +643,10 @@ mod inc {
         assert_eq!(0x10, cpu.reg(Reg::A));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(true, cpu.flag(Flag::HalfCarry));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Carry));
     }
 
     #[test]
@@ -660,10 +660,10 @@ mod inc {
         assert_eq!(0, cpu.reg(Reg::A));
 
         // Flags affected
-        assert_eq!(true, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(true, cpu.flag(Flag::HalfCarry));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Carry));
     }
 
     #[test]
@@ -677,10 +677,10 @@ mod inc {
         assert_eq!(0, cpu.reg(Reg::BC));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Carry));
     }
 }
 
@@ -699,10 +699,10 @@ mod dec {
         assert_eq!(0, cpu.reg(Reg::A));
 
         // Flags affected
-        assert_eq!(true, cpu.flag(Flag::Zero));
-        assert_eq!(true, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(cpu.flag(Flag::Zero));
+        assert!(cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Carry));
     }
 
     #[test]
@@ -716,10 +716,10 @@ mod dec {
         assert_eq!(0xF, cpu.reg(Reg::A));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(true, cpu.flag(Flag::AddSub));
-        assert_eq!(true, cpu.flag(Flag::HalfCarry));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(cpu.flag(Flag::AddSub));
+        assert!(cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Carry));
     }
 
     #[test]
@@ -733,10 +733,10 @@ mod dec {
         assert_eq!(0xFF, cpu.reg(Reg::A));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(true, cpu.flag(Flag::AddSub));
-        assert_eq!(true, cpu.flag(Flag::HalfCarry));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(cpu.flag(Flag::AddSub));
+        assert!(cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Carry));
     }
 
     #[test]
@@ -750,10 +750,10 @@ mod dec {
         assert_eq!(0xFFFE, cpu.reg(Reg::BC));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Carry));
     }
 }
 
@@ -767,10 +767,10 @@ fn daa() {
     assert_eq!(0x90, cpu.reg(Reg::AF));
 
     // Flags affected
-    assert_eq!(true, cpu.flag(Flag::Zero));
-    assert_eq!(false, cpu.flag(Flag::AddSub));
-    assert_eq!(false, cpu.flag(Flag::HalfCarry));
-    assert_eq!(true, cpu.flag(Flag::Carry));
+    assert!(cpu.flag(Flag::Zero));
+    assert!(!cpu.flag(Flag::AddSub));
+    assert!(!cpu.flag(Flag::HalfCarry));
+    assert!(cpu.flag(Flag::Carry));
 }
 
 #[test]
@@ -784,10 +784,10 @@ fn cpl() {
     assert_eq!(0b1010_0101, cpu.reg(Reg::A));
 
     // Flags affected
-    assert_eq!(false, cpu.flag(Flag::Zero));
-    assert_eq!(true, cpu.flag(Flag::AddSub));
-    assert_eq!(true, cpu.flag(Flag::HalfCarry));
-    assert_eq!(false, cpu.flag(Flag::Carry));
+    assert!(!cpu.flag(Flag::Zero));
+    assert!(cpu.flag(Flag::AddSub));
+    assert!(cpu.flag(Flag::HalfCarry));
+    assert!(!cpu.flag(Flag::Carry));
 }
 
 #[test]
@@ -795,14 +795,14 @@ fn ccf() {
     let mut cpu = setup();
 
     cpu.ccf();
-    assert_eq!(true, cpu.flag(Flag::Carry));
+    assert!(cpu.flag(Flag::Carry));
     cpu.ccf();
-    assert_eq!(false, cpu.flag(Flag::Carry));
+    assert!(!cpu.flag(Flag::Carry));
 
     // Flags affected
-    assert_eq!(false, cpu.flag(Flag::Zero));
-    assert_eq!(false, cpu.flag(Flag::AddSub));
-    assert_eq!(false, cpu.flag(Flag::HalfCarry));
+    assert!(!cpu.flag(Flag::Zero));
+    assert!(!cpu.flag(Flag::AddSub));
+    assert!(!cpu.flag(Flag::HalfCarry));
 }
 
 #[test]
@@ -810,12 +810,12 @@ fn scf() {
     let mut cpu = setup();
 
     cpu.scf();
-    assert_eq!(true, cpu.flag(Flag::Carry));
+    assert!(cpu.flag(Flag::Carry));
 
     // Flags affected
-    assert_eq!(false, cpu.flag(Flag::Zero));
-    assert_eq!(false, cpu.flag(Flag::AddSub));
-    assert_eq!(false, cpu.flag(Flag::HalfCarry));
+    assert!(!cpu.flag(Flag::Zero));
+    assert!(!cpu.flag(Flag::AddSub));
+    assert!(!cpu.flag(Flag::HalfCarry));
 }
 
 #[test]
@@ -825,13 +825,13 @@ fn di() {
 
     cpu.ei();
     cpu.di(&mut bus);
-    assert_eq!(false, bus.interrupts_enabled);
+    assert!(!bus.interrupts_enabled);
 
     // Flags affected
-    assert_eq!(false, cpu.flag(Flag::Carry));
-    assert_eq!(false, cpu.flag(Flag::Zero));
-    assert_eq!(false, cpu.flag(Flag::AddSub));
-    assert_eq!(false, cpu.flag(Flag::HalfCarry));
+    assert!(!cpu.flag(Flag::Carry));
+    assert!(!cpu.flag(Flag::Zero));
+    assert!(!cpu.flag(Flag::AddSub));
+    assert!(!cpu.flag(Flag::HalfCarry));
 }
 
 #[cfg(test)]
@@ -846,12 +846,12 @@ mod rlc {
         cpu.ld(&mut bus, Reference::Register(Reg::A), 1);
         cpu.rlc(&mut bus, Reference::Register(Reg::A));
         assert_eq!(0b10, cpu.reg(Reg::A));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Carry));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
     }
 
     #[test]
@@ -862,12 +862,12 @@ mod rlc {
         cpu.ld(&mut bus, Reference::Register(Reg::A), 0b1000_0000);
         cpu.rlc(&mut bus, Reference::Register(Reg::A));
         assert_eq!(1, cpu.reg(Reg::A));
-        assert_eq!(true, cpu.flag(Flag::Carry));
+        assert!(cpu.flag(Flag::Carry));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
     }
 
     #[test]
@@ -878,12 +878,12 @@ mod rlc {
         cpu.ld(&mut bus, Reference::Register(Reg::A), 0);
         cpu.rlc(&mut bus, Reference::Register(Reg::A));
         assert_eq!(0, cpu.reg(Reg::A));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Carry));
 
         // Flags affected
-        assert_eq!(true, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
+        assert!(cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
     }
 }
 
@@ -899,12 +899,12 @@ mod rl {
         cpu.ld(&mut bus, Reference::Register(Reg::A), 1);
         cpu.rl(&mut bus, Reference::Register(Reg::A));
         assert_eq!(0b10, cpu.reg(Reg::A));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Carry));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
     }
 
     #[test]
@@ -916,12 +916,12 @@ mod rl {
         cpu.ld(&mut bus, Reference::Register(Reg::A), 1);
         cpu.rl(&mut bus, Reference::Register(Reg::A));
         assert_eq!(0b11, cpu.reg(Reg::A));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Carry));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
     }
 
     #[test]
@@ -933,12 +933,12 @@ mod rl {
         cpu.ld(&mut bus, Reference::Register(Reg::A), 0b1000_0001);
         cpu.rl(&mut bus, Reference::Register(Reg::A));
         assert_eq!(0b11, cpu.reg(Reg::A));
-        assert_eq!(true, cpu.flag(Flag::Carry));
+        assert!(cpu.flag(Flag::Carry));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
     }
 
     #[test]
@@ -949,12 +949,12 @@ mod rl {
         cpu.ld(&mut bus, Reference::Register(Reg::A), 0b1000_0000);
         cpu.rl(&mut bus, Reference::Register(Reg::A));
         assert_eq!(0, cpu.reg(Reg::A));
-        assert_eq!(true, cpu.flag(Flag::Carry));
+        assert!(cpu.flag(Flag::Carry));
 
         // Flags affected
-        assert_eq!(true, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
+        assert!(cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
     }
 }
 
@@ -970,12 +970,12 @@ mod rrc {
         cpu.ld(&mut bus, Reference::Register(Reg::A), 0b1000_0000);
         cpu.rrc(&mut bus, Reference::Register(Reg::A));
         assert_eq!(0b100_0000, cpu.reg(Reg::A));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Carry));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
     }
 
     #[test]
@@ -986,12 +986,12 @@ mod rrc {
         cpu.ld(&mut bus, Reference::Register(Reg::A), 1);
         cpu.rrc(&mut bus, Reference::Register(Reg::A));
         assert_eq!(0b1000_0000, cpu.reg(Reg::A));
-        assert_eq!(true, cpu.flag(Flag::Carry));
+        assert!(cpu.flag(Flag::Carry));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
     }
 
     #[test]
@@ -1002,12 +1002,12 @@ mod rrc {
         cpu.ld(&mut bus, Reference::Register(Reg::A), 0);
         cpu.rrc(&mut bus, Reference::Register(Reg::A));
         assert_eq!(0, cpu.reg(Reg::A));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Carry));
 
         // Flags affected
-        assert_eq!(true, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
+        assert!(cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
     }
 }
 
@@ -1023,12 +1023,12 @@ mod rr {
         cpu.ld(&mut bus, Reference::Register(Reg::A), 0b10);
         cpu.rr(&mut bus, Reference::Register(Reg::A));
         assert_eq!(1, cpu.reg(Reg::A));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Carry));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
     }
 
     #[test]
@@ -1040,12 +1040,12 @@ mod rr {
         cpu.ld(&mut bus, Reference::Register(Reg::A), 0b10);
         cpu.rr(&mut bus, Reference::Register(Reg::A));
         assert_eq!(0b1000_0001, cpu.reg(Reg::A));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Carry));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
     }
 
     #[test]
@@ -1057,12 +1057,12 @@ mod rr {
         cpu.ld(&mut bus, Reference::Register(Reg::A), 0b1000_0001);
         cpu.rr(&mut bus, Reference::Register(Reg::A));
         assert_eq!(0b1100_0000, cpu.reg(Reg::A));
-        assert_eq!(true, cpu.flag(Flag::Carry));
+        assert!(cpu.flag(Flag::Carry));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
     }
 
     #[test]
@@ -1073,12 +1073,12 @@ mod rr {
         cpu.ld(&mut bus, Reference::Register(Reg::A), 1);
         cpu.rr(&mut bus, Reference::Register(Reg::A));
         assert_eq!(0, cpu.reg(Reg::A));
-        assert_eq!(true, cpu.flag(Flag::Carry));
+        assert!(cpu.flag(Flag::Carry));
 
         // Flags affected
-        assert_eq!(true, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
+        assert!(cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
     }
 }
 
@@ -1096,10 +1096,10 @@ mod swap {
         assert_eq!(0xFE, cpu.reg(Reg::A));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Carry));
     }
 
     #[test]
@@ -1112,10 +1112,10 @@ mod swap {
         assert_eq!(0, cpu.reg(Reg::A));
 
         // Flags affected
-        assert_eq!(true, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Carry));
     }
 }
 
@@ -1131,17 +1131,17 @@ mod sla {
         cpu.ld(&mut bus, Reference::Register(Reg::A), 0b1000_0000);
         cpu.sla(&mut bus, Reference::Register(Reg::A));
         assert_eq!(0, cpu.reg(Reg::A));
-        assert_eq!(true, cpu.flag(Flag::Carry));
+        assert!(cpu.flag(Flag::Carry));
 
         cpu.ld(&mut bus, Reference::Register(Reg::A), 1);
         cpu.sla(&mut bus, Reference::Register(Reg::A));
         assert_eq!(0b10, cpu.reg(Reg::A));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Carry));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
     }
 
     #[test]
@@ -1154,10 +1154,10 @@ mod sla {
         assert_eq!(0, cpu.reg(Reg::A));
 
         // Flags affected
-        assert_eq!(true, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Carry));
     }
 
     #[test]
@@ -1171,10 +1171,10 @@ mod sla {
         assert_eq!(0, cpu.reg(Reg::B));
 
         // Flags affected
-        assert_eq!(true, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
-        assert_eq!(true, cpu.flag(Flag::Carry));
+        assert!(cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
+        assert!(cpu.flag(Flag::Carry));
     }
 }
 
@@ -1190,12 +1190,12 @@ mod sra {
         cpu.ld(&mut bus, Reference::Register(Reg::A), 0b11);
         cpu.sra(&mut bus, Reference::Register(Reg::A));
         assert_eq!(1, cpu.reg(Reg::A));
-        assert_eq!(true, cpu.flag(Flag::Carry));
+        assert!(cpu.flag(Flag::Carry));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
     }
 
     #[test]
@@ -1206,12 +1206,12 @@ mod sra {
         cpu.ld(&mut bus, Reference::Register(Reg::A), 0b10);
         cpu.sra(&mut bus, Reference::Register(Reg::A));
         assert_eq!(1, cpu.reg(Reg::A));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Carry));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
     }
 
     #[test]
@@ -1222,12 +1222,12 @@ mod sra {
         cpu.ld(&mut bus, Reference::Register(Reg::A), 0b1000_0000);
         cpu.sra(&mut bus, Reference::Register(Reg::A));
         assert_eq!(0b1100_0000, cpu.reg(Reg::A));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Carry));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
     }
 
     #[test]
@@ -1240,10 +1240,10 @@ mod sra {
         assert_eq!(0, cpu.reg(Reg::A));
 
         // Flags affected
-        assert_eq!(true, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Carry));
     }
 }
 
@@ -1259,12 +1259,12 @@ mod srl {
         cpu.ld(&mut bus, Reference::Register(Reg::A), 0b11);
         cpu.srl(&mut bus, Reference::Register(Reg::A));
         assert_eq!(1, cpu.reg(Reg::A));
-        assert_eq!(true, cpu.flag(Flag::Carry));
+        assert!(cpu.flag(Flag::Carry));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
     }
 
     #[test]
@@ -1275,12 +1275,12 @@ mod srl {
         cpu.ld(&mut bus, Reference::Register(Reg::A), 0b10);
         cpu.srl(&mut bus, Reference::Register(Reg::A));
         assert_eq!(1, cpu.reg(Reg::A));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Carry));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
     }
 
     #[test]
@@ -1291,12 +1291,12 @@ mod srl {
         cpu.ld(&mut bus, Reference::Register(Reg::A), 0b1000_0000);
         cpu.srl(&mut bus, Reference::Register(Reg::A));
         assert_eq!(0b0100_0000, cpu.reg(Reg::A));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Carry));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
     }
 
     #[test]
@@ -1309,10 +1309,10 @@ mod srl {
         assert_eq!(0, cpu.reg(Reg::A));
 
         // Flags affected
-        assert_eq!(true, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Carry));
     }
 }
 
@@ -1328,28 +1328,28 @@ mod bit {
         cpu.ld(&mut bus, Reference::Register(Reg::A), 0b1010_1010);
 
         cpu.bit(&mut bus, 0, Reference::Register(Reg::A));
-        assert_eq!(true, cpu.flag(Flag::Zero));
+        assert!(cpu.flag(Flag::Zero));
 
         cpu.bit(&mut bus, 1, Reference::Register(Reg::A));
-        assert_eq!(false, cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::Zero));
 
         cpu.bit(&mut bus, 2, Reference::Register(Reg::A));
-        assert_eq!(true, cpu.flag(Flag::Zero));
+        assert!(cpu.flag(Flag::Zero));
 
         cpu.bit(&mut bus, 3, Reference::Register(Reg::A));
-        assert_eq!(false, cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::Zero));
 
         cpu.bit(&mut bus, 4, Reference::Register(Reg::A));
-        assert_eq!(true, cpu.flag(Flag::Zero));
+        assert!(cpu.flag(Flag::Zero));
 
         cpu.bit(&mut bus, 5, Reference::Register(Reg::A));
-        assert_eq!(false, cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::Zero));
 
         cpu.bit(&mut bus, 6, Reference::Register(Reg::A));
-        assert_eq!(true, cpu.flag(Flag::Zero));
+        assert!(cpu.flag(Flag::Zero));
 
         cpu.bit(&mut bus, 7, Reference::Register(Reg::A));
-        assert_eq!(false, cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::Zero));
     }
 
     #[test]
@@ -1361,8 +1361,8 @@ mod bit {
         cpu.bit(&mut bus, 0, Reference::Register(Reg::A));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(true, cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(cpu.flag(Flag::HalfCarry));
     }
 
     #[test]
@@ -1375,7 +1375,7 @@ mod bit {
         assert_eq!(0, cpu.reg(Reg::A));
 
         // Flags affected
-        assert_eq!(true, cpu.flag(Flag::Zero));
+        assert!(cpu.flag(Flag::Zero));
     }
 }
 
@@ -1405,10 +1405,10 @@ mod set {
         cpu.set(&mut bus, 0, Reference::Register(Reg::A));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Carry));
     }
 }
 
@@ -1438,10 +1438,10 @@ mod res {
         cpu.res(&mut bus, 0, Reference::Register(Reg::A));
 
         // Flags affected
-        assert_eq!(false, cpu.flag(Flag::Zero));
-        assert_eq!(false, cpu.flag(Flag::AddSub));
-        assert_eq!(false, cpu.flag(Flag::HalfCarry));
-        assert_eq!(false, cpu.flag(Flag::Carry));
+        assert!(!cpu.flag(Flag::Zero));
+        assert!(!cpu.flag(Flag::AddSub));
+        assert!(!cpu.flag(Flag::HalfCarry));
+        assert!(!cpu.flag(Flag::Carry));
     }
 }
 

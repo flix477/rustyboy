@@ -1,16 +1,26 @@
 PODS:
+  - Bow (0.8.0)
+  - BowEffects (0.8.0):
+    - Bow (~> 0.8.0)
   - SwiftLint (0.27.0)
 
 DEPENDENCIES:
+  - Bow
+  - BowEffects
   - SwiftLint
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  https://github.com/CocoaPods/Specs.git:
     - SwiftLint
+  trunk:
+    - Bow
+    - BowEffects
 
 SPEC CHECKSUMS:
+  Bow: a709b8d14ac59d7f1d2f8388891c8632628e7575
+  BowEffects: 16ba770445cbbd0f58c5c9f53edfa3c63098d49e
   SwiftLint: 3207c1faa2240bf8973b191820a116113cd11073
 
-PODFILE CHECKSUM: f079c7058c19c28322c939f693fb3df41461056d
+PODFILE CHECKSUM: 9da95a73cd6c41b49c5aa591eb08f46a429cb510
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.10.0
