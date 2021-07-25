@@ -21,8 +21,9 @@ private struct GameButtonModifier: ViewModifier {
     }
 }
 
-struct ControllerView: View {
+struct GamepadView: View {
     var onButtonEvent: ((ButtonType, ButtonEventType) -> Void)?
+    var onMenuPressed: (() -> Void)?
 
     func buttonAction(for buttonType: ButtonType) -> (ButtonEventType) -> Void {
         return { state in self.onButtonEvent?(buttonType, state) }
@@ -64,14 +65,22 @@ struct ControllerView: View {
                     .frame(width: 64, height: 42)
                     .modifier(GameButtonModifier(action: buttonAction(for: .start)))
             }
+
+            Button(action: { onMenuPressed?() }, label: {
+                Image("menu")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 48, height: 48)
+                    .opacity(0.2)
+            })
         }
         .padding(EdgeInsets(top: 32, leading: 16, bottom: 32, trailing: 16))
         .background(Color("Controller"))
     }
 }
 
-struct ControllerPreviews: PreviewProvider {
+struct GamepadViewPreviews: PreviewProvider {
     static var previews: some View {
-        ControllerView()
+        GamepadView()
     }
 }

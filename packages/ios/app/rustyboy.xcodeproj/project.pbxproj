@@ -8,14 +8,26 @@
 
 /* Begin PBXBuildFile section */
 		6781C00E5F851B0D675C5DA2 /* Pods_rustyboy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 059802735743B0EE959F4EA4 /* Pods_rustyboy.framework */; };
+		8F2C5E7D26A5D6B200D0ACE8 /* EmulatorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F2C5E7C26A5D6B200D0ACE8 /* EmulatorController.swift */; };
+		8F2C5E7F26A5D93A00D0ACE8 /* FileManager_Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F2C5E7E26A5D93A00D0ACE8 /* FileManager_Extension.swift */; };
+		8F2C5E8126A5DC0900D0ACE8 /* Date_Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F2C5E8026A5DC0900D0ACE8 /* Date_Extension.swift */; };
+		8F2C5E8426A654C600D0ACE8 /* EmulatorMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F2C5E8326A654C600D0ACE8 /* EmulatorMenuView.swift */; };
+		8F2FC079269FF521000F88DD /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F2FC078269FF521000F88DD /* Game.swift */; };
 		8F401AE1269B76D000ADB8A9 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F401AE0269B76D000ADB8A9 /* HomeView.swift */; };
 		8F401AE4269B88B700ADB8A9 /* DocumentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F401AE3269B88B700ADB8A9 /* DocumentPicker.swift */; };
+		8F5077B426A493020060BD79 /* GameListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F5077B326A493020060BD79 /* GameListView.swift */; };
+		8F5077B826A494FD0060BD79 /* GameListCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F5077B726A494FD0060BD79 /* GameListCellView.swift */; };
+		8F5077BC26A533460060BD79 /* HomeEmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F5077BB26A533460060BD79 /* HomeEmptyStateView.swift */; };
 		8F66ED45269D0DE30086FD86 /* ScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F66ED44269D0DE30086FD86 /* ScreenView.swift */; };
 		8F6B4E6A269D58AA000CB0D2 /* RoundedCorners.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6B4E69269D58AA000CB0D2 /* RoundedCorners.swift */; };
 		8F6B4E6C269D5923000CB0D2 /* View_Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6B4E6B269D5923000CB0D2 /* View_Extension.swift */; };
+		8F8DDB5B26A34DD200D23FB0 /* Savestate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F8DDB5A26A34DD200D23FB0 /* Savestate.swift */; };
+		8F8DDB5E26A3519C00D23FB0 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F8DDB5D26A3519C00D23FB0 /* Persistence.swift */; };
+		8F8DDB6426A372FD00D23FB0 /* RealmPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F8DDB6326A372FD00D23FB0 /* RealmPersistence.swift */; };
+		8F8DDB6826A3886400D23FB0 /* MockPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F8DDB6726A3886400D23FB0 /* MockPersistence.swift */; };
 		8FB2623822BD9EFC00FFFCCB /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB2623722BD9EFC00FFFCCB /* Theme.swift */; };
 		8FB2623A22C168FE00FFFCCB /* DirectionalPadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB2623922C168FE00FFFCCB /* DirectionalPadView.swift */; };
-		8FB2623D22C1823D00FFFCCB /* ControllerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB2623C22C1823D00FFFCCB /* ControllerView.swift */; };
+		8FB2623D22C1823D00FFFCCB /* GamepadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB2623C22C1823D00FFFCCB /* GamepadView.swift */; };
 		8FC23C8122BBDC7C00B9E1E2 /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FC23C8022BBDC7C00B9E1E2 /* libresolv.tbd */; };
 		8FC23C8522BBDCDB00B9E1E2 /* librustyboy.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FC23C8422BBDCDB00B9E1E2 /* librustyboy.a */; };
 		8FC23C8722BBDCFA00B9E1E2 /* Gameboy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC23C8622BBDCFA00B9E1E2 /* Gameboy.swift */; };
@@ -26,22 +38,42 @@
 		8FC23C9B22BC17C100B9E1E2 /* HomeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC23C9A22BC17C100B9E1E2 /* HomeController.swift */; };
 		8FC3289922BB3727008E1EDC /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC3289822BB3727008E1EDC /* App.swift */; };
 		8FC328A022BB3728008E1EDC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8FC3289F22BB3728008E1EDC /* Assets.xcassets */; };
-		8FD8039B269BAB4B00F47C27 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FD8039A269BAB4B00F47C27 /* GameView.swift */; };
+		8FD8039B269BAB4B00F47C27 /* EmulatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FD8039A269BAB4B00F47C27 /* EmulatorView.swift */; };
+		8FD92AF626A677B30009FA6C /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FD92AF526A677B20009FA6C /* Environment.swift */; };
+		8FD92AF826A6873C0009FA6C /* EmulatorMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FD92AF726A6873C0009FA6C /* EmulatorMenuController.swift */; };
+		8FD92AFA26A68B4C0009FA6C /* Savestates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FD92AF926A68B4C0009FA6C /* Savestates.swift */; };
 		8FF283BE22BC5C84009177F6 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FF283BD22BC5C84009177F6 /* Renderer.swift */; };
 		8FF283C322BC8767009177F6 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8FF283C222BC8767009177F6 /* Shaders.metal */; };
+		8FFB3F7326A797B200E7AAFD /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FFB3F7226A797B200E7AAFD /* GameViewModel.swift */; };
+		8FFB3F7526A7AE0500E7AAFD /* SavestateViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FFB3F7426A7AE0500E7AAFD /* SavestateViewModel.swift */; };
+		8FFB3F7726A7B60D00E7AAFD /* EmulatorMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FFB3F7626A7B60D00E7AAFD /* EmulatorMenuButton.swift */; };
+		8FFB3F7926A7B64700E7AAFD /* EmulatorMenuSavestatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FFB3F7826A7B64700E7AAFD /* EmulatorMenuSavestatesView.swift */; };
+		8FFB3F7B26A7B6A500E7AAFD /* EmulatorMenuActionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FFB3F7A26A7B6A500E7AAFD /* EmulatorMenuActionsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		059802735743B0EE959F4EA4 /* Pods_rustyboy.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_rustyboy.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DAEDABD16D6BA5512CB24FD /* Pods-rustyboy.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-rustyboy.debug.xcconfig"; path = "Pods/Target Support Files/Pods-rustyboy/Pods-rustyboy.debug.xcconfig"; sourceTree = "<group>"; };
+		8F2C5E7C26A5D6B200D0ACE8 /* EmulatorController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmulatorController.swift; sourceTree = "<group>"; };
+		8F2C5E7E26A5D93A00D0ACE8 /* FileManager_Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManager_Extension.swift; sourceTree = "<group>"; };
+		8F2C5E8026A5DC0900D0ACE8 /* Date_Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date_Extension.swift; sourceTree = "<group>"; };
+		8F2C5E8326A654C600D0ACE8 /* EmulatorMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmulatorMenuView.swift; sourceTree = "<group>"; };
+		8F2FC078269FF521000F88DD /* Game.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Game.swift; sourceTree = "<group>"; };
 		8F401AE0269B76D000ADB8A9 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		8F401AE3269B88B700ADB8A9 /* DocumentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentPicker.swift; sourceTree = "<group>"; };
+		8F5077B326A493020060BD79 /* GameListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameListView.swift; sourceTree = "<group>"; };
+		8F5077B726A494FD0060BD79 /* GameListCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameListCellView.swift; sourceTree = "<group>"; };
+		8F5077BB26A533460060BD79 /* HomeEmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeEmptyStateView.swift; sourceTree = "<group>"; };
 		8F66ED44269D0DE30086FD86 /* ScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenView.swift; sourceTree = "<group>"; };
 		8F6B4E69269D58AA000CB0D2 /* RoundedCorners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedCorners.swift; sourceTree = "<group>"; };
 		8F6B4E6B269D5923000CB0D2 /* View_Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = View_Extension.swift; sourceTree = "<group>"; };
+		8F8DDB5A26A34DD200D23FB0 /* Savestate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Savestate.swift; sourceTree = "<group>"; };
+		8F8DDB5D26A3519C00D23FB0 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
+		8F8DDB6326A372FD00D23FB0 /* RealmPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmPersistence.swift; sourceTree = "<group>"; };
+		8F8DDB6726A3886400D23FB0 /* MockPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPersistence.swift; sourceTree = "<group>"; };
 		8FB2623722BD9EFC00FFFCCB /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		8FB2623922C168FE00FFFCCB /* DirectionalPadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionalPadView.swift; sourceTree = "<group>"; };
-		8FB2623C22C1823D00FFFCCB /* ControllerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerView.swift; sourceTree = "<group>"; };
+		8FB2623C22C1823D00FFFCCB /* GamepadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamepadView.swift; sourceTree = "<group>"; };
 		8FC23C7E22BBDA6900B9E1E2 /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
 		8FC23C8022BBDC7C00B9E1E2 /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
 		8FC23C8422BBDCDB00B9E1E2 /* librustyboy.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librustyboy.a; path = ../target/universal/release/librustyboy.a; sourceTree = "<group>"; };
@@ -55,11 +87,19 @@
 		8FC3289822BB3727008E1EDC /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		8FC3289F22BB3728008E1EDC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8FC328A422BB3728008E1EDC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8FD8039A269BAB4B00F47C27 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
+		8FD8039A269BAB4B00F47C27 /* EmulatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmulatorView.swift; sourceTree = "<group>"; };
+		8FD92AF526A677B20009FA6C /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
+		8FD92AF726A6873C0009FA6C /* EmulatorMenuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmulatorMenuController.swift; sourceTree = "<group>"; };
+		8FD92AF926A68B4C0009FA6C /* Savestates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Savestates.swift; sourceTree = "<group>"; };
 		8FF283B922BC2A58009177F6 /* rustyboy.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = rustyboy.entitlements; sourceTree = "<group>"; };
 		8FF283BD22BC5C84009177F6 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		8FF283C222BC8767009177F6 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		8FF283C522BC9BCB009177F6 /* ShaderDefinitions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderDefinitions.h; sourceTree = "<group>"; };
+		8FFB3F7226A797B200E7AAFD /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
+		8FFB3F7426A7AE0500E7AAFD /* SavestateViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavestateViewModel.swift; sourceTree = "<group>"; };
+		8FFB3F7626A7B60D00E7AAFD /* EmulatorMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmulatorMenuButton.swift; sourceTree = "<group>"; };
+		8FFB3F7826A7B64700E7AAFD /* EmulatorMenuSavestatesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmulatorMenuSavestatesView.swift; sourceTree = "<group>"; };
+		8FFB3F7A26A7B6A500E7AAFD /* EmulatorMenuActionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmulatorMenuActionsView.swift; sourceTree = "<group>"; };
 		C6D121C4739A2E81FEEFFA09 /* Pods-rustyboy.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-rustyboy.release.xcconfig"; path = "Pods/Target Support Files/Pods-rustyboy/Pods-rustyboy.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -86,14 +126,52 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		8F2C5E8226A654AA00D0ACE8 /* EmulatorMenu */ = {
+			isa = PBXGroup;
+			children = (
+				8F2C5E8326A654C600D0ACE8 /* EmulatorMenuView.swift */,
+				8FD92AF726A6873C0009FA6C /* EmulatorMenuController.swift */,
+				8FFB3F7426A7AE0500E7AAFD /* SavestateViewModel.swift */,
+				8FFB3F7626A7B60D00E7AAFD /* EmulatorMenuButton.swift */,
+				8FFB3F7826A7B64700E7AAFD /* EmulatorMenuSavestatesView.swift */,
+				8FFB3F7A26A7B6A500E7AAFD /* EmulatorMenuActionsView.swift */,
+			);
+			path = EmulatorMenu;
+			sourceTree = "<group>";
+		};
+		8F2FC077269FF506000F88DD /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				8F8DDB5C26A3518800D23FB0 /* Models */,
+				8F8DDB5D26A3519C00D23FB0 /* Persistence.swift */,
+				8F8DDB6326A372FD00D23FB0 /* RealmPersistence.swift */,
+				8F8DDB6726A3886400D23FB0 /* MockPersistence.swift */,
+			);
+			path = Persistence;
+			sourceTree = "<group>";
+		};
 		8F401AE2269B889100ADB8A9 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
-				8F401AE3269B88B700ADB8A9 /* DocumentPicker.swift */,
-				8F6B4E69269D58AA000CB0D2 /* RoundedCorners.swift */,
-				8F6B4E6B269D5923000CB0D2 /* View_Extension.swift */,
+				8F2FC077269FF506000F88DD /* Persistence */,
+				8F84A9C3269DE92400117D13 /* UI */,
+				8FC23C8622BBDCFA00B9E1E2 /* Gameboy.swift */,
+				8F2C5E7E26A5D93A00D0ACE8 /* FileManager_Extension.swift */,
+				8F2C5E8026A5DC0900D0ACE8 /* Date_Extension.swift */,
+				8FD92AF526A677B20009FA6C /* Environment.swift */,
+				8FD92AF926A68B4C0009FA6C /* Savestates.swift */,
 			);
 			path = Shared;
+			sourceTree = "<group>";
+		};
+		8F5077B226A492F10060BD79 /* GameList */ = {
+			isa = PBXGroup;
+			children = (
+				8F5077B326A493020060BD79 /* GameListView.swift */,
+				8F5077B726A494FD0060BD79 /* GameListCellView.swift */,
+				8FFB3F7226A797B200E7AAFD /* GameViewModel.swift */,
+			);
+			path = GameList;
 			sourceTree = "<group>";
 		};
 		8F66ED41269CF8730086FD86 /* Screen */ = {
@@ -107,13 +185,33 @@
 			path = Screen;
 			sourceTree = "<group>";
 		};
-		8FB2623B22C1822100FFFCCB /* Controller */ = {
+		8F84A9C3269DE92400117D13 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				8FB2623722BD9EFC00FFFCCB /* Theme.swift */,
+				8F401AE3269B88B700ADB8A9 /* DocumentPicker.swift */,
+				8F6B4E69269D58AA000CB0D2 /* RoundedCorners.swift */,
+				8F6B4E6B269D5923000CB0D2 /* View_Extension.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		8F8DDB5C26A3518800D23FB0 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				8F2FC078269FF521000F88DD /* Game.swift */,
+				8F8DDB5A26A34DD200D23FB0 /* Savestate.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		8FB2623B22C1822100FFFCCB /* Gamepad */ = {
 			isa = PBXGroup;
 			children = (
 				8FB2623922C168FE00FFFCCB /* DirectionalPadView.swift */,
-				8FB2623C22C1823D00FFFCCB /* ControllerView.swift */,
+				8FB2623C22C1823D00FFFCCB /* GamepadView.swift */,
 			);
-			path = Controller;
+			path = Gamepad;
 			sourceTree = "<group>";
 		};
 		8FC23C7F22BBDC7C00B9E1E2 /* Frameworks */ = {
@@ -126,7 +224,7 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		8FC23C8822BC087500B9E1E2 /* fonts */ = {
+		8FC23C8822BC087500B9E1E2 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
 				8FC23C9022BC0BFD00B9E1E2 /* Cabin-Medium.ttf */,
@@ -134,14 +232,16 @@
 				8FC23C8D22BC0BFD00B9E1E2 /* Cabin-SemiBold.ttf */,
 				8FC23C8922BC089200B9E1E2 /* Cabin-SemiBoldItalic.ttf */,
 			);
-			path = fonts;
+			path = Fonts;
 			sourceTree = "<group>";
 		};
 		8FC23C9922BC179600B9E1E2 /* Home */ = {
 			isa = PBXGroup;
 			children = (
+				8F5077B226A492F10060BD79 /* GameList */,
 				8FC23C9A22BC17C100B9E1E2 /* HomeController.swift */,
 				8F401AE0269B76D000ADB8A9 /* HomeView.swift */,
+				8F5077BB26A533460060BD79 /* HomeEmptyStateView.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -168,28 +268,28 @@
 			isa = PBXGroup;
 			children = (
 				8F401AE2269B889100ADB8A9 /* Shared */,
-				8FF283BA22BC2BBA009177F6 /* Game */,
-				8FF283B922BC2A58009177F6 /* rustyboy.entitlements */,
+				8FF283BA22BC2BBA009177F6 /* Emulator */,
 				8FC23C9922BC179600B9E1E2 /* Home */,
-				8FC23C8822BC087500B9E1E2 /* fonts */,
+				8FC23C8822BC087500B9E1E2 /* Fonts */,
 				8FC3289822BB3727008E1EDC /* App.swift */,
+				8FF283B922BC2A58009177F6 /* rustyboy.entitlements */,
 				8FC3289F22BB3728008E1EDC /* Assets.xcassets */,
 				8FC328A422BB3728008E1EDC /* Info.plist */,
 				8FC23C7E22BBDA6900B9E1E2 /* BridgingHeader.h */,
-				8FC23C8622BBDCFA00B9E1E2 /* Gameboy.swift */,
-				8FB2623722BD9EFC00FFFCCB /* Theme.swift */,
 			);
 			path = rustyboy;
 			sourceTree = "<group>";
 		};
-		8FF283BA22BC2BBA009177F6 /* Game */ = {
+		8FF283BA22BC2BBA009177F6 /* Emulator */ = {
 			isa = PBXGroup;
 			children = (
+				8F2C5E8226A654AA00D0ACE8 /* EmulatorMenu */,
 				8F66ED41269CF8730086FD86 /* Screen */,
-				8FB2623B22C1822100FFFCCB /* Controller */,
-				8FD8039A269BAB4B00F47C27 /* GameView.swift */,
+				8FB2623B22C1822100FFFCCB /* Gamepad */,
+				8FD8039A269BAB4B00F47C27 /* EmulatorView.swift */,
+				8F2C5E7C26A5D6B200D0ACE8 /* EmulatorController.swift */,
 			);
-			path = Game;
+			path = Emulator;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -333,16 +433,36 @@
 			buildActionMask = 2147483647;
 			files = (
 				8FB2623A22C168FE00FFFCCB /* DirectionalPadView.swift in Sources */,
+				8F2FC079269FF521000F88DD /* Game.swift in Sources */,
+				8FFB3F7B26A7B6A500E7AAFD /* EmulatorMenuActionsView.swift in Sources */,
+				8F8DDB5E26A3519C00D23FB0 /* Persistence.swift in Sources */,
+				8F5077BC26A533460060BD79 /* HomeEmptyStateView.swift in Sources */,
+				8F8DDB5B26A34DD200D23FB0 /* Savestate.swift in Sources */,
+				8F2C5E7F26A5D93A00D0ACE8 /* FileManager_Extension.swift in Sources */,
+				8F2C5E8126A5DC0900D0ACE8 /* Date_Extension.swift in Sources */,
 				8F401AE1269B76D000ADB8A9 /* HomeView.swift in Sources */,
 				8FF283C322BC8767009177F6 /* Shaders.metal in Sources */,
-				8FD8039B269BAB4B00F47C27 /* GameView.swift in Sources */,
+				8FFB3F7926A7B64700E7AAFD /* EmulatorMenuSavestatesView.swift in Sources */,
+				8FD8039B269BAB4B00F47C27 /* EmulatorView.swift in Sources */,
+				8F2C5E8426A654C600D0ACE8 /* EmulatorMenuView.swift in Sources */,
+				8F2C5E7D26A5D6B200D0ACE8 /* EmulatorController.swift in Sources */,
 				8FB2623822BD9EFC00FFFCCB /* Theme.swift in Sources */,
+				8FFB3F7726A7B60D00E7AAFD /* EmulatorMenuButton.swift in Sources */,
 				8FC23C9B22BC17C100B9E1E2 /* HomeController.swift in Sources */,
+				8F8DDB6426A372FD00D23FB0 /* RealmPersistence.swift in Sources */,
+				8F5077B426A493020060BD79 /* GameListView.swift in Sources */,
 				8F6B4E6C269D5923000CB0D2 /* View_Extension.swift in Sources */,
-				8FB2623D22C1823D00FFFCCB /* ControllerView.swift in Sources */,
+				8FD92AF826A6873C0009FA6C /* EmulatorMenuController.swift in Sources */,
+				8FFB3F7326A797B200E7AAFD /* GameViewModel.swift in Sources */,
+				8FD92AFA26A68B4C0009FA6C /* Savestates.swift in Sources */,
+				8FB2623D22C1823D00FFFCCB /* GamepadView.swift in Sources */,
+				8F8DDB6826A3886400D23FB0 /* MockPersistence.swift in Sources */,
+				8FFB3F7526A7AE0500E7AAFD /* SavestateViewModel.swift in Sources */,
 				8FC23C8722BBDCFA00B9E1E2 /* Gameboy.swift in Sources */,
 				8F66ED45269D0DE30086FD86 /* ScreenView.swift in Sources */,
 				8F6B4E6A269D58AA000CB0D2 /* RoundedCorners.swift in Sources */,
+				8FD92AF626A677B30009FA6C /* Environment.swift in Sources */,
+				8F5077B826A494FD0060BD79 /* GameListCellView.swift in Sources */,
 				8FF283BE22BC5C84009177F6 /* Renderer.swift in Sources */,
 				8F401AE4269B88B700ADB8A9 /* DocumentPicker.swift in Sources */,
 				8FC3289922BB3727008E1EDC /* App.swift in Sources */,

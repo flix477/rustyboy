@@ -17,4 +17,15 @@ extension Color {
     init(red: Int, green: Int, blue: Int) {
         self.init(red: Double(red) / 255, green: Double(green) / 255, blue: Double(blue) / 255)
     }
+
+    init(red: Int, green: Int, blue: Int, opacity: Double) {
+        self.init(red: Double(red) / 255, green: Double(green) / 255, blue: Double(blue) / 255, opacity: opacity)
+    }
+}
+
+extension Gradient {
+    static var primary: Gradient {
+        return Gradient(colors: [Color(red: 36, green: 54, blue: 134),
+                                 Color(red: 190, green: 109, blue: 147)])
+    }
 }

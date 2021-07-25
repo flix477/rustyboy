@@ -1,4 +1,27 @@
 import Foundation
+import CoreGraphics
+
+class RawSavestate {
+    let buffer: UnsafeMutableBufferPointer<UInt8>
+    let preview: CGImage
+
+    init(start: UnsafeMutablePointer<UInt8>?, count: UInt, screenBuffer: UnsafeMutablePointer<UInt8>) {
+        self.buffer = UnsafeMutableBufferPointer(start: start, count: Int(count))
+        self.preview = CGContext(data: screenBuffer,
+                            width: Int(SCREEN_WIDTH),
+                            height: Int(SCREEN_HEIGHT),
+                            bitsPerComponent: 8,
+                            bytesPerRow: 4 * Int(SCREEN_WIDTH),
+                            space: CGColorSpace(name: CGColorSpace.sRGB)!,
+                            bitmapInfo: CGBitmapInfo.byteOrder32Little.rawValue +
+                                CGImageAlphaInfo.premultipliedFirst.rawValue)!.makeImage()!
+
+    }
+
+    deinit {
+        vec_free(buffer.baseAddress, UInt(buffer.count))
+    }
+}
 
 class Gameboy {
     var gameboyPointer: OpaquePointer
@@ -24,7 +47,25 @@ class Gameboy {
         gameboy_send_input(self.gameboyPointer, buttonType.toCore(), eventType.toCore())
     }
 
+    func loadSavestate(buffer: [UInt8]) -> Bool {
+        gameboy_load_savestate(gameboyPointer, buffer, UInt(buffer.count))
+    }
+
+    func dumpSavestate() -> RawSavestate {
+        var pointer = UnsafeMutablePointer<UInt8>(nil)
+        let size = gameboy_dump_savestate(gameboyPointer, &pointer)
+
+        return RawSavestate(start: pointer, count: size, screenBuffer: bufferPointer!)
+    }
+
+    func reset() {
+        gameboy_reset(gameboyPointer)
+    }
+
     deinit {
+        if let pointer = self.bufferPointer {
+            buffer_free(pointer)
+        }
         gameboy_free(self.gameboyPointer)
     }
 }

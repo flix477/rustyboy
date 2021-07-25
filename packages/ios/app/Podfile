@@ -9,4 +9,5 @@ target 'rustyboy' do
   pod 'Bow'
   pod 'BowEffects'
   pod 'SwiftLint'
+  pod 'RealmSwift'
 end
