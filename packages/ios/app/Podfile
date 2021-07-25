@@ -6,5 +6,8 @@ target 'rustyboy' do
   use_frameworks!
 
   # Pods for rustyboy
+  pod 'Bow'
+  pod 'BowEffects'
   pod 'SwiftLint'
+  pod 'RealmSwift'
 end

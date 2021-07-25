@@ -9,14 +9,14 @@ const GAME_TITLE_OFFSET: usize = 0x0134;
 
 // The range where the manufacturer code resides
 // for newer cartridges, 4 characters uppercase
-const MANUFACTURER_CODE_RANGE: RangeInclusive<usize> = (0x013F..=0x0142);
+const MANUFACTURER_CODE_RANGE: RangeInclusive<usize> = 0x013F..=0x0142;
 
 // The offset on CGB cartridges to determine which CGB functions they support
 const CGB_FLAG_OFFSET: usize = 0x0143;
 
 // The range where the company/publisher code of
 // the game is in post-SGB cartridges
-const NEW_LICENSEE_CODE_RANGE: RangeInclusive<usize> = (0x144..=0x145);
+const NEW_LICENSEE_CODE_RANGE: RangeInclusive<usize> = 0x144..=0x145;
 
 // The offset that determines whether the game has SGB functions
 const SGB_FLAG_OFFSET: usize = 0x0146;

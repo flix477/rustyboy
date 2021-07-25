@@ -177,77 +177,63 @@ impl Screen {
         let tall_sprites = video.control.obj_big_size();
         let sprite_height = if tall_sprites { 16 } else { 8 };
 
-        struct AdjustedPosition {
-            absolute: (u8, u8),
-            inner_start: (u8, u8),
-        }
-
-        oam_entries
+        // loop in reverse so we draw sprites that are earlier in oam as higher priority
+        let mut count = 0;
+        for entry in oam_entries
             .iter()
-            .rev() // loop in reverse so we draw sprites that are earlier in oam as higher priority
+            .rev()
             .filter(|entry| entry.visible(tall_sprites))
-            .map(|entry| {
-                let (x, y) = entry.position;
-                let (origin_x, origin_y) = SPRITES_ORIGIN;
+        {
+            let (x, y) = entry.position;
+            let (origin_x, origin_y) = SPRITES_ORIGIN;
 
-                let start_x = if x < origin_x { origin_x - x } else { 0 };
-                let start_y = if y < origin_y { origin_y - y } else { 0 };
+            let start_x = if x < origin_x { origin_x - x } else { 0 };
+            let start_y = if y < origin_y { origin_y - y } else { 0 };
 
-                let absolute = (x.saturating_sub(origin_x), y.saturating_sub(origin_y));
+            let absolute = (x.saturating_sub(origin_x), y.saturating_sub(origin_y));
 
-                let position = AdjustedPosition {
-                    absolute,
-                    inner_start: (start_x, start_y),
-                };
+            // filter out sprites that are not displayed at ly
+            if ly < absolute.1 || ly >= absolute.1 + sprite_height - start_y {
+                continue;
+            }
 
-                (position, entry)
-            })
-            .filter(|(position, _)| {
-                // filter out sprites that are not displayed at ly
-                let abs_y1 = position.absolute.1;
-                let abs_y2 = abs_y1 + sprite_height - position.inner_start.1;
+            // display only the first 10 sprites of the line
+            count += 1;
+            if count > 10 {
+                break;
+            }
 
-                ly >= abs_y1 && ly < abs_y2
-            })
-            .take(10) // display only the first 10 sprites of the line
-            .map(|(position, entry)| {
-                // get the line buffer in the sprite
-                let palette = video.obj_palette(entry.obj_palette_number());
+            // get the line buffer in the sprite
+            let palette = video.obj_palette(entry.obj_palette_number());
 
-                let sprite_y = ly - position.absolute.1 + position.inner_start.1;
+            let sprite_y = ly - absolute.1 + start_y;
 
-                let tile_relative_index = (sprite_y - sprite_y % TILE_SIZE) / TILE_SIZE;
-                let tile = tile_data[(tile_relative_index + entry.tile_number) as usize];
-                let tile_y = sprite_y - tile_relative_index * TILE_SIZE;
+            let tile_relative_index = (sprite_y - sprite_y % TILE_SIZE) / TILE_SIZE;
+            let tile = tile_data[(tile_relative_index + entry.tile_number) as usize];
+            let tile_y = sprite_y - tile_relative_index * TILE_SIZE;
 
-                let abs_x2 = TILE_SIZE - position.inner_start.0 + position.absolute.0;
-                let inner_end_x = if abs_x2 >= SCREEN_SIZE.0 as u8 {
-                    TILE_SIZE - (abs_x2 - SCREEN_SIZE.0 as u8)
-                } else {
-                    TILE_SIZE
-                };
+            let abs_x2 = TILE_SIZE - start_x + absolute.0;
+            let inner_end_x = if abs_x2 >= SCREEN_SIZE.0 as u8 {
+                TILE_SIZE - (abs_x2 - SCREEN_SIZE.0 as u8)
+            } else {
+                TILE_SIZE
+            };
 
-                let line: Vec<DrawnColor> =
-                    tile.colored_line(tile_y, entry.x_flipped(), entry.y_flipped())
-                        [position.inner_start.0 as usize..inner_end_x as usize]
-                        .iter()
-                        .map(|color| DrawnColor {
-                            color: palette.color(*color),
-                            color_value: *color,
-                            low_priority: entry.behind_bg(),
-                        })
-                        .collect();
-
-                (position.absolute.0, line)
-            })
-            .for_each(|(absolute_x, sprite_line)| {
-                sprite_line.iter().enumerate().for_each(|(x, color)| {
-                    let index = absolute_x as usize + x;
-                    if color.color_value != 0 {
-                        line[index] = Some(*color);
-                    }
-                })
-            });
+            for (x, color) in tile.colored_line(tile_y, entry.x_flipped(), entry.y_flipped())
+                [start_x as usize..inner_end_x as usize]
+                .iter()
+                .enumerate()
+            {
+                let index = absolute.0 as usize + x;
+                if *color != 0 {
+                    line[index] = Some(DrawnColor {
+                        color: palette.color(*color),
+                        color_value: *color,
+                        low_priority: entry.behind_bg(),
+                    })
+                }
+            }
+        }
 
         line
     }

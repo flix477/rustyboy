@@ -42,8 +42,8 @@ impl Cartridge {
         };
 
         Ok(Cartridge {
-            metadata,
             buffer,
+            metadata,
             mbc,
             ram,
         })

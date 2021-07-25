@@ -12,4 +12,4 @@ mkdir -p target/headers
 cbindgen src/lib.rs -l c > target/headers/rustyboy.h
 
 cd app
-xcodebuild clean build -workspace rustyboy.xcworkspace -scheme rustyboy -destination "platform=iOS Simulator,name=iPhone Xs,OS=12.2" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=NO -quiet
+xcodebuild clean build -workspace rustyboy.xcworkspace -scheme rustyboy -destination "platform=iOS Simulator,name=iPhone Xs,OS=14.4" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=NO -quiet
