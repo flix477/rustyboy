@@ -3,22 +3,27 @@ use crate::cartridge::Cartridge;
 use crate::processor::interrupt::{Interrupt, InterruptHandler};
 use crate::video::Video;
 
-use self::joypad::{Input, Joypad};
+use self::joypad::Joypad;
 use self::timer::Timer;
+use self::serial::Serial;
 use crate::util::savestate::{read_savestate_byte, LoadSavestateError, Savestate, SavestateStream};
 use crate::video::status_register::StatusMode;
+use crate::gameboy::StepContext;
 
+mod counter;
 pub mod joypad;
 mod timer;
+mod serial;
 
 pub struct Hardware {
     pub cartridge: Cartridge,
     interrupt_handler: InterruptHandler,
-    joypad: Joypad,
+    pub joypad: Joypad,
     timer: Timer,
     pub video: Video,
     internal_ram: [u8; 8192],
     high_ram: [u8; 127],
+    serial: Serial,
 }
 
 impl Hardware {
@@ -31,6 +36,7 @@ impl Hardware {
             video: Video::default(),
             internal_ram: [0; 8192],
             high_ram: [0; 127],
+            serial: Serial::default()
         }
     }
 
@@ -45,10 +51,12 @@ impl Hardware {
         self.timer = Timer::new();
         self.joypad = Joypad::new();
         self.interrupt_handler = InterruptHandler::new();
+        self.serial = Serial::default();
     }
 
-    pub fn clock(&mut self) -> Option<StatusMode> {
+    pub fn clock(&mut self, context: &StepContext) -> Option<StatusMode> {
         self.timer.clock(&mut self.interrupt_handler);
+        self.serial.clock(&mut self.interrupt_handler, context.serial_data_input);
         self.video.clock(&mut self.interrupt_handler)
     }
 
@@ -57,10 +65,6 @@ impl Hardware {
     }
 
     fn audio_unimplemented(&self) {}
-
-    pub fn send_input(&mut self, input: Input) {
-        self.joypad.send_input(input);
-    }
 }
 
 impl Readable for Hardware {
@@ -92,14 +96,7 @@ impl Readable for Hardware {
 
             0xFF00 => self.joypad.read(address), // joypad info
 
-            0xFF01 => {
-                // TODO: serial transfer data
-                0
-            } // serial transfer data
-            0xFF02 => {
-                // TODO: sio control
-                0
-            } // sio control
+            0xFF01 | 0xFF02 => self.serial.read(address), // serial
 
             0xFF04..=0xFF07 => self.timer.read(address), // timer
 

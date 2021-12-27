@@ -12,9 +12,8 @@ import BowEffects
 
 struct Savestates {
     static func loadLatest<D: HasPersistence & HasGameboy>() -> RIO<D, Void> {
-        return RIO.accessM { env in
-            env.persistence.latestSavestate(for: env.game)
-        }.flatMap { savestate in
+        return RIO { env in env.persistence.latestSavestate(for: env.game) }
+        .flatMap { savestate in
             if let savestate = savestate {
                 return load(savestate: savestate)
             } else {
@@ -26,7 +25,7 @@ struct Savestates {
     static func load<D: HasGameboy>(savestate: Savestate) -> RIO<D, Void> {
         return RIO.invoke { env in
             let data = try Data(contentsOf: savestate.absolutePath(game: env.game))
-            env.gameboy.loadSavestate(buffer: [UInt8](data))
+            _ = env.gameboy.loadSavestate(buffer: [UInt8](data))
         }
     }
 
@@ -51,7 +50,7 @@ struct Savestates {
 
                 return savestate
             },
-            |<-env.get.persistence.add(savestate: savestate.get, to: env.get.game),
+            |<-env.get.persistence.add(savestate: savestate.get, to: env.get.game).env(),
             yield: savestate.get)^
     }
 
@@ -61,7 +60,7 @@ struct Savestates {
 
         return binding(
             env <- .ask(),
-            savestates <- env.get.persistence.savestates(for: game),
+            savestates <- env.get.persistence.savestates(for: game).env(),
             yield: savestates.get)^
     }
 }

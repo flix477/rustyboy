@@ -21,7 +21,7 @@ struct EmulatorMenuController {
 
         return binding(
             env <- .ask(),
-            savestates <- env.get.persistence.savestates(for: env.get.game),
+            savestates <- env.get.persistence.savestates(for: env.get.game).env(),
             yield: savestates.get)^
     }
 

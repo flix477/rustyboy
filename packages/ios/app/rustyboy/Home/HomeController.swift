@@ -10,13 +10,7 @@ enum GameLoadError: Error {
 
 struct HomeController {
     static func fetchGames<D: GamesPersistence>() -> EnvIO<D, Error, [Game]> {
-        let persistence = EnvIO<D, Error, D>.var()
-        let games = EnvIO<D, Error, [Game]>.var()
-
-        return binding(
-            persistence <- .ask(),
-            games <- persistence.get.games(),
-            yield: games.get)^
+        return EnvIO { $0.games() }
     }
 
     private static func loadData<D>(at url: URL) -> EnvIO<D, GameLoadError, Data> {
@@ -73,24 +67,22 @@ struct HomeController {
         let data = EnvIO<D, GameLoadError, Data>.var()
         let game = EnvIO<D, GameLoadError, Game>.var()
 
-        func makeGame<D>(url: URL, data: Data) -> EnvIO<D, GameLoadError, Game> {
-            return EnvIO.invokeEither { _ in
-                let buffer = [UInt8](data)
-                if Gameboy(buffer: buffer) != nil {
-                    return .right(Game(name: url.lastPathComponent))
-                } else {
-                    return .left(GameLoadError.notAGameboyROM)
-                }
+        func makeGame(url: URL, data: Data) -> Either<GameLoadError, Game> {
+            let buffer = [UInt8](data)
+            if Gameboy(buffer: buffer) != nil {
+                return .right(Game(name: url.lastPathComponent))
+            } else {
+                return .left(GameLoadError.notAGameboyROM)
             }
         }
 
         return binding(
             persistence <- .ask(),
             data <- loadData(at: url),
-            game <- makeGame(url: url, data: data.get),
+            game <- EnvIO.fromEither(makeGame(url: url, data: data.get)),
             newURL <- copyFileToDocuments(at: url, gameId: game.get._id.stringValue),
             |<-persistence.get.add(game: game.get)
-                .mapError(GameLoadError.errorOpeningFile),
+                .mapError(GameLoadError.errorOpeningFile).env(),
             yield: game.get)^
     }
 }

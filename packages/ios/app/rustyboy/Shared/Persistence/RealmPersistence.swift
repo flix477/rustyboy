@@ -28,14 +28,14 @@ struct RealmPersistence {
         return game.savestates.sorted(byKeyPath: "createdAt", ascending: false)
     }
 
-    private func add<D>(object: Object) -> EnvIO<D, Error, Void> {
+    private func add(object: Object) -> Task<Void> {
         return write { realm in
             realm.add(object)
         }
     }
 
-    private func write<D>(_ perform: @escaping (Realm) throws -> Void) -> RIO<D, Void> {
-        return EnvIO.invoke { _ in
+    private func write(_ perform: @escaping (Realm) throws -> Void) -> Task<Void> {
+        return Task.invoke {
             try realm.write {
                 try perform(realm)
             }
@@ -44,36 +44,36 @@ struct RealmPersistence {
 }
 
 extension RealmPersistence: GamesPersistence {
-    func gameCount<D>() -> EnvIO<D, Error, Int> {
-        return EnvIO.invoke { _ in _games.count }
+    func gameCount() -> Task<Int> {
+        return Task.invoke { _games.count }
     }
 
-    func games<D>() -> EnvIO<D, Error, [Game]> {
-        return EnvIO.invoke { _ in Array(_games.sorted(byKeyPath: "name")) }
+    func games() -> Task<[Game]> {
+        return Task.invoke { Array(_games.sorted(byKeyPath: "name")) }
     }
 
-    func add<D>(game: Game) -> EnvIO<D, Error, Void> {
+    func add(game: Game) -> Task<Void> {
         return add(object: game)
     }
 }
 
 extension RealmPersistence: SavestatesPersistence {
-    func latestSavestate<D>(for game: Game) -> EnvIO<D, Error, Savestate?> {
-        return EnvIO.invoke { _ in _savestates(for: game).first }
+    func latestSavestate(for game: Game) -> Task<Savestate?> {
+        return Task.invoke { _savestates(for: game).first }
     }
 
-    func savestates<D>(for game: Game) -> EnvIO<D, Error, [Savestate]> {
-        return EnvIO.invoke { _ in Array(_savestates(for: game)) }
+    func savestates(for game: Game) -> Task<[Savestate]> {
+        return Task.invoke { Array(_savestates(for: game)) }
     }
 
-    func add<D>(savestate: Savestate, to game: Game) -> EnvIO<D, Error, Void> {
+    func add(savestate: Savestate, to game: Game) -> Task<Void> {
         return write { _ in
             game.savestates.append(savestate)
         }
     }
 
-    func savestate<D>(withId id: String) -> RIO<D, Savestate?> {
-        return RIO.invoke { _ in realm.object(ofType: Savestate.self, forPrimaryKey: id) }
+    func savestate(withId id: String) -> Task<Savestate?> {
+        return Task.invoke { realm.object(ofType: Savestate.self, forPrimaryKey: id) }
     }
 }
 

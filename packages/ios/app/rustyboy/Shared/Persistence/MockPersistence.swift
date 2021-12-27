@@ -13,34 +13,34 @@ import BowEffects
 struct MockPersistence {}
 
 extension MockPersistence: GamesPersistence {
-    func gameCount<D>() -> EnvIO<D, Error, Int> {
-        return EnvIO.invoke(constant(0))
+    func gameCount() -> Task<Int> {
+        return Task.invoke(constant(0))
     }
 
-    func games<D>() -> EnvIO<D, Error, [Game]> {
-        return EnvIO.invoke(constant([]))
+    func games() -> Task<[Game]> {
+        return Task.invoke(constant([]))
     }
 
-    func add<D>(game: Game) -> EnvIO<D, Error, Void> {
-        return EnvIO.invoke { _ in }
+    func add(game: Game) -> Task<Void> {
+        return Task.invoke {}
     }
 }
 
 extension MockPersistence: SavestatesPersistence {
-    func latestSavestate<D>(for game: Game) -> EnvIO<D, Error, Savestate?> {
-        return EnvIO.invoke(constant(nil))
+    func latestSavestate(for game: Game) -> Task<Savestate?> {
+        return Task.invoke(constant(nil))
     }
 
-    func savestates<D>(for game: Game) -> EnvIO<D, Error, [Savestate]> {
-        return EnvIO.invoke(constant([]))
+    func savestates(for game: Game) -> Task<[Savestate]> {
+        return Task.invoke(constant([]))
     }
 
-    func add<D>(savestate: Savestate, to game: Game) -> EnvIO<D, Error, Void> {
-        return EnvIO.invoke { _ in }
+    func add(savestate: Savestate, to game: Game) -> Task<Void> {
+        return Task.invoke {}
     }
 
-    func savestate<D>(withId id: String) -> RIO<D, Savestate?> {
-        return EnvIO.invoke(constant(nil))
+    func savestate(withId id: String) -> Task<Savestate?> {
+        return Task.invoke(constant(nil))
     }
 }
 

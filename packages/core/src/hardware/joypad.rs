@@ -15,8 +15,8 @@ impl Joypad {
         self.mode = mode;
     }
 
-    pub fn send_input(&mut self, input: Input) {
-        self.set_flag(input.button, input.input_type == InputType::Down)
+    pub fn clock(&mut self, pushed_keys: u8) {
+        self.pushed_keys = pushed_keys;
     }
 }
 
@@ -75,6 +75,7 @@ pub enum InputType {
     Up,
 }
 
+#[derive(Copy, Clone, PartialEq, Eq, Hash)]
 pub enum Button {
     A = 1,
     B = 2,

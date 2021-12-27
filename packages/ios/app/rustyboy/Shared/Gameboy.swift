@@ -26,8 +26,10 @@ class RawSavestate {
 class Gameboy {
     var gameboyPointer: OpaquePointer
     var bufferPointer: UnsafeMutablePointer<UInt8>?
+    var joypadInput: UInt8
 
     init?(buffer: [UInt8]) {
+        self.joypadInput = 0
         if let gameboy = create_gameboy(buffer, UInt(buffer.count)) {
             self.gameboyPointer = gameboy
         } else {
@@ -39,12 +41,19 @@ class Gameboy {
         if let pointer = self.bufferPointer {
             buffer_free(pointer)
         }
-        self.bufferPointer = gameboy_run_to_vblank(self.gameboyPointer)!
+        self.bufferPointer = gameboy_run_to_vblank(self.gameboyPointer,
+                                                   StepContext(pushed_keys: joypadInput,
+                                                               serial_data_input: 0))!
         return self.bufferPointer!
     }
 
     func sendInput(buttonType: ButtonType, eventType: ButtonEventType) {
-        gameboy_send_input(self.gameboyPointer, buttonType.toCore(), eventType.toCore())
+        let x = buttonType.toCore()
+        if eventType == .down {
+            joypadInput |= x
+        } else {
+            joypadInput &= ~x
+        }
     }
 
     func loadSavestate(buffer: [UInt8]) -> Bool {
@@ -74,15 +83,6 @@ enum ButtonEventType {
     case down
     case up
 
-    func toCore() -> InputType {
-        switch self {
-        case .down:
-            return InputDown
-        case .up:
-            return InputUp
-        }
-    }
-
     func toString() -> String {
         switch self {
         case .down:
@@ -103,24 +103,24 @@ enum ButtonType {
     case start
     case select
 
-    func toCore() -> InputButton {
+    func toCore() -> UInt8 {
         switch self {
-        case .down:
-            return Down
-        case .up:
-            return Up
-        case .left:
-            return Left
-        case .right:
-            return Right
         case .a:
-            return A
+            return 1
         case .b:
-            return B
+            return 2
         case .start:
-            return Start
+            return 4
         case .select:
-            return Select
+            return 8
+        case .right:
+            return 16
+        case .left:
+            return 32
+        case .up:
+            return 64
+        case .down:
+            return 128
         }
     }
 

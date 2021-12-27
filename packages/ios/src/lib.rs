@@ -3,9 +3,7 @@ use std::slice;
 
 use rustyboy_core::cartridge::Cartridge;
 use rustyboy_core::config::Config;
-use rustyboy_core::gameboy::Gameboy as RustGameboy;
-
-pub mod input;
+use rustyboy_core::gameboy::{Gameboy as RustGameboy, StepContext as RustStepContext};
 
 pub const SCREEN_WIDTH: usize = 160;
 pub const SCREEN_HEIGHT: usize = 144;
@@ -19,6 +17,22 @@ pub struct Gameboy {
 pub struct Vector {
     size: c_ulong,
     pointer: *mut c_uchar,
+}
+
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct StepContext {
+    pushed_keys: u8,
+    serial_data_input: u8,
+}
+
+impl Into<RustStepContext> for StepContext {
+    fn into(self) -> RustStepContext {
+        RustStepContext {
+            pushed_keys: self.pushed_keys,
+            serial_data_input: None,
+        }
+    }
 }
 
 #[no_mangle]
@@ -36,12 +50,15 @@ pub unsafe extern "C" fn create_gameboy(buffer: *const c_uchar, length: c_ulong)
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn gameboy_run_to_vblank(gameboy: *mut Gameboy) -> *mut c_uchar {
+pub unsafe extern "C" fn gameboy_run_to_vblank(
+    gameboy: *mut Gameboy,
+    context: StepContext,
+) -> *mut c_uchar {
     let mut gameboy = {
         assert!(!gameboy.is_null(), "Gameboy is null");
         Box::from_raw(gameboy)
     };
-    gameboy.gameboy.run_to_vblank();
+    gameboy.gameboy.run_to_vblank(&context.into());
     let buffer = gameboy.gameboy.hardware().video.screen().buffer.rgba();
     let mut buffer = Box::new(buffer);
 

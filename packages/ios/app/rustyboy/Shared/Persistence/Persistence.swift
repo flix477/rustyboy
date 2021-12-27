@@ -11,16 +11,16 @@ import Foundation
 import RealmSwift
 
 protocol GamesPersistence {
-    func gameCount<D>() -> EnvIO<D, Error, Int>
-    func games<D>() -> EnvIO<D, Error, [Game]>
-    func add<D>(game: Game) -> EnvIO<D, Error, Void>
+    func gameCount() -> Task<Int>
+    func games() -> Task<[Game]>
+    func add(game: Game) -> Task<Void>
 }
 
 protocol SavestatesPersistence {
-    func latestSavestate<D>(for game: Game) -> EnvIO<D, Error, Savestate?>
-    func savestates<D>(for game: Game) -> EnvIO<D, Error, [Savestate]>
-    func add<D>(savestate: Savestate, to game: Game) -> EnvIO<D, Error, Void>
-    func savestate<D>(withId id: String) -> RIO<D, Savestate?>
+    func latestSavestate(for game: Game) -> Task<Savestate?>
+    func savestates(for game: Game) -> Task<[Savestate]>
+    func add(savestate: Savestate, to game: Game) -> Task<Void>
+    func savestate(withId id: String) -> Task<Savestate?>
 }
 
 protocol Persistence: GamesPersistence, SavestatesPersistence {}

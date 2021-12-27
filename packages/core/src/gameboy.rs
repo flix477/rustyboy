@@ -4,7 +4,7 @@ use crate::config::Config;
 use crate::debugger::debug_info::DebugInfo;
 use crate::debugger::processor_debug_info::ProcessorDebugInfo;
 use crate::debugger::Debugger;
-use crate::hardware::{joypad::Input, Hardware};
+use crate::hardware::Hardware;
 use crate::processor::{Processor, ProcessorStepResult};
 use crate::util::savestate::{LoadSavestateError, Savestate};
 use crate::video::screen::BUFFER_SIZE;
@@ -32,9 +32,9 @@ impl Gameboy {
 
     /// Runs the GameBoy until a VBlank interrupt occurs.
     /// Internally this is equivalent to calling `run_to_event(None)`
-    pub fn run_to_vblank(&mut self) {
+    pub fn run_to_vblank(&mut self, context: &StepContext) {
         loop {
-            if let GameboyStepResult(_, Some(StatusMode::VBlank)) = self.step() {
+            if let GameboyStepResult(_, Some(StatusMode::VBlank)) = self.step(context) {
                 break;
             }
         }
@@ -42,9 +42,13 @@ impl Gameboy {
 
     /// Runs the GameBoy until a VBlank interrupt occurs or, if a debugger is passed to the method,
     /// until a breakpoint is hit
-    pub fn run_to_event(&mut self, mut debugger: Option<&mut Debugger>) -> GameboyEvent {
+    pub fn run_to_event(
+        &mut self,
+        mut debugger: Option<&mut Debugger>,
+        context: &StepContext,
+    ) -> GameboyEvent {
         loop {
-            let GameboyStepResult(cpu_step_result, status_mode) = self.step();
+            let GameboyStepResult(cpu_step_result, status_mode) = self.step(context);
             if let Some(StatusMode::VBlank) = status_mode {
                 return GameboyEvent::VBlank;
             } else if let (Some(debugger), ProcessorStepResult::InstructionCompleted) =
@@ -68,20 +72,16 @@ impl Gameboy {
     }
 
     /// Performs a single step to all of the GameBoy's components
-    fn step(&mut self) -> GameboyStepResult {
+    fn step(&mut self, context: &StepContext) -> GameboyStepResult {
+        self.hardware.joypad.clock(context.pushed_keys);
         GameboyStepResult(
             self.processor.step(&mut self.hardware),
-            self.hardware.clock(),
+            self.hardware.clock(context),
         )
     }
 
     pub fn hardware(&self) -> &Hardware {
         &self.hardware
-    }
-
-    /// Sends an button event to the GameBoy
-    pub fn send_input(&mut self, input: Input) {
-        self.hardware.send_input(input);
     }
 
     pub fn dump_savestate(&self) -> Vec<u8> {
@@ -111,6 +111,20 @@ pub enum GameboyEvent {
     Debugger(Box<DebugInfo>),
 }
 
+pub struct StepContext {
+    pub serial_data_input: Option<u8>,
+    pub pushed_keys: u8,
+}
+
+impl Default for StepContext {
+    fn default() -> Self {
+        Self {
+            serial_data_input: None,
+            pushed_keys: 0,
+        }
+    }
+}
+
 /// Represents the result of a single GameBoy step
 pub struct GameboyStepResult(ProcessorStepResult, Option<StatusMode>);
 
@@ -118,7 +132,8 @@ impl Iterator for Gameboy {
     type Item = [u8; BUFFER_SIZE * 3];
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.run_to_vblank();
+        let context = StepContext::default();
+        self.run_to_vblank(&context);
         Some(self.hardware().video.screen().buffer.rgb())
     }
 }

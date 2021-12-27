@@ -6,6 +6,7 @@ class Renderer: NSObject, MTKViewDelegate {
     private let pipelineState: MTLRenderPipelineState
     private let onDraw: (() -> UnsafeMutablePointer<UInt8>)?
     private let commandQueue: MTLCommandQueue
+    private var fragmentShaderParams: FragmentShaderParams
 
     lazy var vertexBuffer: MTLBuffer = {
         let vertices = [
@@ -18,6 +19,14 @@ class Renderer: NSObject, MTKViewDelegate {
         return self.device.makeBuffer(
             bytes: vertices,
             length: vertices.count * MemoryLayout<Vertex>.stride,
+            options: []
+        )!
+    }()
+
+    lazy var paramsBuffer: MTLBuffer = {
+        return self.device.makeBuffer(
+            bytes: &fragmentShaderParams,
+            length: MemoryLayout<FragmentShaderParams>.size,
             options: []
         )!
     }()
@@ -41,12 +50,16 @@ class Renderer: NSObject, MTKViewDelegate {
         }
 
         self.onDraw = onDraw
+        let isDarkMode = UITraitCollection.current.userInterfaceStyle == .dark
+        self.fragmentShaderParams = FragmentShaderParams(renderSize: [0, 0],
+                                                         textureSize: [UInt32(SCREEN_WIDTH), UInt32(SCREEN_HEIGHT)],
+                                                         darkMode: isDarkMode)
 
         super.init()
     }
 
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
-
+        self.fragmentShaderParams.renderSize = [UInt32(size.width), UInt32(size.height)]
     }
 
     func draw(in view: MTKView) {
@@ -67,6 +80,7 @@ class Renderer: NSObject, MTKViewDelegate {
         renderEncoder.setRenderPipelineState(self.pipelineState)
         renderEncoder.setVertexBuffer(self.vertexBuffer, offset: 0, index: 0)
         renderEncoder.setFragmentTexture(self.texture, index: 0)
+        renderEncoder.setFragmentBuffer(self.paramsBuffer, offset: 0, index: 0)
         renderEncoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         renderEncoder.endEncoding()
 
