@@ -9,7 +9,6 @@ use rustyboy_core::video::debugging::background_map_buffer;
 use rustyboy_core::video::screen::BACKGROUND_SIZE;
 
 use super::{create_display, Window};
-use crate::keymap::keymap;
 use crate::window::UpdateResult;
 
 pub struct BackgroundWindow {
@@ -29,7 +28,7 @@ impl BackgroundWindow {
 }
 
 impl Window for BackgroundWindow {
-    fn update(&mut self, gameboy: &mut Gameboy) -> UpdateResult {
+    fn update(&mut self, gameboy: &mut Gameboy) -> Option<UpdateResult> {
         let mut target = self.display.draw();
         target.clear_color(0.0, 0.0, 1.0, 1.0);
 
@@ -54,18 +53,9 @@ impl Window for BackgroundWindow {
             } => {
                 exit(0);
             }
-            Event::WindowEvent {
-                event: WindowEvent::KeyboardInput { input, .. },
-                ..
-            } => {
-                let input = keymap(input);
-                if let Some(input) = input {
-                    gameboy.send_input(input);
-                }
-            }
             _ => {}
         });
 
-        UpdateResult::Continue
+        None
     }
 }

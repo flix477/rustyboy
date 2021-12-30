@@ -3,7 +3,7 @@ use clap::App;
 use rustyboy_core::cartridge::Cartridge;
 use rustyboy_core::config::Config;
 use rustyboy_core::debugger::Debugger;
-use rustyboy_core::gameboy::{DeviceType, Gameboy, GameboyEvent};
+use rustyboy_core::gameboy::{DeviceType, Gameboy, GameboyEvent, StepContext};
 use std::fs;
 use std::process::exit;
 
@@ -100,6 +100,7 @@ fn start_emulation(mut gameboy: Gameboy, config: Config, options: RunOptions) {
 
     let mut last_time = Instant::now();
     let update_rate = Duration::from_millis(1000 / 60);
+    let mut context = StepContext::default();
     loop {
         let elapsed = last_time.elapsed();
         if elapsed < update_rate {
@@ -107,33 +108,41 @@ fn start_emulation(mut gameboy: Gameboy, config: Config, options: RunOptions) {
         }
         last_time = Instant::now();
 
-        if let GameboyEvent::Debugger(debug_info) = gameboy.run_to_event(debugger.as_mut()) {
+        if let GameboyEvent::Debugger(debug_info) =
+            gameboy.run_to_event(debugger.as_mut(), &context)
+        {
             shell_debugger.run(debugger.as_mut().unwrap(), debug_info.as_ref())
         }
 
-        if let UpdateResult::Close = update_windows(&mut gameboy, &mut windows) {
-            if let Some(ram) = &gameboy.hardware().cartridge.ram {
-                fs::write(options.path.with_extension("sav"), ram)
-                    .expect("Could not save cartridge RAM; game progress might have been lost");
+        match update_windows(&mut gameboy, &mut windows) {
+            Some(UpdateResult::Close) => {
+                if let Some(ram) = &gameboy.hardware().cartridge.ram {
+                    fs::write(options.path.with_extension("sav"), ram)
+                        .expect("Could not save cartridge RAM; game progress might have been lost");
+                }
+
+                let savestate = &gameboy.dump_savestate();
+                fs::write(options.path.with_extension("state"), savestate)
+                    .expect("Could not create a savestate.");
+
+                return;
             }
-
-            let savestate = &gameboy.dump_savestate();
-            fs::write(options.path.with_extension("state"), savestate)
-                .expect("Could not create a savestate.");
-
-            break;
+            Some(UpdateResult::Continue(new_context)) => {
+                context = new_context;
+            }
+            _ => {}
         }
     }
 }
 
-fn update_windows(gameboy: &mut Gameboy, windows: &mut Vec<Box<dyn Window>>) -> UpdateResult {
-    for window in windows.iter_mut() {
-        if let UpdateResult::Close = window.update(gameboy) {
-            return UpdateResult::Close;
-        }
-    }
-
-    UpdateResult::Continue
+fn update_windows(
+    gameboy: &mut Gameboy,
+    windows: &mut Vec<Box<dyn Window>>,
+) -> Option<UpdateResult> {
+    windows
+        .iter_mut()
+        .flat_map(|window| window.update(gameboy))
+        .next()
 }
 
 fn create_windows(options: &RunOptions) -> Vec<Box<dyn Window>> {

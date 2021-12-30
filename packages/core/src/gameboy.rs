@@ -111,6 +111,7 @@ pub enum GameboyEvent {
     Debugger(Box<DebugInfo>),
 }
 
+#[derive(Copy, Clone)]
 pub struct StepContext {
     pub serial_data_input: Option<u8>,
     pub pushed_keys: u8,

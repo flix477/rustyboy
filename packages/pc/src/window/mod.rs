@@ -2,14 +2,19 @@ use glium::{
     glutin::{dpi::LogicalSize, ContextBuilder, EventsLoop, WindowBuilder},
     Display,
 };
-use rustyboy_core::gameboy::Gameboy;
+use rustyboy_core::gameboy::{Gameboy, StepContext};
 
 pub mod background;
 pub mod screen;
 pub mod tile_data;
 
+pub enum UpdateResult {
+    Continue(StepContext),
+    Close,
+}
+
 pub trait Window {
-    fn update(&mut self, gameboy: &mut Gameboy) -> UpdateResult;
+    fn update(&mut self, gameboy: &mut Gameboy) -> Option<UpdateResult>;
 }
 
 pub fn create_display(
@@ -25,9 +30,4 @@ pub fn create_display(
         });
     let ctx = ContextBuilder::new();
     Display::new(window, ctx, &events_loop).unwrap()
-}
-
-pub enum UpdateResult {
-    Continue,
-    Close,
 }

@@ -3,7 +3,8 @@ use glium::texture::RawImage2d;
 use glium::uniforms::MagnifySamplerFilter;
 use glium::{Display, Surface};
 
-use rustyboy_core::gameboy::Gameboy;
+use rustyboy_core::gameboy::{Gameboy, StepContext};
+use rustyboy_core::hardware::joypad::{Input, InputType};
 use rustyboy_core::video::screen::SCREEN_SIZE;
 
 use super::{create_display, Window};
@@ -27,7 +28,7 @@ impl MainWindow {
 }
 
 impl Window for MainWindow {
-    fn update(&mut self, gameboy: &mut Gameboy) -> UpdateResult {
+    fn update(&mut self, gameboy: &mut Gameboy) -> Option<UpdateResult> {
         let mut target = self.display.draw();
         target.clear_color(0.0, 0.0, 1.0, 1.0);
         let buf = gameboy.hardware().video.screen().buffer.rgb();
@@ -40,6 +41,7 @@ impl Window for MainWindow {
 
         target.finish().unwrap();
 
+        let mut pushed_keys = 0u8;
         let mut close = false;
         self.events_loop.poll_events(|event| match event {
             Event::WindowEvent {
@@ -53,17 +55,28 @@ impl Window for MainWindow {
                 ..
             } => {
                 let input = keymap(input);
-                if let Some(input) = input {
-                    gameboy.send_input(input);
+                match input {
+                    Some(Input {
+                        input_type: InputType::Down,
+                        button,
+                    }) => pushed_keys |= button as u8,
+                    Some(Input {
+                        input_type: InputType::Up,
+                        button,
+                    }) => pushed_keys &= !(button as u8),
+                    _ => {}
                 }
             }
             _ => {}
         });
 
         if close {
-            UpdateResult::Close
+            Some(UpdateResult::Close)
         } else {
-            UpdateResult::Continue
+            Some(UpdateResult::Continue(StepContext {
+                serial_data_input: None,
+                pushed_keys,
+            }))
         }
     }
 }
