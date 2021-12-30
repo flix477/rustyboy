@@ -4,16 +4,16 @@ use crate::processor::interrupt::{Interrupt, InterruptHandler};
 use crate::video::Video;
 
 use self::joypad::Joypad;
-use self::timer::Timer;
 use self::serial::Serial;
+use self::timer::Timer;
+use crate::gameboy::StepContext;
 use crate::util::savestate::{read_savestate_byte, LoadSavestateError, Savestate, SavestateStream};
 use crate::video::status_register::StatusMode;
-use crate::gameboy::StepContext;
 
 mod counter;
 pub mod joypad;
-mod timer;
 mod serial;
+mod timer;
 
 pub struct Hardware {
     pub cartridge: Cartridge,
@@ -36,7 +36,7 @@ impl Hardware {
             video: Video::default(),
             internal_ram: [0; 8192],
             high_ram: [0; 127],
-            serial: Serial::default()
+            serial: Serial::default(),
         }
     }
 
@@ -56,7 +56,8 @@ impl Hardware {
 
     pub fn clock(&mut self, context: &StepContext) -> Option<StatusMode> {
         self.timer.clock(&mut self.interrupt_handler);
-        self.serial.clock(&mut self.interrupt_handler, context.serial_data_input);
+        self.serial
+            .clock(&mut self.interrupt_handler, context.serial_data_input);
         self.video.clock(&mut self.interrupt_handler)
     }
 

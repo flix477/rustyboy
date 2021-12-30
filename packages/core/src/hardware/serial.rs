@@ -1,22 +1,22 @@
 use crate::bus::{Readable, Writable};
-use crate::hardware::counter::{Counter, ClockResult};
-use crate::processor::interrupt::{InterruptHandler, Interrupt};
+use crate::hardware::counter::{ClockResult, Counter};
+use crate::processor::interrupt::{Interrupt, InterruptHandler};
 use crate::util::bits;
 
 pub struct Serial {
     data: u8,
     control: u8,
-    counter: Counter
+    counter: Counter,
 }
 
 enum SerialClockSpeed {
     Normal,
-    Fast
+    Fast,
 }
 
 enum SerialClock {
     Internal,
-    External
+    External,
 }
 
 impl Default for Serial {
@@ -24,7 +24,7 @@ impl Default for Serial {
         Self {
             data: 0,
             control: 1,
-            counter: Counter::new(512)
+            counter: Counter::new(512),
         }
     }
 }
@@ -64,9 +64,9 @@ impl Serial {
 impl Readable for Serial {
     fn read(&self, address: u16) -> u8 {
         match address {
-            0xFF01 => self.data, // serial transfer data
+            0xFF01 => self.data,    // serial transfer data
             0xFF02 => self.control, // sio control
-            _ => unimplemented!()
+            _ => unimplemented!(),
         }
     }
 }
@@ -74,9 +74,9 @@ impl Readable for Serial {
 impl Writable for Serial {
     fn write(&mut self, address: u16, value: u8) {
         match address {
-            0xFF01 => { self.data = value },
-            0xFF02 => { self.control = value },
-            _ => unimplemented!()
+            0xFF01 => self.data = value,
+            0xFF02 => self.control = value,
+            _ => unimplemented!(),
         }
     }
 }

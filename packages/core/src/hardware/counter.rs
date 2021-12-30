@@ -1,6 +1,6 @@
 use crate::util::savestate::{
-    read_savestate_byte, read_savestate_u16, write_savestate_u16,
-    LoadSavestateError, Savestate, SavestateStream,
+    read_savestate_byte, read_savestate_u16, write_savestate_u16, LoadSavestateError, Savestate,
+    SavestateStream,
 };
 
 #[derive(PartialEq)]

@@ -1,5 +1,5 @@
 use crate::bus::{Readable, Writable};
-use crate::hardware::counter::{Counter, ClockResult};
+use crate::hardware::counter::{ClockResult, Counter};
 use crate::processor::interrupt::{Interrupt, InterruptHandler};
 use crate::util::savestate::{
     read_savestate_bool, read_savestate_byte, LoadSavestateError, Savestate, SavestateStream,
