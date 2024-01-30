@@ -1,0 +1,12 @@
+[package]
+name = "uniffi-bindgen-cli"
+version = "0.1.0"
+authors = ["felixleveille <flxleveille@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+uniffi = { version = "0.25", features = ["cli"] }
+
+[[bin]]
+name = "uniffi-bindgen"
+path = "uniffi-bindgen.rs"

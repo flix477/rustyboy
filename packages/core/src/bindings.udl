@@ -1,0 +1,42 @@
+[Error]
+enum LoadSavestateError {
+  "InvalidSavestate",
+};
+
+[Error]
+enum CartridgeMetadataError {
+  "InvalidROMSizeIndex",
+  "InvalidRAMSizeIndex",
+  "InvalidDestinationCode",
+  "InvalidCartridgeTypeValue",
+  "Utf8Error",
+  "IOError",
+};
+
+enum Button {
+  "A",
+  "B",
+  "Select",
+  "Start",
+  "Right",
+  "Left",
+  "Up",
+  "Down",
+};
+
+dictionary StepInput {
+  u8 held_buttons;
+};
+
+interface RustyboyGameboy {
+  [Throws=CartridgeMetadataError]
+  constructor(bytes buffer);
+  void reset();
+  bytes run_to_vblank(StepInput input);
+  bytes dump_savestate();
+  [Throws=LoadSavestateError]
+  void load_savestate(bytes buffer);
+};
+
+namespace rustyboy_core {
+};

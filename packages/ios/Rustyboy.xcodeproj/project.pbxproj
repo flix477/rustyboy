@@ -1,0 +1,658 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 60;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		8F29232E2B62216F006EA675 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = 8F29232D2B62216F006EA675 /* OrderedCollections */; };
+		8F2B510E2B4F2EF20039EB99 /* HomeEmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F2B510D2B4F2EF20039EB99 /* HomeEmptyStateView.swift */; };
+		8F2B51172B4F301B0039EB99 /* Cabin-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8F2B51112B4F301A0039EB99 /* Cabin-Regular.ttf */; };
+		8F2B51182B4F301B0039EB99 /* Cabin-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8F2B51122B4F301A0039EB99 /* Cabin-MediumItalic.ttf */; };
+		8F2B51192B4F301B0039EB99 /* Cabin-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8F2B51132B4F301A0039EB99 /* Cabin-SemiBold.ttf */; };
+		8F2B511A2B4F301B0039EB99 /* Cabin-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8F2B51142B4F301A0039EB99 /* Cabin-Medium.ttf */; };
+		8F2B511B2B4F301B0039EB99 /* Cabin-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8F2B51152B4F301A0039EB99 /* Cabin-SemiBoldItalic.ttf */; };
+		8F2B511C2B4F301B0039EB99 /* Cabin-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8F2B51162B4F301A0039EB99 /* Cabin-Italic.ttf */; };
+		8F2B51202B4F31010039EB99 /* Font_Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F2B511F2B4F31010039EB99 /* Font_Extensions.swift */; };
+		8F2B51222B4F34850039EB99 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F2B51212B4F34850039EB99 /* HomeViewModel.swift */; };
+		8F2B512A2B4F3BBB0039EB99 /* Slingshot in Frameworks */ = {isa = PBXBuildFile; productRef = 8F2B51292B4F3BBB0039EB99 /* Slingshot */; };
+		8F2F88222B4F1EBB0081C187 /* RustyboyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F2F88212B4F1EBB0081C187 /* RustyboyApp.swift */; };
+		8F2F88262B4F1EBB0081C187 /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F2F88252B4F1EBB0081C187 /* Game.swift */; };
+		8F2F88282B4F1EBC0081C187 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8F2F88272B4F1EBC0081C187 /* Assets.xcassets */; };
+		8F3D94932B4F23E500D49F8F /* Savestate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F3D94922B4F23E500D49F8F /* Savestate.swift */; };
+		8F3D94962B4F2E9D00D49F8F /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F3D94952B4F2E9D00D49F8F /* HomeView.swift */; };
+		8F3E5F322B68569D0099E1F6 /* AlphabetScrollIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F3E5F312B68569D0099E1F6 /* AlphabetScrollIndicatorView.swift */; };
+		8F3E5F342B6856BC0099E1F6 /* Character+Alphabet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F3E5F332B6856BC0099E1F6 /* Character+Alphabet.swift */; };
+		8F3E5F362B685DBB0099E1F6 /* GameListCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F3E5F352B685DBB0099E1F6 /* GameListCellView.swift */; };
+		8F3E5F382B687F840099E1F6 /* RecentlyPlayedGamesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F3E5F372B687F840099E1F6 /* RecentlyPlayedGamesListView.swift */; };
+		8F3E5F3A2B6880C20099E1F6 /* AlphabeticGamesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F3E5F392B6880C20099E1F6 /* AlphabeticGamesListView.swift */; };
+		8F57896C2B50A2B00080CAAA /* ActionButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F57896B2B50A2B00080CAAA /* ActionButtonsView.swift */; };
+		8F5789712B50E7610080CAAA /* StartSelectButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F5789702B50E7610080CAAA /* StartSelectButton.swift */; };
+		8F62A9CC2B4F40BF0099BBC1 /* RustyboyCore in Frameworks */ = {isa = PBXBuildFile; productRef = 8F62A9CB2B4F40BF0099BBC1 /* RustyboyCore */; };
+		8F9C141B2B51B5A900535930 /* GameMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F9C141A2B51B5A900535930 /* GameMenuView.swift */; };
+		8F9C14232B51BE3300535930 /* CGImage_Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F9C14222B51BE3300535930 /* CGImage_Extension.swift */; };
+		8FAC67062B4F96FC000084AD /* Numeric_Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FAC67052B4F96FC000084AD /* Numeric_Extension.swift */; };
+		8FAC67082B4F985F000084AD /* GamepadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FAC67072B4F985F000084AD /* GamepadView.swift */; };
+		8FAC670B2B4F98D8000084AD /* DirectionalPadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FAC670A2B4F98D8000084AD /* DirectionalPadView.swift */; };
+		8FAC928B2B5887290034A74E /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 8FAC928A2B5887290034A74E /* Localizable.xcstrings */; };
+		8FB0F8072B4F457100EEDE3E /* GamesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB0F8062B4F457100EEDE3E /* GamesListView.swift */; };
+		8FB0F80A2B4F701B00EEDE3E /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB0F8092B4F701B00EEDE3E /* GameView.swift */; };
+		8FB0F80C2B4F707500EEDE3E /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB0F80B2B4F707500EEDE3E /* GameViewModel.swift */; };
+		8FB0F80E2B4F8B0C00EEDE3E /* Collection_Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB0F80D2B4F8B0C00EEDE3E /* Collection_Extension.swift */; };
+		8FB0F8102B4F8D2900EEDE3E /* ScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB0F80F2B4F8D2900EEDE3E /* ScreenView.swift */; };
+		8FB0F8132B4F8D6900EEDE3E /* ScreenRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB0F8122B4F8D6900EEDE3E /* ScreenRenderer.swift */; };
+		8FB0F8162B4F8DDA00EEDE3E /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8FB0F8152B4F8DDA00EEDE3E /* Shaders.metal */; };
+		8FFF70232B67590E0038D437 /* PrefixSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FFF70222B67590E0038D437 /* PrefixSequence.swift */; };
+		8FFF70252B67592F0038D437 /* Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FFF70242B67592F0038D437 /* Functions.swift */; };
+		8FFF70272B67596C0038D437 /* Sequence+Prefix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FFF70262B67596C0038D437 /* Sequence+Prefix.swift */; };
+		8FFF70292B682D300038D437 /* String+Localized.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FFF70282B682D300038D437 /* String+Localized.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		8F2B510D2B4F2EF20039EB99 /* HomeEmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeEmptyStateView.swift; sourceTree = "<group>"; };
+		8F2B51112B4F301A0039EB99 /* Cabin-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Cabin-Regular.ttf"; sourceTree = "<group>"; };
+		8F2B51122B4F301A0039EB99 /* Cabin-MediumItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Cabin-MediumItalic.ttf"; sourceTree = "<group>"; };
+		8F2B51132B4F301A0039EB99 /* Cabin-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Cabin-SemiBold.ttf"; sourceTree = "<group>"; };
+		8F2B51142B4F301A0039EB99 /* Cabin-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Cabin-Medium.ttf"; sourceTree = "<group>"; };
+		8F2B51152B4F301A0039EB99 /* Cabin-SemiBoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Cabin-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
+		8F2B51162B4F301A0039EB99 /* Cabin-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Cabin-Italic.ttf"; sourceTree = "<group>"; };
+		8F2B511D2B4F303F0039EB99 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		8F2B511F2B4F31010039EB99 /* Font_Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Font_Extensions.swift; sourceTree = "<group>"; };
+		8F2B51212B4F34850039EB99 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
+		8F2F881E2B4F1EBB0081C187 /* Rustyboy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rustyboy.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8F2F88212B4F1EBB0081C187 /* RustyboyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RustyboyApp.swift; sourceTree = "<group>"; };
+		8F2F88252B4F1EBB0081C187 /* Game.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Game.swift; sourceTree = "<group>"; };
+		8F2F88272B4F1EBC0081C187 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		8F3D94922B4F23E500D49F8F /* Savestate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Savestate.swift; sourceTree = "<group>"; };
+		8F3D94952B4F2E9D00D49F8F /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		8F3E5F312B68569D0099E1F6 /* AlphabetScrollIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlphabetScrollIndicatorView.swift; sourceTree = "<group>"; };
+		8F3E5F332B6856BC0099E1F6 /* Character+Alphabet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Character+Alphabet.swift"; sourceTree = "<group>"; };
+		8F3E5F352B685DBB0099E1F6 /* GameListCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameListCellView.swift; sourceTree = "<group>"; };
+		8F3E5F372B687F840099E1F6 /* RecentlyPlayedGamesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentlyPlayedGamesListView.swift; sourceTree = "<group>"; };
+		8F3E5F392B6880C20099E1F6 /* AlphabeticGamesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlphabeticGamesListView.swift; sourceTree = "<group>"; };
+		8F57896B2B50A2B00080CAAA /* ActionButtonsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionButtonsView.swift; sourceTree = "<group>"; };
+		8F5789702B50E7610080CAAA /* StartSelectButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartSelectButton.swift; sourceTree = "<group>"; };
+		8F9C141A2B51B5A900535930 /* GameMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameMenuView.swift; sourceTree = "<group>"; };
+		8F9C14222B51BE3300535930 /* CGImage_Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGImage_Extension.swift; sourceTree = "<group>"; };
+		8FAC67052B4F96FC000084AD /* Numeric_Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Numeric_Extension.swift; sourceTree = "<group>"; };
+		8FAC67072B4F985F000084AD /* GamepadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamepadView.swift; sourceTree = "<group>"; };
+		8FAC670A2B4F98D8000084AD /* DirectionalPadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionalPadView.swift; sourceTree = "<group>"; };
+		8FAC928A2B5887290034A74E /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		8FB0F8062B4F457100EEDE3E /* GamesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamesListView.swift; sourceTree = "<group>"; };
+		8FB0F8092B4F701B00EEDE3E /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
+		8FB0F80B2B4F707500EEDE3E /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
+		8FB0F80D2B4F8B0C00EEDE3E /* Collection_Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collection_Extension.swift; sourceTree = "<group>"; };
+		8FB0F80F2B4F8D2900EEDE3E /* ScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenView.swift; sourceTree = "<group>"; };
+		8FB0F8122B4F8D6900EEDE3E /* ScreenRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenRenderer.swift; sourceTree = "<group>"; };
+		8FB0F8142B4F8DAF00EEDE3E /* ShaderDefinitions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderDefinitions.h; sourceTree = "<group>"; };
+		8FB0F8152B4F8DDA00EEDE3E /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		8FCA9ECE2B4F930000669EA5 /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
+		8FFF70222B67590E0038D437 /* PrefixSequence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrefixSequence.swift; sourceTree = "<group>"; };
+		8FFF70242B67592F0038D437 /* Functions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Functions.swift; sourceTree = "<group>"; };
+		8FFF70262B67596C0038D437 /* Sequence+Prefix.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sequence+Prefix.swift"; sourceTree = "<group>"; };
+		8FFF70282B682D300038D437 /* String+Localized.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Localized.swift"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8F2F881B2B4F1EBB0081C187 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8F62A9CC2B4F40BF0099BBC1 /* RustyboyCore in Frameworks */,
+				8F2B512A2B4F3BBB0039EB99 /* Slingshot in Frameworks */,
+				8F29232E2B62216F006EA675 /* OrderedCollections in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		8F2B510F2B4F30000039EB99 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				8FAC928A2B5887290034A74E /* Localizable.xcstrings */,
+				8F2B51102B4F30090039EB99 /* Fonts */,
+				8F2F88272B4F1EBC0081C187 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		8F2B51102B4F30090039EB99 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				8F2B51162B4F301A0039EB99 /* Cabin-Italic.ttf */,
+				8F2B51142B4F301A0039EB99 /* Cabin-Medium.ttf */,
+				8F2B51122B4F301A0039EB99 /* Cabin-MediumItalic.ttf */,
+				8F2B51112B4F301A0039EB99 /* Cabin-Regular.ttf */,
+				8F2B51132B4F301A0039EB99 /* Cabin-SemiBold.ttf */,
+				8F2B51152B4F301A0039EB99 /* Cabin-SemiBoldItalic.ttf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
+		8F2B511E2B4F30EE0039EB99 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				8F2B511F2B4F31010039EB99 /* Font_Extensions.swift */,
+				8FB0F80D2B4F8B0C00EEDE3E /* Collection_Extension.swift */,
+				8FAC67052B4F96FC000084AD /* Numeric_Extension.swift */,
+				8F9C14222B51BE3300535930 /* CGImage_Extension.swift */,
+				8FFF70262B67596C0038D437 /* Sequence+Prefix.swift */,
+				8FFF70282B682D300038D437 /* String+Localized.swift */,
+				8F3E5F332B6856BC0099E1F6 /* Character+Alphabet.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		8F2F88152B4F1EBB0081C187 = {
+			isa = PBXGroup;
+			children = (
+				8F2F88202B4F1EBB0081C187 /* Rustyboy */,
+				8F2F881F2B4F1EBB0081C187 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		8F2F881F2B4F1EBB0081C187 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8F2F881E2B4F1EBB0081C187 /* Rustyboy.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8F2F88202B4F1EBB0081C187 /* Rustyboy */ = {
+			isa = PBXGroup;
+			children = (
+				8F9C14262B51EB1100535930 /* Views */,
+				8F9C14242B51EAE900535930 /* Model */,
+				8F2B511E2B4F30EE0039EB99 /* Extensions */,
+				8FFF70212B6759000038D437 /* Utils */,
+				8F2B511D2B4F303F0039EB99 /* Info.plist */,
+				8F2B510F2B4F30000039EB99 /* Resources */,
+				8F2F88212B4F1EBB0081C187 /* RustyboyApp.swift */,
+				8FCA9ECE2B4F930000669EA5 /* BridgingHeader.h */,
+			);
+			path = Rustyboy;
+			sourceTree = "<group>";
+		};
+		8F3D94942B4F2E8F00D49F8F /* HomeView */ = {
+			isa = PBXGroup;
+			children = (
+				8F3E5F302B6856690099E1F6 /* GamesList */,
+				8F3D94952B4F2E9D00D49F8F /* HomeView.swift */,
+				8F2B510D2B4F2EF20039EB99 /* HomeEmptyStateView.swift */,
+				8F2B51212B4F34850039EB99 /* HomeViewModel.swift */,
+			);
+			path = HomeView;
+			sourceTree = "<group>";
+		};
+		8F3E5F302B6856690099E1F6 /* GamesList */ = {
+			isa = PBXGroup;
+			children = (
+				8FB0F8062B4F457100EEDE3E /* GamesListView.swift */,
+				8F3E5F312B68569D0099E1F6 /* AlphabetScrollIndicatorView.swift */,
+				8F3E5F352B685DBB0099E1F6 /* GameListCellView.swift */,
+				8F3E5F372B687F840099E1F6 /* RecentlyPlayedGamesListView.swift */,
+				8F3E5F392B6880C20099E1F6 /* AlphabeticGamesListView.swift */,
+			);
+			path = GamesList;
+			sourceTree = "<group>";
+		};
+		8F9C14242B51EAE900535930 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				8F3D94922B4F23E500D49F8F /* Savestate.swift */,
+				8F2F88252B4F1EBB0081C187 /* Game.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		8F9C14262B51EB1100535930 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				8FB0F8082B4F700E00EEDE3E /* GameView */,
+				8F3D94942B4F2E8F00D49F8F /* HomeView */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		8FAC67092B4F987D000084AD /* GamepadView */ = {
+			isa = PBXGroup;
+			children = (
+				8FAC67072B4F985F000084AD /* GamepadView.swift */,
+				8FAC670A2B4F98D8000084AD /* DirectionalPadView.swift */,
+				8F57896B2B50A2B00080CAAA /* ActionButtonsView.swift */,
+				8F5789702B50E7610080CAAA /* StartSelectButton.swift */,
+			);
+			path = GamepadView;
+			sourceTree = "<group>";
+		};
+		8FB0F8082B4F700E00EEDE3E /* GameView */ = {
+			isa = PBXGroup;
+			children = (
+				8F9C141A2B51B5A900535930 /* GameMenuView.swift */,
+				8FAC67092B4F987D000084AD /* GamepadView */,
+				8FB0F8112B4F8D3B00EEDE3E /* ScreenView */,
+				8FB0F8092B4F701B00EEDE3E /* GameView.swift */,
+				8FB0F80B2B4F707500EEDE3E /* GameViewModel.swift */,
+			);
+			path = GameView;
+			sourceTree = "<group>";
+		};
+		8FB0F8112B4F8D3B00EEDE3E /* ScreenView */ = {
+			isa = PBXGroup;
+			children = (
+				8FB0F80F2B4F8D2900EEDE3E /* ScreenView.swift */,
+				8FB0F8122B4F8D6900EEDE3E /* ScreenRenderer.swift */,
+				8FB0F8142B4F8DAF00EEDE3E /* ShaderDefinitions.h */,
+				8FB0F8152B4F8DDA00EEDE3E /* Shaders.metal */,
+			);
+			path = ScreenView;
+			sourceTree = "<group>";
+		};
+		8FFF70212B6759000038D437 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				8FFF70222B67590E0038D437 /* PrefixSequence.swift */,
+				8FFF70242B67592F0038D437 /* Functions.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8F2F881D2B4F1EBB0081C187 /* Rustyboy */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8F2F882E2B4F1EBC0081C187 /* Build configuration list for PBXNativeTarget "Rustyboy" */;
+			buildPhases = (
+				8F3D94912B4F206600D49F8F /* Compile RustyboyCore */,
+				8F2F881A2B4F1EBB0081C187 /* Sources */,
+				8F2F881B2B4F1EBB0081C187 /* Frameworks */,
+				8F2F881C2B4F1EBB0081C187 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Rustyboy;
+			packageProductDependencies = (
+				8F2B51292B4F3BBB0039EB99 /* Slingshot */,
+				8F62A9CB2B4F40BF0099BBC1 /* RustyboyCore */,
+				8F29232D2B62216F006EA675 /* OrderedCollections */,
+			);
+			productName = Rustyboy;
+			productReference = 8F2F881E2B4F1EBB0081C187 /* Rustyboy.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		8F2F88162B4F1EBB0081C187 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1510;
+				LastUpgradeCheck = 1510;
+				TargetAttributes = {
+					8F2F881D2B4F1EBB0081C187 = {
+						CreatedOnToolsVersion = 15.1;
+					};
+				};
+			};
+			buildConfigurationList = 8F2F88192B4F1EBB0081C187 /* Build configuration list for PBXProject "Rustyboy" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				fr,
+			);
+			mainGroup = 8F2F88152B4F1EBB0081C187;
+			packageReferences = (
+				8F2B51282B4F3BBB0039EB99 /* XCRemoteSwiftPackageReference "slingshot" */,
+				8F62A9CA2B4F40BF0099BBC1 /* XCLocalSwiftPackageReference "Rustyboy/RustyboyCore" */,
+				8F29232C2B62216F006EA675 /* XCRemoteSwiftPackageReference "swift-collections" */,
+			);
+			productRefGroup = 8F2F881F2B4F1EBB0081C187 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8F2F881D2B4F1EBB0081C187 /* Rustyboy */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8F2F881C2B4F1EBB0081C187 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8F2F88282B4F1EBC0081C187 /* Assets.xcassets in Resources */,
+				8F2B511B2B4F301B0039EB99 /* Cabin-SemiBoldItalic.ttf in Resources */,
+				8FAC928B2B5887290034A74E /* Localizable.xcstrings in Resources */,
+				8F2B51182B4F301B0039EB99 /* Cabin-MediumItalic.ttf in Resources */,
+				8F2B51172B4F301B0039EB99 /* Cabin-Regular.ttf in Resources */,
+				8F2B511A2B4F301B0039EB99 /* Cabin-Medium.ttf in Resources */,
+				8F2B51192B4F301B0039EB99 /* Cabin-SemiBold.ttf in Resources */,
+				8F2B511C2B4F301B0039EB99 /* Cabin-Italic.ttf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		8F3D94912B4F206600D49F8F /* Compile RustyboyCore */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Compile RustyboyCore";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "
+";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8F2F881A2B4F1EBB0081C187 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8FB0F8102B4F8D2900EEDE3E /* ScreenView.swift in Sources */,
+				8F2F88262B4F1EBB0081C187 /* Game.swift in Sources */,
+				8FB0F8132B4F8D6900EEDE3E /* ScreenRenderer.swift in Sources */,
+				8F3D94932B4F23E500D49F8F /* Savestate.swift in Sources */,
+				8F5789712B50E7610080CAAA /* StartSelectButton.swift in Sources */,
+				8FB0F8072B4F457100EEDE3E /* GamesListView.swift in Sources */,
+				8F2B51222B4F34850039EB99 /* HomeViewModel.swift in Sources */,
+				8FAC67082B4F985F000084AD /* GamepadView.swift in Sources */,
+				8FB0F80A2B4F701B00EEDE3E /* GameView.swift in Sources */,
+				8F3E5F3A2B6880C20099E1F6 /* AlphabeticGamesListView.swift in Sources */,
+				8F2B510E2B4F2EF20039EB99 /* HomeEmptyStateView.swift in Sources */,
+				8F3E5F362B685DBB0099E1F6 /* GameListCellView.swift in Sources */,
+				8FFF70272B67596C0038D437 /* Sequence+Prefix.swift in Sources */,
+				8FB0F8162B4F8DDA00EEDE3E /* Shaders.metal in Sources */,
+				8F3E5F322B68569D0099E1F6 /* AlphabetScrollIndicatorView.swift in Sources */,
+				8F3E5F342B6856BC0099E1F6 /* Character+Alphabet.swift in Sources */,
+				8F3D94962B4F2E9D00D49F8F /* HomeView.swift in Sources */,
+				8FFF70252B67592F0038D437 /* Functions.swift in Sources */,
+				8FFF70292B682D300038D437 /* String+Localized.swift in Sources */,
+				8F2B51202B4F31010039EB99 /* Font_Extensions.swift in Sources */,
+				8F3E5F382B687F840099E1F6 /* RecentlyPlayedGamesListView.swift in Sources */,
+				8FAC67062B4F96FC000084AD /* Numeric_Extension.swift in Sources */,
+				8FFF70232B67590E0038D437 /* PrefixSequence.swift in Sources */,
+				8FAC670B2B4F98D8000084AD /* DirectionalPadView.swift in Sources */,
+				8F57896C2B50A2B00080CAAA /* ActionButtonsView.swift in Sources */,
+				8F9C14232B51BE3300535930 /* CGImage_Extension.swift in Sources */,
+				8FB0F80C2B4F707500EEDE3E /* GameViewModel.swift in Sources */,
+				8F2F88222B4F1EBB0081C187 /* RustyboyApp.swift in Sources */,
+				8FB0F80E2B4F8B0C00EEDE3E /* Collection_Extension.swift in Sources */,
+				8F9C141B2B51B5A900535930 /* GameMenuView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		8F2F882C2B4F1EBC0081C187 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		8F2F882D2B4F1EBC0081C187 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		8F2F882F2B4F1EBC0081C187 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Rustyboy/Preview Content\"";
+				DEVELOPMENT_TEAM = 937YNU42V5;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Rustyboy/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = cloclo.Rustyboy;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = Rustyboy/BridgingHeader.h;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		8F2F88302B4F1EBC0081C187 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Rustyboy/Preview Content\"";
+				DEVELOPMENT_TEAM = 937YNU42V5;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Rustyboy/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = cloclo.Rustyboy;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = Rustyboy/BridgingHeader.h;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		8F2F88192B4F1EBB0081C187 /* Build configuration list for PBXProject "Rustyboy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8F2F882C2B4F1EBC0081C187 /* Debug */,
+				8F2F882D2B4F1EBC0081C187 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8F2F882E2B4F1EBC0081C187 /* Build configuration list for PBXNativeTarget "Rustyboy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8F2F882F2B4F1EBC0081C187 /* Debug */,
+				8F2F88302B4F1EBC0081C187 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		8F62A9CA2B4F40BF0099BBC1 /* XCLocalSwiftPackageReference "Rustyboy/RustyboyCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Rustyboy/RustyboyCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		8F29232C2B62216F006EA675 /* XCRemoteSwiftPackageReference "swift-collections" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-collections.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.6;
+			};
+		};
+		8F2B51282B4F3BBB0039EB99 /* XCRemoteSwiftPackageReference "slingshot" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "http://github.com/flix477/slingshot.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.3.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8F29232D2B62216F006EA675 /* OrderedCollections */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8F29232C2B62216F006EA675 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = OrderedCollections;
+		};
+		8F2B51292B4F3BBB0039EB99 /* Slingshot */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8F2B51282B4F3BBB0039EB99 /* XCRemoteSwiftPackageReference "slingshot" */;
+			productName = Slingshot;
+		};
+		8F62A9CB2B4F40BF0099BBC1 /* RustyboyCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RustyboyCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 8F2F88162B4F1EBB0081C187 /* Project object */;
+}
