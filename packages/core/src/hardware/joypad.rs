@@ -15,8 +15,8 @@ impl Joypad {
         self.mode = mode;
     }
 
-    pub fn send_input(&mut self, input: Input) {
-        self.set_flag(input.button, input.input_type == InputType::Down)
+    pub fn step(&mut self, held_buttons: u8) {
+        self.pushed_keys = held_buttons
     }
 }
 

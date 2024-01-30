@@ -1,7 +1,7 @@
 use crate::cartridge::cartridge_capability::CartridgeCapability;
+use crate::cartridge::cartridge_metadata_error::CartridgeMetadataError;
 use crate::util::bytes_convert;
 use crate::util::ut8_decode_trim;
-use std::error::Error;
 use std::ops::RangeInclusive;
 
 // The range where the game's title resides in ASCII uppercase characters
@@ -69,7 +69,7 @@ pub struct CartridgeMetadata {
 }
 
 impl CartridgeMetadata {
-    pub fn from_buffer(buffer: &[u8]) -> Result<CartridgeMetadata, Box<dyn Error>> {
+    pub fn from_buffer(buffer: &[u8]) -> Result<CartridgeMetadata, CartridgeMetadataError> {
         let (title, manufacturer_code, cgb_flag) = Self::parse_title_section(buffer)?;
 
         Ok(CartridgeMetadata {
@@ -89,7 +89,7 @@ impl CartridgeMetadata {
         })
     }
 
-    fn parse_title_section(buffer: &[u8]) -> Result<TitleSection, Box<dyn Error>> {
+    fn parse_title_section(buffer: &[u8]) -> Result<TitleSection, CartridgeMetadataError> {
         let mut title_end_offset = CGB_FLAG_OFFSET;
         let cgb_flag = CGBFlag::from(buffer[CGB_FLAG_OFFSET]);
         let manufacturer_code = Self::parse_manufacturer_code(buffer)?;
@@ -108,7 +108,7 @@ impl CartridgeMetadata {
         ))
     }
 
-    fn parse_manufacturer_code(buffer: &[u8]) -> Result<Option<String>, Box<dyn Error>> {
+    fn parse_manufacturer_code(buffer: &[u8]) -> Result<Option<String>, CartridgeMetadataError> {
         let code = ut8_decode_trim(buffer[MANUFACTURER_CODE_RANGE].to_vec())?;
         if code.len() == 4 {
             return Ok(Some(code));
@@ -116,7 +116,7 @@ impl CartridgeMetadata {
         Ok(None)
     }
 
-    fn parse_new_licensee_code(buffer: &[u8]) -> Result<Option<String>, Box<dyn Error>> {
+    fn parse_new_licensee_code(buffer: &[u8]) -> Result<Option<String>, CartridgeMetadataError> {
         let code = ut8_decode_trim(buffer[NEW_LICENSEE_CODE_RANGE].to_vec())?;
         if code.len() == 2 {
             return Ok(Some(code));
@@ -124,7 +124,7 @@ impl CartridgeMetadata {
         Ok(None)
     }
 
-    fn parse_rom_size(buffer: &[u8]) -> Result<f64, String> {
+    fn parse_rom_size(buffer: &[u8]) -> Result<f64, CartridgeMetadataError> {
         match buffer[ROM_SIZE_OFFSET] {
             0x00 => Ok(bytes_convert::from_kb(32.0)),
             0x01 => Ok(bytes_convert::from_kb(64.0)),
@@ -137,17 +137,17 @@ impl CartridgeMetadata {
             0x52 => Ok(bytes_convert::from_mb(1.1)),
             0x53 => Ok(bytes_convert::from_mb(1.2)),
             0x54 => Ok(bytes_convert::from_mb(1.5)),
-            _ => Err(String::from("invalid ROM size value")),
+            _ => Err(CartridgeMetadataError::InvalidROMSizeIndex),
         }
     }
 
-    fn parse_ram_size(buffer: &[u8]) -> Result<f64, String> {
+    fn parse_ram_size(buffer: &[u8]) -> Result<f64, CartridgeMetadataError> {
         match buffer[RAM_SIZE_OFFSET] {
             0x00 => Ok(0.0),
             0x01 => Ok(bytes_convert::from_kb(2.0)),
             0x02 => Ok(bytes_convert::from_kb(8.0)),
             0x03 => Ok(bytes_convert::from_kb(32.0)),
-            _ => Err(String::from("invalid RAM size value")),
+            _ => Err(CartridgeMetadataError::InvalidRAMSizeIndex),
         }
     }
 
@@ -183,11 +183,11 @@ pub enum Destination {
 }
 
 impl Destination {
-    pub fn from(value: u8) -> Result<Destination, String> {
+    pub fn from(value: u8) -> Result<Destination, CartridgeMetadataError> {
         match value {
             0x00 => Ok(Destination::Japanese),
             0x01 => Ok(Destination::NonJapanese),
-            _ => Err(String::from("invalid destination code")),
+            _ => Err(CartridgeMetadataError::InvalidDestinationCode),
         }
     }
 }

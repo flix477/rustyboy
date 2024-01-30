@@ -1,12 +1,13 @@
 mod cartridge_capability;
+pub mod cartridge_metadata_error;
 pub mod cartridge_metadata;
 mod mbc;
 
 use crate::bus::{Readable, Writable};
 use crate::cartridge::cartridge_metadata::CartridgeMetadata;
+use crate::cartridge::cartridge_metadata_error::CartridgeMetadataError;
 use crate::cartridge::mbc::{MBCFactory, MemoryBankController};
 use crate::util::savestate::{LoadSavestateError, Savestate, SavestateStream};
-use std::error::Error;
 use std::fs;
 use std::path::Path;
 
@@ -18,7 +19,7 @@ pub struct Cartridge {
 }
 
 impl Cartridge {
-    pub fn from_file(filename: &str) -> Result<Cartridge, Box<dyn Error>> {
+    pub fn from_file(filename: &str) -> Result<Cartridge, CartridgeMetadataError> {
         let mut cartridge = Cartridge::from_buffer(fs::read(filename)?)?;
 
         if cartridge.ram.is_some() {
@@ -31,7 +32,7 @@ impl Cartridge {
         Ok(cartridge)
     }
 
-    pub fn from_buffer(buffer: Vec<u8>) -> Result<Cartridge, Box<dyn Error>> {
+    pub fn from_buffer(buffer: Vec<u8>) -> Result<Cartridge, CartridgeMetadataError> {
         let metadata = CartridgeMetadata::from_buffer(&buffer)?;
         let mbc = MBCFactory::from_metadata(&metadata);
 

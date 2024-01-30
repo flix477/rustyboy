@@ -1,6 +1,10 @@
+use thiserror;
+
 pub type SavestateStream<'a> = std::slice::Iter<'a, u8>;
 
+#[derive(thiserror::Error, Debug)]
 pub enum LoadSavestateError {
+    #[error("Invalid savestate")]
     InvalidSavestate,
 }
 

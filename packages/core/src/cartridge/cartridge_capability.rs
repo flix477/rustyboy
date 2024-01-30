@@ -1,3 +1,5 @@
+use crate::cartridge::cartridge_metadata_error::CartridgeMetadataError;
+
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum CartridgeCapability {
     ROM,
@@ -18,7 +20,7 @@ pub enum CartridgeCapability {
 }
 
 impl CartridgeCapability {
-    pub fn from_byte(value: u8) -> Result<Vec<CartridgeCapability>, String> {
+    pub fn from_byte(value: u8) -> Result<Vec<CartridgeCapability>, CartridgeMetadataError> {
         match value {
             0x00 => Ok(vec![CartridgeCapability::ROM]),
             0x01 => Ok(vec![CartridgeCapability::MBC1]),
@@ -98,7 +100,7 @@ impl CartridgeCapability {
                 CartridgeCapability::RAM,
                 CartridgeCapability::Battery,
             ]),
-            _ => Err(String::from("invalid cartridge type value")),
+            _ => Err(CartridgeMetadataError::InvalidCartridgeTypeValue),
         }
     }
 }

@@ -3,3 +3,14 @@ name = "rustyboy-core"
 version = "0.1.0"
 authors = ["felixleveille <flxleveille@gmail.com>"]
 edition = "2018"
+
+[dependencies]
+uniffi = { version = "0.25" }
+thiserror = "1.0.56"
+
+[build-dependencies]
+uniffi = { version = "0.25", features = ["build"] }
+
+[lib]
+crate-type = ["lib", "cdylib", "staticlib"]
+name = "rustyboy_core"

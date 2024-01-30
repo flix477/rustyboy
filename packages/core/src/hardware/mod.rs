@@ -3,10 +3,11 @@ use crate::cartridge::Cartridge;
 use crate::processor::interrupt::{Interrupt, InterruptHandler};
 use crate::video::Video;
 
-use self::joypad::{Input, Joypad};
+use self::joypad::Joypad;
 use self::timer::Timer;
 use crate::util::savestate::{read_savestate_byte, LoadSavestateError, Savestate, SavestateStream};
 use crate::video::status_register::StatusMode;
+use crate::step::StepInput;
 
 pub mod joypad;
 mod timer;
@@ -47,7 +48,8 @@ impl Hardware {
         self.interrupt_handler = InterruptHandler::new();
     }
 
-    pub fn clock(&mut self) -> Option<StatusMode> {
+    pub fn step(&mut self, input: StepInput) -> Option<StatusMode> {
+        self.joypad.step(input.held_buttons);
         self.timer.clock(&mut self.interrupt_handler);
         self.video.clock(&mut self.interrupt_handler)
     }
@@ -57,10 +59,6 @@ impl Hardware {
     }
 
     fn audio_unimplemented(&self) {}
-
-    pub fn send_input(&mut self, input: Input) {
-        self.joypad.send_input(input);
-    }
 }
 
 impl Readable for Hardware {

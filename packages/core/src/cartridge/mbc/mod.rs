@@ -32,7 +32,7 @@ impl MBCFactory {
     }
 }
 
-pub trait MemoryBankController: Savestate {
+pub trait MemoryBankController: Savestate + Send + Sync {
     fn rom_bank(&self) -> u16;
     fn ram_bank(&self) -> u8;
     fn ram_enabled(&self) -> bool;
